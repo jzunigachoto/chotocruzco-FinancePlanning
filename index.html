@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ch&amp;Co. · Cuestionario de cliente</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#17233B; --ink-soft:#4B5A72; --paper:#F6F4EE; --surface:#FFFFFF;
+    --surface-2:#EFEBE1; --line:#DAD4C4; --accent:#9C7A45; --accent-ink:#5A4423;
+    --accent-soft:#EFE2C8; --good:#3F7859; --bad:#A23B3B;
+    --text:#1D2735; --text-muted:#5C6579;
+    --font-display:'Source Serif 4',Georgia,serif;
+    --font-body:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--text);font-family:var(--font-body);padding:0 16px;}
+  .wrap{max-width:640px;margin:0 auto;padding-block:32px;}
+  .eyebrow{text-transform:uppercase;letter-spacing:1.5px;font-size:11px;color:var(--accent-ink);background:var(--accent-soft);padding:3px 8px;border-radius:3px;display:inline-block;margin-bottom:10px;}
+  h1{font-family:var(--font-display);font-weight:600;font-size:26px;margin:0 0 6px;}
+  .sub{color:var(--text-muted);font-size:14px;margin-bottom:22px;}
+  .steps{display:flex;gap:6px;margin-bottom:24px;}
+  .step-dot{flex:1;height:4px;border-radius:2px;background:var(--line);}
+  .step-dot.done{background:var(--accent);}
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px;}
+  fieldset{border:none;padding:0;margin:0 0 18px;}
+  legend{font-family:var(--font-display);font-size:17px;font-weight:600;margin-bottom:4px;padding:0;}
+  .legend-sub{color:var(--text-muted);font-size:13px;margin-bottom:14px;}
+  .field{display:flex;flex-direction:column;gap:4px;margin-bottom:14px;}
+  label{font-size:13px;font-weight:500;color:var(--ink-soft);}
+  input,select{font-family:var(--font-body);font-size:14px;padding:9px 10px;border:1px solid var(--line);border-radius:7px;background:var(--paper);color:var(--text);width:100%;}
+  input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px;}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+  @media (max-width:480px){.row3{grid-template-columns:1fr;}}
+  .amount-row{display:grid;grid-template-columns:1fr 90px;gap:8px;}
+  .hint{font-size:11.5px;color:var(--text-muted);margin-top:2px;}
+  .nav{display:flex;justify-content:space-between;gap:10px;margin-top:20px;}
+  button{font-family:var(--font-body);cursor:pointer;border:none;border-radius:8px;padding:11px 18px;font-size:14px;font-weight:600;}
+  .btn-primary{background:var(--ink);color:var(--paper);}
+  .btn-ghost{background:transparent;color:var(--ink-soft);border:1px solid var(--line);}
+  .btn-primary:disabled{opacity:.5;cursor:default;}
+  .page{display:none;}
+  .page.active{display:block;}
+  .status{font-size:13px;margin-top:14px;min-height:18px;}
+  .status.err{color:var(--bad);}
+  .status.ok{color:var(--good);}
+  .confirm{text-align:center;padding:40px 10px;}
+  .confirm .icon{width:48px;height:48px;border-radius:50%;background:#E3EEE6;color:var(--good);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:24px;}
+  footer{text-align:center;color:var(--text-muted);font-size:11.5px;margin-top:18px;}
+  footer a{color:var(--text-muted);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="eyebrow">Ch&amp;Co. · Multi-family office</span>
+  <h1>Cuestionario de perfil y planificación</h1>
+  <div class="sub">Esta información nos permite construir su perfil de riesgo y proyectar su portafolio de inversión. Le tomará entre 5 y 8 minutos.</div>
+
+  <div class="steps">
+    <div class="step-dot done" id="dot-1"></div>
+    <div class="step-dot" id="dot-2"></div>
+    <div class="step-dot" id="dot-3"></div>
+  </div>
+
+  <div class="panel">
+    <form id="form">
+      <!-- PÁGINA 1: Identificación -->
+      <div class="page active" data-page="1">
+        <fieldset>
+          <legend>Sus datos</legend>
+          <div class="legend-sub">Para identificar su respuesta ante su asesor.</div>
+          <div class="field"><label for="nombre">Nombre completo</label><input required id="nombre" name="Nombre"></div>
+          <div class="row2">
+            <div class="field"><label for="correo">Correo electrónico</label><input required type="email" id="correo" name="Correo"></div>
+            <div class="field"><label for="telefono">Teléfono</label><input required id="telefono" name="Teléfono"></div>
+          </div>
+          <div class="row2">
+            <div class="field"><label for="edad">Edad actual</label><input required type="number" min="18" max="90" id="edad" name="Edad actual"></div>
+            <div class="field"><label for="edad_retiro">Edad deseada de retiro</label><input required type="number" min="30" max="90" id="edad_retiro" name="Edad deseada de retiro"></div>
+          </div>
+        </fieldset>
+        <div class="nav"><span></span><button type="button" class="btn-primary" onclick="goTo(2)">Continuar</button></div>
+      </div>
+
+      <!-- PÁGINA 2: Cuestionario 1 - Perfil de riesgo -->
+      <div class="page" data-page="2">
+        <fieldset>
+          <legend>Cuestionario 1 · Perfil de riesgo</legend>
+          <div class="legend-sub">No hay respuestas correctas o incorrectas — buscamos entender su situación real.</div>
+
+          <div class="field"><label>1. ¿Cuándo planea empezar a retirar fondos de este portafolio?</label>
+            <select required name="Q1 - Horizonte para retirar" id="q1">
+              <option value="">Seleccione...</option>
+              <option value="1">Menos de 3 años</option>
+              <option value="3">3 a 5 años</option>
+              <option value="7">6 a 10 años</option>
+              <option value="10">11 años o más</option>
+            </select></div>
+
+          <div class="field"><label>2. Una vez que inicie los retiros, ¿en cuánto tiempo estima usar la totalidad de los fondos?</label>
+            <select required name="Q2 - Duración del retiro" id="q2">
+              <option value="">Seleccione...</option>
+              <option value="0">Menos de 2 años</option>
+              <option value="1">2 a 5 años</option>
+              <option value="4">6 a 10 años</option>
+              <option value="8">11 años o más</option>
+            </select></div>
+
+          <div class="field"><label>3. Su conocimiento y experiencia en instrumentos de inversión es:</label>
+            <select required name="Q3 - Conocimiento" id="q3">
+              <option value="">Seleccione...</option>
+              <option value="0">Ninguno</option>
+              <option value="2">Limitado — principalmente cuentas de ahorro y CDP</option>
+              <option value="4">Bueno — ha invertido en fondos de inversión o bonos</option>
+              <option value="6">Extenso — acciones, mercados internacionales o alternativos</option>
+            </select></div>
+
+          <div class="field"><label>4. Al invertir, usted está:</label>
+            <select required name="Q4 - Preocupación pérdida vs. ganancia" id="q4">
+              <option value="">Seleccione...</option>
+              <option value="0">Más preocupado por perder valor de mi capital</option>
+              <option value="4">Igual de preocupado por perder o por ganar valor</option>
+              <option value="8">Más enfocado en el crecimiento, aunque implique más variación</option>
+            </select></div>
+
+          <div class="field"><label>5. Si su portafolio perdiera 25% de su valor en 3 meses por un movimiento fuerte del mercado, usted:</label>
+            <select required name="Q5 - Reacción ante caída de 25%" id="q5">
+              <option value="">Seleccione...</option>
+              <option value="0">Vendería toda mi posición</option>
+              <option value="2">Vendería una parte</option>
+              <option value="5">No haría nada, esperaría a que se recupere</option>
+              <option value="8">Aprovecharía para invertir más</option>
+            </select></div>
+
+          <div class="field"><label>6. ¿Cuál rango de retorno y posible pérdida anual acepta?</label>
+            <select required name="Q6 - Rango de retorno aceptado" id="q6">
+              <option value="">Seleccione...</option>
+              <option value="0">A · Retorno promedio 6% · Mejor año +14% · Peor año −5%</option>
+              <option value="3">B · Retorno promedio 7.5% · Mejor año +21% · Peor año −10%</option>
+              <option value="6">C · Retorno promedio 8.5% · Mejor año +28% · Peor año −16%</option>
+              <option value="8">D · Retorno promedio 9.5% · Mejor año +36% · Peor año −22%</option>
+              <option value="10">E · Retorno promedio 10.5% · Mejor año +42% · Peor año −27%</option>
+            </select></div>
+
+          <div class="field"><label>7. Número de personas que dependen económicamente de usted:</label>
+            <select required name="Q7 - Dependientes" id="q7">
+              <option value="">Seleccione...</option>
+              <option value="1">4 o más</option>
+              <option value="2">3</option>
+              <option value="3">1 a 2</option>
+              <option value="4">Ninguna</option>
+            </select></div>
+
+          <div class="field"><label>8. Su fuente principal de ingreso es:</label>
+            <select required name="Q8 - Estabilidad laboral" id="q8">
+              <option value="">Seleccione...</option>
+              <option value="1">Ingreso variable (comisiones, negocio informal)</option>
+              <option value="2">Jubilado, con pensión</option>
+              <option value="3">Negocio propio establecido</option>
+              <option value="4">Empleado con ingreso fijo y estable</option>
+            </select></div>
+
+          <div class="field"><label>9. Además de este portafolio, ¿cuál es su patrimonio invertible aproximado?</label>
+            <select required name="Q9 - Patrimonio invertible" id="q9">
+              <option value="">Seleccione...</option>
+              <option value="1">Menos de $50,000</option>
+              <option value="2">$50,000 a $250,000</option>
+              <option value="3">$250,000 a $1,000,000</option>
+              <option value="4">Más de $1,000,000</option>
+            </select></div>
+
+          <div class="field"><label>10. ¿En qué moneda prefiere mantener la mayor parte de este portafolio?</label>
+            <select required name="Q10 - Preferencia de moneda" id="q10">
+              <option value="">Seleccione...</option>
+              <option>Principalmente en colones (₡)</option>
+              <option>Principalmente en dólares (US$)</option>
+              <option>Mitad y mitad, sin preferencia marcada</option>
+            </select></div>
+
+          <div class="field"><label>11. Si el tipo de cambio ₡/US$ se moviera fuerte en un año, ¿qué tanto afectaría su tranquilidad?</label>
+            <select required name="Q11 - Sensibilidad cambiaria" id="q11">
+              <option value="">Seleccione...</option>
+              <option>Mucho — prefiero estar en la moneda de mis gastos</option>
+              <option>Algo, pero lo toleraría si el retorno compensa</option>
+              <option>Poco — es normal invertir así en Costa Rica</option>
+            </select></div>
+        </fieldset>
+        <div class="nav"><button type="button" class="btn-ghost" onclick="goTo(1)">Atrás</button><button type="button" class="btn-primary" onclick="goTo(3)">Continuar</button></div>
+      </div>
+
+      <!-- PÁGINA 3: Cuestionario 2 - Planificación financiera -->
+      <div class="page" data-page="3">
+        <fieldset>
+          <legend>Cuestionario 2 · Planificación financiera</legend>
+          <div class="legend-sub">Estas cifras alimentan directamente la proyección de su portafolio.</div>
+
+          <div class="field"><label>Capital inicial invertido</label>
+            <div class="amount-row">
+              <input required type="number" min="0" id="capital-monto" name="Capital inicial (monto)" placeholder="Ej. 250000">
+              <select id="capital-moneda" name="Capital inicial (moneda)"><option>USD</option><option>CRC</option></select>
+            </div></div>
+
+          <div class="field"><label>Aporte anual estimado</label>
+            <div class="amount-row">
+              <input required type="number" min="0" id="aporte-monto" name="Aporte anual (monto)" placeholder="Ej. 25000">
+              <select id="aporte-moneda" name="Aporte anual (moneda)"><option>USD</option><option>CRC</option></select>
+            </div></div>
+
+          <div class="field"><label>Gasto mensual estimado en retiro (en valores de hoy)</label>
+            <div class="amount-row">
+              <input required type="number" min="0" id="gasto-monto" name="Gasto mensual en retiro (monto)" placeholder="Ej. 4500">
+              <select id="gasto-moneda" name="Gasto mensual en retiro (moneda)"><option>USD</option><option>CRC</option></select>
+            </div>
+            <div class="hint">Si su gasto real está en colones, selecciónelo — la conversión se hace con el tipo de cambio de referencia de Ch&amp;Co.</div>
+          </div>
+
+          <div class="field"><label>Inflación anual que le gustaría asumir (déjelo en blanco para usar el supuesto de Ch&amp;Co., 3.9%)</label>
+            <input type="number" step="0.001" id="inflacion" name="Inflación anual asumida" placeholder="Ej. 0.039"></div>
+
+          <div class="field"><label>Comentarios adicionales sobre sus metas (compra de vivienda, educación de hijos, viajes, etc.)</label>
+            <input id="comentarios" name="Comentarios / metas adicionales"></div>
+        </fieldset>
+        <div class="nav"><button type="button" class="btn-ghost" onclick="goTo(2)">Atrás</button><button type="submit" class="btn-primary" id="submit-btn">Enviar respuestas</button></div>
+        <div class="status" id="form-status"></div>
+      </div>
+
+      <!-- CONFIRMACIÓN -->
+      <div class="page" data-page="4">
+        <div class="confirm">
+          <div class="icon">&#10003;</div>
+          <h2 style="font-family:var(--font-display);margin:0 0 6px;">Respuestas guardadas</h2>
+          <div class="sub">Gracias — su información quedó registrada y su asesor en Ch&amp;Co. podrá consultar su perfil de riesgo y la proyección de su portafolio.</div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <footer>Chotocruz CO · Multi-family office · Uso confidencial · <a href="#" id="reset-token">cambiar token de acceso</a></footer>
+</div>
+
+<script>
+// ---- Punto único de configuración: repositorio donde se guardan las respuestas ----
+const GH_OWNER  = "jzunigachoto";
+const GH_REPO   = "chotocruzco-FinancePlanning";
+const GH_BRANCH = "main";
+// Tipo de cambio de referencia para convertir montos en colones a dólares (ajustar según el vigente)
+const TIPO_CAMBIO = 505;
+
+function goTo(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelector('.page[data-page="'+page+'"]').classList.add('active');
+  document.getElementById('dot-1').classList.toggle('done', page>=1);
+  document.getElementById('dot-2').classList.toggle('done', page>=2);
+  document.getElementById('dot-3').classList.toggle('done', page>=3);
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// El token se pide una sola vez y se guarda SOLO en este navegador (localStorage) —
+// nunca queda escrito en este archivo ni se sube a GitHub.
+function getToken(){
+  let t = localStorage.getItem('gh_token');
+  if(!t){
+    t = window.prompt(
+      "Pegue su GitHub Personal Access Token para guardar respuestas en el repositorio "+GH_OWNER+"/"+GH_REPO+".\n\n" +
+      "Se guarda únicamente en este navegador. Para crear uno:\n" +
+      "GitHub → foto de perfil → Settings → Developer settings → Fine-grained tokens → Generate new token\n" +
+      "→ Repository access: Only select repositories → "+GH_REPO+"\n" +
+      "→ Permissions → Contents: Read and write"
+    );
+    if(t) localStorage.setItem('gh_token', t.trim());
+  }
+  return t;
+}
+
+document.getElementById('reset-token').addEventListener('click', function(e){
+  e.preventDefault();
+  localStorage.removeItem('gh_token');
+  alert('Token borrado. Se le pedirá uno nuevo en el próximo envío.');
+});
+
+function toUsd(monto, moneda){
+  const m = parseFloat(monto)||0;
+  return moneda==='CRC' ? m / TIPO_CAMBIO : m;
+}
+
+function b64EncodeUnicode(str){
+  return btoa(unescape(encodeURIComponent(str)));
+}
+
+document.getElementById('form').addEventListener('submit', async function(e){
+  e.preventDefault();
+  const statusEl = document.getElementById('form-status');
+  const btn = document.getElementById('submit-btn');
+  const val = id => document.getElementById(id).value;
+
+  const nombre = val('nombre').trim();
+  const cliente = {
+    id: 'c-' + Date.now() + '-' + Math.random().toString(36).slice(2,7),
+    nombre,
+    correo: val('correo').trim(),
+    telefono: val('telefono').trim(),
+    edad: +val('edad'),
+    edadRetiro: +val('edad_retiro'),
+    respuestas: {
+      q1:+val('q1'), q2:+val('q2'), q3:+val('q3'), q4:+val('q4'), q5:+val('q5'),
+      q6:+val('q6'), q7:+val('q7'), q8:+val('q8'), q9:+val('q9')
+    },
+    preferenciaMoneda: val('q10'),
+    sensibilidadCambiaria: val('q11'),
+    capital: toUsd(val('capital-monto'), val('capital-moneda')),
+    aporte: toUsd(val('aporte-monto'), val('aporte-moneda')),
+    gasto: toUsd(val('gasto-monto'), val('gasto-moneda')),
+    inflacion: val('inflacion') ? +val('inflacion') : 0.039,
+    comentarios: val('comentarios').trim(),
+    creadoEn: Date.now()
+  };
+
+  const token = getToken();
+  if(!token){
+    statusEl.className='status err';
+    statusEl.textContent = 'Se necesita el token de GitHub para guardar las respuestas.';
+    return;
+  }
+
+  btn.disabled = true; statusEl.className='status'; statusEl.textContent='Guardando en GitHub...';
+  try{
+    const path = `data/clientes/${cliente.id}.json`;
+    const url = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${path}`;
+    const res = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Accept': 'application/vnd.github+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        message: 'Nuevo cuestionario: ' + (nombre || 'cliente sin nombre'),
+        content: b64EncodeUnicode(JSON.stringify(cliente, null, 2)),
+        branch: GH_BRANCH
+      })
+    });
+    if(!res.ok){
+      if(res.status===401 || res.status===403){
+        localStorage.removeItem('gh_token');
+        throw new Error('El token no es válido o no tiene permiso de escritura. Se borró — intente enviar de nuevo para ingresar uno nuevo.');
+      }
+      throw new Error('GitHub respondió '+res.status);
+    }
+    goTo(4);
+  }catch(err){
+    statusEl.className='status err';
+    statusEl.textContent = 'No se pudo guardar: ' + (err.message || 'error desconocido') + '.';
+    btn.disabled = false;
+  }
+});
+</script>
+</body>
+</html>

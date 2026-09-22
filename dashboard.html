@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel de perfiles Ch&amp;Co.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#17233B; --ink-soft:#4B5A72; --paper:#F6F4EE; --surface:#FFFFFF;
+    --surface-2:#EFEBE1; --line:#DAD4C4; --accent:#9C7A45; --accent-ink:#5A4423;
+    --accent-soft:#EFE2C8; --good:#3F7859; --good-soft:#E3EEE6; --warn:#9C6B2E;
+    --warn-soft:#F3E6D2; --bad:#A23B3B; --bad-soft:#F5E3E1; --text:#1D2735;
+    --text-muted:#5C6579; --font-display:'Source Serif 4',Georgia,serif;
+    --font-body:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ink:#E8E6DE; --ink-soft:#B9BFCC; --paper:#141821; --surface:#1B202B;
+      --surface-2:#232939; --line:#323A4C; --accent:#D8B876; --accent-ink:#2A2013;
+      --accent-soft:#3A3120; --good:#7FC79A; --good-soft:#1E3327; --warn:#E0B36B;
+      --warn-soft:#3A2E17; --bad:#E48A8A; --bad-soft:#3A2020; --text:#EDEBE3;
+      --text-muted:#9CA3B5;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ink:#E8E6DE; --ink-soft:#B9BFCC; --paper:#141821; --surface:#1B202B;
+    --surface-2:#232939; --line:#323A4C; --accent:#D8B876; --accent-ink:#2A2013;
+    --accent-soft:#3A3120; --good:#7FC79A; --good-soft:#1E3327; --warn:#E0B36B;
+    --warn-soft:#3A2E17; --bad:#E48A8A; --bad-soft:#3A2020; --text:#EDEBE3;
+    --text-muted:#9CA3B5;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;}
+  body{background:var(--paper);color:var(--text);font-family:var(--font-body);padding:0 16px;padding-block:28px;}
+  .wrap{max-width:1040px;margin:0 auto;}
+  header{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:20px;border-bottom:1px solid var(--line);padding-bottom:16px;}
+  h1{font-family:var(--font-display);font-weight:600;font-size:26px;margin:0 0 4px;letter-spacing:.2px;}
+  .sub{color:var(--text-muted);font-size:13px;}
+  .eyebrow{text-transform:uppercase;letter-spacing:1.5px;font-size:11px;color:var(--accent-ink);background:var(--accent-soft);padding:3px 8px;border-radius:3px;display:inline-block;margin-bottom:8px;}
+  .layout{display:grid;grid-template-columns:260px 1fr;gap:20px;}
+  @media (max-width:760px){.layout{grid-template-columns:1fr;}}
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;}
+  .client-list{display:flex;flex-direction:column;gap:6px;margin-top:10px;}
+  .client-row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 10px;border-radius:7px;cursor:pointer;border:1px solid transparent;font-size:13.5px;}
+  .client-row:hover{background:var(--surface-2);}
+  .client-row.active{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-ink);}
+  .client-row .name{font-weight:600;}
+  .client-row .tag{font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);}
+  button{font-family:var(--font-body);cursor:pointer;}
+  .btn{background:var(--ink);color:var(--paper);border:none;border-radius:7px;padding:9px 14px;font-size:13px;font-weight:600;width:100%;}
+  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);}
+  .btn.danger{background:transparent;color:var(--bad);border:1px solid var(--bad-soft);}
+  .btn:disabled{opacity:.5;cursor:default;}
+  h2.section-title{font-family:var(--font-display);font-size:17px;font-weight:600;margin:0 0 4px;}
+  .empty{color:var(--text-muted);font-size:13px;padding:30px 10px;text-align:center;}
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0;}
+  @media (max-width:640px){.cards{grid-template-columns:1fr;}}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;}
+  .card .label{font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);margin-bottom:8px;}
+  .card .value{font-family:var(--font-display);font-size:26px;font-weight:600;font-variant-numeric:tabular-nums;}
+  .pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;margin-top:6px;}
+  .pill.conservador{background:var(--good-soft);color:var(--good);}
+  .pill.moderado{background:var(--warn-soft);color:var(--warn);}
+  .pill.agresivo{background:var(--bad-soft);color:var(--bad);}
+  .chart-card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px;margin-bottom:16px;}
+  .legend{display:flex;gap:16px;font-size:12px;color:var(--text-muted);margin-top:8px;flex-wrap:wrap;}
+  .legend span{display:inline-flex;align-items:center;gap:5px;}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
+  table{width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums;}
+  th{text-align:right;font-weight:600;color:var(--text-muted);text-transform:uppercase;font-size:10.5px;letter-spacing:.4px;padding:6px 8px;border-bottom:1px solid var(--line);}
+  th:first-child,td:first-child{text-align:left;}
+  td{text-align:right;padding:6px 8px;border-bottom:1px solid var(--line);}
+  .table-wrap{overflow-x:auto;max-height:320px;overflow-y:auto;}
+  form.add-form{display:flex;flex-direction:column;gap:10px;margin-top:10px;}
+  form.add-form fieldset{border:1px solid var(--line);border-radius:8px;padding:10px 12px 12px;}
+  form.add-form legend{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--accent-ink);padding:0 4px;}
+  .field{display:flex;flex-direction:column;gap:3px;margin-bottom:8px;}
+  .field:last-child{margin-bottom:0;}
+  label{font-size:12px;color:var(--text-muted);}
+  input,select{font-family:var(--font-body);font-size:13px;padding:7px 8px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--text);width:100%;}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .modal-backdrop{position:fixed;inset:0;background:rgba(20,20,20,.45);display:none;align-items:flex-start;justify-content:center;padding:24px 16px;overflow-y:auto;z-index:10;}
+  .modal-backdrop.open{display:flex;}
+  .modal{background:var(--surface);border-radius:12px;max-width:520px;width:100%;padding:20px;margin-top:20px;}
+  .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+  .close-x{background:none;border:none;font-size:18px;color:var(--text-muted);}
+  .status{font-size:12px;color:var(--text-muted);margin-top:8px;min-height:16px;}
+  .status.err{color:var(--bad);}
+  .toprow{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;gap:10px;}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div>
+      <span class="eyebrow">Ch&amp;Co. · Prototipo interno</span>
+      <h1>Panel de perfiles de riesgo y proyección</h1>
+      <div class="sub" id="source-sub">Leyendo respuestas del repositorio de GitHub...</div>
+    </div>
+    <button class="btn" id="btn-refresh" style="width:auto;">Actualizar</button>
+  </header>
+
+  <div class="layout">
+    <aside class="panel">
+      <h2 class="section-title">Clientes</h2>
+      <div class="sub" id="client-count">Cargando...</div>
+      <div class="client-list" id="client-list"></div>
+    </aside>
+
+    <main id="main-panel">
+      <div class="empty" id="empty-state">Cargando respuestas...</div>
+      <div id="detail" hidden></div>
+    </main>
+  </div>
+</div>
+
+<script>
+(function(){
+
+// ---------- motor de proyección (idéntico a projection.py / Excel) ----------
+function proyectarPortafolio({capitalInicial, aporteAnual, retornoAnual, inflacionAnual, edadActual, edadRetiro, gastoMensualHoy, horizonteRetiro}){
+  if(!horizonteRetiro){
+    horizonteRetiro = Math.round(80 - edadRetiro);
+    horizonteRetiro = Math.max(15, Math.min(50, horizonteRetiro));
+  }
+  const aniosAcum = Math.max(0, edadRetiro - edadActual);
+  const totalAnios = aniosAcum + horizonteRetiro;
+  const gastoAnualHoy = gastoMensualHoy * 12;
+  let portafolio = capitalInicial;
+  let edad = edadActual;
+  const filas = [{t:0, edad, fase:'inicio', portafolioFinal:portafolio, portafolioReal:portafolio}];
+  for(let t=1;t<=totalAnios;t++){
+    edad++;
+    const enRetiro = t > aniosAcum;
+    const portafolioInicial = portafolio;
+    const retornoMonto = portafolioInicial * retornoAnual;
+    let aporteRetiro;
+    if(!enRetiro){ aporteRetiro = aporteAnual; }
+    else { const gastoInflado = gastoAnualHoy * Math.pow(1+inflacionAnual, t); aporteRetiro = -gastoInflado; }
+    const resultadoNeto = retornoMonto + aporteRetiro;
+    const portafolioFinal = portafolioInicial + resultadoNeto;
+    const portafolioReal = portafolioFinal / Math.pow(1+inflacionAnual, t);
+    filas.push({t, edad, fase: enRetiro?'retiro':'acumulacion', portafolioInicial, aporteRetiro, retornoMonto, resultadoNeto, portafolioFinal, portafolioReal});
+    portafolio = portafolioFinal;
+  }
+  return {aniosAcum, horizonteRetiro, filas, seAgota: filas.some(f=>f.portafolioFinal<0)};
+}
+
+const PERFILES = {
+  conservador:{retorno:0.05,label:'Conservador'},
+  moderado:{retorno:0.07,label:'Moderado'},
+  agresivo:{retorno:0.08,label:'Agresivo'}
+};
+
+function calcularPerfil(q){
+  const horizonte = (q.q1+q.q2); // 0-18
+  const tolerancia = (q.q3+q.q4+q.q5+q.q6); // 0-32
+  const capacidad = (q.q7+q.q8+q.q9); // 3-12
+  const hN = horizonte/18, tN = tolerancia/32, cN = (capacidad-3)/9;
+  const score = tN*0.40 + hN*0.35 + cN*0.25;
+  let perfil = 'moderado';
+  if(score < 0.40) perfil='conservador'; else if(score>0.70) perfil='agresivo';
+  return {horizonte, tolerancia, capacidad, score, perfil};
+}
+
+function fmt(n){ return new Intl.NumberFormat('es-CR',{maximumFractionDigits:0}).format(Math.round(n)); }
+function fmtPct(n){ return (n*100).toFixed(1)+'%'; }
+
+// ---------- Punto único de configuración: mismo repositorio que index.html ----------
+const GH_OWNER  = "jzunigachoto";
+const GH_REPO   = "chotocruzco-FinancePlanning";
+const GH_BRANCH = "main";
+const GH_DATA_PATH = "data/clientes";
+
+// ---------- estado ----------
+let clients = [], activeId = null;
+
+// Lee las respuestas guardadas directamente del repositorio de GitHub (lectura pública,
+// sin token — el repo es público, así que cualquier archivo en data/clientes/ es legible).
+async function cargarClientesDesdeGitHub(){
+  const url = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_DATA_PATH}?ref=${GH_BRANCH}`;
+  const res = await fetch(url, { headers:{ 'Accept':'application/vnd.github+json' } });
+  if(res.status===404) return []; // todavía no existe ningún cliente guardado
+  if(!res.ok) throw new Error('GitHub API respondió '+res.status);
+  const files = await res.json();
+  const jsonFiles = (Array.isArray(files)?files:[]).filter(f=>f.name && f.name.endsWith('.json'));
+  const clientes = await Promise.all(jsonFiles.map(async f=>{
+    const r = await fetch(f.download_url);
+    if(!r.ok) return null;
+    return r.json();
+  }));
+  return clientes.filter(Boolean).map(c=>{
+    const perfilInfo = calcularPerfil(c.respuestas || {});
+    return {
+      ...c,
+      horizonteScore: perfilInfo.horizonte,
+      toleranciaScore: perfilInfo.tolerancia,
+      capacidadScore: perfilInfo.capacidad,
+      scoreFinal: perfilInfo.score,
+      perfil: perfilInfo.perfil,
+      inflacion: (c.inflacion!=null ? c.inflacion : 0.039)
+    };
+  });
+}
+
+function renderList(){
+  const list = document.getElementById('client-list');
+  const count = document.getElementById('client-count');
+  count.textContent = clients.length + (clients.length===1?' registrado':' registrados');
+  list.innerHTML = '';
+  clients.forEach(c=>{
+    const row = document.createElement('div');
+    row.className = 'client-row' + (c.id===activeId?' active':'');
+    row.innerHTML = `<span class="name">${escapeHtml(c.nombre)}</span><span class="tag">${PERFILES[c.perfil]?.label||''}</span>`;
+    row.onclick = ()=>selectClient(c.id);
+    list.appendChild(row);
+  });
+}
+
+function selectClient(id){
+  activeId = id;
+  renderList();
+  const c = clients.find(c=>c.id===id);
+  if(c) renderDetail(c);
+}
+
+function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+function renderDetail(c){
+  document.getElementById('empty-state').hidden = true;
+  const detail = document.getElementById('detail');
+  detail.hidden = false;
+
+  const proy = proyectarPortafolio({
+    capitalInicial:c.capital, aporteAnual:c.aporte, retornoAnual:PERFILES[c.perfil].retorno,
+    inflacionAnual:c.inflacion, edadActual:c.edad, edadRetiro:c.edadRetiro, gastoMensualHoy:c.gasto
+  });
+  const maxNominal = Math.max(...proy.filas.map(f=>f.portafolioFinal));
+  const finalReal = proy.filas[proy.filas.length-1].portafolioReal;
+
+  detail.innerHTML = `
+    <div class="toprow">
+      <div>
+        <span class="eyebrow">Cliente</span>
+        <h2 class="section-title" style="font-size:20px;">${escapeHtml(c.nombre)}</h2>
+        <div class="sub">${c.edad} años · retiro proyectado a los ${c.edadRetiro} · horizonte de ${proy.aniosAcum + proy.horizonteRetiro} años (${proy.aniosAcum} de acumulación + ${proy.horizonteRetiro} de retiro)</div>
+      </div>
+    </div>
+    <div class="cards">
+      <div class="card">
+        <div class="label">Perfil de riesgo</div>
+        <div class="value">${PERFILES[c.perfil].label}</div>
+        <span class="pill ${c.perfil}">Retorno esperado ${fmtPct(PERFILES[c.perfil].retorno)}</span>
+      </div>
+      <div class="card">
+        <div class="label">Portafolio máximo proyectado</div>
+        <div class="value">$${fmt(maxNominal)}</div>
+        <div class="sub">Valor nominal, previo al retiro</div>
+      </div>
+      <div class="card">
+        <div class="label">Portafolio final (términos reales)</div>
+        <div class="value" style="color:${finalReal<0?'var(--bad)':'inherit'}">$${fmt(finalReal)}</div>
+        <div class="sub">${proy.seAgota? 'El portafolio se agota dentro del horizonte' : 'El portafolio no se agota en el horizonte proyectado'}</div>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <h2 class="section-title">Proyección de portafolio</h2>
+      <div class="sub">Valor nominal vs. términos reales, ${proy.aniosAcum+proy.horizonteRetiro} años</div>
+      <canvas id="chart" style="width:100%;height:280px;margin-top:10px;"></canvas>
+      <div class="legend">
+        <span><span class="dot" style="background:var(--accent)"></span>Nominal</span>
+        <span><span class="dot" style="background:var(--ink-soft)"></span>Términos reales</span>
+        <span><span class="dot" style="background:var(--good-soft);border:1px solid var(--good)"></span>Fase de acumulación</span>
+        <span><span class="dot" style="background:var(--bad-soft);border:1px solid var(--bad)"></span>Fase de retiro</span>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <h2 class="section-title">Detalle año a año</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Año</th><th>Edad</th><th>Fase</th><th>Aporte/Retiro</th><th>Retorno</th><th>Portafolio nominal</th><th>Portafolio real</th></tr></thead>
+          <tbody>
+            ${proy.filas.map(f=>`<tr>
+              <td>${f.t}</td><td>${f.edad}</td><td>${f.fase}</td>
+              <td>${f.aporteRetiro!=null? (f.aporteRetiro<0?'−$':'$')+fmt(Math.abs(f.aporteRetiro)) : '—'}</td>
+              <td>${f.retornoMonto!=null? '$'+fmt(f.retornoMonto): '—'}</td>
+              <td>$${fmt(f.portafolioFinal)}</td>
+              <td>$${fmt(f.portafolioReal)}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+  drawChart(proy);
+}
+
+function drawChart(proy){
+  const canvas = document.getElementById('chart');
+  const dpr = window.devicePixelRatio||1;
+  const cssW = canvas.clientWidth || 600, cssH = 280;
+  canvas.width = cssW*dpr; canvas.height = cssH*dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,cssW,cssH);
+
+  const styles = getComputedStyle(document.documentElement);
+  const cAccent = styles.getPropertyValue('--accent').trim();
+  const cInkSoft = styles.getPropertyValue('--ink-soft').trim();
+  const cLine = styles.getPropertyValue('--line').trim();
+  const cText = styles.getPropertyValue('--text-muted').trim();
+  const cGoodSoft = styles.getPropertyValue('--good-soft').trim();
+  const cBadSoft = styles.getPropertyValue('--bad-soft').trim();
+
+  const padL=64, padR=16, padT=14, padB=26;
+  const w = cssW-padL-padR, h = cssH-padT-padB;
+  const maxV = Math.max(...proy.filas.map(f=>Math.max(f.portafolioFinal,f.portafolioReal)));
+  const minV = Math.min(0, ...proy.filas.map(f=>Math.min(f.portafolioFinal,f.portafolioReal)));
+  const n = proy.filas.length;
+  const x = i => padL + (w * i/(n-1));
+  const y = v => padT + h - (h * (v-minV)/(maxV-minV || 1));
+
+  // phase shading
+  const accX = x(proy.aniosAcum);
+  ctx.fillStyle = cGoodSoft; ctx.fillRect(padL, padT, accX-padL, h);
+  ctx.fillStyle = cBadSoft; ctx.fillRect(accX, padT, padL+w-accX, h);
+
+  // gridlines + y labels
+  ctx.strokeStyle = cLine; ctx.fillStyle = cText; ctx.font='11px Inter,sans-serif'; ctx.textAlign='right';
+  for(let g=0; g<=4; g++){
+    const v = minV + (maxV-minV)*g/4;
+    const yy = y(v);
+    ctx.beginPath(); ctx.moveTo(padL,yy); ctx.lineTo(padL+w,yy); ctx.globalAlpha=.5; ctx.stroke(); ctx.globalAlpha=1;
+    ctx.fillText('$'+fmt(v), padL-8, yy+4);
+  }
+
+  function line(key, color){
+    ctx.beginPath();
+    proy.filas.forEach((f,i)=>{ const xx=x(i), yy=y(f[key]); i===0?ctx.moveTo(xx,yy):ctx.lineTo(xx,yy); });
+    ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.stroke();
+  }
+  line('portafolioReal', cInkSoft);
+  line('portafolioFinal', cAccent);
+
+  // x labels (every ~5 years)
+  ctx.fillStyle = cText; ctx.textAlign='center';
+  const step = Math.max(1, Math.round(n/8));
+  proy.filas.forEach((f,i)=>{ if(i%step===0 || i===n-1){ ctx.fillText(''+f.edad, x(i), padT+h+18); } });
+}
+
+// ---------- carga inicial + botón actualizar ----------
+async function init(){
+  const sourceSub = document.getElementById('source-sub');
+  const emptyState = document.getElementById('empty-state');
+  const btnRefresh = document.getElementById('btn-refresh');
+  btnRefresh.disabled = true;
+  try{
+    clients = await cargarClientesDesdeGitHub();
+    clients.sort((a,b)=> (b.creadoEn||0) - (a.creadoEn||0));
+    sourceSub.textContent = `Leído de github.com/${GH_OWNER}/${GH_REPO} · ${new Date().toLocaleTimeString('es-CR')}`;
+    renderList();
+    if(clients.length){
+      selectClient(activeId && clients.find(c=>c.id===activeId) ? activeId : clients[0].id);
+    } else {
+      document.getElementById('detail').hidden = true;
+      emptyState.hidden = false;
+      emptyState.innerHTML = 'Todavía no hay respuestas guardadas.<br>Llená el cuestionario (index.html) para que aparezca el primer cliente acá.';
+    }
+  }catch(err){
+    sourceSub.textContent = 'No se pudo leer el repositorio.';
+    emptyState.hidden = false;
+    document.getElementById('detail').hidden = true;
+    emptyState.innerHTML = 'Error al leer GitHub: ' + (err.message||'desconocido') + '.<br>Revisá que el repositorio sea público y que la ruta data/clientes/ exista.';
+  }finally{
+    btnRefresh.disabled = false;
+  }
+}
+document.getElementById('btn-refresh').onclick = init;
+init();
+
+})();
+</script>
+</body>
+</html>
