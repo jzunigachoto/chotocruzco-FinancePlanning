@@ -1,0 +1,27 @@
+{
+  "id": "c-1790071559767-r79jr",
+  "nombre": "Alberto Zuñiga",
+  "correo": "Jcrzuniga@gmail.com",
+  "telefono": "8324456",
+  "edad": 36,
+  "edadRetiro": 70,
+  "respuestas": {
+    "q1": 10,
+    "q2": 4,
+    "q3": 2,
+    "q4": 8,
+    "q5": 5,
+    "q6": 6,
+    "q7": 3,
+    "q8": 3,
+    "q9": 1
+  },
+  "preferenciaMoneda": "Principalmente en dólares (US$)",
+  "sensibilidadCambiaria": "Mucho — prefiero estar en la moneda de mis gastos",
+  "capital": 500000,
+  "aporte": 25000,
+  "gasto": 4500,
+  "inflacion": 3.9,
+  "comentarios": "Vivienda",
+  "creadoEn": 1790071559768
+}
