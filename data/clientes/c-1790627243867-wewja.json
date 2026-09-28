@@ -1,0 +1,47 @@
+{
+  "id": "c-1790627243867-wewja",
+  "nombre": "Carlos Choto",
+  "correo": "jzuniga@chotocruzco.com",
+  "telefono": "8789877684",
+  "edad": 45,
+  "edadRetiro": 65,
+  "respuestas": {
+    "q1": 0,
+    "q2": 0,
+    "q3": 10,
+    "q4": 0,
+    "q5": 7,
+    "q6": 8,
+    "q7": 7,
+    "q8": 8,
+    "q9": 3
+  },
+  "capacidad": {
+    "fuenteIngreso": 7,
+    "dependientes": 2,
+    "pesoDelPortafolio": 3,
+    "fondosLaborales": {
+      "incorpora": "ninguno",
+      "fclUsdHoy": null,
+      "ropUsdHoy": null
+    },
+    "aniosPrimerRetiro": 10,
+    "montoPrimerRetiroUsdHoy": 3000,
+    "conocimiento": 10
+  },
+  "legado": {
+    "destino": "indistinto",
+    "montoUsdHoy": null
+  },
+  "preferenciaMoneda": "Principalmente en dólares (US$)",
+  "salarioMonto": 5000,
+  "salarioMoneda": "USD",
+  "gastoMonto": 2000,
+  "gastoMoneda": "USD",
+  "capitalMonto": 250000,
+  "capitalMoneda": "USD",
+  "aporteMonto": 24000,
+  "aporteMoneda": "USD",
+  "comentarios": "Compra de vivienda",
+  "creadoEn": 1790627243867
+}
