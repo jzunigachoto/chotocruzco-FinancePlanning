@@ -29,10 +29,10 @@
     font-weight:300;font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;}
 
   /* banda superior */
-  .masthead{background:var(--ink);padding:20px 0;}
+  .masthead{background:var(--ink);padding:26px 0;}
   .masthead-inner{max-width:1120px;margin:0 auto;padding:0 32px;
     display:flex;align-items:center;justify-content:space-between;gap:20px;}
-  .masthead img{height:31px;width:auto;display:block;}
+  .masthead img{height:36px;width:auto;display:block;}
   .masthead .ref{color:rgba(228,231,218,.70);font-size:10.5px;letter-spacing:.18em;
     text-transform:uppercase;white-space:nowrap;}
   @media (max-width:640px){.masthead .ref{display:none;}}
@@ -92,9 +92,23 @@
   .alloc-table .suma{text-align:center;font-size:12.5px;color:var(--ink-45);width:15%;}
   .alloc-table .suma.mal{color:var(--alert);font-weight:700;}
 
+  .avisos-perfil{margin-top:20px;padding-top:16px;border-top:1px solid #DCDFCD;}
+  .avisos-perfil p{margin:0 0 9px;font-size:12.5px;line-height:1.55;color:#5A5B45;padding-left:14px;position:relative;}
+  .avisos-perfil p::before{content:'';position:absolute;left:0;top:7px;width:5px;height:5px;border-radius:50%;background:#918042;}
+  .avisos-perfil p:last-child{margin-bottom:0;}
   .donut-card{border:1px solid var(--rule-2);padding:20px;margin-bottom:26px;}
   .donut-row{display:grid;grid-template-columns:230px minmax(0,1fr);gap:28px;align-items:center;}
   @media (max-width:640px){.donut-row{grid-template-columns:1fr;}}
+  .matriz-row{grid-template-columns:340px minmax(0,1fr);}
+  @media (max-width:700px){.matriz-row{grid-template-columns:1fr;}}
+  .puntaje-total{display:flex;align-items:baseline;justify-content:space-between;gap:16px;
+    margin-top:6px;padding-top:14px;border-top:1px solid #DCDFCD;}
+  .puntaje-total .alloc-name{font-weight:700;color:#141709;white-space:nowrap;}
+  .puntaje-total .alloc-pct{font-weight:700;white-space:nowrap;}
+  .datos-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:22px 28px;}
+  .dato-label{font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:#918042;font-weight:600;margin-bottom:7px;}
+  .dato-valor{font-size:16px;color:#141709;font-weight:700;line-height:1.3;}
+  .dato-extra{font-size:12px;color:#5A5B45;margin-top:4px;line-height:1.45;}
   .alloc-legend{display:flex;flex-direction:column;gap:14px;}
   .alloc-item{display:grid;grid-template-columns:14px 1fr auto;gap:12px;align-items:center;}
   .alloc-dot{width:14px;height:14px;border-radius:2px;}
@@ -186,6 +200,23 @@
   footer{max-width:1120px;margin:0 auto;padding:22px 32px 46px;font-size:11px;
     letter-spacing:.06em;text-transform:uppercase;color:var(--ink);}
   @media (max-width:640px){footer{padding:18px 20px 34px;}}
+  /* Pie institucional */
+  .pie{background:var(--ink);margin-top:44px;padding:25px 0;}
+  .pie-inner{max-width:1120px;margin:0 auto;padding:0 32px;
+    display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;}
+  .pie-marca{display:flex;align-items:center;gap:18px;}
+  .pie img{height:38px;width:auto;display:block;flex:none;}
+  .pie span{font-size:12px;color:rgba(228,231,218,.75);line-height:1.6;}
+  .pie-redes{display:flex;gap:10px;flex:none;}
+  .pie-redes a{width:36px;height:36px;border-radius:50%;border:1px solid rgba(228,231,218,.45);
+    display:flex;align-items:center;justify-content:center;transition:border-color .18s,background .18s;}
+  .pie-redes a:hover{border-color:#fff;background:rgba(255,255,255,.08);}
+  .pie-redes svg{width:17px;height:17px;fill:#E4E7DA;display:block;}
+  @media (max-width:640px){
+    .pie-inner{padding:0 20px;gap:18px;}
+    .pie img{height:38px;}
+    .pie span{font-size:11px;}
+  }
 </style>
 </head>
 <body>
@@ -223,7 +254,7 @@
         <div class="field">
           <label for="s-inf-ing">Inflación de ingresos</label>
           <div class="amount"><input type="number" step="0.1" min="0" max="50" id="s-inf-ing" value="1"><span class="unit">%</span></div>
-          <p class="hint">Crecimiento anual del salario.</p>
+          <p class="hint">Referencial. Igual que el Excel original, la proyección hace crecer el salario con la inflación general.</p>
         </div>
       </div>
 
@@ -242,35 +273,6 @@
         </div>
       </div>
 
-      <div class="block-title">Composición sugerida del portafolio</div>
-      <p class="hint" style="margin:-8px 0 20px;">Asignación por perfil. Valores de partida tomados de las carteras modelo del Investor Profile Questionnaire de Charles Schwab, agrupadas en tres clases de activo. Cada fila debe sumar 100%.</p>
-      <table class="alloc-table">
-        <thead><tr><th>Perfil</th><th>Renta variable</th><th>Renta fija</th><th>Efectivo</th><th>Suma</th></tr></thead>
-        <tbody>
-          <tr>
-            <td>Conservador</td>
-            <td><input type="number" min="0" max="100" step="1" id="a-cons-rv" value="20"></td>
-            <td><input type="number" min="0" max="100" step="1" id="a-cons-rf" value="50"></td>
-            <td><input type="number" min="0" max="100" step="1" id="a-cons-ef" value="30"></td>
-            <td class="suma" id="suma-cons">100%</td>
-          </tr>
-          <tr>
-            <td>Moderado</td>
-            <td><input type="number" min="0" max="100" step="1" id="a-mod-rv" value="60"></td>
-            <td><input type="number" min="0" max="100" step="1" id="a-mod-rf" value="35"></td>
-            <td><input type="number" min="0" max="100" step="1" id="a-mod-ef" value="5"></td>
-            <td class="suma" id="suma-mod">100%</td>
-          </tr>
-          <tr>
-            <td>Agresivo</td>
-            <td><input type="number" min="0" max="100" step="1" id="a-agr-rv" value="95"></td>
-            <td><input type="number" min="0" max="100" step="1" id="a-agr-rf" value="0"></td>
-            <td><input type="number" min="0" max="100" step="1" id="a-agr-ef" value="5"></td>
-            <td class="suma" id="suma-agr">100%</td>
-          </tr>
-        </tbody>
-      </table>
-
       <div class="block-title">Horizonte</div>
       <div class="grid-3">
         <div class="field">
@@ -282,6 +284,11 @@
           <input type="number" min="60" max="120" id="s-edad-final" value="95">
           <p class="hint">El Excel original proyecta hasta los 120 años.</p>
         </div>
+        <div class="field">
+          <label for="s-fcl">Año de ingreso del FCL</label>
+          <input type="number" min="1" max="60" id="s-fcl" value="5">
+          <p class="hint">Año de la proyección en que el cliente traslada su FCL al portafolio. El ROP ingresa al cumplir la edad de retiro, por su propia regla.</p>
+        </div>
       </div>
 
       <div class="actions">
@@ -290,7 +297,18 @@
       </div>
     </div>
   </div>
-  <footer>Chotocruz &amp; Co. · Uso interno</footer>
+  <div class="pie">
+  <div class="pie-inner">
+    <div class="pie-marca">
+      <img src="data:image/png;base64,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" alt="Chotocruz &amp; Co.">
+      <span>© 2026 Chotocruz&amp;Co. Todos los derechos reservados. &nbsp;|&nbsp; Asesoría patrimonial independiente.</span>
+    </div>
+    <div class="pie-redes">
+      <a href="https://www.linkedin.com/company/chotocruz" target="_blank" rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3V9zm7 0h3.8v1.7h.05c.53-.95 1.83-1.95 3.75-1.95 4 0 4.75 2.5 4.75 5.8V21h-4v-5.5c0-1.3-.03-3-1.85-3-1.85 0-2.13 1.4-2.13 2.9V21h-4V9z"/></svg></a>
+      <a href="https://www.youtube.com/@chotocruz" target="_blank" rel="noopener" aria-label="YouTube"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23 12s0-3.2-.4-4.7a2.5 2.5 0 0 0-1.76-1.77C19.25 5.1 12 5.1 12 5.1s-7.25 0-8.84.43A2.5 2.5 0 0 0 1.4 7.3C1 8.8 1 12 1 12s0 3.2.4 4.7a2.5 2.5 0 0 0 1.76 1.77c1.59.43 8.84.43 8.84.43s7.25 0 8.84-.43A2.5 2.5 0 0 0 22.6 16.7c.4-1.5.4-4.7.4-4.7zM9.75 15.5v-7l6 3.5-6 3.5z"/></svg></a>
+    </div>
+  </div>
+</div>
 </div>
 
 <!-- ==================== PANTALLA 2: PANEL ==================== -->
@@ -328,7 +346,18 @@
       </div>
     </div>
   </div>
-  <footer>Chotocruz &amp; Co. · Uso interno</footer>
+  <div class="pie">
+  <div class="pie-inner">
+    <div class="pie-marca">
+      <img src="data:image/png;base64,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" alt="Chotocruz &amp; Co.">
+      <span>© 2026 Chotocruz&amp;Co. Todos los derechos reservados. &nbsp;|&nbsp; Asesoría patrimonial independiente.</span>
+    </div>
+    <div class="pie-redes">
+      <a href="https://www.linkedin.com/company/chotocruz" target="_blank" rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3V9zm7 0h3.8v1.7h.05c.53-.95 1.83-1.95 3.75-1.95 4 0 4.75 2.5 4.75 5.8V21h-4v-5.5c0-1.3-.03-3-1.85-3-1.85 0-2.13 1.4-2.13 2.9V21h-4V9z"/></svg></a>
+      <a href="https://www.youtube.com/@chotocruz" target="_blank" rel="noopener" aria-label="YouTube"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23 12s0-3.2-.4-4.7a2.5 2.5 0 0 0-1.76-1.77C19.25 5.1 12 5.1 12 5.1s-7.25 0-8.84.43A2.5 2.5 0 0 0 1.4 7.3C1 8.8 1 12 1 12s0 3.2.4 4.7a2.5 2.5 0 0 0 1.76 1.77c1.59.43 8.84.43 8.84.43s7.25 0 8.84-.43A2.5 2.5 0 0 0 22.6 16.7c.4-1.5.4-4.7.4-4.7zM9.75 15.5v-7l6 3.5-6 3.5z"/></svg></a>
+    </div>
+  </div>
+</div>
 </div>
 
 <script src="jszip.min.js"></script>
@@ -347,6 +376,9 @@ const SUPUESTOS_EXCEL = {
   tipoCambio: 450, inflacion: 3.9, inflacionIngresos: 1,
   inflacionPension: 1, inflacionSalud: 8, ajusteAlquileres: 0,
   anioInicio: new Date().getFullYear(), edadFinal: 95,
+  // Año de la proyección en que ingresa el FCL. El ROP ingresa al retiro, por su
+  // propia regla, y por eso no lleva supuesto: depende de la edad de cada cliente.
+  anioIngresoFcl: 5,
   asignacion: {conservador:{rv:20,rf:50,ef:30}, moderado:{rv:60,rf:35,ef:5}, agresivo:{rv:95,rf:0,ef:5}}
 };
 const STORAGE_KEY = 'chyco_supuestos_v1';
@@ -371,6 +403,17 @@ function proyectar(c, sup){
   // Igual que el Excel: la fila 1 corresponde a la edad actual y la última a la edad final
   const totalAnios  = Math.max(1, sup.edadFinal - c.edad + 1);
 
+  // Fondos laborales que el cliente trae al portafolio. Son ingresos puntuales,
+  // no un flujo anual: el ROP entra al cumplir la edad de retiro y el FCL en el año
+  // que fije el analista. Los montos se declaran en dólares de hoy, así que se
+  // ajustan por inflación hasta el año de ingreso para conservar su valor real.
+  const fl = (c.capacidad || {}).fondosLaborales || {};
+  const traeFondos = !!fl.incorpora && fl.incorpora !== 'ninguno';
+  const anioFcl = Math.max(1, Math.round(sup.anioIngresoFcl || 5));
+  const anioRop = aniosAcum + 1;                       // primer año con la edad de retiro
+  const montoFcl = traeFondos ? (+fl.fclUsdHoy || 0) : 0;
+  const montoRop = traeFondos ? (+fl.ropUsdHoy || 0) : 0;
+
   const filas = [];
   let portafolio = capital;
 
@@ -388,7 +431,12 @@ function proyectar(c, sup){
     const gastoPct = portafolioInicial ? aporteRetiro / portafolioInicial : 0;  // M
     const retornoMonto = portafolioInicial * retorno;           // O
     const resultadoNeto = retornoMonto + aporteRetiro;          // P
-    const portafolioFinal = portafolioInicial + resultadoNeto;  // Q
+    // S: ingreso extraordinario del año. Vale 0 en todos los años para un cliente
+    // que no trae fondos, de modo que Q queda exactamente igual que antes.
+    const extraordinario =
+        (montoFcl && t === anioFcl ? montoFcl * Math.pow(1 + inf, t - 1) : 0)
+      + (montoRop && t === anioRop ? montoRop * Math.pow(1 + inf, t - 1) : 0);
+    const portafolioFinal = portafolioInicial + resultadoNeto + extraordinario;  // Q
     // R: el Excel usa resta en el primer año y división en los siguientes
     const portafolioReal = (t === 1)
       ? portafolioFinal - (portafolioFinal * inf)
@@ -397,7 +445,7 @@ function proyectar(c, sup){
     filas.push({t, anio, edad, fase: enRetiro ? 'Retiro' : 'Acumulación',
       salarioMes, gastoAnual, gastoMensual: gastoAnual/12,
       portafolioInicial, aporteRetiro, gastoPct, retornoMonto,
-      resultadoNeto, portafolioFinal, portafolioReal});
+      resultadoNeto, extraordinario, portafolioFinal, portafolioReal});
 
     portafolio = portafolioFinal;
   }
@@ -405,6 +453,11 @@ function proyectar(c, sup){
   const agota = filas.find(f => f.portafolioFinal < 0);
   return {
     filas, aniosAcum, totalAnios, retorno,
+    traeFondos, anioFcl, anioRop, montoFcl, montoRop,
+    // Portafolio al retiro, acotado al horizonte: si el retiro cae después de la edad
+    // final se toma el último año proyectado; si ya está retirado, el capital inicial.
+    alRetiro: aniosAcum === 0 ? capital : filas[Math.min(aniosAcum, filas.length) - 1].portafolioFinal,
+    totalExtraordinario: filas.reduce((a,f)=>a+f.extraordinario, 0),
     capital, aporte, salarioMensual, gastoMensual,
     maxNominal: Math.max(...filas.map(f=>f.portafolioFinal)),
     finalNominal: filas[filas.length-1].portafolioFinal,
@@ -425,14 +478,135 @@ const PERFILES = {
   agresivo:   {retorno:0.08, label:'Agresivo'}
 };
 
-function calcularPerfil(q){
-  const horizonte  = (q.q1||0)+(q.q2||0);
-  const tolerancia = (q.q3||0)+(q.q4||0)+(q.q5||0)+(q.q6||0);
-  const capacidad  = (q.q7||0)+(q.q8||0)+(q.q9||0);
-  const score = (tolerancia/32)*0.40 + (horizonte/18)*0.35 + ((capacidad-3)/9)*0.25;
-  let perfil = 'moderado';
-  if(score < 0.40) perfil = 'conservador'; else if(score > 0.70) perfil = 'agresivo';
-  return {horizonte, tolerancia, capacidad, score, perfil};
+// ============ perfil de riesgo — metodología 2026 ============
+// El cuestionario mide cuatro cosas distintas y NO se suman entre sí:
+//   Tolerancia  (página 2) — cómo reacciona el cliente ante la pérdida
+//   Apetito     (página 2) — cuánto riesgo quiere asumir a cambio de retorno
+//   Capacidad   (página 3) — cuánto riesgo puede permitirse, objetivamente
+//   Conocimiento(página 2) — idoneidad
+// Tolerancia y apetito definen la disposición; capacidad y conocimiento solo
+// pueden BAJAR el perfil resultante, nunca subirlo.
+const REACTIVOS = {
+  tolerancia: ['q1','q2','q4','q5','q9'],   // q4 admite null cuando el cliente marca «no aplica»
+  apetito:    ['q3','q6','q7','q8']
+};
+
+// Promedia los reactivos presentes. Un reactivo nulo sale del denominador en vez
+// de recibir un puntaje inventado, que sesgaría al cliente hacia el centro.
+function promedioReactivos(q, ids){
+  const vals = ids.map(k => q[k]).filter(v => v !== null && v !== undefined && !isNaN(v));
+  return {valor: vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : null,
+          usados: vals.length, total: ids.length};
+}
+
+// Tramos de capacidad. Viven aquí, del lado del analista, para poder moverlos
+// sin volver a pedirle nada al cliente ni invalidar respuestas ya recogidas.
+function puntajeHorizonte(a){ return a < 5 ? 0 : a < 10 ? 3 : a < 15 ? 7 : 10; }
+function puntajeDependientes(n){ return n >= 4 ? 0 : n === 3 ? 3 : n >= 1 ? 7 : 10; }
+// El peso del portafolio dentro del patrimonio total ya llega como escala 0-10
+// desde el cuestionario: cuanto menor sea la porción que representa, mayor el colchón.
+
+function calcularCapacidad(c, sup){
+  const cap = c.capacidad || {};
+  // El horizonte sale de las edades, que es el dato que mueve la proyección,
+  // el Excel y la ficha. Así no puede contradecir a la gráfica.
+  // El horizonte de capacidad sale de las edades. Los años hasta el primer retiro
+  // NO entran en el cálculo: son un dato descriptivo del cliente, no un insumo.
+  const horizonteLaboral = Math.max(0, (+c.edadRetiro || 0) - (+c.edad || 0));
+  const horizonte = horizonteLaboral;
+  const partes = [
+    puntajeHorizonte(horizonte),
+    cap.fuenteIngreso,
+    cap.dependientes !== undefined ? puntajeDependientes(cap.dependientes) : undefined,
+    cap.pesoDelPortafolio
+  ].filter(v => v !== null && v !== undefined && !isNaN(v));
+  return {valor: partes.length ? partes.reduce((a,b)=>a+b,0)/partes.length : null, horizonte, horizonteLaboral};
+}
+
+const ESCALA = ['conservador','moderado','agresivo'];
+function nivel(v){ return v < 4 ? 0 : v <= 7 ? 1 : 2; }
+
+function calcularPerfil(c, sup){
+  const q = c.respuestas || {};
+  const formatoAnterior = !c.capacidad;   // cuestionarios llenados antes de esta metodología
+
+  const tol = promedioReactivos(q, REACTIVOS.tolerancia);
+  const ape = promedioReactivos(q, REACTIVOS.apetito);
+  const cap = calcularCapacidad(c, sup);
+  const con = (c.capacidad || {}).conocimiento;
+
+  const disposicion = (tol.valor != null && ape.valor != null) ? (tol.valor + ape.valor)/2
+                    : (tol.valor != null ? tol.valor : ape.valor);
+  let idx = disposicion == null ? 1 : nivel(disposicion);
+
+  const limitantes = [];
+  if(cap.valor != null && nivel(cap.valor) < idx){ limitantes.push('capacidad'); idx = nivel(cap.valor); }
+  if(con != null && !isNaN(con)){
+    const techoCon = con <= 0 ? 0 : con <= 3 ? 1 : 2;
+    if(techoCon < idx){ limitantes.push('conocimiento'); idx = techoCon; }
+  }
+
+  // Señales para el analista: divergencias que conviene conversar con el cliente
+  // antes de proponer una cartera, en lugar de promediarlas en silencio.
+  const avisos = [];
+  if(formatoAnterior){
+    avisos.push('Este cliente respondió una versión anterior del cuestionario. Su perfil no es comparable con el de los demás.');
+  }
+  if(tol.valor != null && ape.valor != null && Math.abs(tol.valor - ape.valor) >= 3){
+    avisos.push(ape.valor > tol.valor
+      ? 'Apetito por encima de la tolerancia: quiere más riesgo del que su conducta sugiere que sostendría.'
+      : 'Tolerancia por encima del apetito: sostendría más riesgo del que declara querer.');
+  }
+  if(q.q6 >= 8 && q.q9 != null && q.q9 <= 3){
+    avisos.push('Acepta una caída profunda pero la sostendría menos de dos años. Conviene revisar la magnitud con el cliente.');
+  }
+  const primerRetiro = (c.capacidad || {}).aniosPrimerRetiro;
+  if(primerRetiro !== undefined && primerRetiro !== null && !isNaN(primerRetiro)
+     && primerRetiro + 5 < cap.horizonteLaboral){
+    avisos.push('El primer retiro del portafolio ocurre ' + (cap.horizonteLaboral - primerRetiro)
+      + ' años antes del retiro laboral. El horizonte efectivo de la inversión es más corto de lo que sugieren las edades.');
+  }
+  // Coherencia de edades y horizonte: casos que el motor calcula, pero que el
+  // analista debe ver antes de presentar la proyección.
+  const ed = +c.edad, er = +c.edadRetiro, ef = +sup.edadFinal;
+  if(ed && er && er <= ed){
+    avisos.push('La edad de retiro no es posterior a la edad actual: la proyección arranca directamente en fase de retiro.');
+  }
+  if(er && ef && er >= ef){
+    avisos.push('La edad de retiro (' + er + ') alcanza o supera la edad final de la proyección (' + ef + '): no hay años de retiro proyectados.');
+  }
+  const flx = (c.capacidad || {}).fondosLaborales || {};
+  if(flx.incorpora && flx.incorpora !== 'ninguno' && ed && ef){
+    const total = ef - ed + 1;
+    if((flx.incorpora === 'rop' || flx.incorpora === 'ambos') && (er - ed + 1) > total)
+      avisos.push('El ROP no entra en la proyección: la edad de retiro queda fuera del horizonte.');
+    if((flx.incorpora === 'fcl' || flx.incorpora === 'ambos') && (sup.anioIngresoFcl || 5) > total)
+      avisos.push('El FCL no entra en la proyección: su año de ingreso queda fuera del horizonte.');
+  }
+  if(tol.usados < tol.total){
+    avisos.push('La pregunta sobre pérdidas previas quedó como «no aplica»; la tolerancia se calculó con ' + tol.usados + ' de ' + tol.total + ' reactivos.');
+  }
+  limitantes.forEach(n => avisos.push(n === 'capacidad'
+    ? 'El perfil quedó limitado por la capacidad financiera, no por las preferencias del cliente.'
+    : 'El perfil quedó limitado por el conocimiento y la experiencia declarados.'));
+
+  // Puntaje del cliente: promedio simple de las cuatro dimensiones. NO es un puntaje
+  // de riesgo y no interviene en la asignación del perfil; resume qué tan atractivo
+  // resulta el cliente para la firma. Los pesos son iguales a propósito: cambiarlos
+  // es una decisión comercial, y este es el único lugar donde se tocan.
+  const PESOS = {tolerancia:1, apetito:1, capacidad:1, conocimiento:1};
+  const componentes = [[tol.valor,'tolerancia'],[ape.valor,'apetito'],
+                       [cap.valor,'capacidad'],[con,'conocimiento']]
+    .filter(([v]) => v !== null && v !== undefined && !isNaN(v));
+  const sumaPesos = componentes.reduce((a,[,k]) => a + PESOS[k], 0);
+  const puntajeCliente = sumaPesos
+    ? componentes.reduce((a,[v,k]) => a + v*PESOS[k], 0) / sumaPesos : null;
+
+  return {puntajeCliente,
+          tolerancia: tol.valor, apetito: ape.valor, capacidad: cap.valor,
+          conocimiento: con, disposicion, horizonte: cap.horizonte,
+          perfil: ESCALA[idx], limitantes, avisos, formatoAnterior,
+          reactivosTolerancia: tol};
 }
 
 // ================= formato =================
@@ -445,14 +619,9 @@ function esc(s){ return (s||'').toString().replace(/[&<>"']/g, m=>({'&':'&amp;',
 // ================= supuestos =================
 const CAMPOS = {tipoCambio:'s-tc', inflacion:'s-inf', inflacionIngresos:'s-inf-ing',
   inflacionPension:'s-inf-pen', inflacionSalud:'s-inf-sal', ajusteAlquileres:'s-alq',
-  anioInicio:'s-anio', edadFinal:'s-edad-final'};
+  anioInicio:'s-anio', edadFinal:'s-edad-final', anioIngresoFcl:'s-fcl'};
 
 // Composición sugerida por perfil (renta variable / renta fija / efectivo)
-const ALLOC_CAMPOS = {
-  conservador:{rv:'a-cons-rv', rf:'a-cons-rf', ef:'a-cons-ef', suma:'suma-cons'},
-  moderado:   {rv:'a-mod-rv',  rf:'a-mod-rf',  ef:'a-mod-ef',  suma:'suma-mod'},
-  agresivo:   {rv:'a-agr-rv',  rf:'a-agr-rf',  ef:'a-agr-ef',  suma:'suma-agr'}
-};
 const ALLOC_SCHWAB = {
   conservador:{rv:20, rf:50, ef:30},
   moderado:   {rv:60, rf:35, ef:5},
@@ -475,33 +644,19 @@ function cargarSupuestos(){
 }
 function pintarSupuestos(s){
   for(const k in CAMPOS){ const el = document.getElementById(CAMPOS[k]); if(el) el.value = s[k]; }
-  const a = s.asignacion || ALLOC_SCHWAB;
-  for(const perf in ALLOC_CAMPOS){
-    CLASES.forEach(c=>{ document.getElementById(ALLOC_CAMPOS[perf][c.k]).value = a[perf][c.k]; });
-  }
-  validarSumas();
 }
 
-function validarSumas(){
-  let ok = true;
-  for(const perf in ALLOC_CAMPOS){
-    const total = CLASES.reduce((s,c)=> s + (parseFloat(document.getElementById(ALLOC_CAMPOS[perf][c.k]).value)||0), 0);
-    const el = document.getElementById(ALLOC_CAMPOS[perf].suma);
-    el.textContent = total + '%';
-    el.classList.toggle('mal', Math.round(total) !== 100);
-    if(Math.round(total) !== 100) ok = false;
-  }
-  document.getElementById('btn-aplicar').disabled = !ok;
-  return ok;
-}
 function leerSupuestos(){
   const s = {};
-  for(const k in CAMPOS){ s[k] = parseFloat(document.getElementById(CAMPOS[k]).value) || 0; }
-  s.asignacion = {};
-  for(const perf in ALLOC_CAMPOS){
-    s.asignacion[perf] = {};
-    CLASES.forEach(c=>{ s.asignacion[perf][c.k] = parseFloat(document.getElementById(ALLOC_CAMPOS[perf][c.k]).value) || 0; });
+  for(const k in CAMPOS){
+    // Un campo vacío toma el valor por defecto. Se usa isNaN y no «|| 0» porque 0 es
+    // un valor válido en varios supuestos (ajuste de alquileres, por ejemplo).
+    const v = parseFloat(document.getElementById(CAMPOS[k]).value);
+    s[k] = isNaN(v) ? SUPUESTOS_EXCEL[k] : v;
   }
+  if(!(s.tipoCambio > 0)) s.tipoCambio = SUPUESTOS_EXCEL.tipoCambio;
+  // La asignación por perfil ya no se edita en pantalla: queda fija en las carteras modelo.
+  s.asignacion = ALLOC_SCHWAB;
   return s;
 }
 function guardarSupuestos(s){
@@ -523,18 +678,17 @@ let clientes = [], activoId = null;
 
 // Normaliza respuestas viejas (montos ya convertidos a USD) y nuevas (monto + moneda)
 function normalizar(c){
-  const q = c.respuestas || {};
-  const info = calcularPerfil(q);
-  const o = Object.assign({}, c, {
-    perfil: info.perfil, scoreFinal: info.score,
-    horizonteScore: info.horizonte, toleranciaScore: info.tolerancia, capacidadScore: info.capacidad
-  });
-  if(o.capitalMonto === undefined){       // formato anterior
+  const o = Object.assign({}, c);
+  if(o.capitalMonto === undefined){       // formato anterior de montos
     o.capitalMonto = o.capital;  o.capitalMoneda = 'USD';
     o.aporteMonto  = o.aporte;   o.aporteMoneda  = 'USD';
     o.gastoMonto   = o.gasto;    o.gastoMoneda   = 'USD';
     o.salarioMonto = 0;          o.salarioMoneda = 'USD';
   }
+  // El perfil se calcula sobre el cliente ya normalizado: necesita edades y capacidad,
+  // no solo el bloque de respuestas.
+  o.diag = calcularPerfil(o, supuestos);
+  o.perfil = o.diag.perfil;
   return o;
 }
 
@@ -594,7 +748,7 @@ function renderDetalle(c){
     <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;">
       <div>
         <h2 class="section-title">${esc(c.nombre)}</h2>
-        <p class="section-sub">${c.edad} años · retiro a los ${c.edadRetiro} · ${p.aniosAcum} años de acumulación y ${p.totalAnios - p.aniosAcum} de retiro${c.correo ? ' · ' + esc(c.correo) : ''}</p>
+        <p class="section-sub">${c.edad} años · retiro a los ${c.edadRetiro} · ${Math.min(p.aniosAcum, p.totalAnios)} años de acumulación y ${Math.max(0, p.totalAnios - p.aniosAcum)} de retiro${c.correo ? ' · ' + esc(c.correo) : ''}</p>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;">
         <button class="btn btn-ghost btn-sm" id="btn-pdf">Ficha PDF</button>
@@ -606,11 +760,11 @@ function renderDetalle(c){
       <div class="card">
         <div class="label">Perfil de riesgo</div>
         <div class="value">${PERFILES[c.perfil].label}</div>
-        <div class="note">Retorno esperado ${pct(p.retorno)} anual</div>
+        <div class="note">Retorno esperado ${pct(p.retorno)} anual · ${asig.rv}/${asig.rf}/${asig.ef} en renta variable, renta fija y efectivo</div>
       </div>
       <div class="card">
         <div class="label">Portafolio al retiro</div>
-        <div class="value">${usd(p.filas[p.aniosAcum-1] ? p.filas[p.aniosAcum-1].portafolioFinal : p.capital)}</div>
+        <div class="value">${usd(p.alRetiro)}</div>
         <div class="note">Valor nominal al cumplir ${c.edadRetiro} años</div>
       </div>
       <div class="card">
@@ -626,18 +780,61 @@ function renderDetalle(c){
     </div>
 
     <div class="donut-card">
-      <h2 class="section-title" style="font-size:16px;">Composición sugerida del portafolio</h2>
-      <p class="section-sub" style="margin-bottom:18px;">Asignación correspondiente al perfil ${PERFILES[c.perfil].label.toLowerCase()}, con un retorno esperado de ${pct(p.retorno)} anual.</p>
-      <div class="donut-row">
-        <canvas id="donut" style="width:230px;height:230px;"></canvas>
+      <h2 class="section-title" style="font-size:16px;">Posición del cliente</h2>
+      <p class="section-sub" style="margin-bottom:18px;">Tolerancia frente a apetito de riesgo, en escala de 0 a 10. La capacidad financiera y el conocimiento no se grafican: no ubican al cliente en el plano, solo limitan hasta dónde puede llegar el perfil.</p>
+      <div class="donut-row matriz-row">
+        <canvas id="matriz" style="width:340px;height:340px;"></canvas>
         <div class="alloc-legend">
-          ${CLASES.map(cl=>`
+          ${[['Tolerancia', c.diag.tolerancia],['Apetito', c.diag.apetito],
+             ['Capacidad financiera', c.diag.capacidad],['Conocimiento', c.diag.conocimiento]]
+            .map(([n,v])=>`
             <div class="alloc-item">
-              <span class="alloc-dot" style="background:${cl.color}"></span>
-              <span class="alloc-name">${cl.nombre}</span>
-              <span class="alloc-pct">${asig[cl.k]}%</span>
+              <span class="alloc-dot" style="background:${n==='Tolerancia'?'#2B3014':n==='Apetito'?'#918042':'#B3BC80'}"></span>
+              <span class="alloc-name">${n}</span>
+              <span class="alloc-pct">${v==null||isNaN(v) ? '—' : (Math.round(v*10)/10).toFixed(1)}</span>
             </div>`).join('')}
+          <div class="puntaje-total">
+            <span class="alloc-name">Puntaje del cliente</span>
+            <span class="alloc-pct">${c.diag.puntajeCliente==null ? '—'
+              : (Math.round(c.diag.puntajeCliente*10)/10).toFixed(1) + ' · ' +
+                (c.diag.puntajeCliente>=7 ? 'Alto' : c.diag.puntajeCliente>=4 ? 'Medio' : 'Bajo')}</span>
+          </div>
         </div>
+      </div>
+      ${c.diag.avisos.length ? `<div class="avisos-perfil">${c.diag.avisos.map(a=>`<p>${esc(a)}</p>`).join('')}</div>` : ''}
+    </div>
+
+    <div class="donut-card">
+      <h2 class="section-title" style="font-size:16px;">Permanencia del cliente</h2>
+      <p class="section-sub" style="margin-bottom:18px;">Respuestas del cuestionario sobre el compromiso del cliente con la cartera. Los saldos de ROP y FCL sí entran a la proyección como ingresos puntuales: el FCL en el año ${supuestos.anioIngresoFcl} y el ROP al cumplir la edad de retiro, ajustados por inflación desde dólares de hoy.</p>
+      <div class="datos-grid">
+        ${(()=>{
+          const cap = c.capacidad || {}, fl = cap.fondosLaborales || {}, leg = c.legado || {};
+          const num = v => (v===null || v===undefined || isNaN(v)) ? '—' : usd(v);
+          const enUsd = (m, mon) => aUsd(m, mon, supuestos.tipoCambio);
+          const filas = [
+            ['Capital inicial del portafolio', num(enUsd(c.capitalMonto, c.capitalMoneda)),
+             c.capitalMoneda === 'CRC' ? 'Declarado en colones' : ''],
+            ['Aporte anual comprometido', num(enUsd(c.aporteMonto, c.aporteMoneda)),
+             'Durante la etapa de acumulación'],
+            ['Primer retiro del portafolio',
+             cap.aniosPrimerRetiro!=null ? 'En ' + cap.aniosPrimerRetiro + ' años' : '—',
+             cap.montoPrimerRetiroUsdHoy!=null ? num(cap.montoPrimerRetiroUsdHoy) + ' en dólares de hoy' : ''],
+            ['Fondos laborales',
+             ({ninguno:'No los incorpora', fcl:'Solo el FCL', rop:'Solo el ROP', ambos:'FCL y ROP'})[fl.incorpora] || '—',
+             [fl.fclUsdHoy!=null ? 'FCL ' + num(fl.fclUsdHoy) : '', fl.ropUsdHoy!=null ? 'ROP ' + num(fl.ropUsdHoy) : '']
+               .filter(Boolean).join(' · ')],
+            ['Destino del patrimonio',
+             ({herencia:'Deja herencia', consumir:'Lo consume en vida', indistinto:'Sin preferencia'})[leg.destino] || '—',
+             leg.montoUsdHoy!=null ? 'Meta de ' + num(leg.montoUsdHoy) + ' en dólares de hoy' : '']
+          ];
+          return filas.map(([t,v2,extra])=>`
+            <div class="dato">
+              <div class="dato-label">${t}</div>
+              <div class="dato-valor">${v2}</div>
+              ${extra ? `<div class="dato-extra">${extra}</div>` : ''}
+            </div>`).join('');
+        })()}
       </div>
     </div>
 
@@ -660,6 +857,7 @@ function renderDetalle(c){
           <th>Año</th><th>Período</th><th>Edad</th><th>Fase</th><th>Salario mensual</th>
           <th>Gasto mensual</th><th>Portafolio inicial</th><th>Aportes / retiros</th>
           <th>Gasto % portafolio</th><th>Retorno</th><th>Resultado neto</th>
+          ${p.traeFondos ? '<th>Ingreso extraordinario</th>' : ''}
           <th>Portafolio nominal</th><th>Portafolio real</th>
         </tr></thead>
         <tbody>
@@ -672,6 +870,7 @@ function renderDetalle(c){
             <td class="${f.gastoPct<0?'neg':''}">${pct(f.gastoPct)}</td>
             <td>${usd(f.retornoMonto)}</td>
             <td class="${f.resultadoNeto<0?'neg':''}">${usd(f.resultadoNeto)}</td>
+            ${p.traeFondos ? `<td>${f.extraordinario ? usd(f.extraordinario) : '—'}</td>` : ''}
             <td class="${f.portafolioFinal<0?'neg':''}">${usd(f.portafolioFinal)}</td>
             <td class="${f.portafolioReal<0?'neg':''}">${usd(f.portafolioReal)}</td>
           </tr>`).join('')}
@@ -680,9 +879,98 @@ function renderDetalle(c){
     </div>
   `;
   dibujarGrafico(p);
-  dibujarDonut(asig, PERFILES[c.perfil].label);
+  dibujarMatriz(c.diag);
   document.getElementById('btn-excel').onclick = ()=>exportarExcel(c, p, asig);
   document.getElementById('btn-pdf').onclick = ()=>exportarFicha(c, p, asig);
+}
+
+// Matriz de posición: tolerancia (eje X) contra apetito (eje Y).
+// La rejilla es de 3x3 porque la escala de perfiles tiene tres niveles. El perfil
+// de cada casilla NO está escrito a mano: se calcula con la misma función nivel()
+// que usa el motor, así el cuadro nunca puede decir algo distinto del cálculo.
+// Dos niveles por eje: bajo y alto, partidos en la mitad de la escala.
+const NIVELES = [
+  {nombre:'Baja', masc:'Bajo', desde:0, hasta:5},
+  {nombre:'Alta', masc:'Alto', desde:5, hasta:10}
+];
+NIVELES.forEach(n => n.centro = (n.desde + n.hasta)/2);
+const TONO = {conservador:'#F3F5EC', moderado:'#E2E8D1', agresivo:'#C6D0A6'};
+
+
+// ================= exportar a Excel con gráficos nativos =================
+// Se parte de plantilla.xlsx, que ya trae el gráfico de líneas y el circular hechos
+// en Excel. El navegador solo sustituye el XML de las tres hojas, de modo que los
+// gráficos quedan intactos y las fórmulas son las mismas del Excel original.
+const ICONO_LINKEDIN = 'data:image/png;base64,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';
+const ICONO_YOUTUBE = 'data:image/png;base64,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';
+
+const ISOTIPO_B64 = 'data:image/png;base64,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';
+
+const EST = {bold:1, tc:2, titulo:3, pct:4, encab:5, seccion:6, pct0:7, dec2:8, ent:9, num:10};
+
+function dibujarMatriz(d){
+  const cv = document.getElementById('matriz');
+  if(!cv) return;
+  const dpr = window.devicePixelRatio || 1;
+  const W = 340, H = 340;
+  cv.width = W*dpr; cv.height = H*dpr;
+  const g = cv.getContext('2d'); g.scale(dpr,dpr); g.clearRect(0,0,W,H);
+
+  const padL=58, padR=14, padT=14, padB=52;
+  const w = W-padL-padR, h = H-padT-padB;
+  const X = v => padL + w*Math.min(Math.max(v,0),10)/10;
+  const Y = v => padT + h - h*Math.min(Math.max(v,0),10)/10;
+
+  // casilla del cliente, para resaltarla
+  const idxDe = v => v == null ? -1 : (v < 5 ? 0 : 1);
+  const ct = idxDe(d.tolerancia), ca = idxDe(d.apetito);
+
+  for(let i=0;i<NIVELES.length;i++){   // i = tolerancia (columna)
+    for(let j=0;j<NIVELES.length;j++){ // j = apetito (fila)
+      const perfil = ESCALA[nivel((NIVELES[i].centro + NIVELES[j].centro)/2)];
+      const x0 = X(NIVELES[i].desde), x1 = X(NIVELES[i].hasta);
+      const y1 = Y(NIVELES[j].desde), y0 = Y(NIVELES[j].hasta);
+      g.fillStyle = TONO[perfil]; g.fillRect(x0, y0, x1-x0, y1-y0);
+      if(i===ct && j===ca){
+        g.strokeStyle='#2B3014'; g.lineWidth=1.6;
+        g.strokeRect(x0+0.8, y0+0.8, x1-x0-1.6, y1-y0-1.6);
+      }
+      g.fillStyle = perfil==='agresivo' ? '#2B3014' : '#6B6C55';
+      g.font = '11px Satoshi, sans-serif'; g.textAlign='center';
+      g.fillText(PERFILES[perfil].label, (x0+x1)/2, (y0+y1)/2+3.5);
+    }
+  }
+
+  // rejilla en los umbrales
+  g.strokeStyle='#FFFFFF'; g.lineWidth=1;
+  [5].forEach(u=>{
+    g.beginPath(); g.moveTo(X(u), padT); g.lineTo(X(u), padT+h);
+    g.moveTo(padL, Y(u)); g.lineTo(padL+w, Y(u)); g.stroke();
+  });
+  g.strokeStyle='#AEB694'; g.strokeRect(padL, padT, w, h);
+
+  // rótulos de nivel
+  g.font='10px Satoshi, sans-serif'; g.fillStyle='#6B6C55';
+  g.textAlign='center';
+  NIVELES.forEach(n=> g.fillText(n.nombre, (X(n.desde)+X(n.hasta))/2, padT+h+16));
+  g.textAlign='right';
+  NIVELES.forEach(n=> g.fillText(n.masc, padL-10, (Y(n.desde)+Y(n.hasta))/2+3.5));
+
+  // títulos de eje
+  g.fillStyle='#2B3014'; g.font='11px Satoshi, sans-serif'; g.textAlign='center';
+  g.fillText('Tolerancia al riesgo', padL+w/2, H-10);
+  g.save(); g.translate(14, padT+h/2); g.rotate(-Math.PI/2);
+  g.fillText('Apetito de riesgo', 0, 0); g.restore();
+
+  // el cliente
+  if(d.tolerancia == null || d.apetito == null) return;
+  const dentro=(v,a,b)=>Math.min(Math.max(v,a),b);
+  const px = dentro(X(d.tolerancia), padL+10, padL+w-10);
+  const py = dentro(Y(d.apetito),    padT+10, padT+h-10);
+  g.beginPath(); g.arc(px,py,12,0,Math.PI*2); g.fillStyle='rgba(43,48,20,.14)'; g.fill();
+  g.beginPath(); g.arc(px,py,5.5,0,Math.PI*2);
+  g.fillStyle='#2B3014'; g.fill();
+  g.strokeStyle='#FFFFFF'; g.lineWidth=2; g.stroke();
 }
 
 function dibujarGrafico(p){
@@ -741,58 +1029,6 @@ function dibujarGrafico(p){
   });
 }
 
-function dibujarDonut(asig, etiqueta){
-  const cv = document.getElementById('donut');
-  if(!cv) return;
-  const dpr = window.devicePixelRatio || 1, S = 230;
-  cv.width = S*dpr; cv.height = S*dpr;
-  const g = cv.getContext('2d'); g.scale(dpr,dpr); g.clearRect(0,0,S,S);
-
-  const cx = S/2, cy = S/2, rExt = S/2 - 6, rInt = rExt * 0.60;
-  const total = CLASES.reduce((s,c)=> s + (asig[c.k]||0), 0) || 100;
-  let ang = -Math.PI/2;
-
-  CLASES.forEach(cl=>{
-    const v = asig[cl.k] || 0;
-    if(v <= 0) return;
-    const barrido = (v/total) * Math.PI * 2;
-    g.beginPath();
-    g.moveTo(cx, cy);
-    g.arc(cx, cy, rExt, ang, ang + barrido);
-    g.closePath();
-    g.fillStyle = cl.color;
-    g.fill();
-    // separación entre segmentos
-    g.strokeStyle = '#FFFFFF'; g.lineWidth = 2.5; g.stroke();
-    ang += barrido;
-  });
-
-  // centro hueco
-  g.globalCompositeOperation = 'destination-out';
-  g.beginPath(); g.arc(cx, cy, rInt, 0, Math.PI*2); g.fill();
-  g.globalCompositeOperation = 'source-over';
-
-  // etiqueta del perfil en el centro
-  g.fillStyle = '#141709';
-  g.textAlign = 'center'; g.textBaseline = 'middle';
-  g.font = '600 15px Satoshi, sans-serif';
-  g.fillText(etiqueta, cx, cy - 7);
-  g.fillStyle = '#666653';
-  g.font = '10px Satoshi, sans-serif';
-  g.fillText('PERFIL', cx, cy + 11);
-}
-
-// ================= exportar a Excel con gráficos nativos =================
-// Se parte de plantilla.xlsx, que ya trae el gráfico de líneas y el circular hechos
-// en Excel. El navegador solo sustituye el XML de las tres hojas, de modo que los
-// gráficos quedan intactos y las fórmulas son las mismas del Excel original.
-
-// ======= Generador de Excel con gráficos NATIVOS =======
-// Parte de plantilla.xlsx (que ya contiene los gráficos) y reemplaza
-// únicamente el XML de las hojas, dejando los gráficos intactos.
-
-const EST = {bold:1, tc:2, titulo:3, pct:4, encab:5, seccion:6, pct0:7, dec2:8, ent:9, num:10};
-
 function xEsc(s){
   return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;')
     .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -849,12 +1085,34 @@ function xmlCliente(c, p, asig, sup){
   sec('Perfil de riesgo');
   Ftxt('Perfil asignado', PERFILES[c.perfil].label);
   Fnum('Retorno esperado anual', p.retorno, EST.pct);
-  Fnum('Puntaje global de riesgo', c.scoreFinal, EST.dec2);
-  Fnum('Puntaje de horizonte (0 a 18)', c.horizonteScore, EST.ent);
-  Fnum('Puntaje de tolerancia (0 a 32)', c.toleranciaScore, EST.ent);
-  Fnum('Puntaje de capacidad (3 a 12)', c.capacidadScore, EST.ent);
+  Fnum('Tolerancia al riesgo (0 a 10)', c.diag.tolerancia, EST.dec2);
+  Fnum('Apetito de riesgo (0 a 10)', c.diag.apetito, EST.dec2);
+  Fnum('Capacidad financiera (0 a 10)', c.diag.capacidad, EST.dec2);
+  Fnum('Conocimiento y experiencia (0 a 10)', c.diag.conocimiento, EST.ent);
+  Fnum('Puntaje del cliente (0 a 10)', c.diag.puntajeCliente, EST.dec2);
+  Ftxt('Factor limitante del perfil', c.diag.limitantes.length
+        ? c.diag.limitantes.join(' y ')
+        : 'Ninguno: el perfil corresponde a la disposición del cliente');
   Ftxt('Preferencia de moneda', c.preferenciaMoneda);
-  Ftxt('Sensibilidad cambiaria', c.sensibilidadCambiaria);
+
+  // Datos de calificación del cliente. No entran en el cálculo de la proyección,
+  // pero quedan en la pestaña porque describen su conducta y su compromiso con la cartera.
+  sec('Perfil de permanencia y aportes');
+  const cap = c.capacidad || {}, fl = cap.fondosLaborales || {}, leg = c.legado || {};
+  Fnum('Años hasta el primer retiro', cap.aniosPrimerRetiro, EST.ent);
+  Fnum('Monto del primer retiro (US$ de hoy)', cap.montoPrimerRetiroUsdHoy, EST.num);
+  Ftxt('Fondos laborales que incorpora', ({
+        ninguno:'Ninguno: los mantiene fuera del portafolio',
+        fcl:'Solo el FCL', rop:'Solo el ROP', ambos:'FCL y ROP'
+      })[fl.incorpora] || '—');
+  Fnum('Saldo del FCL (US$ de hoy)', fl.fclUsdHoy, EST.num);
+  Fnum('Saldo del ROP (US$ de hoy)', fl.ropUsdHoy, EST.num);
+  Ftxt('Destino del patrimonio', ({
+        herencia:'Dejar una herencia a sus herederos',
+        consumir:'Utilizarlo durante su vida',
+        indistinto:'Sin preferencia definida'
+      })[leg.destino] || '—');
+  Fnum('Herencia deseada (US$ de hoy)', leg.montoUsdHoy, EST.num);
 
   sec('Datos financieros declarados');
   [['Salario mensual',c.salarioMonto,c.salarioMoneda],['Gasto familiar mensual',c.gastoMonto,c.gastoMoneda],
@@ -903,8 +1161,23 @@ function xmlProyeccion(c, p, sup){
   const sups = [['Tipo de Cambio', tc, EST.tc], ['Inflación Ingresos', sup.inflacionIngresos/100, EST.pct],
     ['Inflación', sup.inflacion/100, EST.pct], ['Inflación Pensión', sup.inflacionPension/100, EST.pct],
     ['Inflación Salud', sup.inflacionSalud/100, EST.pct], ['Ajuste Anual Alquileres', sup.ajusteAlquileres/100, EST.pct]];
-  sups.forEach((s,i)=>{ const r=i+1;
-    x += `<row r="${r}">` + celda('C'+r, s[0], EST.bold) + celda('D'+r, s[1], s[2]) + `</row>`; });
+  // Insumos de ROP y FCL, solo si el cliente los trae. La columna S se calcula
+  // con fórmula a partir de estas celdas: si alguien cambia la inflación, el saldo
+  // o el año de ingreso dentro del Excel, toda la proyección se recalcula sola.
+  const insumosFondos = p.traeFondos ? [
+    ['Saldo FCL (US$ de hoy)', p.montoFcl, EST.num],
+    ['Año de ingreso del FCL', p.anioFcl, EST.ent],
+    ['Saldo ROP (US$ de hoy)', p.montoRop, EST.num],
+    ['Año de ingreso del ROP', p.anioRop, EST.ent]
+  ] : [];
+  sups.forEach((s,i)=>{ const r=i+1, f = insumosFondos[i];
+    x += `<row r="${r}">` + celda('C'+r, s[0], EST.bold) + celda('D'+r, s[1], s[2])
+       + (f ? celda('G'+r, f[0], EST.bold) + celda('H'+r, f[1], f[2]) : '')
+       + `</row>`; });
+
+  // Columna S: el ingreso entra en el período indicado, ajustado por inflación
+  // desde dólares de hoy — exactamente la misma regla del motor.
+  const formulaS = r => `IF(D${r}=$H$2,$H$1*(1+$D$3)^(D${r}-1),0)+IF(D${r}=$H$4,$H$3*(1+$D$3)^(D${r}-1),0)`;
 
   x += `<row r="7">` + celda('E7','Ingresos en ₡',EST.seccion) + celda('G7','Gastos',EST.seccion)
      + celda('K7','Proyección Base',EST.seccion) + `</row>`;
@@ -914,22 +1187,31 @@ function xmlProyeccion(c, p, sup){
     ['K','Portafolio Inicial'],['L','Aportes/Retiros'],['M','Gasto % del Portafolio'],
     ['N','Retorno Total'],['O','Retorno Total $'],['P','Resultado Neto'],
     ['Q','Portafolio Nominal Final $ (sin incluir inflación)'],['R','Portafolio en Términos Reales']];
+  // La columna S aparece únicamente cuando el cliente incorpora ROP o FCL. Sin ellos,
+  // la hoja queda idéntica a la del Excel original, fórmula por fórmula.
+  if(p.traeFondos) cab.push(['S','Ingreso extraordinario (ROP y FCL)']);
   x += `<row r="8" ht="34" customHeight="1">` + cab.map(([col,t])=>celda(col+'8', t, EST.encab)).join('') + `</row>`;
 
   const f0 = p.filas[0];
   x += `<row r="9">`
     + celda('B9', sup.anioInicio, EST.ent) + celda('C9', c.edad, EST.ent) + celda('D9', 1, EST.ent)
-    + celda('E9', Math.round(salUsd*tc), EST.num, `${salUsd}*D1`)
+    + (p.aniosAcum > 0 ? celda('E9', Math.round(salUsd*tc), EST.num, `${salUsd}*D1`) : '')
     + celda('G9', Math.round(gasUsd*12*tc), EST.num, `${gasUsd*12}*$D$1`)
     + celda('H9', Math.round(gasUsd*12), EST.num, 'G9/$D$1')
     + celda('I9', Math.round(gasUsd), EST.num, 'H9/12')
-    + celda('K9', capUsd, EST.num) + celda('L9', aporUsd, EST.num)
-    + celda('M9', f0.gastoPct, EST.pct, 'L9/K9')
+    // Si la fila 1 ya es de retiro, L9 es el gasto negativo (igual que el motor),
+    // no el aporte; de lo contrario Excel recalcularía otra proyección al abrirlo.
+    + celda('K9', capUsd, EST.num)
+    + (p.aniosAcum > 0 ? celda('L9', aporUsd, EST.num) : celda('L9', Math.round(f0.aporteRetiro), EST.num, '-H9'))
+    // Con capital inicial 0 la razón L/K no existe: se protege solo en ese caso,
+    // para no alterar la fórmula original en los casos normales.
+    + celda('M9', f0.gastoPct, EST.pct, capUsd ? 'L9/K9' : 'IF(K9=0,0,L9/K9)')
     + celda('N9', p.retorno, EST.pct)
     + celda('O9', Math.round(f0.retornoMonto), EST.num, '+K9*N9')
     + celda('P9', Math.round(f0.resultadoNeto), EST.num, '+O9+L9')
-    + celda('Q9', Math.round(f0.portafolioFinal), EST.num, '+K9+P9')
+    + celda('Q9', Math.round(f0.portafolioFinal), EST.num, p.traeFondos ? '+K9+P9+S9' : '+K9+P9')
     + celda('R9', Math.round(f0.portafolioReal), EST.num, 'Q9-(Q9*$D$3)')
+    + (p.traeFondos ? celda('S9', f0.extraordinario, EST.num, formulaS(9)) : '')
     + `</row>`;
 
   for(let i=1;i<nF;i++){
@@ -944,15 +1226,19 @@ function xmlProyeccion(c, p, sup){
       + celda('I'+r, Math.round(f.gastoMensual), EST.num, `H${r}/12`)
       + celda('K'+r, Math.round(f.portafolioInicial), EST.num, `+Q${a}`)
       + celda('L'+r, Math.round(f.aporteRetiro), EST.num, r>=filaRetiro ? `-H${r}` : `L${a}`)
-      + celda('M'+r, f.gastoPct, EST.pct, `L${r}/K${r}`)
+      + celda('M'+r, f.gastoPct, EST.pct, Math.round(f.portafolioInicial) ? `L${r}/K${r}` : `IF(K${r}=0,0,L${r}/K${r})`)
       + celda('N'+r, p.retorno, EST.pct, `+N${a}`)
       + celda('O'+r, Math.round(f.retornoMonto), EST.num, `+K${r}*N${r}`)
       + celda('P'+r, Math.round(f.resultadoNeto), EST.num, `+O${r}+L${r}`)
-      + celda('Q'+r, Math.round(f.portafolioFinal), EST.num, `+K${r}+P${r}`)
+      + celda('Q'+r, Math.round(f.portafolioFinal), EST.num, p.traeFondos ? `+K${r}+P${r}+S${r}` : `+K${r}+P${r}`)
       + celda('R'+r, Math.round(f.portafolioReal), EST.num, `Q${r}/(1+$D$3)^D${r}`)
+      + (p.traeFondos ? celda('S'+r, f.extraordinario, EST.num, formulaS(r)) : '')
       + `</row>`;
   }
-  return hoja(x, {cols: COLS_PROY, vistas: VISTA_PROY, drawing: DRAWING});
+  const cols = p.traeFondos
+    ? COLS_PROY.replace('</cols>', '<col width="26" customWidth="1" min="19" max="19"/></cols>')
+    : COLS_PROY;
+  return hoja(x, {cols, vistas: VISTA_PROY, drawing: DRAWING});
 }
 
 // ---------- Hoja Datos: alimenta el gráfico circular ----------
@@ -994,21 +1280,29 @@ function exportarConsolidado(){
   btn.disabled = true; btn.textContent = 'Generando…';
   try{
     const cab = ['Cliente','Correo','Telefono','Perfil','Retorno esperado','Edad actual','Edad de retiro',
+      'Anios primer retiro','Monto primer retiro USD','Fondos laborales','Saldo FCL USD','Saldo ROP USD',
+      'Destino del patrimonio','Herencia deseada USD',
       'Renta variable %','Renta fija %','Efectivo %','Anio proyeccion','Periodo','Edad','Fase',
       'Salario mensual USD','Gasto mensual USD','Portafolio inicial USD','Aportes o retiros USD',
-      'Gasto % portafolio','Retorno USD','Resultado neto USD','Portafolio nominal USD','Portafolio real USD'];
+      'Gasto % portafolio','Retorno USD','Resultado neto USD','Ingreso extraordinario USD','Portafolio nominal USD','Portafolio real USD'];
     const lineas = [cab.join(',')];
     clientes.forEach(c=>{
       const p = proyectar(c, supuestos);
       const a = (supuestos.asignacion || ALLOC_SCHWAB)[c.perfil];
+      const cc = c.capacidad || {};
       p.filas.forEach(f=>{
         lineas.push([
           csv(c.nombre), csv(c.correo), csv(c.telefono), PERFILES[c.perfil].label,
-          p.retorno, c.edad, c.edadRetiro, a.rv, a.rf, a.ef,
+          p.retorno, c.edad, c.edadRetiro,
+          cc.aniosPrimerRetiro ?? '', cc.montoPrimerRetiroUsdHoy ?? '',
+          (cc.fondosLaborales||{}).incorpora || '', (cc.fondosLaborales||{}).fclUsdHoy ?? '',
+          (cc.fondosLaborales||{}).ropUsdHoy ?? '',
+          (c.legado||{}).destino || '', (c.legado||{}).montoUsdHoy ?? '',
+          a.rv, a.rf, a.ef,
           f.t, f.anio, f.edad, f.fase,
           f.salarioMes!=null ? Math.round(f.salarioMes) : '',
           Math.round(f.gastoMensual), Math.round(f.portafolioInicial), Math.round(f.aporteRetiro),
-          f.gastoPct.toFixed(6), Math.round(f.retornoMonto), Math.round(f.resultadoNeto),
+          f.gastoPct.toFixed(6), Math.round(f.retornoMonto), Math.round(f.resultadoNeto), Math.round(f.extraordinario||0),
           Math.round(f.portafolioFinal), Math.round(f.portafolioReal)
         ].join(','));
       });
@@ -1049,23 +1343,27 @@ async function exportarFicha(c, p, asig){
     const VERDE = [43,48,20], ORO = [145,128,66], NEGRO = [20,23,9];
     const GRIS = [102,102,83], LINEA = [198,204,180];
 
-    // ---- Encabezado ----
-    doc.setFillColor(...VERDE); doc.rect(0, 0, W, 30, 'F');
-    doc.addImage(LOGO_PDF, 'PNG', M, 10, 44, 9.5);
-    doc.setFont('helvetica','normal'); doc.setFontSize(7.5);
-    doc.setTextColor(228,231,218);
-    doc.text('FICHA DE PLANIFICACIÓN FINANCIERA', W-M, 15.5, {align:'right'});
-    doc.setTextColor(200,190,140);
-    doc.text('DOCUMENTO CONFIDENCIAL', W-M, 20.5, {align:'right'});
+    // ---- Encabezado: misma banda y misma tipografía que el pie de página ----
+    const altoBanda = 17;
+    doc.setFillColor(35, 39, 15); doc.rect(0, 0, W, altoBanda, 'F');
+    doc.addImage(LOGO_PDF, 'PNG', M, altoBanda/2 - 2.4, 22.3, 4.8);
+    doc.setFont('helvetica','normal'); doc.setFontSize(7.2);
+    doc.setTextColor(205, 205, 190);
+    doc.text('Ficha de planificación financiera   |   Documento confidencial',
+             W-M, altoBanda/2 + 1.2, {align:'right'});
 
-    let y = 46;
+    let y = 32;
 
     // ---- Cliente ----
     doc.setTextColor(...ORO); doc.setFontSize(7.5);
     doc.text('PREPARADO PARA', M, y);
     y += 7.5;
     doc.setTextColor(...NEGRO); doc.setFont('helvetica','bold'); doc.setFontSize(19);
-    doc.text(c.nombre || 'Cliente', M, y);
+    // El nombre se achica hasta caber en el ancho útil de la página
+    const nombrePdf = c.nombre || 'Cliente';
+    let tamNombre = doc.getFontSize();
+    while(tamNombre > 12 && doc.getTextWidth(nombrePdf) > W - 2*M){ tamNombre -= 1; doc.setFontSize(tamNombre); }
+    doc.text(doc.splitTextToSize(nombrePdf, W - 2*M)[0], M, y);
     y += 6;
     doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(...GRIS);
     doc.text(`${c.edad} años · retiro proyectado a los ${c.edadRetiro} · horizonte de ${p.totalAnios} años`, M, y);
@@ -1078,7 +1376,7 @@ async function exportarFicha(c, p, asig){
     const cifras = [
       ['Perfil de riesgo', PERFILES[c.perfil].label],
       ['Retorno esperado', pct(p.retorno) + ' anual'],
-      ['Portafolio al retiro', usdPdf(p.filas[p.aniosAcum-1] ? p.filas[p.aniosAcum-1].portafolioFinal : p.capital)],
+      ['Portafolio al retiro', usdPdf(p.alRetiro)],
       ['Tasa de retiro inicial', p.tasaRetiroInicial!=null ? pct(p.tasaRetiroInicial) : '—']
     ];
     const anchoC = (W - 2*M) / 4;
@@ -1096,28 +1394,21 @@ async function exportarFicha(c, p, asig){
     doc.line(M, y, W-M, y);
     y += 11;
 
-    // ---- Composición sugerida ----
+    // ---- Posición del cliente y composición ----
+    // La ficha llega al cliente, así que lleva el cuadro de posición pero NO los
+    // puntajes de tolerancia, apetito, capacidad ni el puntaje del cliente:
+    // esos son criterios internos del asesor y viven solo en el panel y el Excel.
     doc.setFontSize(10.5); doc.setTextColor(...NEGRO); doc.setFont('helvetica','bold');
-    doc.text('Composición sugerida del portafolio', M, y);
+    doc.text('Posición del cliente', M, y);
     doc.setFont('helvetica','normal');
     y += 5;
 
-    const donut = document.getElementById('donut');
-    if(donut){ doc.addImage(donut.toDataURL('image/png'), 'PNG', M, y, 42, 42, undefined, 'FAST'); }
-    // leyenda al lado del donut
-    let ly = y + 8;
-    CLASES.forEach(cl=>{
-      const rgb = hexRgb(cl.color);
-      doc.setFillColor(...rgb);
-      doc.rect(M+50, ly-3, 3.4, 3.4, 'F');
-      doc.setFontSize(9); doc.setTextColor(...NEGRO);
-      doc.text(cl.nombre, M+56, ly);
-      doc.setFont('helvetica','bold');
-      doc.text((asig[cl.k]||0) + '%', M+95, ly, {align:'right'});
-      doc.setFont('helvetica','normal');
-      ly += 11;
-    });
-    y += 48;
+    const matriz = document.getElementById('matriz');
+    if(matriz){
+      const lado = 76;                       // cuadro grande y centrado en la página
+      doc.addImage(matriz.toDataURL('image/png'), 'PNG', (W-lado)/2, y, lado, lado, undefined, 'FAST');
+      y += lado + 6;
+    }
 
     // ---- Proyección ----
     doc.setFontSize(10.5); doc.setTextColor(...NEGRO); doc.setFont('helvetica','bold');
@@ -1130,8 +1421,14 @@ async function exportarFicha(c, p, asig){
     const graf = document.getElementById('chart');
     if(graf){
       const anchoG = W - 2*M;
-      doc.addImage(graf.toDataURL('image/png'), 'PNG', M, y, anchoG, anchoG*0.42, undefined, 'FAST');
-      y += anchoG*0.42 + 6;
+      // La altura no se fija a ojo: se deriva del espacio que queda hasta el pie,
+      // reservando lo que ocupan la conclusión y los supuestos. Así el gráfico es
+      // lo más grande posible sin que nada se monte, con cualquier contenido.
+      const topePie = H - 17;          // borde superior de la banda del pie
+      const reserva = 40;              // conclusión + supuestos + nota legal
+      const altoG = Math.max(42, Math.min(anchoG*0.46, topePie - reserva - y));
+      doc.addImage(graf.toDataURL('image/png'), 'PNG', M, y, anchoG, altoG, undefined, 'FAST');
+      y += altoG + 6;
     }
 
     // ---- Resultado de la proyección ----
@@ -1144,23 +1441,35 @@ async function exportarFicha(c, p, asig){
     y += 12;
 
     // ---- Supuestos ----
-    doc.setFontSize(7.5); doc.setTextColor(...ORO);
-    doc.text('SUPUESTOS APLICADOS', M, y); y += 5;
-    doc.setTextColor(...GRIS); doc.setFontSize(7.8);
+    doc.setFontSize(5.4); doc.setTextColor(...ORO);
+    doc.text('SUPUESTOS APLICADOS', M, y); y += 4;
+    doc.setTextColor(...GRIS); doc.setFontSize(5.4);
     const sup = `Tipo de cambio ${fmt(supuestos.tipoCambio)} colones por US$1 · Inflación general ${supuestos.inflacion}% · `
       + `Inflación de ingresos ${supuestos.inflacionIngresos}% · Inflación de pensión ${supuestos.inflacionPension}% · `
       + `Inflación de salud ${supuestos.inflacionSalud}% · Ajuste de alquileres ${supuestos.ajusteAlquileres}% · `
       + `Horizonte hasta los ${supuestos.edadFinal} años. Montos expresados en dólares de los Estados Unidos.`;
     doc.text(doc.splitTextToSize(sup, W-2*M), M, y);
 
-    // ---- Pie ----
-    doc.setDrawColor(...LINEA); doc.line(M, H-20, W-M, H-20);
-    doc.setFontSize(7); doc.setTextColor(...GRIS);
-    doc.text('Chotocruz & Co. · Multi-family office · San José, Costa Rica', M, H-14);
+    // ---- Pie: el mismo del cuestionario, banda oscura con isotipo y redes ----
+    const altoPie = 17, yPie = H - altoPie;
+    doc.setFillColor(35, 39, 15); doc.rect(0, yPie, W, altoPie, 'F');
+    doc.addImage(ISOTIPO_B64, 'PNG', M, yPie + 4.2, 6.2, 8.6, undefined, 'FAST');
+    doc.setFontSize(7.2); doc.setTextColor(205, 205, 190);
+    doc.text('© 2026 Chotocruz&Co. Todos los derechos reservados.   |   Asesoría patrimonial independiente.',
+             M + 10, yPie + altoPie/2 + 1.2);
+
+    // LinkedIn y YouTube: los mismos iconos del cuestionario, rasterizados a 256 px
+    const cy = yPie + altoPie/2, r = 3.3, lado = 3.4;
+    doc.setDrawColor(150, 152, 130); doc.setLineWidth(0.3);
+    [[W-M-11, ICONO_LINKEDIN], [W-M-2.6, ICONO_YOUTUBE]].forEach(([cx, img])=>{
+      doc.circle(cx, cy, r);
+      doc.addImage(img, 'PNG', cx - lado/2, cy - lado/2, lado, lado, undefined, 'FAST');
+    });
+
+    doc.setFontSize(5.6); doc.setTextColor(150, 152, 130);
     const hoy = new Date().toLocaleDateString('es-CR', {day:'2-digit', month:'long', year:'numeric'});
-    doc.text(hoy, W-M, H-14, {align:'right'});
-    doc.setFontSize(6.2);
-    doc.text(doc.splitTextToSize('Documento de uso confidencial elaborado para el cliente indicado. Las cifras corresponden a una proyección basada en los supuestos señalados y no constituyen una garantía de resultados futuros.', W-2*M), M, H-10);
+    doc.text('Proyección basada en los supuestos señalados; no constituye una garantía de resultados futuros.   ·   ' + hoy,
+             M, yPie - 3);
 
     doc.save(`ChyCo - ${(c.nombre||'cliente').replace(/[^\w\s-]/g,'')} - ficha.pdf`);
   }catch(e){
@@ -1184,9 +1493,6 @@ function mostrar(pantalla){
 }
 
 document.getElementById('btn-reset').onclick = ()=>{ pintarSupuestos(SUPUESTOS_EXCEL); };
-Object.values(ALLOC_CAMPOS).forEach(g=>{
-  CLASES.forEach(c=>{ document.getElementById(g[c.k]).addEventListener('input', validarSumas); });
-});
 
 document.getElementById('btn-aplicar').onclick = async ()=>{
   supuestos = leerSupuestos();
