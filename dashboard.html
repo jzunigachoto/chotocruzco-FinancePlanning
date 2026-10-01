@@ -97,6 +97,12 @@
   .avisos-perfil p::before{content:'';position:absolute;left:0;top:7px;width:5px;height:5px;border-radius:50%;background:#918042;}
   .avisos-perfil p:last-child{margin-bottom:0;}
   .donut-card{border:1px solid var(--rule-2);padding:20px;margin-bottom:26px;}
+  .paginas-nav{display:flex;gap:0;margin:6px 0 22px;border-bottom:1px solid var(--rule-2);}
+  .pag-btn{background:none;border:none;border-bottom:2px solid transparent;padding:10px 18px 9px;margin-bottom:-1px;
+    font:inherit;font-size:13px;color:var(--ink-45);cursor:pointer;}
+  .pag-btn.activa{color:var(--ink);border-bottom-color:var(--gold);font-weight:600;}
+  .pag-btn:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
+
   .donut-row{display:grid;grid-template-columns:230px minmax(0,1fr);gap:28px;align-items:center;}
   @media (max-width:640px){.donut-row{grid-template-columns:1fr;}}
   .matriz-row{grid-template-columns:340px minmax(0,1fr);}
@@ -171,6 +177,34 @@
     -webkit-text-stroke:.35px currentColor;paint-order:stroke fill;transition:color .15s;}
   .client-row .tag{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-45);}
 
+  /* Antesala: tipo de cliente */
+  .segmentos{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:30px;}
+  @media (max-width:640px){.segmentos{grid-template-columns:1fr;}}
+  .segmento{display:flex;justify-content:center;cursor:pointer;font-family:inherit;}
+  .segmentos.elegido .segmento .seg-tit{font-weight:700;}
+  .segmentos.elegido .segmento:hover .seg-tit{color:var(--black);}
+  /* Barra superior: supuestos en una fila y botones en la siguiente, fija en ambas pestañas */
+  .assum-bar .assum-list{flex-basis:100%;}
+  /* Con un segmento elegido, los cuadros se compactan y funcionan como pestañas */
+  .segmentos.elegido{gap:0;margin-bottom:26px;border-bottom:1px solid var(--rule);}
+  .segmentos.elegido .segmento{padding:12px 4px 12px;background:transparent;border:none;border-bottom:2px solid transparent;
+    margin-bottom:-1px;align-items:center;}
+  .segmentos.elegido .segmento .seg-desc,.segmentos.elegido .segmento .seg-ir{display:none;}
+  .segmentos.elegido .segmento .seg-tit{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-45);
+    -webkit-text-stroke:.3px currentColor;}
+  .segmentos.elegido .segmento.activo{border-bottom-color:var(--gold);}
+  .segmentos.elegido .segmento.activo .seg-tit{color:var(--black);}
+  .layout[hidden]{display:none;}
+  .pasteles{display:grid;grid-template-columns:1fr 1fr;gap:26px;}
+  @media (max-width:760px){.pasteles{grid-template-columns:1fr;}}
+  .pastel-col{display:flex;flex-direction:column;align-items:center;text-align:center;}
+  .pastel-col .alloc-legend{width:100%;max-width:240px;margin-top:14px;text-align:left;}
+  .pastel-col .alloc-item{padding:7px 0;}
+  .pastel-col .alloc-pct{font-size:15px;}
+  .pastel-tit{font-size:14px;font-weight:700;margin:0 0 4px;color:var(--black);-webkit-text-stroke:.35px currentColor;paint-order:stroke fill;}
+  .pastel-sub{font-size:11.5px;color:var(--ink-45);margin:0 0 12px;min-height:16px;}
+  .pendiente-inst{border:1px dashed var(--rule);padding:22px 22px;margin-bottom:26px;background:#FBFBF6;}
+  .pendiente-inst p{margin:0;font-size:13.5px;line-height:1.65;color:#3A3F24;}
   .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--rule-2);
     border:1px solid var(--rule-2);margin:22px 0 28px;}
   @media (max-width:860px){.cards{grid-template-columns:1fr 1fr;}}
@@ -194,7 +228,7 @@
     position:sticky;top:0;background:var(--sheet);
     -webkit-text-stroke:.3px currentColor;paint-order:stroke fill;}
   th:first-child,td:first-child{text-align:left;}
-  td{text-align:right;padding:7px 8px;border-bottom:1px solid var(--rule-2);}
+  td{text-align:right;padding:7px 8px;border-bottom:1px solid var(--rule-2);white-space:nowrap;}
   tr.retiro td{background:#FBF7F0;}
   td.neg{color:var(--alert);}
   .table-wrap{overflow:auto;max-height:420px;border:1px solid var(--rule-2);}
@@ -281,6 +315,20 @@
         </div>
       </div>
 
+      <div class="block-title">Retiro de familias y personas</div>
+      <div class="grid-3">
+        <div class="field">
+          <label for="s-gasto-menor">Gasto en el retiro si el cliente lo prevé menor</label>
+          <div class="amount"><input type="number" step="1" min="10" max="100" id="s-gasto-menor" value="80"><span class="unit">%</span></div>
+          <p class="hint">Porcentaje del gasto actual que se retira cada año durante la jubilación.</p>
+        </div>
+        <div class="field">
+          <label for="s-gasto-mayor">Gasto en el retiro si el cliente lo prevé mayor</label>
+          <div class="amount"><input type="number" step="1" min="100" max="300" id="s-gasto-mayor" value="110"><span class="unit">%</span></div>
+          <p class="hint">Si lo prevé similar, se retira el 100% del gasto actual.</p>
+        </div>
+      </div>
+
       <div class="block-title">Horizonte</div>
       <div class="grid-3">
         <div class="field">
@@ -325,7 +373,7 @@
     <div class="assum-list" id="assum-list"></div>
     <div style="display:flex;gap:10px;">
       <button class="btn btn-ghost btn-sm" id="btn-editar-sup">Editar supuestos</button>
-      <button class="btn btn-ghost btn-sm" id="btn-todos">Todos los clientes · CSV</button>
+      <button class="btn btn-ghost btn-sm" id="btn-todos" hidden>Familias y personas · CSV</button>
       <button class="btn btn-sm" id="btn-refresh">Actualizar datos</button>
     </div>
   </div>
@@ -338,7 +386,11 @@
 
   <div class="sheet">
     <div class="sheet-pad">
-      <div class="layout">
+      <div class="segmentos elegido" id="segmentos" role="tablist">
+        <button class="segmento activo" data-seg="persona" role="tab"><span class="seg-tit">Familias y personas</span></button>
+        <button class="segmento" data-seg="institucion" role="tab"><span class="seg-tit">Instituciones</span></button>
+      </div>
+      <div class="layout" id="layout">
         <aside>
           <button class="selector" id="btn-selector" aria-expanded="false">
             <span class="selector-label" id="selector-label">Clientes</span>
@@ -387,6 +439,9 @@ const SUPUESTOS_EXCEL = {
   // Año de la proyección en que ingresa el FCL. El ROP ingresa al retiro, por su
   // propia regla, y por eso no lleva supuesto: depende de la edad de cada cliente.
   anioIngresoFcl: 5,
+  // Gasto en el retiro respecto del gasto actual, según lo que declare el cliente
+  // («menor» o «mayor»). Si declara «similar», el retiro es el gasto completo.
+  factorGastoMenor: 80, factorGastoMayor: 110,
   asignacion: {conservador:{rv:20,rf:50,ef:30}, moderado:{rv:60,rf:35,ef:5}, agresivo:{rv:95,rf:0,ef:5}}
 };
 const STORAGE_KEY = 'chyco_supuestos_v1';
@@ -421,8 +476,21 @@ function proyectar(c, sup, opts){
   const traeFondos = !!fl.incorpora && fl.incorpora !== 'ninguno';
   const anioFcl = Math.max(1, Math.round(sup.anioIngresoFcl || 5));
   const anioRop = aniosAcum + 1;                       // primer año con la edad de retiro
-  const montoFcl = traeFondos ? (+fl.fclUsdHoy || 0) : 0;
-  const montoRop = traeFondos ? (+fl.ropUsdHoy || 0) : 0;
+  const montoFcl = (fl.incorpora === 'fcl' || fl.incorpora === 'ambos') ? (+fl.fclUsdHoy || 0) : 0;
+  const montoRop = (fl.incorpora === 'rop' || fl.incorpora === 'ambos') ? (+fl.ropUsdHoy || 0) : 0;
+
+  // Pensión: monto mensual declarado en valor de hoy; se anualiza y se indexa con la
+  // inflación de pensión (supuesto D4). Entra como ingreso desde el primer año de retiro.
+  const pen = c.pension || {};
+  const pensionMensual = (pen.regimen && pen.regimen !== 'ninguno' && +pen.montoMensual > 0)
+    ? aUsd(pen.montoMensual, pen.moneda, sup.tipoCambio) : 0;
+  const infPen = (sup.inflacionPension || 0)/100;
+  // Gasto en el retiro: factor sobre el gasto del año, según lo que declaró el cliente
+  const gr = (c.ingresos || {}).gastoEnRetiro;
+  const factorGasto = gr === 'menor' ? (sup.factorGastoMenor ?? 80)/100
+                    : gr === 'mayor' ? (sup.factorGastoMayor ?? 110)/100 : 1;
+  // Metas: salidas puntuales en dólares de hoy, indexadas a la inflación general hasta su año
+  const metas = (c.metas || []).filter(m => +m.montoUsdHoy > 0 && +m.anio > 0).slice(0, 8);
 
   const filas = [];
   let portafolio = capital;
@@ -437,7 +505,7 @@ function proyectar(c, sup, opts){
     const salarioMes   = enRetiro ? null : salarioMensual * Math.pow(1 + inf, t - 1);  // el Excel usa $D$3
 
     const portafolioInicial = portafolio;                       // K
-    const aporteRetiro = enRetiro ? -gastoAnual : aporte;       // L
+    const aporteRetiro = enRetiro ? -gastoAnual * factorGasto : aporte;       // L
     const gastoPct = portafolioInicial ? aporteRetiro / portafolioInicial : 0;  // M
     const retornoMonto = portafolioInicial * retorno;           // O
     const resultadoNeto = retornoMonto + aporteRetiro;          // P
@@ -446,16 +514,17 @@ function proyectar(c, sup, opts){
     const extraordinario =
         (montoFcl && t === anioFcl ? montoFcl * Math.pow(1 + inf, t - 1) : 0)
       + (montoRop && t === anioRop ? montoRop * Math.pow(1 + inf, t - 1) : 0);
-    const portafolioFinal = portafolioInicial + resultadoNeto + extraordinario;  // Q
-    // R: el Excel usa resta en el primer año y división en los siguientes
-    const portafolioReal = (t === 1)
-      ? portafolioFinal - (portafolioFinal * inf)
-      : portafolioFinal / Math.pow(1 + inf, t);
+    const pension = (pensionMensual && enRetiro) ? pensionMensual * 12 * Math.pow(1 + infPen, t - 1) : 0;
+    const salidaMetas = -metas.filter(m => +m.anio === anio).reduce((a,m) => a + (+m.montoUsdHoy), 0) * Math.pow(1 + inf, t - 1);
+    const portafolioFinal = portafolioInicial + resultadoNeto + extraordinario + pension + salidaMetas;  // Q
+    // R: valor en dólares de hoy, descontado con la inflación general en todos los años.
+    // (El machote usaba Q−Q×inflación en el primer año, una aproximación del descuento.)
+    const portafolioReal = portafolioFinal / Math.pow(1 + inf, t);
 
     filas.push({t, anio, edad, fase: enRetiro ? 'Retiro' : 'Acumulación',
       salarioMes, gastoAnual, gastoMensual: gastoAnual/12,
       portafolioInicial, aporteRetiro, gastoPct, retornoMonto,
-      resultadoNeto, extraordinario, portafolioFinal, portafolioReal});
+      resultadoNeto, extraordinario, pension, metas: salidaMetas, portafolioFinal, portafolioReal});
 
     portafolio = portafolioFinal;
   }
@@ -464,6 +533,8 @@ function proyectar(c, sup, opts){
   return {
     filas, aniosAcum, totalAnios, retorno,
     traeFondos, anioFcl, anioRop, montoFcl, montoRop,
+    pensionMensual, infPen, factorGasto, gastoEnRetiro: gr || null, metas,
+    traePension: pensionMensual > 0, traeMetas: metas.length > 0,
     // Portafolio al retiro, acotado al horizonte: si el retiro cae después de la edad
     // final se toma el último año proyectado; si ya está retirado, el capital inicial.
     alRetiro: aniosAcum === 0 ? capital : filas[Math.min(aniosAcum, filas.length) - 1].portafolioFinal,
@@ -478,6 +549,56 @@ function proyectar(c, sup, opts){
 }
 
 // ============ rendimiento de equilibrio ============
+// ================= proyección institucional =================
+// Año a año, en dólares: el rendimiento se aplica al saldo inicial y los flujos entran
+// al cierre del año (la misma convención del Excel de personas). Aportes, retiros y
+// retiros extraordinarios se declaran en dólares de hoy y se indexan a la inflación.
+// Es exactamente lo que replican las fórmulas de plantilla_instituciones.xlsx.
+const HORIZONTE_MAX = 60;
+function proyectarInst(c, sup, opts){
+  const ins = c.institucional || {}, tc = sup.tipoCambio, inf = sup.inflacion/100;
+  const r = (opts && opts.retorno != null) ? opts.retorno : PERFILES[c.perfil].retorno;
+  const capital = aUsd(ins.capitalMonto, ins.capitalMoneda, tc);
+  const aporte  = aUsd(ins.aporteMonto,  ins.aporteMoneda,  tc);
+  const retiro  = aUsd(ins.retiroMonto,  ins.retiroMoneda,  tc);
+  const minimo  = +ins.capitalMinimoUsdHoy || 0;
+  const H = Math.max(1, Math.min(HORIZONTE_MAX, Math.round(+ins.horizonteAnios) || 1));
+  const extras = (ins.extraordinarios || []).filter(x => +x.montoUsdHoy > 0).slice(0, 3);
+  const filas = [];
+  let saldo = capital;
+  for(let t = 1; t <= H; t++){
+    const anio = sup.anioInicio + t - 1, idx = Math.pow(1 + inf, t - 1);
+    const ap = aporte * idx, re = -retiro * idx;
+    const ex = -extras.filter(x => +x.anio === anio).reduce((a,x) => a + (+x.montoUsdHoy), 0) * idx;
+    const rend = saldo * r;
+    const fin = saldo + rend + ap + re + ex;
+    const real = fin / Math.pow(1 + inf, t);
+    filas.push({t, anio, saldoInicial: saldo, aporte: ap, retiro: re, extraordinario: ex, rendimiento: rend,
+      saldoFinal: fin, saldoReal: real, metaNominal: minimo * Math.pow(1 + inf, t), metaReal: minimo,
+      portafolioFinal: fin, portafolioReal: real, edad: anio});
+    saldo = fin;
+  }
+  const ult = filas[filas.length - 1], agota = filas.find(f => f.saldoFinal < 0);
+  return {institucional: true, filas, retorno: r, horizonte: H, totalAnios: H, aniosAcum: H + 1,
+    capital, aporte, retiro, minimo, extras,
+    finalNominal: ult.saldoFinal, finalReal: ult.saldoReal,
+    maxNominal: Math.max(...filas.map(f => f.saldoFinal)),
+    anioAgota: agota ? agota.anio : null, cumpleMeta: !agota && ult.saldoReal >= minimo};
+}
+// Rendimiento mínimo con el que la institución nunca queda en negativo y termina el
+// horizonte con al menos el capital mínimo, en términos reales.
+function rendimientoEquilibrioInst(c, sup){
+  const meta = +((c.institucional || {}).capitalMinimoUsdHoy) || 0;
+  const cumple = r => { const pr = proyectarInst(c, sup, {retorno: r});
+    return pr.filas.every(f => f.saldoFinal >= 0) && pr.finalReal >= meta; };
+  const MIN = 0, MAX = 0.30;
+  if(cumple(MIN)) return {r: 0, meta, estado: 'sin-rendimiento'};
+  if(!cumple(MAX)) return {r: null, meta, estado: 'inalcanzable'};
+  let lo = MIN, hi = MAX;
+  for(let i = 0; i < 40; i++){ const m = (lo + hi)/2; if(cumple(m)) hi = m; else lo = m; }
+  return {r: hi, meta, estado: 'ok'};
+}
+
 // Rendimiento anual mínimo con el que el plan se sostiene hasta la edad final: el
 // portafolio nunca queda negativo y, si el cliente pidió herencia, termina con al
 // menos ese monto en términos reales. Se obtiene corriendo la misma proyección con
@@ -518,25 +639,64 @@ function estadisticaCartera(a){
   return {vol, peor, anioPeor: HIST.desde + serie.indexOf(peor), media};
 }
 
-// Curva de carteras modelo: eje X = riesgo (volatilidad anual de la mezcla completa),
-// eje Y = rendimiento esperado del perfil. Pasa exactamente por las tres carteras del
-// sistema; entre ellas se interpola con la parábola que une los tres puntos.
+// Curva de carteras modelo. Cada punto es una combinación de dos carteras modelo
+// vecinas (conservadora–moderada o moderada–agresiva):
+//   composición = (1 − w)·A + w·B        rendimiento = (1 − w)·rA + w·rB
+// y su riesgo (eje X) es la volatilidad histórica de esa mezcla, rebalanceada cada año
+// con la serie de Damodaran. Así la curva pasa por las tres carteras del sistema y cada
+// punto intermedio tiene una composición concreta que se puede invertir.
+function mezclaCarteras(A, B, w){
+  return {rv: A.rv + (B.rv - A.rv)*w, rf: A.rf + (B.rf - A.rf)*w, ef: A.ef + (B.ef - A.ef)*w};
+}
 function curvaModelo(){
   const asig = supuestos.asignacion || ALLOC_SCHWAB;
-  const pts = ESCALA.map(k => { const e = estadisticaCartera(asig[k]);
-      return {perfil: k, x: e.vol, y: PERFILES[k].retorno, peor: e.peor, anioPeor: e.anioPeor}; })
-    .sort((a,b) => a.x - b.x);
-  const [a, b, c] = pts;
-  const d1 = (b.y - a.y)/(b.x - a.x), d2 = (c.y - b.y)/(c.x - b.x), d3 = (d2 - d1)/(c.x - a.x);
-  const f = x => a.y + d1*(x - a.x) + d3*(x - a.x)*(x - b.x);
-  const inversa = y => {
-    if(y <= a.y) return a.x; if(y >= c.y) return c.x;
-    let lo = a.x, hi = c.x;
-    for(let i = 0; i < 50; i++){ const m = (lo + hi)/2; if(f(m) < y) lo = m; else hi = m; }
-    return (lo + hi)/2;
+  const orden = ESCALA.slice().sort((a,b) => PERFILES[a].retorno - PERFILES[b].retorno);
+  const pts = orden.map(k => { const e = estadisticaCartera(asig[k]);
+      return {perfil: k, x: e.vol, y: PERFILES[k].retorno, peor: e.peor, anioPeor: e.anioPeor}; });
+  const traza = [];
+  for(let s2 = 0; s2 < orden.length - 1; s2++){
+    const A = asig[orden[s2]], B = asig[orden[s2+1]];
+    const rA = PERFILES[orden[s2]].retorno, rB = PERFILES[orden[s2+1]].retorno;
+    for(let k = (s2 ? 1 : 0); k <= 40; k++){
+      const w = k/40, m = mezclaCarteras(A, B, w);
+      traza.push({x: estadisticaCartera(m).vol, y: rA + (rB - rA)*w});
+    }
+  }
+  // Cartera que rinde exactamente r. Por debajo de la conservadora se usa la
+  // conservadora (la de menor riesgo del sistema); por encima de la agresiva no hay
+  // combinación de carteras modelo que alcance ese rendimiento.
+  const carteraPara = r => {
+    const rMin = PERFILES[orden[0]].retorno, rMax = PERFILES[orden[orden.length-1]].retorno;
+    let m, alcanzable = true, tramo = null;
+    if(r == null || r > rMax + 1e-12){ m = Object.assign({}, asig[orden[orden.length-1]]); alcanzable = false; }
+    else if(r <= rMin){ m = Object.assign({}, asig[orden[0]]); tramo = {desde: orden[0], hasta: orden[0], w: 0}; }
+    else {
+      for(let s2 = 0; s2 < orden.length - 1; s2++){
+        const rA = PERFILES[orden[s2]].retorno, rB = PERFILES[orden[s2+1]].retorno;
+        if(r <= rB + 1e-12){ const w = (r - rA)/(rB - rA);
+          m = mezclaCarteras(asig[orden[s2]], asig[orden[s2+1]], w); tramo = {desde: orden[s2], hasta: orden[s2+1], w}; break; }
+      }
+    }
+    const e = estadisticaCartera(m);
+    return {asig: m, x: e.vol, peor: e.peor, anioPeor: e.anioPeor,
+            rendimiento: alcanzable ? Math.max(r, rMin) : rMax, alcanzable, tramo};
   };
-  return {pts, f, inversa};
+  const inversa = y => carteraPara(y).x;
+  return {pts, traza, carteraPara, inversa};
 }
+
+// Cartera de equilibrio (óptima): la combinación de menor riesgo que rinde el equilibrio.
+function carteraEquilibrio(eq){
+  const cm = curvaModelo();
+  if(eq.estado === 'sin-rendimiento') return Object.assign(cm.carteraPara(0), {nota: 'El objetivo se cumple sin rendimiento; basta la cartera de menor riesgo.'});
+  if(eq.estado === 'inalcanzable' || eq.r == null) return Object.assign(cm.carteraPara(null), {nota: 'Ninguna combinación de carteras modelo alcanza el equilibrio; se muestra la de mayor rendimiento.'});
+  const c2 = cm.carteraPara(eq.r);
+  return Object.assign(c2, {nota: !c2.alcanzable ? 'Ninguna combinación de carteras modelo alcanza el equilibrio; se muestra la de mayor rendimiento.'
+    : eq.r <= PERFILES.conservador.retorno ? 'El equilibrio queda por debajo de la cartera conservadora; se usa esa cartera, la de menor riesgo del sistema.' : ''});
+}
+const fmtPeso = v => { const r = Math.round((v||0)*10)/10; return r % 1 ? r.toFixed(1) : String(r); };
+const redondeoAsig = a => { const rv = Math.round(a.rv*10)/10, rf = Math.round(a.rf*10)/10;
+  return {rv, rf, ef: Math.round((100 - rv - rf)*10)/10}; };
 
 // Perfil que exige el objetivo: el menor perfil cuya cartera cubre el equilibrio.
 function perfilRequerido(eq){
@@ -586,6 +746,14 @@ function puntajeDependientes(n){ return n >= 4 ? 0 : n === 3 ? 3 : n >= 1 ? 7 : 
 
 function calcularCapacidad(c, sup){
   const cap = c.capacidad || {};
+  // Institución: horizonte de inversión declarado, estabilidad de ingresos y peso del
+  // portafolio en sus activos. No hay dependientes ni edades.
+  if(c.tipoCliente === 'institucion'){
+    const h = +((c.institucional || {}).horizonteAnios) || 0;
+    const partes = [puntajeHorizonte(h), cap.fuenteIngreso, cap.pesoDelPortafolio]
+      .filter(v => v !== null && v !== undefined && !isNaN(v));
+    return {valor: partes.length ? partes.reduce((a,b)=>a+b,0)/partes.length : null, horizonte: h, horizonteLaboral: h};
+  }
   // El horizonte sale de las edades, que es el dato que mueve la proyección,
   // el Excel y la ficha. Así no puede contradecir a la gráfica.
   // El horizonte de capacidad sale de las edades. Los años hasta el primer retiro
@@ -636,8 +804,25 @@ function calcularPerfil(c, sup){
       : 'Tolerancia por encima del apetito: sostendría más riesgo del que declara querer.');
   }
   if(q.q6 >= 8 && q.q9 != null && q.q9 <= 3){
-    avisos.push('Acepta una caída profunda pero la sostendría menos de dos años. Conviene revisar la magnitud con el cliente.');
+    avisos.push('Acepta una caída profunda pero la sostendría alrededor de dos años o menos. Conviene revisar la magnitud con el cliente.');
   }
+  const ins = c.institucional;
+  if(ins){
+    const capIni = aUsd(ins.capitalMonto, ins.capitalMoneda, sup.tipoCambio);
+    if(+ins.capitalMinimoUsdHoy > capIni)
+      avisos.push('El capital mínimo exigido al final del horizonte supera el capital inicial: el portafolio debe crecer en términos reales para cumplirlo.');
+    (ins.extraordinarios || []).forEach(x => {
+      if(x.anio < sup.anioInicio || x.anio > sup.anioInicio + (+ins.horizonteAnios) - 1)
+        avisos.push('El retiro extraordinario previsto para ' + x.anio + ' cae fuera del horizonte de la proyección y no se incluye.');
+    });
+  }
+  if(!ins && +c.edad && sup.edadFinal){
+    const anioFinal = sup.anioInicio + (sup.edadFinal - (+c.edad));
+    (c.metas || []).forEach(m => { if(+m.anio < sup.anioInicio || +m.anio > anioFinal)
+      avisos.push('La meta prevista para ' + m.anio + ' cae fuera del horizonte de la proyección y no se incluye.'); });
+  }
+  if((c.metas || []).length > 8) avisos.push('Se registraron más de 8 metas; la proyección y el Excel incluyen las primeras 8.');
+  if(ins && (ins.extraordinarios || []).length > 3) avisos.push('Se registraron más de 3 retiros extraordinarios; la proyección y el Excel incluyen los primeros 3.');
   const primerRetiro = (c.capacidad || {}).aniosPrimerRetiro;
   if(primerRetiro !== undefined && primerRetiro !== null && !isNaN(primerRetiro)
      && primerRetiro + 5 < cap.horizonteLaboral){
@@ -665,7 +850,7 @@ function calcularPerfil(c, sup){
     avisos.push('La pregunta sobre pérdidas previas quedó como «no aplica»; la tolerancia se calculó con ' + tol.usados + ' de ' + tol.total + ' reactivos.');
   }
   limitantes.forEach(n => avisos.push(n === 'capacidad'
-    ? 'El perfil quedó limitado por la capacidad financiera, no por las preferencias del cliente.'
+    ? 'El perfil quedó limitado por la capacidad financiera, no por las preferencias ' + (ins ? 'de la institución.' : 'del cliente.')
     : 'El perfil quedó limitado por el conocimiento y la experiencia declarados.'));
 
   // Puntaje del cliente: promedio simple de las cuatro dimensiones. NO es un puntaje
@@ -697,7 +882,8 @@ function esc(s){ return (s||'').toString().replace(/[&<>"']/g, m=>({'&':'&amp;',
 // ================= supuestos =================
 const CAMPOS = {tipoCambio:'s-tc', inflacion:'s-inf', inflacionIngresos:'s-inf-ing',
   inflacionPension:'s-inf-pen', inflacionSalud:'s-inf-sal', ajusteAlquileres:'s-alq',
-  anioInicio:'s-anio', edadFinal:'s-edad-final', anioIngresoFcl:'s-fcl'};
+  anioInicio:'s-anio', edadFinal:'s-edad-final', anioIngresoFcl:'s-fcl',
+  factorGastoMenor:'s-gasto-menor', factorGastoMayor:'s-gasto-mayor'};
 
 // Composición sugerida por perfil (renta variable / renta fija / efectivo)
 const ALLOC_SCHWAB = {
@@ -741,6 +927,14 @@ function guardarSupuestos(s){
   try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }catch(e){}
 }
 function pintarBarraSupuestos(){
+  // En la pestaña de instituciones solo se muestran los supuestos que usa su proyección
+  if(typeof segmento !== 'undefined' && segmento === 'institucion'){
+    document.getElementById('assum-list').innerHTML =
+      `<span>Tipo de cambio <b>₡${fmt(supuestos.tipoCambio)}</b></span>
+       <span>Inflación general <b>${supuestos.inflacion}%</b></span>
+       <span>Año de inicio <b>${supuestos.anioInicio}</b></span>`;
+    return;
+  }
   document.getElementById('assum-list').innerHTML =
     `<span>Tipo de cambio <b>₡${fmt(supuestos.tipoCambio)}</b></span>
      <span>Inflación general <b>${supuestos.inflacion}%</b></span>
@@ -753,10 +947,59 @@ function pintarBarraSupuestos(){
 
 // ================= estado =================
 let clientes = [], activoId = null;
+// Segmento elegido en la antesala: 'persona' o 'institucion'. Las respuestas llegan a la misma
+// carpeta; el campo tipoCliente las separa. Los registros anteriores a este campo son personas.
+let segmento = 'persona';
+const tipoDe = c => c.tipoCliente === 'institucion' ? 'institucion' : 'persona';
+const clientesSeg = () => clientes.filter(c => tipoDe(c) === segmento)
+  .sort((a,b) => (a.nombre||'').localeCompare(b.nombre||'', 'es', {sensitivity:'base'}));
+const SEGMENTOS = {
+  persona:     {lista:'Clientes',      csv:'Familias y personas · CSV', vacio:'Todavía no hay familias ni personas registradas.',
+                elegir:'Seleccione un cliente para ver su proyección.', panel:'Seleccione un cliente en el panel de la izquierda.'},
+  institucion: {lista:'Instituciones', csv:'Instituciones · CSV',                          vacio:'Todavía no hay instituciones registradas.',
+                elegir:'Seleccione una institución para ver su perfil.', panel:'Seleccione una institución en el panel de la izquierda.'}
+};
+function elegirSegmento(seg){
+  segmento = seg;
+  pintarBarraSupuestos();
+  activoId = null;
+  const caja = document.getElementById('segmentos');
+  caja.classList.add('elegido');
+  caja.querySelectorAll('.segmento').forEach(b => b.classList.toggle('activo', b.dataset.seg === seg));
+  document.getElementById('layout').hidden = false;
+  document.getElementById('selector-label').textContent = SEGMENTOS[seg].lista;
+  document.getElementById('selector-hint').textContent = SEGMENTOS[seg].elegir;
+  const csv = document.getElementById('btn-todos');
+  csv.hidden = !SEGMENTOS[seg].csv;
+  csv.textContent = SEGMENTOS[seg].csv;
+  mostrarSegmento();
+}
+function mostrarSegmento(){
+  const vacio = document.getElementById('empty-state');
+  document.getElementById('detail').hidden = true;
+  renderLista();
+  vacio.hidden = false;
+  if(clientesSeg().length){
+    abrirLista(true);
+    vacio.innerHTML = SEGMENTOS[segmento].panel;
+  }else{
+    abrirLista(false);
+    vacio.innerHTML = SEGMENTOS[segmento].vacio + '<br>Aparecerán aquí cuando completen el cuestionario.';
+  }
+}
 
 // Normaliza respuestas viejas (montos ya convertidos a USD) y nuevas (monto + moneda)
 function normalizar(c){
   const o = Object.assign({}, c);
+  // La edad se recalcula con la fecha de nacimiento: un registro abierto años después
+  // proyecta con la edad vigente, no con la que tenía el día que llenó el cuestionario.
+  const fn = (o.identificacion || {}).fechaNacimiento;
+  if(fn){
+    const f = new Date(fn + 'T00:00:00'), h = new Date();
+    if(!isNaN(f)){ let e = h.getFullYear() - f.getFullYear();
+      if(h.getMonth() < f.getMonth() || (h.getMonth() === f.getMonth() && h.getDate() < f.getDate())) e--;
+      o.edad = e; }
+  }
   if(o.capitalMonto === undefined){       // formato anterior de montos
     o.capitalMonto = o.capital;  o.capitalMoneda = 'USD';
     o.aporteMonto  = o.aporte;   o.aporteMoneda  = 'USD';
@@ -787,7 +1030,7 @@ async function cargarClientes(){
 function renderLista(){
   const list = document.getElementById('client-list');
   list.innerHTML = '';
-  clientes.forEach(c=>{
+  clientesSeg().forEach(c=>{
     const row = document.createElement('div');
     row.className = 'client-row' + (c.id===activoId ? ' active' : '');
     row.innerHTML = `<span class="name">${esc(c.nombre)}</span><span class="tag">${PERFILES[c.perfil].label}</span>`;
@@ -810,32 +1053,279 @@ function seleccionar(id){
   renderLista();
   // Por privacidad, la lista se cierra y solo queda visible el cliente elegido
   abrirLista(false);
-  document.getElementById('selector-label').textContent = c ? c.nombre : 'Clientes';
-  document.getElementById('selector-hint').textContent = 'Toque el nombre para cambiar de cliente.';
-  if(c) renderDetalle(c);
+  document.getElementById('selector-label').textContent = c ? c.nombre : SEGMENTOS[segmento].lista;
+  document.getElementById('selector-hint').textContent = segmento === 'institucion' ? 'Toque el nombre para cambiar de institución.' : 'Toque el nombre para cambiar de cliente.';
+  if(c) (tipoDe(c) === 'institucion' ? renderInstitucion(c) : renderDetalle(c));
 }
 
+// El detalle del cliente se lee en dos páginas, en el mismo orden que la ficha PDF:
+// 1) posición, puntaje y rendimiento de equilibrio; 2) carteras y proyección.
+let paginaPanel = 1;
+function activarPaginas(p){
+  const mostrar = n => {
+    paginaPanel = n;
+    document.querySelectorAll('#detail .pagina').forEach(el => el.hidden = +el.dataset.pag !== n);
+    document.querySelectorAll('#detail .pag-btn').forEach(b => {
+      const on = +b.dataset.pag === n; b.classList.toggle('activa', on); b.setAttribute('aria-selected', on ? 'true' : 'false'); });
+    if(n === 2) dibujarGrafico(p);      // el ancho del gráfico depende de que la página esté visible
+  };
+  document.querySelectorAll('#detail .pag-btn').forEach(b => b.onclick = () => { mostrar(+b.dataset.pag); window.scrollTo({top: document.getElementById('detail').offsetTop - 20, behavior: 'smooth'}); });
+  mostrar(1);
+}
+function posicionHTML(c, titulo){
+  const inst = tipoDe(c) === 'institucion';
+  return `    <div class="donut-card">
+      <h2 class="section-title" style="font-size:16px;">${titulo}</h2>
+      <p class="section-sub" style="margin-bottom:18px;">Tolerancia frente a apetito de riesgo, en escala de 0 a 10. La capacidad financiera y el conocimiento no se grafican: no ubican ${inst ? 'a la institución' : 'al cliente'} en el plano, solo limitan hasta dónde puede llegar el perfil.</p>
+      <div class="donut-row matriz-row">
+        <canvas id="matriz" style="width:340px;height:340px;"></canvas>
+        <div class="alloc-legend">
+          ${[['Tolerancia', c.diag.tolerancia],['Apetito', c.diag.apetito],
+             ['Capacidad financiera', c.diag.capacidad],['Conocimiento', c.diag.conocimiento]]
+            .map(([n,v])=>`
+            <div class="alloc-item">
+              <span class="alloc-dot" style="background:${n==='Tolerancia'?'#2B3014':n==='Apetito'?'#918042':'#B3BC80'}"></span>
+              <span class="alloc-name">${n}</span>
+              <span class="alloc-pct">${v==null||isNaN(v) ? '—' : (Math.round(v*10)/10).toFixed(1)}</span>
+            </div>`).join('')}
+          <div class="puntaje-total">
+            <span class="alloc-name">${inst ? 'Puntaje de la institución' : 'Puntaje del cliente'}</span>
+            <span class="alloc-pct">${c.diag.puntajeCliente==null ? '—'
+              : (Math.round(c.diag.puntajeCliente*10)/10).toFixed(1) + ' · ' +
+                (c.diag.puntajeCliente>=7 ? 'Alto' : c.diag.puntajeCliente>=4 ? 'Medio' : 'Bajo')}</span>
+          </div>
+        </div>
+      </div>
+      ${c.diag.avisos.length ? `<div class="avisos-perfil">${c.diag.avisos.map(a=>`<p>${esc(a)}</p>`).join('')}</div>` : ''}
+    </div>`;
+}
+
+// Vista de una institución: perfil de riesgo (página 2 común) y proyección del
+// portafolio institucional (página 3 de instituciones) con los supuestos vigentes.
+const TXT_INST = {
+  tipo: {asociacion:'Asociación solidarista', cooperativa:'Cooperativa', fondo:'Fondo de ahorro o de pensión',
+         fundacion:'Fundación u organización sin fines de lucro', empresa:'Empresa', otra:'Otra'},
+  objetivo: {preservar:'Preservar el capital', rentas:'Generar rentas para gastos operativos',
+             crecimiento:'Crecimiento de largo plazo', respaldo:'Respaldo de obligaciones'},
+  regulacion: {regulada:'Regulada por SUGEF, SUPEN o SUGEVAL', politica:'Política interna aprobada por la junta',
+               ninguna:'Sin restricciones formales'}
+};
+function veredictoInst(c, p, eq){
+  const pct1 = v => (v*100).toFixed(1) + '%';
+  const holgura = eq.r == null ? null : p.retorno - eq.r;
+  const req = perfilRequerido(eq);
+  const objetivo = eq.meta > 0
+    ? `sostener sus flujos durante ${p.horizonte} años y conservar al final un capital mínimo de ${usd(eq.meta)} en dólares de hoy`
+    : `sostener sus flujos durante ${p.horizonte} años sin que el portafolio se agote`;
+  if(eq.estado === 'sin-rendimiento')
+    return `Los flujos de la institución permiten ${objetivo} incluso sin rendimiento.`;
+  if(eq.estado === 'inalcanzable')
+    return `Ningún rendimiento razonable permite ${objetivo}. El plan necesita ajustes en los retiros, los aportes o el capital mínimo antes que en la cartera.`;
+  if(holgura >= 0)
+    return `Para ${objetivo}, el portafolio necesita un rendimiento de ${pct1(eq.r)} anual. La cartera del perfil ${PERFILES[c.perfil].label.toLowerCase()} rinde ${pct1(p.retorno)}: el objetivo se cumple con una holgura de ${(holgura*100).toFixed(1)} puntos.`;
+  if(req)
+    return `Para ${objetivo}, el portafolio necesita un rendimiento de ${pct1(eq.r)} anual, por encima del ${pct1(p.retorno)} de la cartera asignada. Lo cubriría un perfil ${PERFILES[req].label.toLowerCase()}, que excede el perfil de riesgo de la institución: el ajuste debe venir del plan, no de la cartera.`;
+  return `Para ${objetivo}, el portafolio necesita un rendimiento de ${pct1(eq.r)} anual, por encima de lo que rinde cualquiera de las carteras modelo. El plan necesita ajustes en los retiros, los aportes o el capital mínimo.`;
+}
+
+function renderInstitucion(c){
+  const asig = (supuestos.asignacion || ALLOC_SCHWAB)[c.perfil];
+  const ins = c.institucional;
+  document.getElementById('empty-state').hidden = true;
+  const d = document.getElementById('detail');
+  d.hidden = false;
+  const contacto = [c.telefono, c.correo, c.direccion].filter(Boolean).map(esc).join(' · ');
+  if(!ins){
+    // Registro anterior a la página 3 institucional: solo hay perfil de riesgo
+    d.innerHTML = `<div><h2 class="section-title">${esc(c.nombre)}</h2><p class="section-sub">Institución${contacto ? ' · ' + contacto : ''}</p></div>
+      ${posicionHTML(c, 'Posición de la institución')}
+      <div class="pendiente-inst"><p>Este registro no tiene los datos de la página 3 institucional, por lo que no se puede proyectar.</p></div>`;
+    dibujarMatriz(c.diag);
+    return;
+  }
+  const p = proyectarInst(c, supuestos);
+  const eq = rendimientoEquilibrioInst(c, supuestos);
+  const req = perfilRequerido(eq);
+  const holgura = eq.r == null ? null : p.retorno - eq.r;
+  const pct1 = v => (v*100).toFixed(1) + '%';
+  const anioFin = supuestos.anioInicio + p.horizonte - 1;
+  const num = v => usd(v);
+  const datos = [
+    ['Tipo de institución', TXT_INST.tipo[ins.tipo] || '—', ''],
+    ['Objetivo del portafolio', TXT_INST.objetivo[ins.objetivo] || '—', ''],
+    ['Capital inicial', num(p.capital), ins.capitalMoneda === 'CRC' ? 'Declarado en colones' : ''],
+    ['Horizonte de inversión', p.horizonte + ' años', `De ${supuestos.anioInicio} a ${anioFin}`],
+    ['Aporte anual', num(p.aporte), 'Dólares de hoy, indexado a la inflación'],
+    ['Retiro anual', num(p.retiro), 'Dólares de hoy, indexado a la inflación'],
+    ['Retiros extraordinarios', p.extras.length ? p.extras.length + (p.extras.length === 1 ? ' previsto' : ' previstos') : 'Ninguno',
+       p.extras.map(x => num(x.montoUsdHoy) + ' en ' + x.anio).join(' · ')],
+    ['Capital mínimo al final', num(p.minimo), 'Dólares de hoy'],
+    ['Política de inversión', TXT_INST.regulacion[ins.regulacion] || '—', '']
+  ];
+  const pt = c.diag.puntajeCliente;
+  d.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;">
+      <div>
+        <h2 class="section-title">${esc(c.nombre)}</h2>
+        <p class="section-sub">${TXT_INST.tipo[ins.tipo] || 'Institución'} · horizonte de ${p.horizonte} años${contacto ? ' · ' + contacto : ''}</p>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn btn-ghost btn-sm" id="btn-pdf">Ficha PDF</button>
+        <button class="btn btn-sm" id="btn-excel">Descargar Excel</button>
+      </div>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <div class="label">Perfil de riesgo</div>
+        <div class="value">${PERFILES[c.perfil].label}</div>
+        <div class="note">Retorno esperado ${pct(p.retorno)} anual · ${asig.rv}/${asig.rf}/${asig.ef} en renta variable, renta fija y efectivo</div>
+      </div>
+      <div class="card">
+        <div class="label">Saldo final nominal</div>
+        <div class="value" style="${p.finalNominal<0?'color:var(--alert)':''}">${usd(p.finalNominal)}</div>
+        <div class="note">Al cierre de ${anioFin}</div>
+      </div>
+      <div class="card">
+        <div class="label">Saldo final real</div>
+        <div class="value" style="${p.finalReal<0?'color:var(--alert)':''}">${usd(p.finalReal)}</div>
+        <div class="note">${p.anioAgota ? 'Se agota en ' + p.anioAgota : p.minimo > 0 ? (p.cumpleMeta ? 'Cumple' : 'No cumple') + ' el mínimo de ' + usd(p.minimo) : 'Dólares de hoy'}</div>
+      </div>
+      <div class="card">
+        <div class="label">Puntaje de la institución</div>
+        <div class="value">${pt==null ? '—' : (Math.round(pt*10)/10).toFixed(1)}</div>
+        <div class="note">${pt==null ? '' : pt>=7 ? 'Alto' : pt>=4 ? 'Medio' : 'Bajo'} · escala de 0 a 10</div>
+      </div>
+    </div>
+
+    <div class="paginas-nav" role="tablist">
+      <button type="button" class="pag-btn activa" data-pag="1" role="tab">Página 1 · Perfil y rendimiento de equilibrio</button>
+      <button type="button" class="pag-btn" data-pag="2" role="tab">Página 2 · Carteras y proyección</button>
+    </div>
+
+    <div class="pagina" data-pag="1">
+    ${posicionHTML(c, 'Posición de la institución')}
+
+    <div class="donut-card">
+      <h2 class="section-title" style="font-size:16px;">Rendimiento de equilibrio</h2>
+      <p class="section-sub" style="margin-bottom:18px;">Rendimiento anual mínimo con el que el portafolio sostiene los flujos de la institución y conserva el capital mínimo, frente a la curva de carteras modelo.</p>
+      <div class="donut-row matriz-row equilibrio-row">
+        <canvas id="frontera" style="width:440px;height:330px;"></canvas>
+        <div class="alloc-legend">
+          ${[['Rendimiento de equilibrio', eq.estado==='inalcanzable' ? 'Más de 30%' : pct1(eq.r)],
+             ['Cartera asignada', pct1(p.retorno) + ' · ' + PERFILES[c.perfil].label],
+             [holgura == null || holgura >= 0 ? 'Holgura' : 'Brecha',
+              holgura == null ? '—' : (holgura >= 0 ? '+' : '−') + (Math.abs(holgura)*100).toFixed(1) + ' pts'],
+             ['Perfil que exige el objetivo', req ? PERFILES[req].label : 'Ninguno alcanza']]
+            .map(([n,v])=>`
+            <div class="alloc-item">
+              <span></span>
+              <span class="alloc-name">${n}</span>
+              <span class="alloc-pct">${v}</span>
+            </div>`).join('')}
+        </div>
+      </div>
+      <p class="nota-riesgo">Peor año histórico de cada cartera, ${HIST.desde}–${HIST.hasta}: ${curvaModelo().pts.map(x =>
+        PERFILES[x.perfil].label + ' ' + (x.peor*100).toFixed(1).replace('-', '−') + '% (' + x.anioPeor + ')').join(' · ')}.
+        Volatilidad y peor año calculados con la serie de Damodaran (NYU Stern) de acciones, bonos del Tesoro y letras de EE. UU.</p>
+      <p class="veredicto ${holgura != null && holgura >= 0 ? 'ok' : 'alerta'}">${esc(veredictoInst(c, p, eq))}</p>
+    </div>
+
+    </div>
+
+    <div class="pagina" data-pag="2" hidden>
+    ${pastelesHTML(c, p, eq)}
+
+    <div class="chart-wrap">
+      <h2 class="section-title" style="font-size:16px;">Proyección del portafolio</h2>
+      <p class="section-sub" style="margin-bottom:14px;">${p.horizonte} años · de ${supuestos.anioInicio} a ${anioFin}</p>
+      <canvas id="chart" style="width:100%;height:300px;"></canvas>
+      <div class="legend">
+        <span><span class="swatch" style="background:#2B3014"></span>Valor nominal</span>
+        <span><span class="swatch" style="background:#918042"></span>Términos reales</span>
+        ${p.minimo > 0 ? '<span><span class="swatch" style="background:#A2543A"></span>Capital mínimo (dólares de hoy)</span>' : ''}
+      </div>
+    </div>
+
+    <div class="donut-card">
+      <h2 class="section-title" style="font-size:16px;">Datos de la institución</h2>
+      <p class="section-sub" style="margin-bottom:18px;">Respuestas de la página 3. Los montos en colones se convierten con el tipo de cambio vigente; los flujos se indexan con la inflación general de los supuestos.</p>
+      <div class="datos-grid">
+        ${datos.map(([t,v2,extra])=>`
+          <div class="dato">
+            <div class="dato-label">${t}</div>
+            <div class="dato-valor">${v2}</div>
+            ${extra ? `<div class="dato-extra">${extra}</div>` : ''}
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="block-title">Detalle año a año</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>Año</th><th>Período</th><th>Saldo inicial</th><th>Aporte</th><th>Retiro ordinario</th>
+          <th>Retiro extraordinario</th><th>Rendimiento</th><th>Saldo final nominal</th><th>Saldo final real</th>
+          ${p.minimo > 0 ? '<th>Meta mínima nominal</th>' : ''}
+        </tr></thead>
+        <tbody>
+          ${p.filas.map(f=>`<tr>
+            <td>${f.t}</td><td>${f.anio}</td>
+            <td class="${f.saldoInicial<0?'neg':''}">${usd(f.saldoInicial)}</td>
+            <td>${usd(f.aporte)}</td>
+            <td class="${f.retiro<0?'neg':''}">${usd(f.retiro)}</td>
+            <td class="${f.extraordinario<0?'neg':''}">${f.extraordinario ? usd(f.extraordinario) : '—'}</td>
+            <td class="${f.rendimiento<0?'neg':''}">${usd(f.rendimiento)}</td>
+            <td class="${f.saldoFinal<0?'neg':''}">${usd(f.saldoFinal)}</td>
+            <td class="${f.saldoReal<0?'neg':''}">${usd(f.saldoReal)}</td>
+            ${p.minimo > 0 ? `<td>${usd(f.metaNominal)}</td>` : ''}
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+    </div>
+  `;
+  dibujarGrafico(p);
+  activarPaginas(p);
+  dibujarMatriz(c.diag);
+  dibujarFrontera(c, p, eq);
+  dibujarPastel('pastel-asig', asig);
+  dibujarPastel('pastel-eq', redondeoAsig(carteraEquilibrio(eq).asig));
+  document.getElementById('btn-excel').onclick = ()=>exportarExcelInst(c, p, asig);
+  document.getElementById('btn-pdf').onclick = ()=>exportarFicha(c, p, asig);
+}
+
+function veredictoPersona(c, p, eq){
+  const req = perfilRequerido(eq);
+  const holgura = eq.r == null ? null : p.retorno - eq.r;
+  const pct1 = v => (v*100).toFixed(1) + '%';
+  const objetivo = eq.meta > 0
+    ? `sostener su gasto hasta los ${supuestos.edadFinal} años y dejar una herencia de ${usd(eq.meta)} en dólares de hoy`
+    : `sostener su gasto hasta los ${supuestos.edadFinal} años sin que el portafolio se agote`;
+  let veredicto;
+  if(eq.estado === 'sin-rendimiento')
+    veredicto = `El plan alcanza el objetivo incluso sin rendimiento: el capital y los aportes cubren por sí solos ${objetivo.replace('sostener su','el')}.`;
+  else if(eq.estado === 'inalcanzable')
+    veredicto = `Ningún rendimiento razonable permite ${objetivo}. El plan necesita ajustes en el gasto, el aporte o la edad de retiro antes que en la cartera.`;
+  else if(holgura >= 0)
+    veredicto = `Para ${objetivo}, el plan necesita un rendimiento de ${pct1(eq.r)} anual. La cartera del perfil ${PERFILES[c.perfil].label.toLowerCase()} rinde ${pct1(p.retorno)}: el objetivo se cumple con una holgura de ${(holgura*100).toFixed(1)} puntos.`;
+  else if(req)
+    veredicto = `Para ${objetivo}, el plan necesita un rendimiento de ${pct1(eq.r)} anual, por encima del ${pct1(p.retorno)} de la cartera asignada. Lo cubriría un perfil ${PERFILES[req].label.toLowerCase()}, que excede el perfil de riesgo del cliente: el ajuste debe venir del plan, no de la cartera.`;
+  else
+    veredicto = `Para ${objetivo}, el plan necesita un rendimiento de ${pct1(eq.r)} anual, por encima de lo que rinde cualquiera de las carteras modelo. El plan necesita ajustes en el gasto, el aporte o la edad de retiro.`;
+  return veredicto;
+}
 function renderDetalle(c){
   const p = proyectar(c, supuestos);
   const asig = (supuestos.asignacion || ALLOC_SCHWAB)[c.perfil];
   const eq = rendimientoEquilibrio(c, supuestos);
   const req = perfilRequerido(eq);
   const holgura = eq.r == null ? null : p.retorno - eq.r;
-  const pct1 = v => (v*100).toFixed(1).replace('.', ',') + '%';
+  const pct1 = v => (v*100).toFixed(1) + '%';
   const objetivo = eq.meta > 0
     ? `sostener su gasto hasta los ${supuestos.edadFinal} años y dejar una herencia de ${usd(eq.meta)} en dólares de hoy`
     : `sostener su gasto hasta los ${supuestos.edadFinal} años sin que el portafolio se agote`;
-  let veredicto;
-  if(eq.estado === 'sin-rendimiento')
-    veredicto = `El plan alcanza el objetivo incluso sin rendimiento: los aportes cubren por sí solos ${objetivo.replace('sostener su','el')}.`;
-  else if(eq.estado === 'inalcanzable')
-    veredicto = `Ningún rendimiento razonable permite ${objetivo}. El plan necesita ajustes en el gasto, el aporte o la edad de retiro antes que en la cartera.`;
-  else if(holgura >= 0)
-    veredicto = `Para ${objetivo}, el plan necesita un rendimiento de ${pct1(eq.r)} anual. La cartera del perfil ${PERFILES[c.perfil].label.toLowerCase()} rinde ${pct1(p.retorno)}: el objetivo se cumple con una holgura de ${(holgura*100).toFixed(1).replace('.', ',')} puntos.`;
-  else if(req)
-    veredicto = `Para ${objetivo}, el plan necesita un rendimiento de ${pct1(eq.r)} anual, por encima del ${pct1(p.retorno)} de la cartera asignada. Lo cubriría un perfil ${PERFILES[req].label.toLowerCase()}, que excede el perfil de riesgo del cliente: el ajuste debe venir del plan, no de la cartera.`;
-  else
-    veredicto = `Para ${objetivo}, el plan necesita un rendimiento de ${pct1(eq.r)} anual, por encima de lo que rinde cualquiera de las carteras modelo. El plan necesita ajustes en el gasto, el aporte o la edad de retiro.`;
+  const veredicto = veredictoPersona(c, p, eq);
   document.getElementById('empty-state').hidden = true;
   const d = document.getElementById('detail');
   d.hidden = false;
@@ -861,7 +1351,7 @@ function renderDetalle(c){
       <div class="card">
         <div class="label">Portafolio al retiro</div>
         <div class="value">${usd(p.alRetiro)}</div>
-        <div class="note">Valor nominal al cumplir ${c.edadRetiro} años</div>
+        <div class="note">${p.aniosAcum === 0 ? 'Ya retirado: capital actual' : 'Valor nominal al cumplir ' + c.edadRetiro + ' años'}</div>
       </div>
       <div class="card">
         <div class="label">Tasa de retiro inicial</div>
@@ -875,34 +1365,59 @@ function renderDetalle(c){
       </div>
     </div>
 
+    <div class="paginas-nav" role="tablist">
+      <button type="button" class="pag-btn activa" data-pag="1" role="tab">Página 1 · Perfil y rendimiento de equilibrio</button>
+      <button type="button" class="pag-btn" data-pag="2" role="tab">Página 2 · Carteras y proyección</button>
+    </div>
+
+    <div class="pagina" data-pag="1">
+    ${posicionHTML(c, 'Posición del cliente')}
+
     <div class="donut-card">
-      <h2 class="section-title" style="font-size:16px;">Posición del cliente</h2>
-      <p class="section-sub" style="margin-bottom:18px;">Tolerancia frente a apetito de riesgo, en escala de 0 a 10. La capacidad financiera y el conocimiento no se grafican: no ubican al cliente en el plano, solo limitan hasta dónde puede llegar el perfil.</p>
-      <div class="donut-row matriz-row">
-        <canvas id="matriz" style="width:340px;height:340px;"></canvas>
+      <h2 class="section-title" style="font-size:16px;">Rendimiento de equilibrio</h2>
+      <p class="section-sub" style="margin-bottom:18px;">Rendimiento anual mínimo con el que el plan alcanza sus objetivos, frente a la curva de carteras modelo. El riesgo es la volatilidad de cada cartera con su mezcla completa de renta variable, renta fija y efectivo.</p>
+      <div class="donut-row matriz-row equilibrio-row">
+        <canvas id="frontera" style="width:440px;height:330px;"></canvas>
         <div class="alloc-legend">
-          ${[['Tolerancia', c.diag.tolerancia],['Apetito', c.diag.apetito],
-             ['Capacidad financiera', c.diag.capacidad],['Conocimiento', c.diag.conocimiento]]
+          ${[['Rendimiento de equilibrio', eq.estado==='inalcanzable' ? 'Más de 30%' : pct1(eq.r)],
+             ['Cartera asignada', pct1(p.retorno) + ' · ' + PERFILES[c.perfil].label],
+             [holgura == null || holgura >= 0 ? 'Holgura' : 'Brecha',
+              holgura == null ? '—' : (holgura >= 0 ? '+' : '−') + (Math.abs(holgura)*100).toFixed(1) + ' pts'],
+             ['Perfil que exige el objetivo', req ? PERFILES[req].label : 'Ninguno alcanza']]
             .map(([n,v])=>`
             <div class="alloc-item">
-              <span class="alloc-dot" style="background:${n==='Tolerancia'?'#2B3014':n==='Apetito'?'#918042':'#B3BC80'}"></span>
+              <span></span>
               <span class="alloc-name">${n}</span>
-              <span class="alloc-pct">${v==null||isNaN(v) ? '—' : (Math.round(v*10)/10).toFixed(1)}</span>
+              <span class="alloc-pct">${v}</span>
             </div>`).join('')}
-          <div class="puntaje-total">
-            <span class="alloc-name">Puntaje del cliente</span>
-            <span class="alloc-pct">${c.diag.puntajeCliente==null ? '—'
-              : (Math.round(c.diag.puntajeCliente*10)/10).toFixed(1) + ' · ' +
-                (c.diag.puntajeCliente>=7 ? 'Alto' : c.diag.puntajeCliente>=4 ? 'Medio' : 'Bajo')}</span>
-          </div>
         </div>
       </div>
-      ${c.diag.avisos.length ? `<div class="avisos-perfil">${c.diag.avisos.map(a=>`<p>${esc(a)}</p>`).join('')}</div>` : ''}
+      <p class="nota-riesgo">Peor año histórico de cada cartera, ${HIST.desde}–${HIST.hasta}: ${curvaModelo().pts.map(pt =>
+        PERFILES[pt.perfil].label + ' ' + (pt.peor*100).toFixed(1).replace('-', '−') + '% (' + pt.anioPeor + ')').join(' · ')}.
+        Volatilidad y peor año calculados con la serie de Damodaran (NYU Stern) de acciones, bonos del Tesoro y letras de EE. UU.</p>
+      <p class="veredicto ${holgura != null && holgura >= 0 ? 'ok' : 'alerta'}">${esc(veredicto)}</p>
+    </div>
+
+    </div>
+
+    <div class="pagina" data-pag="2" hidden>
+    ${pastelesHTML(c, p, eq)}
+
+    <div class="chart-wrap">
+      <h2 class="section-title" style="font-size:16px;">Proyección del portafolio</h2>
+      <p class="section-sub" style="margin-bottom:14px;">${p.totalAnios} años · de los ${c.edad} a los ${supuestos.edadFinal} años</p>
+      <canvas id="chart" style="width:100%;height:300px;"></canvas>
+      <div class="legend">
+        <span><span class="swatch" style="background:#2B3014"></span>Valor nominal</span>
+        <span><span class="swatch" style="background:#918042"></span>Términos reales</span>
+        <span><span class="swatch box" style="background:#EDF0E6"></span>Acumulación</span>
+        <span><span class="swatch box" style="background:#F7EFE4"></span>Retiro</span>
+      </div>
     </div>
 
     <div class="donut-card">
       <h2 class="section-title" style="font-size:16px;">Permanencia del cliente</h2>
-      <p class="section-sub" style="margin-bottom:18px;">Respuestas del cuestionario sobre el compromiso del cliente con la cartera. Los saldos de ROP y FCL sí entran a la proyección como ingresos puntuales: el FCL en el año ${supuestos.anioIngresoFcl} y el ROP al cumplir la edad de retiro, ajustados por inflación desde dólares de hoy.</p>
+      <p class="section-sub" style="margin-bottom:18px;">Respuestas del cuestionario sobre el compromiso del cliente con la cartera. La pensión, el gasto en el retiro y las metas, cuando el cliente los declara, entran a la proyección. Los saldos de ROP y FCL sí entran a la proyección como ingresos puntuales: el FCL en el año ${supuestos.anioIngresoFcl} y el ROP al cumplir la edad de retiro, ajustados por inflación desde dólares de hoy.</p>
       <div class="datos-grid">
         ${(()=>{
           const cap = c.capacidad || {}, fl = cap.fondosLaborales || {}, leg = c.legado || {};
@@ -922,7 +1437,16 @@ function renderDetalle(c){
                .filter(Boolean).join(' · ')],
             ['Destino del patrimonio',
              ({herencia:'Deja herencia', consumir:'Lo consume en vida', indistinto:'Sin preferencia'})[leg.destino] || '—',
-             leg.montoUsdHoy!=null ? 'Meta de ' + num(leg.montoUsdHoy) + ' en dólares de hoy' : '']
+             leg.montoUsdHoy!=null ? 'Meta de ' + num(leg.montoUsdHoy) + ' en dólares de hoy' : ''],
+            ['Gasto en el retiro',
+             ({menor:'Menor que el actual', igual:'Similar al actual', mayor:'Mayor que el actual'})[(c.ingresos||{}).gastoEnRetiro] || '—',
+             'Se retira el ' + Math.round(p.factorGasto*100) + '% del gasto de cada año'],
+            ['Pensión',
+             p.traePension ? num(p.pensionMensual) + ' al mes' : (({ninguno:'No cotiza'})[(c.pension||{}).regimen] || '—'),
+             p.traePension ? 'Dólares de hoy, indexada al ' + (supuestos.inflacionPension) + '% anual desde el retiro' : ''],
+            ['Metas específicas',
+             p.traeMetas ? p.metas.length + (p.metas.length === 1 ? ' meta' : ' metas') : 'Ninguna',
+             p.metas.map(m => num(m.montoUsdHoy) + ' en ' + m.anio).join(' · ')]
           ];
           return filas.map(([t,v2,extra])=>`
             <div class="dato">
@@ -934,43 +1458,6 @@ function renderDetalle(c){
       </div>
     </div>
 
-    <div class="chart-wrap">
-      <h2 class="section-title" style="font-size:16px;">Proyección del portafolio</h2>
-      <p class="section-sub" style="margin-bottom:14px;">${p.totalAnios} años · de los ${c.edad} a los ${supuestos.edadFinal} años</p>
-      <canvas id="chart" style="width:100%;height:300px;"></canvas>
-      <div class="legend">
-        <span><span class="swatch" style="background:#2B3014"></span>Valor nominal</span>
-        <span><span class="swatch" style="background:#918042"></span>Términos reales</span>
-        <span><span class="swatch box" style="background:#EDF0E6"></span>Acumulación</span>
-        <span><span class="swatch box" style="background:#F7EFE4"></span>Retiro</span>
-      </div>
-    </div>
-
-    <div class="donut-card">
-      <h2 class="section-title" style="font-size:16px;">Rendimiento de equilibrio</h2>
-      <p class="section-sub" style="margin-bottom:18px;">Rendimiento anual mínimo con el que el plan alcanza sus objetivos, frente a la curva de carteras modelo. El riesgo es la volatilidad de cada cartera con su mezcla completa de renta variable, renta fija y efectivo.</p>
-      <div class="donut-row matriz-row equilibrio-row">
-        <canvas id="frontera" style="width:440px;height:330px;"></canvas>
-        <div class="alloc-legend">
-          ${[['Rendimiento de equilibrio', eq.estado==='inalcanzable' ? 'Más de 30%' : pct1(eq.r)],
-             ['Cartera asignada', pct1(p.retorno) + ' · ' + PERFILES[c.perfil].label],
-             [holgura == null || holgura >= 0 ? 'Holgura' : 'Brecha',
-              holgura == null ? '—' : (holgura >= 0 ? '+' : '−') + (Math.abs(holgura)*100).toFixed(1).replace('.', ',') + ' pts'],
-             ['Perfil que exige el objetivo', req ? PERFILES[req].label : 'Ninguno alcanza']]
-            .map(([n,v])=>`
-            <div class="alloc-item">
-              <span></span>
-              <span class="alloc-name">${n}</span>
-              <span class="alloc-pct">${v}</span>
-            </div>`).join('')}
-        </div>
-      </div>
-      <p class="nota-riesgo">Peor año histórico de cada cartera, ${HIST.desde}–${HIST.hasta}: ${curvaModelo().pts.map(pt =>
-        PERFILES[pt.perfil].label + ' ' + (pt.peor*100).toFixed(1).replace('.', ',').replace('-', '−') + '% (' + pt.anioPeor + ')').join(' · ')}.
-        Volatilidad y peor año calculados con la serie de Damodaran (NYU Stern) de acciones, bonos del Tesoro y letras de EE. UU.</p>
-      <p class="veredicto ${holgura != null && holgura >= 0 ? 'ok' : 'alerta'}">${esc(veredicto)}</p>
-    </div>
-
     <div class="block-title">Detalle año a año</div>
     <div class="table-wrap">
       <table>
@@ -979,6 +1466,8 @@ function renderDetalle(c){
           <th>Gasto mensual</th><th>Portafolio inicial</th><th>Aportes / retiros</th>
           <th>Gasto % portafolio</th><th>Retorno</th><th>Resultado neto</th>
           ${p.traeFondos ? '<th>Ingreso extraordinario</th>' : ''}
+          ${p.traePension ? '<th>Pensión</th>' : ''}
+          ${p.traeMetas ? '<th>Metas</th>' : ''}
           <th>Portafolio nominal</th><th>Portafolio real</th>
         </tr></thead>
         <tbody>
@@ -992,16 +1481,22 @@ function renderDetalle(c){
             <td>${usd(f.retornoMonto)}</td>
             <td class="${f.resultadoNeto<0?'neg':''}">${usd(f.resultadoNeto)}</td>
             ${p.traeFondos ? `<td>${f.extraordinario ? usd(f.extraordinario) : '—'}</td>` : ''}
+            ${p.traePension ? `<td>${f.pension ? usd(f.pension) : '—'}</td>` : ''}
+            ${p.traeMetas ? `<td class="${f.metas<0?'neg':''}">${f.metas ? usd(f.metas) : '—'}</td>` : ''}
             <td class="${f.portafolioFinal<0?'neg':''}">${usd(f.portafolioFinal)}</td>
             <td class="${f.portafolioReal<0?'neg':''}">${usd(f.portafolioReal)}</td>
           </tr>`).join('')}
         </tbody>
       </table>
     </div>
+    </div>
   `;
   dibujarGrafico(p);
+  activarPaginas(p);
   dibujarMatriz(c.diag);
   dibujarFrontera(c, p, eq);
+  dibujarPastel('pastel-asig', asig);
+  dibujarPastel('pastel-eq', redondeoAsig(carteraEquilibrio(eq).asig));
   document.getElementById('btn-excel').onclick = ()=>exportarExcel(c, p, asig);
   document.getElementById('btn-pdf').onclick = ()=>exportarFicha(c, p, asig);
 }
@@ -1009,14 +1504,16 @@ function renderDetalle(c){
 // Curva de carteras modelo con el rendimiento de equilibrio y la cartera asignada.
 // Cada franja del eje X termina en la cartera que la cubre: un punto de equilibrio
 // que cae dentro de una franja exige, como mínimo, el perfil de esa franja.
-function dibujarFrontera(c, p, eq){
-  const cv = document.getElementById('frontera');
+function dibujarFrontera(c, p, eq, destino, escala){
+  const cv = destino || document.getElementById('frontera');
   if(!cv) return;
-  const dpr = window.devicePixelRatio || 1;
+  const dpr = escala || window.devicePixelRatio || 1;
   const W = 440, H = 330;
   cv.width = W*dpr; cv.height = H*dpr;
-  const g = cv.getContext('2d'); g.scale(dpr,dpr); g.clearRect(0,0,W,H);
-  const {pts, f, inversa} = curvaModelo();
+  const g = cv.getContext('2d'); g.scale(dpr,dpr);
+  g.fillStyle = '#FFFFFF'; g.fillRect(0,0,W,H);
+  const {pts, traza, carteraPara} = curvaModelo();
+  const ce = carteraEquilibrio(eq);                      // la misma cartera del pastel
 
   const padL=50, padR=18, padT=18, padB=62;
   const w = W-padL-padR, h = H-padT-padB;
@@ -1025,7 +1522,7 @@ function dibujarFrontera(c, p, eq){
   const X = x => padL + w*Math.max(0, Math.min(x, xMax))/xMax;
   const Y = y => padT + h - h*Math.max(0, Math.min(y, yMax))/yMax;
 
-  // franjas: separadores verticales y nombre del perfil bajo el eje, como el boceto
+  // franjas: separadores verticales y nombre del perfil bajo el eje
   let desde = 0;
   pts.forEach((pt, i) => {
     g.fillStyle = i % 2 ? '#F6F7F0' : '#FFFFFF';
@@ -1042,7 +1539,8 @@ function dibujarFrontera(c, p, eq){
   g.beginPath(); g.moveTo(padL, padT); g.lineTo(padL, padT + h); g.lineTo(padL + w, padT + h); g.stroke();
   g.font = '10px Satoshi, sans-serif'; g.fillStyle = '#666653';
   g.textAlign = 'right';
-  for(let v = 0; v <= yMax + 1e-9; v += 0.02) g.fillText(Math.round(v*100) + '%', padL - 7, Y(v) + 3.5);
+  const pasoY = yMax > 0.16 ? 0.04 : 0.02;
+  for(let v = 0; v <= yMax + 1e-9; v += pasoY) g.fillText(Math.round(v*100) + '%', padL - 7, Y(v) + 3.5);
   g.textAlign = 'center';
   for(let v = 0; v <= xMax + 1e-9; v += 0.05) g.fillText(Math.round(v*100) + '%', X(v), padT + h + 15);
   g.fillStyle = '#2B3014'; g.font = '11px Satoshi, sans-serif';
@@ -1052,10 +1550,7 @@ function dibujarFrontera(c, p, eq){
 
   // la curva de carteras modelo
   g.strokeStyle = '#2B3014'; g.lineWidth = 2; g.beginPath();
-  for(let i = 0; i <= 60; i++){
-    const x = pts[0].x + (pts[2].x - pts[0].x)*i/60;
-    i ? g.lineTo(X(x), Y(f(x))) : g.moveTo(X(x), Y(f(x)));
-  }
+  traza.forEach((q, i) => i ? g.lineTo(X(q.x), Y(q.y)) : g.moveTo(X(q.x), Y(q.y)));
   g.stroke();
   pts.forEach(pt => { g.beginPath(); g.arc(X(pt.x), Y(pt.y), 3.4, 0, Math.PI*2); g.fillStyle = '#2B3014'; g.fill(); });
 
@@ -1068,31 +1563,48 @@ function dibujarFrontera(c, p, eq){
     g.fillText('Cartera asignada', X(asignada.x) - 12, Y(asignada.y) - 10);
   }
 
-  // rendimiento de equilibrio: punto sobre la curva con guías a los dos ejes
-  if(eq.r == null || eq.estado === 'inalcanzable') return;
-  const color = eq.r > p.retorno + 1e-9 ? '#A2543A' : '#918042';
-  const ye = Y(eq.r);
-  const enCurva = eq.r >= pts[0].y && eq.r <= pts[2].y;
-  const xe = enCurva ? inversa(eq.r) : (eq.r < pts[0].y ? pts[0].x : xMax);
-  g.strokeStyle = color; g.lineWidth = 1.3; g.setLineDash([4,3]);
-  g.beginPath(); g.moveTo(padL, ye); g.lineTo(X(xe), ye);
-  if(enCurva){ g.lineTo(X(xe), padT + h); }
-  g.stroke(); g.setLineDash([]);
-  if(enCurva){
-    g.beginPath(); g.arc(X(xe), ye, 5, 0, Math.PI*2); g.fillStyle = color; g.fill();
-    g.strokeStyle = '#FFFFFF'; g.lineWidth = 1.5; g.stroke();
-    // Rótulo del punto, abajo a la derecha: así no choca con la guía punteada
-    // (que baja desde el punto) ni con el rótulo de la cartera asignada (que va arriba).
-    g.fillStyle = color; g.font = '600 10px Satoshi, sans-serif'; g.textAlign = 'left';
-    g.fillText('Cartera de equilibrio', X(xe) + 9, ye + 17);
+  // Rendimiento de equilibrio y cartera de equilibrio. La cartera es siempre la del
+  // pastel: sobre la curva si el equilibrio está entre la conservadora y la agresiva;
+  // la conservadora si el equilibrio queda por debajo; la agresiva (máximo disponible)
+  // si queda por encima o es inalcanzable.
+  const inalc = eq.r == null || eq.estado === 'inalcanzable';
+  const color = (inalc || eq.r > p.retorno + 1e-9) ? '#A2543A' : '#918042';
+  const xe = ce.x, yeC = ce.rendimiento;                 // posición de la cartera de equilibrio
+  if(!inalc){
+    const ye = Y(eq.r);
+    g.strokeStyle = color; g.lineWidth = 1.3; g.setLineDash([4,3]);
+    g.beginPath(); g.moveTo(padL, ye);
+    if(ce.alcanzable && Math.abs(yeC - eq.r) < 1e-9){ g.lineTo(X(xe), ye); g.lineTo(X(xe), padT + h); }
+    else if(ce.alcanzable){ g.lineTo(X(xe), ye); g.lineTo(X(xe), Y(yeC)); }   // equilibrio bajo la conservadora
+    else { g.lineTo(padL + w, ye); }                                          // equilibrio sobre la agresiva
+    g.stroke(); g.setLineDash([]);
+    const txt = (eq.r*100).toFixed(1) + '%';
+    g.font = '600 10.5px Satoshi, sans-serif';
+    const anchoTxt = g.measureText(txt).width + 8;
+    g.fillStyle = color; g.fillRect(padL - anchoTxt - 2, ye - 8, anchoTxt, 16);
+    g.fillStyle = '#FFFFFF'; g.textAlign = 'center';
+    g.fillText(txt, padL - 2 - anchoTxt/2, ye + 3.8);
+    if(!ce.alcanzable){
+      g.fillStyle = color; g.font = '10px Satoshi, sans-serif'; g.textAlign = 'right';
+      g.fillText('Fuera del alcance de las carteras modelo', padL + w - 4, ye - 6);
+    }
+  } else {
+    g.fillStyle = color; g.font = '10px Satoshi, sans-serif'; g.textAlign = 'right';
+    g.fillText('Equilibrio superior a 30%: fuera del alcance de las carteras modelo', padL + w - 4, padT + 12);
   }
-  // el valor sobre el eje Y, como en el boceto
-  const txt = (eq.r*100).toFixed(1).replace('.', ',') + '%';
-  g.font = '600 10.5px Satoshi, sans-serif';
-  const anchoTxt = g.measureText(txt).width + 8;
-  g.fillStyle = color; g.fillRect(padL - anchoTxt - 2, ye - 8, anchoTxt, 16);
-  g.fillStyle = '#FFFFFF'; g.textAlign = 'center';
-  g.fillText(txt, padL - 2 - anchoTxt/2, ye + 3.8);
+  // punto de la cartera de equilibrio
+  g.beginPath(); g.arc(X(xe), Y(yeC), 5, 0, Math.PI*2); g.fillStyle = color; g.fill();
+  g.strokeStyle = '#FFFFFF'; g.lineWidth = 1.5; g.stroke();
+  g.fillStyle = color; g.font = '600 10px Satoshi, sans-serif';
+  // Rótulo abajo del punto: a la derecha si cabe; si no, alineado a la derecha.
+  // Cuando no es alcanzable el punto es la agresiva y el rótulo va en dos líneas
+  // para no tocar el de la cartera asignada.
+  const lineas = ce.alcanzable ? ['Cartera de equilibrio'] : ['Cartera de equilibrio', '(máximo disponible)'];
+  const anchoRot = Math.max(...lineas.map(t => g.measureText(t).width));
+  const izq = X(xe) + 9 + anchoRot <= W - 2;
+  g.textAlign = izq ? 'left' : 'right';
+  const bajo = ce.alcanzable ? 17 : 30;            // más abajo cuando el rótulo queda bajo la curva
+  lineas.forEach((t, i) => g.fillText(t, izq ? X(xe) + 9 : X(xe) + 4, Y(yeC) + bajo + i*12));
 }
 
 // Matriz de posición: tolerancia (eje X) contra apetito (eje Y).
@@ -1118,6 +1630,45 @@ const ICONO_YOUTUBE = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAY
 const ISOTIPO_B64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGEAAAB4CAYAAADi35zwAAAHdElEQVR4nO2dbahlVRnHf88+Z5pJppdBRkyU8FMgpEQgWBoIFSmVMyUVIZSQQVQQiIkoBn0wqYGkoJcPYX6QikijjJpe8ENCkQ6EaZB9CinERmMoxhnvueffh/Wse86de869+87ste7ed54fbM7bPvtl/dd61trPs15gAEga+esNkp6X9B8lvjf/+7mewzc712Ntl3HtE54lOWHeCFwKTDo/gdlqfi/JzExdn2MZTY2TSOrqPKuAgGkXB5srYbdLeljSYUkHawoAhUXIN2lmnSQaqUR0aS7ysS4DPg48Ajwr6YPQjZlrQxERsl3NRVzSW2rd0FnyKsnEnQQOApf791XqhyIi5OIs6f2SngB+gJuQnaj4WmCk+nFEMnev1jx5pxXzXAIfBH4MvMs/H6ttZ8+Brk3elnRdEnKr4iKSAKu+BZtQqmKekIp0QyriwSaUEsGIxG9NleeEYHNChIJIatq0BkOEgpjZ1My0lRAhQiG8FHxI0siFWJrWIUIBJDXuqrkbeEzSBWY2XSZEiFCW48D7gF9JusiF2GCaQoSyjEkPq9cBv5V0ADa6bkKE8oxIQrwVeJN7FJaL0LZJFWybhpmndgNrDjyPJnXl9w820rDAMSjJGn/TeDPqckkH84+VL/K8xMzU5OaUpIuBR0lxXKjszj3fkGS+vaEBzKNePwKuAv67s5d33tB4JX2k8RDkV0j+/5cYTg+MITMys1VJ7wE+1Ui6BbiDFH4MAeogSXuBByDV2Pf6D/HMUAkzmwBfBK4AJmM66sMTtCL38LsCuIuU9qPI/XWZemX8HeC1pJ4dFiLUYwwcl3QrcC3JlTGCqAdqYaSm/9XA10hmaO05LFpDdchOu28CF859BkKEWkyB/b5t7kUNirNBAAgRarPQHxci9IAQoQeECD0gROgBIUIPCBF6QIjQA0KEHhAi9IAQoQeECD0gROgBIUIPCBF6QIjQA0KElpTsIB0itGCu13qRAfIhwhZIGnuv9TuBd/h3naZbiLA5YzObSPoEcD+zyVI6NU0hwhLcBJ2SdAh4kBSk73zuPQgRlpFN0M2keZtyZ60i6RUiLOZFSdcAP2Q2G1gxovPXenKmPARcTxJgSuHMGiKsJ1e4H/VXkQQoOnwgzNFipizpLVeCKAmLqZo5oyT0gBChB4QIPSBE6AEhQg8IEXpAiNADQoQesCtFGNpcTbvqidkTf3AzmO2akpDjwB4H2LfT17MddosI45z7JX0duNXfD6KkD10E82mQT0u6TNLPgC8wsGUDhi7CxGfQOgz8EfgAKRgfdUJFXifpPtLSXJcAp0ilIFpHFcjm5iOkjJRjwIO8n6GXhIZkfqqvCNUlQxcBBlYJL2I3iDB4QoQeECL0gBChB+yoCEPzdpZiR9rV3r9fA1oUtShVS4InfjO3/tilNc/fV2qJYHmdBvf1XC3pKHAfDMfbWYpaIqy4n/+dkn4C/AF4L4W7nA+F0jkwV7wXS/oFcKN/nhACrFHDDAh4s28wG/c1eHdDV9QyRyIlvojE30CtCjEWyd6EViUhHqrKMmZ5BZlXncIXPwoKMWY2OjHn9pEHz9cS3sXQ0PrzDIUGOMn6qNTL/kB1QNKNkr4L/AbYB2GaCqAx8HngKCmRDfi0pLeRhpBe4ju+QLTrS2FjM/u9pNuBb5EW2zkyt0OeRuBk9Uvb/eQqYNL4LCbfJs3fsAc4zazvTkOqNyLu0C1i1jfqtgZYde/mZ4AngL3MBlEHZcgrS33JzL6fF+HEzE4DHwaeY7asedA9K6T0fdDMvixp3AC4h3NkZi+SuhL+k9my5kF3rJBM/s9JDaARsLpmcrxZOjKz54CbgOP+h2gVdcOElJ6/Bj6G17tmtn4aMRdibGbHgBuAf+M1eOUL3m1MSCboKHDIzE6SBrMIFlS+Pt3Y2MyeIgVeXgAOMLCezj0he4/3Ar8kCfBKjjLmnRa2gOaE+DPwbuBJ0jNEsD2y6/4h4Cafzq050/2ztBnqQjRm9ixwGHjFv486ogXu3tkPfMPMPmlmK5IWjqfbNJ7grabGzE6VutjdSE434HNmdiz725Zl4C2DOn5AixKwPTzHH2uTdq2eikOAsyOPKN1qv3BNFKRt/CVE6AGlRJjvXRFsQSkRxsBrmD1tD12MKQX9aF2LIG+OPQ88zMxhZQxvfHEuzavMYvFF6FQEn1tCZnbCzG4B3k6K2L1Euok83HVCPwXJwZYJs75SI+DvwJ3AM57JOr32YhWzN8/+YmafBa4E7gCeJt3cPtaPP95p5hM+RxNPA48BNwNXmtlXzex/OaN1efJiPfDmnhrNzP4FHJH0AHAdKXh0uOT5t8kFpGtZAf4E/BR4xMz+lnc4sxtQlxRNhLmZVwwYmdkEeBx4XNLdwIW+a9uby+Zi2STimtvaHg/gKeAe4FEz++vaj56JSH7/YhVzlZzoxXfiYuRo3gngxNzvbdjj/19mRvf4a6v7yglrZg/Nf++DVqa1OrtVNQee2Kuw7Vm6skj/AH5Him/sB15PagrnknGCZFKOn/G/zQ/uw7jwhPcSW43/A3wc6BkqKlDmAAAAAElFTkSuQmCC';
 
 const EST = {bold:1, tc:2, titulo:3, pct:4, encab:5, seccion:6, pct0:7, dec2:8, ent:9, num:10};
+
+// Gráfico de pastel de una cartera (renta variable, renta fija, efectivo)
+const COLOR_CLASE = {rv:'#2B3014', rf:'#918042', ef:'#B3BC80'};
+function dibujarPastel(id, a){
+  const cv = document.getElementById(id);
+  if(!cv) return;
+  const dpr = window.devicePixelRatio || 1, W = 200, H = 200;
+  cv.width = W*dpr; cv.height = H*dpr;
+  const g = cv.getContext('2d'); g.scale(dpr,dpr); g.clearRect(0,0,W,H);
+  let ang = -Math.PI/2; const cx = W/2, cy = H/2, R = 92;
+  ['rv','rf','ef'].forEach(k => {
+    const v = (a[k]||0)/100; if(v <= 0) return;
+    g.beginPath(); g.moveTo(cx,cy); g.arc(cx,cy,R,ang,ang+v*Math.PI*2); g.closePath();
+    g.fillStyle = COLOR_CLASE[k]; g.fill(); g.strokeStyle='#FFFFFF'; g.lineWidth=2; g.stroke();
+    ang += v*Math.PI*2;
+  });
+}
+function pastelesHTML(c, p, eq){
+  const asig = (supuestos.asignacion || ALLOC_SCHWAB)[c.perfil];
+  const ce = carteraEquilibrio(eq), ae = redondeoAsig(ce.asig);
+  const fila = (n, k, a) => `<div class="alloc-item"><span class="alloc-dot" style="background:${COLOR_CLASE[k]}"></span>
+      <span class="alloc-name">${n}</span><span class="alloc-pct">${fmtPeso(a[k])}%</span></div>`;
+  const bloque = (titulo, sub, id, a) => `<div class="pastel-col"><h3 class="pastel-tit">${titulo}</h3><p class="pastel-sub">${sub}</p>
+      <canvas id="${id}" style="width:200px;height:200px;"></canvas>
+      <div class="alloc-legend">${fila('Renta variable','rv',a)}${fila('Renta fija','rf',a)}${fila('Efectivo','ef',a)}</div></div>`;
+  const pct1 = v => (v*100).toFixed(1) + '%';
+  const subEq = ce.alcanzable
+    ? `Rinde ${pct1(ce.rendimiento)} · volatilidad ${pct1(ce.x)} · peor año ${(ce.peor*100).toFixed(1).replace('-','−')}% (${ce.anioPeor})`
+    : `Rinde ${pct1(ce.rendimiento)}, por debajo del equilibrio`;
+  return `<div class="donut-card">
+      <h2 class="section-title" style="font-size:16px;">Cartera asignada y cartera de equilibrio</h2>
+      <p class="section-sub" style="margin-bottom:18px;">La cartera de equilibrio es la combinación de carteras modelo vecinas que rinde exactamente el rendimiento de equilibrio, con el menor riesgo posible.</p>
+      <div class="pasteles">
+        ${bloque('Cartera asignada · ' + PERFILES[c.perfil].label, `Rinde ${pct1(p.retorno)} · volatilidad ${pct1(estadisticaCartera(asig).vol)}`, 'pastel-asig', asig)}
+        ${bloque('Cartera de equilibrio', subEq, 'pastel-eq', ae)}
+      </div>
+      ${ce.nota ? `<p class="nota-riesgo">${esc(ce.nota)}</p>` : ''}
+    </div>`;
+}
 
 function dibujarMatriz(d){
   const cv = document.getElementById('matriz');
@@ -1184,30 +1735,50 @@ function dibujarMatriz(d){
   g.strokeStyle='#FFFFFF'; g.lineWidth=2; g.stroke();
 }
 
-function dibujarGrafico(p){
-  const cv = document.getElementById('chart');
-  const dpr = window.devicePixelRatio || 1;
-  const W = cv.clientWidth || 700, H = 300;
+function escalaRedonda(min, max, objetivo){
+  const bruto = (max - min) / objetivo || 1;
+  const pot = Math.pow(10, Math.floor(Math.log10(bruto)));
+  const paso = [1, 2, 2.5, 5, 10].map(m => m*pot).find(x => x >= bruto);
+  const lo = Math.floor(min/paso)*paso, hi = Math.ceil(max/paso)*paso;
+  const marcas = [];
+  for(let v = lo; v <= hi + paso/2; v += paso) marcas.push(Math.abs(v) < paso/1e6 ? 0 : v);
+  return {min: lo, max: hi, marcas};
+}
+
+function dibujarGrafico(p, destino, escala, anchoPx){
+  const cv = destino || document.getElementById('chart');
+  const dpr = escala || window.devicePixelRatio || 1;
+  const W = destino ? (anchoPx || 700) : (cv.clientWidth || 700), H = 300;
   cv.width = W*dpr; cv.height = H*dpr;
   const x2 = cv.getContext('2d'); x2.scale(dpr,dpr); x2.clearRect(0,0,W,H);
 
-  const padL=78, padR=14, padT=14, padB=28;
+  x2.font = '10.5px Satoshi, sans-serif';
+  const vals0 = p.filas.flatMap(f=>[f.portafolioFinal, f.portafolioReal]);
+  const ej0 = escalaRedonda(Math.min(...vals0, 0), Math.max(...vals0, 0), 4);
+  const padL = Math.max(78, Math.ceil(Math.max(...ej0.marcas.map(v => x2.measureText(usd(v)).width))) + 14);
+  const padR=14, padT=14, padB=28;
   const w = W-padL-padR, h = H-padT-padB;
-  const vals = p.filas.flatMap(f=>[f.portafolioFinal, f.portafolioReal]);
-  const maxV = Math.max(...vals, 0), minV = Math.min(...vals, 0);
+  const vals = p.filas.flatMap(f=>[f.portafolioFinal, f.portafolioReal].concat(p.institucional ? [f.metaReal] : []));
+  // Marcas del eje en cifras redondas (1, 2, 2.5 o 5 por potencia de diez)
+  const ejes = escalaRedonda(Math.min(...vals, 0), Math.max(...vals, 0), 4);
+  const maxV = ejes.max, minV = ejes.min;
   const n = p.filas.length;
   const X = i => padL + w*i/Math.max(1,n-1);
   const Y = v => padT + h - h*(v-minV)/((maxV-minV)||1);
 
   // fondo por fase
-  const corte = X(Math.max(0, p.aniosAcum-1));
-  x2.fillStyle = '#EDF0E6'; x2.fillRect(padL, padT, corte-padL, h);
-  x2.fillStyle = '#F7EFE4'; x2.fillRect(corte, padT, padL+w-corte, h);
+  if(p.institucional){
+    x2.fillStyle = '#F4F5EE'; x2.fillRect(padL, padT, w, h);
+  }else{
+    const corte = X(Math.max(0, p.aniosAcum-1));
+    x2.fillStyle = '#EDF0E6'; x2.fillRect(padL, padT, corte-padL, h);
+    x2.fillStyle = '#F7EFE4'; x2.fillRect(corte, padT, padL+w-corte, h);
+  }
 
   // cuadrícula y eje Y
   x2.font = '10.5px Satoshi, sans-serif'; x2.textAlign = 'right';
-  for(let g=0; g<=4; g++){
-    const v = minV + (maxV-minV)*g/4, yy = Y(v);
+  for(const v of ejes.marcas){
+    const yy = Y(v);
     x2.strokeStyle = '#C6CCB4'; x2.globalAlpha=.55;
     x2.beginPath(); x2.moveTo(padL,yy); x2.lineTo(padL+w,yy); x2.stroke(); x2.globalAlpha=1;
     x2.fillStyle = '#666653'; x2.fillText(usd(v), padL-8, yy+3.5);
@@ -1225,6 +1796,9 @@ function dibujarGrafico(p){
     p.filas.forEach((f,i)=>{ const xx=X(i), yy=Y(f[key]); i? x2.lineTo(xx,yy) : x2.moveTo(xx,yy); });
     x2.strokeStyle=color; x2.lineWidth=ancho; x2.stroke();
   }
+  if(p.institucional && p.minimo > 0){
+    x2.setLineDash([6,4]); linea('metaReal', '#A2543A', 1.4); x2.setLineDash([]);
+  }
   linea('portafolioReal', '#918042', 1.6);
   linea('portafolioFinal', '#2B3014', 2.2);
 
@@ -1241,7 +1815,7 @@ function dibujarGrafico(p){
 }
 
 function xEsc(s){
-  return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;')
+  return String(s==null?'':s).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\uFFFE\uFFFF]/g,' ').replace(/&/g,'&amp;').replace(/</g,'&lt;')
     .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 function celda(ref, v, s, formula){
@@ -1256,7 +1830,7 @@ function hoja(cuerpo, extras){
     + `<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" `
     + `xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">`
     + (extras.vistas||'') + (extras.cols||'')
-    + `<sheetData>${cuerpo}</sheetData>`
+    + `<sheetData>${cuerpo}</sheetData>` + (extras.combinadas||'')
     + `<pageMargins left="0.5" right="0.5" top="0.75" bottom="0.75" header="0.3" footer="0.3"/>`
     + (extras.drawing||'') + `</worksheet>`;
 }
@@ -1290,7 +1864,14 @@ function xmlCliente(c, p, asig, sup){
     + celda('B'+n,'Dato numérico',EST.encab) + celda('C'+n,'Dato cualitativo',EST.encab) + `</row>`;
 
   sec('Identificación');
-  Ftxt('Nombre', c.nombre); Ftxt('Correo electrónico', c.correo); Ftxt('Teléfono', c.telefono);
+  const idn = c.identificacion || {};
+  Ftxt('Nombre', c.nombre);
+  if(idn.cedula) Ftxt('Cédula', idn.cedula);
+  if(idn.fechaNacimiento) Ftxt('Fecha de nacimiento', idn.fechaNacimiento);
+  if(idn.ocupacion) Ftxt('Ocupación', idn.ocupacion);
+  if(idn.estadoCivil) Ftxt('Estado civil', ({soltero:'Soltero(a)',casado:'Casado(a)',union:'Unión libre',divorciado:'Divorciado(a) o separado(a)',viudo:'Viudo(a)'})[idn.estadoCivil] || idn.estadoCivil);
+  Ftxt('Correo electrónico', c.correo); Ftxt('Teléfono', c.telefono);
+  if(c.direccion) Ftxt('Dirección', c.direccion);
   Fnum('Edad actual', c.edad, EST.ent); Fnum('Edad de retiro', c.edadRetiro, EST.ent);
 
   sec('Perfil de riesgo');
@@ -1332,17 +1913,57 @@ function xmlCliente(c, p, asig, sup){
       })[leg.destino] || '—');
   Fnum('Herencia deseada (US$ de hoy)', leg.montoUsdHoy, EST.num);
 
+  // Variables que alimentan la proyección cuando el cliente las declara
+  sec('Retiro, pensión y metas');
+  Ftxt('Gasto esperado en el retiro', ({menor:'Menor que el actual', igual:'Similar al actual', mayor:'Mayor que el actual'})[(c.ingresos||{}).gastoEnRetiro] || '—');
+  Fnum('Gasto retirado cada año en la jubilación (% del gasto)', p.factorGasto, EST.pct0);
+  const pn = c.pension || {};
+  Ftxt('Régimen de pensión', ({ivm:'IVM de la CCSS', otro:'Otro régimen', ninguno:'No cotiza'})[pn.regimen] || '—');
+  if(pn.montoMensual != null){ n++; filas += `<row r="${n}">` + celda('A'+n,'Pensión mensual estimada (valor de hoy)',EST.bold) + celda('B'+n,pn.montoMensual,EST.num) + celda('C'+n,pn.moneda) + `</row>`; }
+  (c.metas || []).forEach((m,k) => { n++; filas += `<row r="${n}">` + celda('A'+n,'Meta ' + (k+1) + ' (US$ de hoy)',EST.bold) + celda('B'+n,+m.montoUsdHoy,EST.num)
+    + celda('C'+n, (({educacion:'Educación',vivienda:'Vivienda o propiedad',vehiculo:'Vehículo',viaje:'Viaje',negocio:'Negocio o emprendimiento',otra:'Otra'})[m.tipo]||m.tipo) + ' · año ' + m.anio + ' · ' + (m.prioridad === 'esencial' ? 'esencial' : 'deseable')) + `</row>`; });
+
+  // Información patrimonial declarada: describe al cliente; no entra en la proyección
+  sec('Hogar, patrimonio y protección');
+  const hg = c.hogar || {}, pt = c.patrimonio || {}, pr = c.proteccion || {}, ig = c.ingresos || {};
+  if(hg.planificacion) Ftxt('Tipo de planificación', hg.planificacion === 'conjunta' ? 'Conjunta con la pareja' : 'Individual');
+  if(hg.edadPareja) Fnum('Edad de la pareja', hg.edadPareja, EST.ent);
+  if(ig.ingresoPareja){ n++; filas += `<row r="${n}">` + celda('A'+n,'Ingreso mensual de la pareja',EST.bold) + celda('B'+n,ig.ingresoPareja.monto,EST.num) + celda('C'+n,ig.ingresoPareja.moneda) + `</row>`; }
+  if(hg.hijos) Ftxt('Hijos', hg.hijos.length ? hg.hijos.length + ' (edades: ' + hg.hijos.join(', ') + ')' : 'No tiene');
+  if(hg.otrosDependientes){ n++; filas += `<row r="${n}">` + celda('A'+n,'Otros dependientes',EST.bold) + celda('B'+n,hg.otrosDependientes.cantidad,EST.ent)
+    + celda('C'+n, hg.otrosDependientes.aporteMensual != null ? 'Aporte mensual ' + fmt(hg.otrosDependientes.aporteMensual) + ' ' + hg.otrosDependientes.moneda : '') + `</row>`; }
+  if(ig.fuentePrincipal) Ftxt('Fuente principal del ingreso', ({salario:'Salario',empresa:'Empresa propia',honorarios:'Honorarios profesionales',rentas:'Rentas'})[ig.fuentePrincipal] || ig.fuentePrincipal);
+  if(pt.vivienda) Ftxt('Vivienda principal', ({propia:'Propia, sin deuda',hipoteca:'Propia, con hipoteca',alquilada:'Alquilada'})[pt.vivienda.situacion] || '—');
+  if(pt.vivienda && pt.vivienda.hipoteca){ const h = pt.vivienda.hipoteca;
+    n++; filas += `<row r="${n}">` + celda('A'+n,'Saldo de la hipoteca',EST.bold) + celda('B'+n,h.saldo,EST.num) + celda('C'+n,h.saldoMoneda) + `</row>`;
+    n++; filas += `<row r="${n}">` + celda('A'+n,'Cuota mensual de la hipoteca',EST.bold) + celda('B'+n,h.cuotaMensual,EST.num) + celda('C'+n,h.cuotaMoneda) + `</row>`; }
+  if(pt.inmuebles) (pt.inmuebles.lista || []).forEach((im,k) => { n++; filas += `<row r="${n}">` + celda('A'+n,'Inmueble de inversión ' + (k+1) + ' (valor)',EST.bold)
+    + celda('B'+n,im.valor,EST.num) + celda('C'+n,'Renta neta ' + fmt(im.rentaMensualNeta) + ' · deuda ' + fmt(im.saldoDeuda) + ' · ' + pt.inmuebles.moneda) + `</row>`; });
+  if(pt.empresa) Ftxt('Empresa propia', pt.empresa.propietario ? (({vender:'Prevé venderla',traspasar:'Prevé traspasarla',mantener:'No prevé venderla ni traspasarla'})[pt.empresa.plan] || 'Sí')
+    + (pt.empresa.aniosHastaEvento != null ? ' en ' + pt.empresa.aniosHastaEvento + ' años' : '') : 'No');
+  if(pt.deudas){ n++; filas += `<row r="${n}">` + celda('A'+n,'Deudas: saldo total',EST.bold) + celda('B'+n,pt.deudas.saldo,EST.num) + celda('C'+n,pt.deudas.saldoMoneda) + `</row>`;
+    n++; filas += `<row r="${n}">` + celda('A'+n,'Deudas: cuota mensual',EST.bold) + celda('B'+n,pt.deudas.cuotaMensual,EST.num) + celda('C'+n,pt.deudas.cuotaMoneda) + `</row>`; }
+  if(pt.reservaLiquidez) Ftxt('Reserva de liquidez', ({ninguna:'No mantiene',menos3:'Menos de 3 meses',['3a6']:'Entre 3 y 6 meses',['6a12']:'Entre 6 y 12 meses',mas12:'Más de 12 meses'})[pt.reservaLiquidez] || '—');
+  if(pr.seguros) Ftxt('Seguros vigentes', pr.seguros.length ? pr.seguros.map(x => ({vida:'Vida',gastosMedicos:'Gastos médicos',invalidez:'Invalidez'})[x] || x).join(', ') : 'Ninguno');
+  if(pr.vidaSumaAsegurada){ n++; filas += `<row r="${n}">` + celda('A'+n,'Suma asegurada de vida',EST.bold) + celda('B'+n,pr.vidaSumaAsegurada.monto,EST.num) + celda('C'+n,pr.vidaSumaAsegurada.moneda) + `</row>`; }
+
   sec('Datos financieros declarados');
   [['Salario mensual',c.salarioMonto,c.salarioMoneda],['Gasto familiar mensual',c.gastoMonto,c.gastoMoneda],
    ['Capital inicial invertido',c.capitalMonto,c.capitalMoneda],['Aporte anual estimado',c.aporteMonto,c.aporteMoneda]]
    .forEach(([t,v,m])=>{ n++; filas += `<row r="${n}">` + celda('A'+n,t,EST.bold)
      + celda('B'+n,v,EST.num) + celda('C'+n,m) + `</row>`; });
-  Ftxt('Metas adicionales', c.comentarios);
+  Ftxt('Comentarios del cliente', c.comentarios);
 
-  sec('Composición sugerida del portafolio');
+  sec('Cartera asignada y cartera de equilibrio');
+  const ceX = carteraEquilibrio(eqX), aeX = redondeoAsig(ceX.asig);
+  n++; filas += `<row r="${n}">` + celda('A'+n,'Clase de activo',EST.encab) + celda('B'+n,'Cartera asignada',EST.encab)
+    + celda('C'+n,'Cartera de equilibrio',EST.encab) + `</row>`;
   [['Renta variable','rv'],['Renta fija','rf'],['Efectivo','ef']].forEach(([t,k])=>{
-    Fnum(t, (asig[k]||0)/100, EST.pct0);
+    n++; filas += `<row r="${n}">` + celda('A'+n, t, EST.bold) + celda('B'+n, (asig[k]||0)/100, EST.pct) + celda('C'+n, (aeX[k]||0)/100, EST.pct) + `</row>`;
   });
+  Fnum('Rendimiento de la cartera de equilibrio', ceX.rendimiento, EST.pct);
+  Fnum('Volatilidad anual de la cartera de equilibrio', ceX.x, EST.pct);
+  if(ceX.nota) Ftxt('Nota', ceX.nota);
 
   sec('Supuestos aplicados');
   Fnum('Tipo de cambio ₡/US$', sup.tipoCambio, EST.tc);
@@ -1351,6 +1972,8 @@ function xmlCliente(c, p, asig, sup){
    ['Ajuste anual de alquileres',sup.ajusteAlquileres]].forEach(([t,v])=>Fnum(t, v/100, EST.pct));
   Fnum('Año de inicio', sup.anioInicio, EST.ent);
   Fnum('Edad final de la proyección', sup.edadFinal, EST.ent);
+  Fnum('Gasto en el retiro si lo prevé menor', (sup.factorGastoMenor ?? 80)/100, EST.pct0);
+  Fnum('Gasto en el retiro si lo prevé mayor', (sup.factorGastoMayor ?? 110)/100, EST.pct0);
 
   sec('Resultados de la proyección');
   Fnum('Portafolio máximo proyectado', Math.round(p.maxNominal), EST.num);
@@ -1374,40 +1997,61 @@ function xmlProyeccion(c, p, sup){
   const aporUsd = aUsd(c.aporteMonto,  c.aporteMoneda,  tc);
   const F0 = 9, nF = p.filas.length, filaRetiro = F0 + p.aniosAcum;
 
+  // Columnas adicionales al machote, solo si el cliente las necesita:
+  //   ROP/FCL (ingreso puntual) · Pensión (ingreso anual en el retiro) · Metas (salidas puntuales)
+  const LETRAS = ['S','T','U'];
+  const extras = [];
+  if(p.traeFondos)  extras.push({k:'fondos',  t:'Ingreso extraordinario (ROP y FCL)'});
+  if(p.traePension) extras.push({k:'pension', t:'Pensión anual'});
+  if(p.traeMetas)   extras.push({k:'metas',   t:'Metas (salidas)'});
+  extras.forEach((e,k) => e.col = LETRAS[k]);
+  const colDe = k => (extras.find(e => e.k === k) || {}).col;
+  const conFactor = Math.abs(p.factorGasto - 1) > 1e-9;
+  const metasTab = p.metas.slice(0, 8);
+  const COLS_METAS = ['N','O','P','Q','R','S','T','U'];
+
   let x = '';
-  // supuestos C1:D6
+  // supuestos C1:D6 (bloque del machote)
   const sups = [['Tipo de Cambio', tc, EST.tc], ['Inflación Ingresos', sup.inflacionIngresos/100, EST.pct],
     ['Inflación', sup.inflacion/100, EST.pct], ['Inflación Pensión', sup.inflacionPension/100, EST.pct],
     ['Inflación Salud', sup.inflacionSalud/100, EST.pct], ['Ajuste Anual Alquileres', sup.ajusteAlquileres/100, EST.pct]];
-  // Insumos de ROP y FCL, solo si el cliente los trae. La columna S se calcula
-  // con fórmula a partir de estas celdas: si alguien cambia la inflación, el saldo
-  // o el año de ingreso dentro del Excel, toda la proyección se recalcula sola.
+  // G1:H4 ROP y FCL · K1:L2 pensión y factor de gasto · M1:U2 metas (año y monto)
   const insumosFondos = p.traeFondos ? [
-    ['Saldo FCL (US$ de hoy)', p.montoFcl, EST.num],
-    ['Año de ingreso del FCL', p.anioFcl, EST.ent],
-    ['Saldo ROP (US$ de hoy)', p.montoRop, EST.num],
-    ['Año de ingreso del ROP', p.anioRop, EST.ent]
-  ] : [];
-  sups.forEach((s,i)=>{ const r=i+1, f = insumosFondos[i];
-    x += `<row r="${r}">` + celda('C'+r, s[0], EST.bold) + celda('D'+r, s[1], s[2])
+    ['Saldo FCL (US$ de hoy)', p.montoFcl, EST.num], ['Año de ingreso del FCL', p.anioFcl, EST.ent],
+    ['Saldo ROP (US$ de hoy)', p.montoRop, EST.num], ['Año de ingreso del ROP', p.anioRop, EST.ent]] : [];
+  const insumosRetiro = [];
+  insumosRetiro[0] = p.traePension ? ['Pensión mensual (US$ de hoy)', p.pensionMensual, EST.num] : null;
+  insumosRetiro[1] = conFactor ? ['Gasto en el retiro (% del gasto)', p.factorGasto, EST.pct0] : null;
+  sups.forEach((sv,i)=>{ const r=i+1, f = insumosFondos[i], g = insumosRetiro[i];
+    let fila = celda('C'+r, sv[0], EST.bold) + celda('D'+r, sv[1], sv[2])
        + (f ? celda('G'+r, f[0], EST.bold) + celda('H'+r, f[1], f[2]) : '')
-       + `</row>`; });
+       + (g ? celda('K'+r, g[0], EST.bold) + celda('L'+r, g[1], g[2]) : '');
+    if(p.traeMetas && r <= 2){
+      fila += celda('M'+r, r === 1 ? 'Año de la meta' : 'Monto de la meta (US$ de hoy)', EST.bold)
+        + metasTab.map((m,k) => celda(COLS_METAS[k]+r, r === 1 ? +m.anio : +m.montoUsdHoy, r === 1 ? EST.ent : EST.num)).join('');
+    }
+    x += `<row r="${r}">` + fila + `</row>`; });
 
-  // Columna S: el ingreso entra en el período indicado, ajustado por inflación
-  // desde dólares de hoy — exactamente la misma regla del motor.
-  const formulaS = r => `IF(D${r}=$H$2,$H$1*(1+$D$3)^(D${r}-1),0)+IF(D${r}=$H$4,$H$3*(1+$D$3)^(D${r}-1),0)`;
+  // Fórmulas de las columnas adicionales
+  const ultMeta = COLS_METAS[Math.max(0, metasTab.length - 1)];
+  const formula = {
+    fondos:  r => `IF(D${r}=$H$2,$H$1*(1+$D$3)^(D${r}-1),0)+IF(D${r}=$H$4,$H$3*(1+$D$3)^(D${r}-1),0)`,
+    pension: r => `IF(D${r}>${p.aniosAcum},$L$1*12*(1+$D$4)^(D${r}-1),0)`,
+    metas:   r => `-SUMIF($N$1:$${ultMeta}$1,B${r},$N$2:$${ultMeta}$2)*(1+$D$3)^(D${r}-1)`
+  };
+  const valor = {fondos: f => f.extraordinario, pension: f => f.pension, metas: f => f.metas};
+  const sumaQ = r => `+K${r}+P${r}` + extras.map(e => `+${e.col}${r}`).join('');
+  const celdasExtra = (r, f) => extras.map(e => celda(e.col + r, Math.round(valor[e.k](f)), EST.num, formula[e.k](r))).join('');
+  const retiro = r => conFactor ? `-H${r}*$L$2` : `-H${r}`;
 
   x += `<row r="7">` + celda('E7','Ingresos en ₡',EST.seccion) + celda('G7','Gastos',EST.seccion)
      + celda('K7','Proyección Base',EST.seccion) + `</row>`;
-
   const cab = [['B','Periodo'],['C', c.nombre||'Edad'],['D','Año'],['E','Salario'],
     ['G','Gasto Familiar ₡'],['H','Gasto Familiar en $'],['I','Total Gasto Mensual'],
     ['K','Portafolio Inicial'],['L','Aportes/Retiros'],['M','Gasto % del Portafolio'],
     ['N','Retorno Total'],['O','Retorno Total $'],['P','Resultado Neto'],
-    ['Q','Portafolio Nominal Final $ (sin incluir inflación)'],['R','Portafolio en Términos Reales']];
-  // La columna S aparece únicamente cuando el cliente incorpora ROP o FCL. Sin ellos,
-  // la hoja queda idéntica a la del Excel original, fórmula por fórmula.
-  if(p.traeFondos) cab.push(['S','Ingreso extraordinario (ROP y FCL)']);
+    ['Q','Portafolio Nominal Final $ (sin incluir inflación)'],['R','Portafolio en Términos Reales']]
+    .concat(extras.map(e => [e.col, e.t]));
   x += `<row r="8" ht="34" customHeight="1">` + cab.map(([col,t])=>celda(col+'8', t, EST.encab)).join('') + `</row>`;
 
   const f0 = p.filas[0];
@@ -1417,19 +2061,17 @@ function xmlProyeccion(c, p, sup){
     + celda('G9', Math.round(gasUsd*12*tc), EST.num, `${gasUsd*12}*$D$1`)
     + celda('H9', Math.round(gasUsd*12), EST.num, 'G9/$D$1')
     + celda('I9', Math.round(gasUsd), EST.num, 'H9/12')
-    // Si la fila 1 ya es de retiro, L9 es el gasto negativo (igual que el motor),
-    // no el aporte; de lo contrario Excel recalcularía otra proyección al abrirlo.
     + celda('K9', capUsd, EST.num)
-    + (p.aniosAcum > 0 ? celda('L9', aporUsd, EST.num) : celda('L9', Math.round(f0.aporteRetiro), EST.num, '-H9'))
-    // Con capital inicial 0 la razón L/K no existe: se protege solo en ese caso,
-    // para no alterar la fórmula original en los casos normales.
+    // Si la fila 1 ya es de retiro, L9 es el retiro (gasto con su factor), no el aporte
+    + (p.aniosAcum > 0 ? celda('L9', aporUsd, EST.num) : celda('L9', Math.round(f0.aporteRetiro), EST.num, retiro(9)))
     + celda('M9', f0.gastoPct, EST.pct, capUsd ? 'L9/K9' : 'IF(K9=0,0,L9/K9)')
     + celda('N9', p.retorno, EST.pct)
     + celda('O9', Math.round(f0.retornoMonto), EST.num, '+K9*N9')
     + celda('P9', Math.round(f0.resultadoNeto), EST.num, '+O9+L9')
-    + celda('Q9', Math.round(f0.portafolioFinal), EST.num, p.traeFondos ? '+K9+P9+S9' : '+K9+P9')
-    + celda('R9', Math.round(f0.portafolioReal), EST.num, 'Q9-(Q9*$D$3)')
-    + (p.traeFondos ? celda('S9', f0.extraordinario, EST.num, formulaS(9)) : '')
+    + celda('Q9', Math.round(f0.portafolioFinal), EST.num, sumaQ(9))
+    // Valor real exacto también en el primer año (el machote usaba Q9−Q9×inflación)
+    + celda('R9', Math.round(f0.portafolioReal), EST.num, 'Q9/(1+$D$3)^D9')
+    + celdasExtra(9, f0)
     + `</row>`;
 
   for(let i=1;i<nF;i++){
@@ -1443,32 +2085,238 @@ function xmlProyeccion(c, p, sup){
       + celda('H'+r, Math.round(f.gastoAnual), EST.num, `+H${a}*(1+$D$3)`)
       + celda('I'+r, Math.round(f.gastoMensual), EST.num, `H${r}/12`)
       + celda('K'+r, Math.round(f.portafolioInicial), EST.num, `+Q${a}`)
-      + celda('L'+r, Math.round(f.aporteRetiro), EST.num, r>=filaRetiro ? `-H${r}` : `L${a}`)
+      + celda('L'+r, Math.round(f.aporteRetiro), EST.num, r>=filaRetiro ? retiro(r) : `L${a}`)
       + celda('M'+r, f.gastoPct, EST.pct, Math.round(f.portafolioInicial) ? `L${r}/K${r}` : `IF(K${r}=0,0,L${r}/K${r})`)
       + celda('N'+r, p.retorno, EST.pct, `+N${a}`)
       + celda('O'+r, Math.round(f.retornoMonto), EST.num, `+K${r}*N${r}`)
       + celda('P'+r, Math.round(f.resultadoNeto), EST.num, `+O${r}+L${r}`)
-      + celda('Q'+r, Math.round(f.portafolioFinal), EST.num, p.traeFondos ? `+K${r}+P${r}+S${r}` : `+K${r}+P${r}`)
+      + celda('Q'+r, Math.round(f.portafolioFinal), EST.num, sumaQ(r))
       + celda('R'+r, Math.round(f.portafolioReal), EST.num, `Q${r}/(1+$D$3)^D${r}`)
-      + (p.traeFondos ? celda('S'+r, f.extraordinario, EST.num, formulaS(r)) : '')
+      + celdasExtra(r, f)
       + `</row>`;
   }
-  const cols = p.traeFondos
-    ? COLS_PROY.replace('</cols>', '<col width="26" customWidth="1" min="19" max="19"/></cols>')
+  const cols = extras.length
+    ? COLS_PROY.replace('</cols>', extras.map((e,k)=>`<col width="24" customWidth="1" min="${19+k}" max="${19+k}"/>`).join('') + '</cols>')
     : COLS_PROY;
   return hoja(x, {cols, vistas: VISTA_PROY, drawing: DRAWING});
 }
 
 // ---------- Hoja Datos: alimenta el gráfico circular ----------
-function xmlDatos(asig){
-  let x = `<row r="1">` + celda('A1','Clase') + celda('B1','Peso') + `</row>`;
+async function colorEquilibrio(zip, p, eq){
+  const brecha = eq.r == null || eq.estado === 'inalcanzable' || eq.r > p.retorno + 1e-9;
+  if(!brecha) return;
+  const f = zip.file('xl/charts/chart6.xml'); if(!f) return;
+  zip.file('xl/charts/chart6.xml', (await f.async('string')).replace(/918042/g, 'A2543A'));
+}
+function xmlDatos(c, p, asig, eq){
+  // Hoja de datos que alimenta los gráficos nativos de la primera pestaña:
+  // A1:C4 pasteles · A6:C12 matriz de posición · E1:F82 curva de carteras modelo ·
+  // H1:J9 carteras modelo, cartera asignada, cartera de equilibrio y guía del equilibrio.
+  const ce = carteraEquilibrio(eq), asigEq = redondeoAsig(ce.asig);
+  const {pts, traza} = curvaModelo();
+  const filas = {};
+  const pon = (ref, v, s) => { const r = +ref.replace(/[A-Z]+/, ''); (filas[r] = filas[r] || []).push(celda(ref, v, s)); };
+  pon('A1','Clase'); pon('B1','Cartera asignada'); pon('C1','Cartera de equilibrio');
   [['Renta variable','rv'],['Renta fija','rf'],['Efectivo','ef']].forEach(([t,k],i)=>{
-    const r = i+2;
-    x += `<row r="${r}">` + celda('A'+r, t) + celda('B'+r, (asig[k]||0)/100, EST.pct0) + `</row>`;
+    const r = i+2; pon('A'+r, t); pon('B'+r, (asig[k]||0)/100, EST.pct); pon('C'+r, (asigEq[k]||0)/100, EST.pct);
   });
+  // matriz de posición (escala 0 a 10, cuadrantes divididos en 5)
+  const d = c.diag || {};
+  pon('A6','Matriz de posición'); pon('B6','Tolerancia'); pon('C6','Apetito');
+  pon('A7', c.nombre || 'Cliente');
+  if(d.tolerancia != null) pon('B7', +d.tolerancia.toFixed(2), EST.dec2);
+  if(d.apetito != null) pon('C7', +d.apetito.toFixed(2), EST.dec2);
+  [['Moderado',2.5,7.5],['Agresivo',7.5,7.5],['Conservador',2.5,2.5],['Moderado',7.5,2.5]].forEach(([t,x,y],i)=>{
+    const r = 9+i; pon('A'+r, t); pon('B'+r, x); pon('C'+r, y);
+  });
+  // curva de carteras modelo
+  pon('E1','Volatilidad'); pon('F1','Rendimiento');
+  traza.forEach((q,i)=>{ const r = i+2; pon('E'+r, +q.x.toFixed(6), EST.pct); pon('F'+r, +q.y.toFixed(6), EST.pct); });
+  pon('H1','Cartera'); pon('I1','Volatilidad'); pon('J1','Rendimiento');
+  pts.forEach((pt,i)=>{ const r = i+2; pon('H'+r, PERFILES[pt.perfil].label); pon('I'+r, +pt.x.toFixed(6), EST.pct); pon('J'+r, pt.y, EST.pct); });
+  const asg = pts.find(pt => pt.perfil === c.perfil) || pts[1];
+  pon('H5','Cartera asignada'); pon('I5', +asg.x.toFixed(6), EST.pct); pon('J5', asg.y, EST.pct);
+  pon('H6', ce.alcanzable ? 'Cartera de equilibrio' : 'Cartera de equilibrio (máximo disponible)');
+  pon('I6', +ce.x.toFixed(6), EST.pct); pon('J6', +ce.rendimiento.toFixed(6), EST.pct);
+  // guía del rendimiento de equilibrio: del eje Y a la cartera de equilibrio
+  pon('H7','Rendimiento de equilibrio');
+  const inalc = eq.r == null || eq.estado === 'inalcanzable';
+  if(!inalc){
+    const xMax = Math.ceil((pts[2].x + 0.01)*20)/20;
+    const guia = !ce.alcanzable ? [[0, eq.r], [xMax, eq.r]]
+               : [[0, eq.r], [ce.x, eq.r], [ce.x, Math.abs(ce.rendimiento - eq.r) < 1e-9 ? 0 : ce.rendimiento]];
+    guia.forEach(([x,y],i)=>{ const r = 7+i; pon('I'+r, +x.toFixed(6), EST.pct); pon('J'+r, +y.toFixed(6), EST.pct); });
+  }
+  const x = Object.keys(filas).map(Number).sort((m,n)=>m-n).map(r => `<row r="${r}">${filas[r].join('')}</row>`).join('');
   return hoja(x, {});
 }
 
+
+// ---------- Excel institucional: plantilla_instituciones.xlsx ----------
+// Hoja Proyección: insumos editables arriba (C1:D8 y la tabla de retiros extraordinarios
+// en I1:J5) y una fila por año desde la 12, toda con fórmulas. Si se cambia la inflación,
+// el rendimiento, un flujo o un retiro extraordinario dentro del Excel, todo se recalcula.
+// Las dos gráficas nativas leen las columnas C (período), I/K (nominal y meta) y J/L (real y meta).
+const COLS_PROY_INST = `<cols>` + [[1,14],[2,8],[3,10],[4,18],[5,18],[6,18],[7,20],[8,18],[9,20],[10,22],[11,20],[12,20]]
+  .map(([c,w])=>`<col width="${w}" customWidth="1" min="${c}" max="${c}"/>`).join('') + `</cols>`;
+const VISTA_PROY_INST = `<sheetViews><sheetView workbookViewId="0">`
+  + `<pane ySplit="11" topLeftCell="A12" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>`;
+
+function xmlProyeccionInst(c, p, sup){
+  let x = '';
+  const ins = [
+    ['Tipo de cambio ₡/US$', sup.tipoCambio, EST.tc],
+    ['Inflación', sup.inflacion/100, EST.pct],
+    ['Rendimiento anual del perfil', p.retorno, EST.pct],
+    ['Capital inicial (US$)', p.capital, EST.num],
+    ['Aporte anual (US$ de hoy)', p.aporte, EST.num],
+    ['Retiro anual (US$ de hoy)', p.retiro, EST.num],
+    ['Capital mínimo final (US$ de hoy)', p.minimo, EST.num],
+    ['Horizonte (años)', p.horizonte, EST.ent]
+  ];
+  const ext = p.extras.slice(0, 3);
+  ins.forEach((v, k) => {
+    const r = k + 1;
+    let extra = '';
+    if(r === 1) extra = celda('I1', 'Retiros extraordinarios', EST.seccion);
+    if(r === 2) extra = celda('I2', 'Año', EST.encab) + celda('J2', 'Monto (US$ de hoy)', EST.encab);
+    if(r >= 3 && r <= 5){
+      const e = ext[r - 3];
+      extra = e ? celda('I'+r, +e.anio, EST.ent) + celda('J'+r, +e.montoUsdHoy, EST.num) : '';
+    }
+    x += `<row r="${r}">` + celda('A'+r, v[0], EST.bold) + celda('D'+r, v[1], v[2]) + extra + `</row>`;
+  });
+  x += `<row r="10">` + celda('B10', 'Proyección institucional', EST.seccion) + `</row>`;
+  const cab = [['B','Año'],['C','Período'],['D','Saldo inicial'],['E','Aporte'],['F','Retiro ordinario'],
+    ['G','Retiro extraordinario'],['H','Rendimiento'],['I','Saldo final nominal'],['J','Saldo final real'],
+    ['K','Meta mínima nominal'],['L','Meta mínima (US$ de hoy)']];
+  x += `<row r="11" ht="34" customHeight="1">` + cab.map(([col,t])=>celda(col+'11', t, EST.encab)).join('') + `</row>`;
+  p.filas.forEach((f, k) => {
+    const r = 12 + k, a = r - 1, idx = `(1+$D$2)^(B${r}-1)`;
+    x += `<row r="${r}">`
+      + celda('B'+r, f.t, EST.ent, k ? `B${a}+1` : null)
+      + celda('C'+r, f.anio, EST.ent, k ? `C${a}+1` : null)
+      + celda('D'+r, Math.round(f.saldoInicial), EST.num, k ? `I${a}` : '$D$4')
+      + celda('E'+r, Math.round(f.aporte), EST.num, `$D$5*${idx}`)
+      + celda('F'+r, Math.round(f.retiro), EST.num, `-$D$6*${idx}`)
+      + celda('G'+r, Math.round(f.extraordinario), EST.num, `-SUMIF($I$3:$I$5,C${r},$J$3:$J$5)*${idx}`)
+      + celda('H'+r, Math.round(f.rendimiento), EST.num, `D${r}*$D$3`)
+      + celda('I'+r, Math.round(f.saldoFinal), EST.num, `D${r}+H${r}+E${r}+F${r}+G${r}`)
+      + celda('J'+r, Math.round(f.saldoReal), EST.num, `I${r}/(1+$D$2)^B${r}`)
+      + celda('K'+r, Math.round(f.metaNominal), EST.num, `$D$7*(1+$D$2)^B${r}`)
+      + celda('L'+r, Math.round(f.metaReal), EST.num, `$D$7`)
+      + `</row>`;
+  });
+  // Las etiquetas de los insumos ocupan A:C combinadas, para que se lean completas
+  const combinadas = `<mergeCells count="9">` + [1,2,3,4,5,6,7,8].map(r => `<mergeCell ref="A${r}:C${r}"/>`).join('')
+    + `<mergeCell ref="I1:J1"/></mergeCells>`;
+  return hoja(x, {cols: COLS_PROY_INST, vistas: VISTA_PROY_INST, drawing: DRAWING, combinadas});
+}
+
+function xmlInstitucion(c, p, asig, sup){
+  const ins = c.institucional || {};
+  let n = 0, filas = '';
+  const Fnum = (a, v, f) => { n++; filas += `<row r="${n}">` + celda('A'+n, a, EST.bold) + celda('B'+n, v, f) + `</row>`; };
+  const Ftxt = (a, t) => { n++; filas += `<row r="${n}">` + celda('A'+n, a, EST.bold) + celda('C'+n, t) + `</row>`; };
+  const sec = t => { n += 2; filas += `<row r="${n}">` + celda('A'+n, t, EST.seccion) + `</row>`; };
+  n++; filas += `<row r="${n}">` + celda('A'+n, 'Chotocruz & Co. · Ficha de institución', EST.titulo) + `</row>`;
+  n += 2; filas += `<row r="${n}">` + celda('A'+n,'Concepto',EST.encab) + celda('B'+n,'Dato numérico',EST.encab) + celda('C'+n,'Dato cualitativo',EST.encab) + `</row>`;
+
+  sec('Identificación');
+  Ftxt('Nombre de la institución', c.nombre); Ftxt('Teléfono', c.telefono);
+  Ftxt('Correo electrónico', c.correo); Ftxt('Dirección', c.direccion);
+  Ftxt('Tipo de institución', TXT_INST.tipo[ins.tipo] || '—');
+  Ftxt('Objetivo del portafolio', TXT_INST.objetivo[ins.objetivo] || '—');
+
+  sec('Perfil de riesgo');
+  Ftxt('Perfil asignado', PERFILES[c.perfil].label);
+  Fnum('Retorno esperado anual', p.retorno, EST.pct);
+  Fnum('Tolerancia al riesgo (0 a 10)', c.diag.tolerancia, EST.dec2);
+  Fnum('Apetito de riesgo (0 a 10)', c.diag.apetito, EST.dec2);
+  Fnum('Capacidad financiera (0 a 10)', c.diag.capacidad, EST.dec2);
+  Fnum('Conocimiento y experiencia (0 a 10)', c.diag.conocimiento, EST.ent);
+  Fnum('Puntaje de la institución (0 a 10)', c.diag.puntajeCliente, EST.dec2);
+  const eq = rendimientoEquilibrioInst(c, sup), req = perfilRequerido(eq);
+  if(eq.estado === 'inalcanzable') Ftxt('Rendimiento de equilibrio', 'Más de 30%: no alcanzable');
+  else Fnum('Rendimiento de equilibrio', eq.r, EST.pct);
+  Ftxt('Perfil que exige el objetivo', req ? PERFILES[req].label : 'Ninguna cartera modelo lo alcanza');
+  if(eq.r != null) Fnum('Holgura frente a la cartera asignada', p.retorno - eq.r, EST.pct);
+  Ftxt('Factor limitante del perfil', c.diag.limitantes.length ? c.diag.limitantes.join(' y ')
+        : 'Ninguno: el perfil corresponde a la disposición de la institución');
+  Ftxt('Preferencia de moneda', c.preferenciaMoneda);
+
+  sec('Datos de la proyección declarados');
+  n++; filas += `<row r="${n}">` + celda('A'+n,'Capital inicial',EST.bold) + celda('B'+n,ins.capitalMonto,EST.num) + celda('C'+n,ins.capitalMoneda) + `</row>`;
+  Fnum('Horizonte de inversión (años)', p.horizonte, EST.ent);
+  n++; filas += `<row r="${n}">` + celda('A'+n,'Aporte anual',EST.bold) + celda('B'+n,ins.aporteMonto,EST.num) + celda('C'+n,ins.aporteMoneda) + `</row>`;
+  n++; filas += `<row r="${n}">` + celda('A'+n,'Retiro anual',EST.bold) + celda('B'+n,ins.retiroMonto,EST.num) + celda('C'+n,ins.retiroMoneda) + `</row>`;
+  (ins.extraordinarios || []).slice(0, 3).forEach((e, k) => {
+    n++; filas += `<row r="${n}">` + celda('A'+n,'Retiro extraordinario ' + (k+1) + ' (US$ de hoy)',EST.bold)
+      + celda('B'+n,+e.montoUsdHoy,EST.num) + celda('C'+n,'Año ' + e.anio) + `</row>`;
+  });
+  Fnum('Capital mínimo al final (US$ de hoy)', ins.capitalMinimoUsdHoy, EST.num);
+
+  sec('Capacidad y restricciones');
+  const peso = {0:'Prácticamente todo',3:'Más de la mitad',7:'Entre un cuarto y la mitad',10:'Menos de un cuarto'};
+  const est = {0:'Varían de forma importante',3:'Varían de manera moderada',7:'Estables, con variaciones menores',10:'Fijos o rentas consolidadas'};
+  Ftxt('Peso del portafolio en sus activos', peso[(c.capacidad||{}).pesoDelPortafolio] || '—');
+  Ftxt('Estabilidad de los ingresos', est[(c.capacidad||{}).fuenteIngreso] || '—');
+  Ftxt('Política o regulación de inversión', TXT_INST.regulacion[ins.regulacion] || '—');
+  Ftxt('Comentarios', c.comentarios);
+
+  sec('Cartera asignada y cartera de equilibrio');
+  const ceI = carteraEquilibrio(eq), aeI = redondeoAsig(ceI.asig);
+  n++; filas += `<row r="${n}">` + celda('A'+n,'Clase de activo',EST.encab) + celda('B'+n,'Cartera asignada',EST.encab)
+    + celda('C'+n,'Cartera de equilibrio',EST.encab) + `</row>`;
+  [['Renta variable','rv'],['Renta fija','rf'],['Efectivo','ef']].forEach(([t,k]) => {
+    n++; filas += `<row r="${n}">` + celda('A'+n, t, EST.bold) + celda('B'+n, (asig[k]||0)/100, EST.pct) + celda('C'+n, (aeI[k]||0)/100, EST.pct) + `</row>`; });
+  Fnum('Rendimiento de la cartera de equilibrio', ceI.rendimiento, EST.pct);
+  Fnum('Volatilidad anual de la cartera de equilibrio', ceI.x, EST.pct);
+  if(ceI.nota) Ftxt('Nota', ceI.nota);
+
+  sec('Supuestos aplicados');
+  Fnum('Tipo de cambio ₡/US$', sup.tipoCambio, EST.tc);
+  Fnum('Inflación general', sup.inflacion/100, EST.pct);
+  Fnum('Año de inicio', sup.anioInicio, EST.ent);
+
+  sec('Resultados de la proyección');
+  Fnum('Saldo máximo proyectado', Math.round(p.maxNominal), EST.num);
+  Fnum('Saldo final nominal', Math.round(p.finalNominal), EST.num);
+  Fnum('Saldo final en términos reales', Math.round(p.finalReal), EST.num);
+  Ftxt('Cumplimiento del capital mínimo', p.minimo > 0 ? (p.cumpleMeta ? 'Cumple' : 'No cumple') : 'No se definió un capital mínimo');
+  if(p.anioAgota) Fnum('Año en que se agota el portafolio', p.anioAgota, EST.ent);
+  else Ftxt('Año en que se agota el portafolio', 'No se agota en el horizonte');
+  return hoja(filas, {cols: COLS_CLIENTE, drawing: DRAWING});
+}
+
+async function exportarExcelInst(c, p, asig){
+  const btn = document.getElementById('btn-excel');
+  const txt = btn.textContent;
+  btn.disabled = true; btn.textContent = 'Generando…';
+  try{
+    const resp = await fetch('plantilla_instituciones.xlsx');
+    if(!resp.ok) throw new Error('no se encontró plantilla_instituciones.xlsx en el repositorio');
+    const zip = await JSZip.loadAsync(await resp.arrayBuffer());
+    zip.file('xl/worksheets/sheet1.xml', xmlInstitucion(c, p, asig, supuestos));
+    zip.file('xl/worksheets/sheet2.xml', xmlProyeccionInst(c, p, supuestos));
+    const eqX = rendimientoEquilibrioInst(c, supuestos);
+    zip.file('xl/worksheets/sheet3.xml', xmlDatos(c, p, asig, eqX));
+    await colorEquilibrio(zip, p, eqX);
+    // Las gráficas leen exactamente las filas del horizonte, no las 60 de la plantilla
+    const ultima = 11 + p.filas.length;
+    for(const g of ['xl/charts/chart2.xml','xl/charts/chart3.xml']){
+      const xml = await zip.file(g).async('string');
+      zip.file(g, xml.replace(/\$71</g, '$' + ultima + '<'));
+    }
+    const blob = await zip.generateAsync({type:'blob', compression:'DEFLATE',
+      mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+    descargar(blob, `ChyCo - ${limpiar(c.nombre)} - proyeccion institucional.xlsx`);
+  }catch(e){
+    alert('No se pudo generar el Excel: ' + (e.message||'error desconocido'));
+  }finally{
+    btn.disabled = false; btn.textContent = txt;
+  }
+}
 
 async function exportarExcel(c, p, asig){
   const btn = document.getElementById('btn-excel');
@@ -1480,7 +2328,15 @@ async function exportarExcel(c, p, asig){
     const zip = await JSZip.loadAsync(await resp.arrayBuffer());
     zip.file('xl/worksheets/sheet1.xml', xmlCliente(c, p, asig, supuestos));
     zip.file('xl/worksheets/sheet2.xml', xmlProyeccion(c, p, supuestos));
-    zip.file('xl/worksheets/sheet3.xml', xmlDatos(asig));
+    const eqX = rendimientoEquilibrio(c, supuestos);
+    zip.file('xl/worksheets/sheet3.xml', xmlDatos(c, p, asig, eqX));
+    await colorEquilibrio(zip, p, eqX);
+    // Con columnas adicionales (ROP/FCL, pensión, metas), la gráfica se corre a la derecha
+    const nExtras = [p.traeFondos, p.traePension, p.traeMetas].filter(Boolean).length;
+    if(nExtras){
+      const dib = await zip.file('xl/drawings/drawing2.xml').async('string');
+      zip.file('xl/drawings/drawing2.xml', dib.replace('<col>19</col>', '<col>' + (19 + nExtras + 1) + '</col>'));
+    }
     const blob = await zip.generateAsync({type:'blob', compression:'DEFLATE',
       mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
     descargar(blob, `ChyCo - ${limpiar(c.nombre)} - proyeccion.xlsx`);
@@ -1493,6 +2349,7 @@ async function exportarExcel(c, p, asig){
 
 // ---------- Exportación consolidada para Power BI ----------
 function exportarConsolidado(){
+  if(segmento === 'institucion') return exportarConsolidadoInst();
   const btn = document.getElementById('btn-todos');
   const txt = btn.textContent;
   btn.disabled = true; btn.textContent = 'Generando…';
@@ -1502,13 +2359,15 @@ function exportarConsolidado(){
       'Destino del patrimonio','Herencia deseada USD',
       'Renta variable %','Renta fija %','Efectivo %','Anio proyeccion','Periodo','Edad','Fase',
       'Salario mensual USD','Gasto mensual USD','Portafolio inicial USD','Aportes o retiros USD',
-      'Gasto % portafolio','Retorno USD','Resultado neto USD','Ingreso extraordinario USD','Portafolio nominal USD','Portafolio real USD'];
+      'Gasto % portafolio','Retorno USD','Resultado neto USD','Ingreso extraordinario USD','Pension USD','Metas USD','Portafolio nominal USD','Portafolio real USD',
+      'Cartera equilibrio RV %','Cartera equilibrio RF %','Cartera equilibrio EF %'];
     const lineas = [cab.join(',')];
-    clientes.forEach(c=>{
+    clientes.filter(c => tipoDe(c) === 'persona').forEach(c=>{
       const p = proyectar(c, supuestos);
       const a = (supuestos.asignacion || ALLOC_SCHWAB)[c.perfil];
       const cc = c.capacidad || {};
       const eqC = rendimientoEquilibrio(c, supuestos), reqC = perfilRequerido(eqC);
+      const aeC = redondeoAsig(carteraEquilibrio(eqC).asig);
       p.filas.forEach(f=>{
         lineas.push([
           csv(c.nombre), csv(c.correo), csv(c.telefono), PERFILES[c.perfil].label,
@@ -1523,7 +2382,8 @@ function exportarConsolidado(){
           f.salarioMes!=null ? Math.round(f.salarioMes) : '',
           Math.round(f.gastoMensual), Math.round(f.portafolioInicial), Math.round(f.aporteRetiro),
           f.gastoPct.toFixed(6), Math.round(f.retornoMonto), Math.round(f.resultadoNeto), Math.round(f.extraordinario||0),
-          Math.round(f.portafolioFinal), Math.round(f.portafolioReal)
+          Math.round(f.pension||0), Math.round(f.metas||0),
+          Math.round(f.portafolioFinal), Math.round(f.portafolioReal), aeC.rv, aeC.rf, aeC.ef
         ].join(','));
       });
     });
@@ -1536,11 +2396,45 @@ function exportarConsolidado(){
   }
 }
 
+function exportarConsolidadoInst(){
+  const btn = document.getElementById('btn-todos');
+  const txt = btn.textContent;
+  btn.disabled = true; btn.textContent = 'Generando…';
+  try{
+    const cab = ['Institucion','Correo','Telefono','Tipo','Objetivo','Perfil','Retorno esperado','Rendimiento de equilibrio','Perfil requerido',
+      'Horizonte anios','Capital inicial USD','Aporte anual USD hoy','Retiro anual USD hoy','Capital minimo USD hoy',
+      'Renta variable %','Renta fija %','Efectivo %','Anio proyeccion','Periodo','Saldo inicial USD','Aporte USD','Retiro ordinario USD',
+      'Retiro extraordinario USD','Rendimiento USD','Saldo final nominal USD','Saldo final real USD','Meta minima nominal USD',
+      'Cartera equilibrio RV %','Cartera equilibrio RF %','Cartera equilibrio EF %'];
+    const lineas = [cab.join(',')];
+    clientes.filter(c => tipoDe(c) === 'institucion' && c.institucional).forEach(c=>{
+      const p = proyectarInst(c, supuestos), ins = c.institucional;
+      const a = (supuestos.asignacion || ALLOC_SCHWAB)[c.perfil];
+      const eq = rendimientoEquilibrioInst(c, supuestos), req = perfilRequerido(eq);
+      const aeI = redondeoAsig(carteraEquilibrio(eq).asig);
+      p.filas.forEach(f=>{
+        lineas.push([csv(c.nombre), csv(c.correo), csv(c.telefono), csv(TXT_INST.tipo[ins.tipo]||''), csv(TXT_INST.objetivo[ins.objetivo]||''),
+          PERFILES[c.perfil].label, p.retorno, eq.r == null ? '' : eq.r.toFixed(6), req ? PERFILES[req].label : 'Ninguno',
+          p.horizonte, Math.round(p.capital), Math.round(p.aporte), Math.round(p.retiro), Math.round(p.minimo),
+          a.rv, a.rf, a.ef, f.t, f.anio, Math.round(f.saldoInicial), Math.round(f.aporte), Math.round(f.retiro),
+          Math.round(f.extraordinario), Math.round(f.rendimiento), Math.round(f.saldoFinal), Math.round(f.saldoReal),
+          Math.round(f.metaNominal), aeI.rv, aeI.rf, aeI.ef].join(','));
+      });
+    });
+    const blob = new Blob(['﻿' + lineas.join('\r\n')], {type:'text/csv;charset=utf-8'});
+    descargar(blob, `ChyCo - instituciones ${new Date().toISOString().slice(0,10)}.csv`);
+  }catch(e){
+    alert('No se pudo generar el consolidado: ' + (e.message||'error desconocido'));
+  }finally{
+    btn.disabled = false; btn.textContent = txt;
+  }
+}
+
 function csv(v){
   const s = (v==null?'':String(v));
   return /[",\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
 }
-function limpiar(s){ return (s||'cliente').replace(/[^\w\s-]/g,'').trim(); }
+function limpiar(s){ return (s||'cliente').replace(/[^\p{L}\p{N}\s-]/gu,'').trim(); }
 function descargar(blob, nombre){
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -1565,12 +2459,17 @@ async function exportarFicha(c, p, asig){
 
     // ---- Encabezado: misma banda y misma tipografía que el pie de página ----
     const altoBanda = 17;
-    doc.setFillColor(35, 39, 15); doc.rect(0, 0, W, altoBanda, 'F');
-    doc.addImage(LOGO_PDF, 'PNG', M, altoBanda/2 - 2.4, 22.3, 4.8);
-    doc.setFont('helvetica','normal'); doc.setFontSize(7.2);
-    doc.setTextColor(205, 205, 190);
-    doc.text('Ficha de planificación financiera   |   Documento confidencial',
-             W-M, altoBanda/2 + 1.2, {align:'right'});
+    const esInst = !!p.institucional;
+    const anioFin = esInst ? supuestos.anioInicio + p.horizonte - 1 : null;
+    function bandaSuperior(){
+      doc.setFillColor(35, 39, 15); doc.rect(0, 0, W, altoBanda, 'F');
+      doc.addImage(LOGO_PDF, 'PNG', M, altoBanda/2 - 2.4, 22.3, 4.8);
+      doc.setFont('helvetica','normal'); doc.setFontSize(7.2);
+      doc.setTextColor(205, 205, 190);
+      doc.text((esInst ? 'Ficha de planificación institucional' : 'Ficha de planificación financiera') + '   |   Documento confidencial',
+               W-M, altoBanda/2 + 1.2, {align:'right'});
+    }
+    bandaSuperior();
 
     let y = 32;
 
@@ -1583,20 +2482,31 @@ async function exportarFicha(c, p, asig){
     const nombrePdf = c.nombre || 'Cliente';
     let tamNombre = doc.getFontSize();
     while(tamNombre > 12 && doc.getTextWidth(nombrePdf) > W - 2*M){ tamNombre -= 1; doc.setFontSize(tamNombre); }
-    doc.text(doc.splitTextToSize(nombrePdf, W - 2*M)[0], M, y);
+    const lineasNombre = doc.splitTextToSize(nombrePdf, W - 2*M).slice(0, 2);
+    doc.text(lineasNombre, M, y);
+    y += (lineasNombre.length - 1) * tamNombre * 0.42;
     y += 6;
     doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(...GRIS);
-    doc.text(`${c.edad} años · retiro proyectado a los ${c.edadRetiro} · horizonte de ${p.totalAnios} años`, M, y);
+    doc.text(esInst
+      ? `${TXT_INST.tipo[(c.institucional||{}).tipo] || 'Institución'} · horizonte de ${p.horizonte} años, de ${supuestos.anioInicio} a ${anioFin}`
+      : p.aniosAcum === 0
+        ? `${c.edad} años · ya retirado · horizonte de ${p.totalAnios} años`
+        : `${c.edad} años · retiro proyectado a los ${c.edadRetiro} · horizonte de ${p.totalAnios} años`, M, y);
     y += 4;
     doc.setDrawColor(...ORO); doc.setLineWidth(0.6);
     doc.line(M, y, M+22, y);
     y += 10;
 
     // ---- Cifras clave ----
-    const cifras = [
+    const cifras = esInst ? [
       ['Perfil de riesgo', PERFILES[c.perfil].label],
       ['Retorno esperado', pct(p.retorno) + ' anual'],
-      ['Portafolio al retiro', usdPdf(p.alRetiro)],
+      ['Saldo final nominal', usdPdf(p.finalNominal)],
+      ['Saldo final real', usdPdf(p.finalReal)]
+    ] : [
+      ['Perfil de riesgo', PERFILES[c.perfil].label],
+      ['Retorno esperado', pct(p.retorno) + ' anual'],
+      [p.aniosAcum === 0 ? 'Capital actual' : 'Portafolio al retiro', usdPdf(p.alRetiro)],
       ['Tasa de retiro inicial', p.tasaRetiroInicial!=null ? pct(p.tasaRetiroInicial) : '—']
     ];
     const anchoC = (W - 2*M) / 4;
@@ -1614,63 +2524,8 @@ async function exportarFicha(c, p, asig){
     doc.line(M, y, W-M, y);
     y += 11;
 
-    // ---- Posición del cliente y composición ----
-    // La ficha llega al cliente, así que lleva el cuadro de posición pero NO los
-    // puntajes de tolerancia, apetito, capacidad ni el puntaje del cliente:
-    // esos son criterios internos del asesor y viven solo en el panel y el Excel.
-    doc.setFontSize(10.5); doc.setTextColor(...NEGRO); doc.setFont('helvetica','bold');
-    doc.text('Posición del cliente', M, y);
-    doc.setFont('helvetica','normal');
-    y += 5;
-
-    const matriz = document.getElementById('matriz');
-    if(matriz){
-      const lado = 76;                       // cuadro grande y centrado en la página
-      doc.addImage(matriz.toDataURL('image/png'), 'PNG', (W-lado)/2, y, lado, lado, undefined, 'FAST');
-      y += lado + 6;
-    }
-
-    // ---- Proyección ----
-    doc.setFontSize(10.5); doc.setTextColor(...NEGRO); doc.setFont('helvetica','bold');
-    doc.text('Proyección del portafolio', M, y);
-    doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(...GRIS);
-    y += 5;
-    doc.text(`Valor nominal y en términos reales, de los ${c.edad} a los ${supuestos.edadFinal} años`, M, y);
-    y += 4;
-
-    const graf = document.getElementById('chart');
-    if(graf){
-      const anchoG = W - 2*M;
-      // La altura no se fija a ojo: se deriva del espacio que queda hasta el pie,
-      // reservando lo que ocupan la conclusión y los supuestos. Así el gráfico es
-      // lo más grande posible sin que nada se monte, con cualquier contenido.
-      const topePie = H - 17;          // borde superior de la banda del pie
-      const reserva = 40;              // conclusión + supuestos + nota legal
-      const altoG = Math.max(42, Math.min(anchoG*0.46, topePie - reserva - y));
-      doc.addImage(graf.toDataURL('image/png'), 'PNG', M, y, anchoG, altoG, undefined, 'FAST');
-      y += altoG + 6;
-    }
-
-    // ---- Resultado de la proyección ----
-    doc.setDrawColor(...LINEA); doc.line(M, y, W-M, y); y += 8;
-    doc.setFontSize(8.5); doc.setTextColor(...NEGRO);
-    const cierre = p.edadAgota
-      ? `Bajo estos supuestos, el portafolio se agota a los ${p.edadAgota} años.`
-      : `Bajo estos supuestos, el portafolio no se agota dentro del horizonte proyectado; el saldo final en términos reales asciende a ${usdPdf(p.finalReal)}.`;
-    doc.text(doc.splitTextToSize(cierre, W-2*M), M, y);
-    y += 12;
-
-    // ---- Supuestos ----
-    doc.setFontSize(5.4); doc.setTextColor(...ORO);
-    doc.text('SUPUESTOS APLICADOS', M, y); y += 4;
-    doc.setTextColor(...GRIS); doc.setFontSize(5.4);
-    const sup = `Tipo de cambio ${fmt(supuestos.tipoCambio)} colones por US$1 · Inflación general ${supuestos.inflacion}% · `
-      + `Inflación de ingresos ${supuestos.inflacionIngresos}% · Inflación de pensión ${supuestos.inflacionPension}% · `
-      + `Inflación de salud ${supuestos.inflacionSalud}% · Ajuste de alquileres ${supuestos.ajusteAlquileres}% · `
-      + `Horizonte hasta los ${supuestos.edadFinal} años. Montos expresados en dólares de los Estados Unidos.`;
-    doc.text(doc.splitTextToSize(sup, W-2*M), M, y);
-
-    // ---- Pie: el mismo del cuestionario, banda oscura con isotipo y redes ----
+    // ---- Pie de página: banda oscura con isotipo y redes, nota legal y número de página ----
+    function piePagina(nPag){
     const altoPie = 17, yPie = H - altoPie;
     doc.setFillColor(35, 39, 15); doc.rect(0, yPie, W, altoPie, 'F');
     doc.addImage(ISOTIPO_B64, 'PNG', M, yPie + 4.2, 6.2, 8.6, undefined, 'FAST');
@@ -1690,8 +2545,178 @@ async function exportarFicha(c, p, asig){
     const hoy = new Date().toLocaleDateString('es-CR', {day:'2-digit', month:'long', year:'numeric'});
     doc.text('Proyección basada en los supuestos señalados; no constituye una garantía de resultados futuros.   ·   ' + hoy,
              M, yPie - 3);
+    doc.text('Página ' + nPag + ' de 2', W - M, yPie - 3, {align:'right'});
 
-    doc.save(`ChyCo - ${(c.nombre||'cliente').replace(/[^\w\s-]/g,'')} - ficha.pdf`);
+    }
+    const eqP = esInst ? rendimientoEquilibrioInst(c, supuestos) : rendimientoEquilibrio(c, supuestos);
+    const ceP = carteraEquilibrio(eqP), aeP = redondeoAsig(ceP.asig);
+    const reqP = perfilRequerido(eqP);
+    const holP = eqP.r == null ? null : p.retorno - eqP.r;
+    const verP = esInst ? veredictoInst(c, p, eqP) : veredictoPersona(c, p, eqP);
+    const pctSigno = v => (v*100).toFixed(1).replace('-', '-') + '%';
+    const titulo = (t, yy) => { doc.setFontSize(10.5); doc.setTextColor(...NEGRO); doc.setFont('helvetica','bold');
+      doc.text(t, M, yy); doc.setFont('helvetica','normal'); };
+    const sujeto = esInst ? 'la institución' : 'el cliente';
+
+    // =================== Página 1: posición, puntaje y rendimiento de equilibrio ===================
+    titulo((esInst ? 'Posición de la institución' : 'Posición del cliente') + ' y puntaje', y);
+    y += 4;
+    const ladoM = 62, yPos = y;
+    const matriz = document.getElementById('matriz');
+    if(matriz) doc.addImage(matriz.toDataURL('image/png'), 'PNG', M, yPos, ladoM, ladoM, undefined, 'FAST');
+    const xS = M + ladoM + 10, anchoS = W - M - xS;
+    const dg = c.diag || {};
+    const un = v => v == null || isNaN(v) ? '-' : (Math.round(v*10)/10).toFixed(1) + ' de 10';
+    let yS = yPos + 6;
+    [['Tolerancia al riesgo', dg.tolerancia], ['Apetito de riesgo', dg.apetito],
+     ['Capacidad financiera', dg.capacidad], ['Conocimiento y experiencia', dg.conocimiento]].forEach(([n2, v]) => {
+      doc.setFontSize(8.2); doc.setTextColor(...GRIS); doc.text(n2, xS, yS);
+      doc.setTextColor(...NEGRO); doc.setFont('helvetica','bold'); doc.text(un(v), W - M, yS, {align:'right'});
+      doc.setFont('helvetica','normal'); doc.setDrawColor(...LINEA); doc.setLineWidth(0.2);
+      doc.line(xS, yS + 2.2, W - M, yS + 2.2);
+      yS += 7;
+    });
+    yS += 2;
+    const pc = dg.puntajeCliente;
+    doc.setFontSize(8.6); doc.setTextColor(...NEGRO); doc.setFont('helvetica','bold');
+    doc.text(esInst ? 'Puntaje de la institución' : 'Puntaje del cliente', xS, yS);
+    doc.text(pc == null ? '-' : (Math.round(pc*10)/10).toFixed(1) + ' · ' + (pc >= 7 ? 'Alto' : pc >= 4 ? 'Medio' : 'Bajo'), W - M, yS, {align:'right'});
+    doc.setFont('helvetica','normal');
+    doc.setDrawColor(...ORO); doc.setLineWidth(0.4); doc.line(xS, yS + 2.4, W - M, yS + 2.4);
+    yS += 9;
+    doc.setFontSize(8.2); doc.setTextColor(...GRIS); doc.text('Perfil asignado', xS, yS);
+    doc.setTextColor(...NEGRO); doc.setFont('helvetica','bold'); doc.text(PERFILES[c.perfil].label, W - M, yS, {align:'right'});
+    doc.setFont('helvetica','normal');
+    yS += 6;
+    const notaPos = 'La tolerancia y el apetito ubican a ' + sujeto + ' en el plano. La capacidad financiera y el conocimiento no se grafican: solo limitan hasta dónde puede llegar el perfil.'
+      + ((dg.limitantes || []).length ? ' En este caso, el perfil queda limitado por ' + dg.limitantes.map(l => l === 'capacidad' ? 'la capacidad financiera' : 'el conocimiento').join(' y ') + '.' : '');
+    doc.setFontSize(6.8); doc.setTextColor(...GRIS);
+    doc.text(doc.splitTextToSize(notaPos, anchoS), xS, yS);
+    y = yPos + ladoM + 9;
+
+    titulo('Rendimiento de equilibrio', y);
+    y += 4;
+    const altoF = 72, anchoF = altoF * 440/330, yF = y;
+    const lienzoF = document.createElement('canvas');
+    dibujarFrontera(c, p, eqP, lienzoF, 4);
+    doc.addImage(lienzoF.toDataURL('image/png'), 'PNG', M, yF, anchoF, altoF, undefined, 'FAST');
+    const xE = M + anchoF + 8;
+    let yE = yF + 8;
+    [['Rendimiento de equilibrio', eqP.estado === 'inalcanzable' ? 'Más de 30%' : pct(eqP.r)],
+     ['Cartera asignada', pct(p.retorno) + ' · ' + PERFILES[c.perfil].label],
+     [holP == null || holP >= 0 ? 'Holgura' : 'Brecha', holP == null ? '-' : (holP >= 0 ? '+' : '-') + (Math.abs(holP)*100).toFixed(1) + ' pts'],
+     ['Perfil que exige el objetivo', reqP ? PERFILES[reqP].label : 'Ninguno alcanza']].forEach(([n2, v]) => {
+      doc.setFontSize(7); doc.setTextColor(...GRIS); doc.text(n2.toUpperCase(), xE, yE);
+      doc.setFontSize(12); doc.setTextColor(...NEGRO); doc.setFont('helvetica','bold'); doc.text(v, xE, yE + 6);
+      doc.setFont('helvetica','normal');
+      yE += 15.5;
+    });
+    y = yF + altoF + 6;
+    // veredicto con filete a la izquierda, como en el panel
+    const okP = holP != null && holP >= 0;
+    doc.setFontSize(8.4); doc.setTextColor(...NEGRO);
+    const lineasV = doc.splitTextToSize(verP, W - 2*M - 6);
+    doc.setFillColor(...(okP ? ORO : [162,84,58])); doc.rect(M, y - 3.5, 1, lineasV.length*4 + 2.5, 'F');
+    doc.text(lineasV, M + 5, y);
+    y += lineasV.length*4 + 4;
+    doc.setFontSize(6.2); doc.setTextColor(...GRIS);
+    const notaPeor = 'Peor año histórico de cada cartera, ' + HIST.desde + '-' + HIST.hasta + ': ' + curvaModelo().pts.map(pt =>
+      PERFILES[pt.perfil].label + ' ' + (pt.peor*100).toFixed(1) + '% (' + pt.anioPeor + ')').join(' · ')
+      + '. Volatilidad y peor año calculados con la serie de A. Damodaran (NYU Stern) de acciones, bonos del Tesoro y letras de EE. UU.';
+    doc.text(doc.splitTextToSize(notaPeor, W - 2*M), M, y);
+
+    piePagina(1);
+
+    // =================== Página 2: carteras y proyección ===================
+    doc.addPage();
+    bandaSuperior();
+    y = 28;
+    doc.setFontSize(8); doc.setTextColor(...GRIS);
+    doc.text((c.nombre || '') + ' · continuación', M, y);
+    y += 9;
+    titulo('Cartera asignada y cartera de equilibrio', y);
+    y += 4;
+    doc.setFontSize(7.4); doc.setTextColor(...GRIS);
+    doc.text(doc.splitTextToSize('La cartera de equilibrio es la combinación de carteras modelo vecinas que rinde exactamente el rendimiento de equilibrio, con el menor riesgo posible.', W - 2*M), M, y);
+    y += 6;
+    const eAsig = estadisticaCartera(asig);
+    const columnas = [
+      ['Cartera asignada', PERFILES[c.perfil].label + ' · rinde ' + pct(p.retorno), asig, 'pastel-asig', eAsig],
+      ['Cartera de equilibrio', ceP.alcanzable ? 'Rinde ' + pct(ceP.rendimiento) : 'Rinde ' + pct(ceP.rendimiento) + ' (máximo disponible)', aeP, 'pastel-eq', ceP]
+    ];
+    const anchoCol = (W - 2*M) / 2, diam = 50, yC = y;
+    columnas.forEach(([tit, sub, a, id, est], k) => {
+      const cx = M + k*anchoCol;
+      doc.setFont('helvetica','bold'); doc.setFontSize(9.5); doc.setTextColor(...NEGRO);
+      doc.text(tit, cx + anchoCol/2, yC + 4, {align:'center'});
+      doc.setFont('helvetica','normal'); doc.setFontSize(7.4); doc.setTextColor(...GRIS);
+      doc.text(sub, cx + anchoCol/2, yC + 8.5, {align:'center'});
+      const cv = document.getElementById(id);
+      if(cv) doc.addImage(cv.toDataURL('image/png'), 'PNG', cx + (anchoCol - diam)/2, yC + 12, diam, diam, undefined, 'FAST');
+      const xl0 = cx + 16, xl1 = cx + anchoCol - 16;
+      [['Renta variable','rv'],['Renta fija','rf'],['Efectivo','ef']].forEach(([n2,kk], j) => {
+        const yl = yC + 12 + diam + 7 + j*5;
+        doc.setFillColor(...hexRgb(COLOR_CLASE[kk])); doc.rect(xl0, yl - 2.6, 2.8, 2.8, 'F');
+        doc.setFontSize(8); doc.setTextColor(...NEGRO); doc.text(n2, xl0 + 5, yl);
+        doc.text(fmtPeso(a[kk]) + '%', xl1, yl, {align:'right'});
+      });
+      doc.setFontSize(7); doc.setTextColor(...GRIS);
+      doc.text('Volatilidad anual ' + (est.x != null ? est.x*100 : est.vol*100).toFixed(1) + '% · peor año ' + (est.peor*100).toFixed(1) + '% (' + est.anioPeor + ')',
+               cx + anchoCol/2, yC + 12 + diam + 7 + 3*5 + 2, {align:'center'});
+    });
+    y = yC + 12 + diam + 7 + 3*5 + 8;
+    if(ceP.nota){
+      doc.setFontSize(7); doc.setTextColor(...GRIS);
+      const ln2 = doc.splitTextToSize(ceP.nota, W - 2*M); doc.text(ln2, M, y); y += ln2.length*3.2 + 3;
+    }
+    y += 4;
+
+    titulo('Proyección del portafolio', y);
+    y += 5;
+    doc.setFontSize(7.6); doc.setTextColor(...GRIS);
+    doc.text(esInst
+      ? `Valor nominal y en términos reales, de ${supuestos.anioInicio} a ${anioFin}` + (p.minimo > 0 ? '; la línea punteada es el capital mínimo en dólares de hoy' : '')
+      : `Valor nominal y en términos reales, de los ${c.edad} a los ${supuestos.edadFinal} años`, M, y);
+    y += 4;
+    const anchoG = W - 2*M;
+    const altoG = Math.max(50, Math.min(88, (H - 17 - 6 - 34) - y));
+    const lienzoG = document.createElement('canvas');
+    dibujarGrafico(p, lienzoG, 4, Math.round(300 * anchoG / altoG));
+    doc.addImage(lienzoG.toDataURL('image/png'), 'PNG', M, y, anchoG, altoG, undefined, 'FAST');
+    y += altoG + 6;
+
+    // ---- Resultado de la proyección ----
+    doc.setDrawColor(...LINEA); doc.setLineWidth(0.25); doc.line(M, y, W-M, y); y += 6;
+    doc.setFontSize(8.5); doc.setTextColor(...NEGRO);
+    const cierre = esInst
+      ? (p.anioAgota
+          ? `Bajo estos supuestos, el portafolio se agota en ${p.anioAgota}.`
+          : `Bajo estos supuestos, el portafolio cierra ${anioFin} con un saldo de ${usdPdf(p.finalReal)} en términos reales` +
+            (p.minimo > 0 ? (p.cumpleMeta ? `, por encima del capital mínimo de ${usdPdf(p.minimo)}.` : `, por debajo del capital mínimo de ${usdPdf(p.minimo)}.`) : '.'))
+      : p.edadAgota
+      ? `Bajo estos supuestos, el portafolio se agota a los ${p.edadAgota} años.`
+      : `Bajo estos supuestos, el portafolio no se agota dentro del horizonte proyectado; el saldo final en términos reales asciende a ${usdPdf(p.finalReal)}.`;
+    const lineasCierre = doc.splitTextToSize(cierre, W-2*M);
+    doc.text(lineasCierre, M, y);
+    y += 4 + lineasCierre.length*4;
+
+    // ---- Supuestos ----
+    doc.setFontSize(5.4); doc.setTextColor(...ORO);
+    doc.text('SUPUESTOS APLICADOS', M, y); y += 4;
+    doc.setTextColor(...GRIS); doc.setFontSize(5.4);
+    const sup = esInst
+      ? `Tipo de cambio ${fmt(supuestos.tipoCambio)} colones por US$1 · Inflación general ${supuestos.inflacion}%, aplicada a aportes, retiros y términos reales · `
+        + `Año de inicio ${supuestos.anioInicio} · Horizonte de ${p.horizonte} años. Montos expresados en dólares de los Estados Unidos.`
+      : `Tipo de cambio ${fmt(supuestos.tipoCambio)} colones por US$1 · Inflación general ${supuestos.inflacion}% · `
+      + `Inflación de ingresos ${supuestos.inflacionIngresos}% · Inflación de pensión ${supuestos.inflacionPension}% · `
+      + `Inflación de salud ${supuestos.inflacionSalud}% · Ajuste de alquileres ${supuestos.ajusteAlquileres}% · `
+      + `Horizonte hasta los ${supuestos.edadFinal} años` + (Math.abs(p.factorGasto - 1) > 1e-9 ? ` · Gasto en el retiro ${Math.round(p.factorGasto*100)}% del gasto actual` : '')
+      + (p.traePension ? ` · Pensión estimada ${usdPdf(p.pensionMensual)} mensuales en dólares de hoy` : '') + `. Montos expresados en dólares de los Estados Unidos.`;
+    doc.text(doc.splitTextToSize(sup, W-2*M), M, y);
+
+    piePagina(2);
+
+    doc.save(`ChyCo - ${limpiar(c.nombre)} - ficha.pdf`);
   }catch(e){
     alert('No se pudo generar la ficha: ' + (e.message||'error desconocido'));
   }finally{
@@ -1732,6 +2757,7 @@ document.getElementById('btn-selector').onclick = ()=>{
   abrirLista(lista.hidden);
 };
 document.getElementById('btn-todos').onclick = exportarConsolidado;
+document.querySelectorAll('.segmento').forEach(b => b.onclick = () => elegirSegmento(b.dataset.seg));
 document.getElementById('btn-refresh').onclick = ()=>cargar();
 
 async function cargar(){
@@ -1741,8 +2767,9 @@ async function cargar(){
   try{
     clientes = await cargarClientes();
     clientes.sort((a,b)=>(b.creadoEn||0)-(a.creadoEn||0));
+    document.getElementById('btn-todos').hidden = !SEGMENTOS[segmento].csv;
     renderLista();
-    if(clientes.length){
+    if(clientesSeg().length){
       if(clientes.find(c=>c.id===activoId)){
         seleccionar(activoId);
       }else{
@@ -1754,9 +2781,7 @@ async function cargar(){
         vacio.innerHTML = 'Seleccione un cliente en el panel de la izquierda.';
       }
     }else{
-      document.getElementById('detail').hidden = true;
-      vacio.hidden = false;
-      vacio.innerHTML = 'Todavía no hay cuestionarios registrados.<br>Complete el formulario del cliente para que aparezca aquí.';
+      mostrarSegmento();
     }
   }catch(e){
     document.getElementById('detail').hidden = true;

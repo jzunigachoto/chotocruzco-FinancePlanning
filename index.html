@@ -205,6 +205,49 @@
   }
   .sub-q{margin-top:18px;padding-left:16px;border-left:2px solid #DCD6B8;}
   .sub-q[hidden]{display:none;}
+  .q[hidden]{display:none;}
+  .block-title + .q{border-top:none;padding-top:6px;}
+  .q .qlabel.espacio,.mini.espacio{margin-top:18px;}
+  .mini{display:block;font-size:12.5px;color:#3A3F24;margin:0 0 2px;}
+  /* Filas repetibles (hijos, inmuebles, metas) */
+  .filas[hidden]{display:none;}
+  .fila-rep{margin-top:16px;}
+  .fila-rep:first-child{margin-top:4px;}
+  .fila-rep .fila-tit{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+    color:#918042;font-weight:600;margin-bottom:6px;}
+  #inmuebles-filas{margin-top:14px;}
+  #hijos-filas{display:grid;grid-template-columns:repeat(3,1fr);gap:14px 18px;}
+  #hijos-filas[hidden]{display:none;}
+  #hijos-filas .fila-rep{margin-top:0;}
+  @media (max-width:560px){ #hijos-filas{grid-template-columns:1fr 1fr;} }
+  .fila-grid{display:grid;gap:14px 18px;grid-template-columns:repeat(2,1fr);}
+  .fila-grid.c3{grid-template-columns:repeat(3,1fr);}
+  .fila-grid.c1{grid-template-columns:1fr;}
+  @media (max-width:560px){ .fila-grid,.fila-grid.c3{grid-template-columns:1fr;} }
+  /* Selección múltiple con apariencia de lista desplegable */
+  .multi{position:relative;}
+  .multi-btn{width:100%;text-align:left;background:transparent;border:none;border-bottom:1px solid var(--rule);
+    padding:7px 20px 9px 2px;font-family:var(--font);font-weight:300;font-size:15px;color:var(--ink);cursor:pointer;
+    background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%237F8757'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 2px center;-webkit-text-stroke:.2px currentColor;paint-order:stroke fill;
+    letter-spacing:0;text-transform:none;}
+  .multi-btn:focus{outline:none;border-bottom:2px solid var(--accent);padding-bottom:8px;}
+  .multi-txt.vacio{color:#B9B79E;}
+  .q.contestada .multi-btn{border-bottom-color:#CFC7A4;}
+  .q.pendiente .multi-btn{border-bottom-color:#A2543A;}
+  .multi-panel{margin-top:6px;background:#fff;
+    border:1px solid var(--rule);box-shadow:0 6px 18px rgba(30,34,14,.08);padding:14px 16px;
+    display:flex;flex-direction:column;gap:12px;}
+  .multi-panel[hidden]{display:none;}
+  /* Casillas */
+  .opciones{display:flex;flex-direction:column;gap:12px;margin-top:2px;}
+  .opcion{display:flex;align-items:center;gap:11px;margin:0;cursor:pointer;
+    font-size:15px;font-weight:300;letter-spacing:0;text-transform:none;color:var(--ink);}
+  .opcion input{width:17px;height:17px;flex:none;padding:0;margin:0;cursor:pointer;
+    border:1px solid #A9A88C;border-radius:2px;background:#fff;}
+  .opcion input:focus{border:1px solid var(--accent);padding:0;}
+  .opcion input:checked{background:#2B3014 url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='10'%3E%3Cpath d='M1 5l3.5 3.5L11 1' stroke='%23fff' stroke-width='1.8' fill='none'/%3E%3C/svg%3E") no-repeat center;border-color:#2B3014;}
+  .q.pendiente .opcion input{border-color:#A2543A;}
   .aviso{
     margin-top:26px;padding:13px 16px;border-left:2px solid #A2543A;
     background:#FBF6F3;font-size:13px;color:#7A3E29;line-height:1.55;
@@ -231,6 +274,41 @@
   }
   .btn-back:hover{color:var(--ink);border-color:var(--ink-45);}
 
+  /* Página 0: elección del tipo de cliente */
+  .tipos{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:6px;}
+  @media (max-width:560px){ .tipos{grid-template-columns:1fr;} }
+  .tipo{display:flex;flex-direction:column;align-items:flex-start;gap:12px;text-align:left;
+    padding:26px 24px 22px;background:#FBFBF6;border:1px solid var(--rule);border-top:2px solid var(--ink);
+    border-radius:2px;transition:background .18s ease,border-color .18s ease,transform .18s ease;}
+  .tipo:hover{background:#F4F3E8;border-color:#918042;border-top-color:#918042;transform:translateY(-1px);}
+  .tipo-tit{font-size:19px;font-weight:700;color:#141709;letter-spacing:-.01em;-webkit-text-stroke:.5px currentColor;paint-order:stroke fill;}
+  .tipo-desc{font-size:13.5px;line-height:1.62;color:#3A3F24;font-weight:300;}
+  .tipo-ir{margin-top:6px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#918042;font-weight:600;
+    display:flex;align-items:center;gap:8px;}
+  .tipo-ir::after{content:'→';font-size:14px;letter-spacing:0;}
+  .variante[hidden]{display:none;}
+  .tel{display:grid;grid-template-columns:112px 1fr;gap:12px;}
+  /* Código de país con bandera */
+  .pais{position:relative;}
+  .pais-btn{width:100%;display:flex;align-items:center;gap:9px;background:transparent;border:none;
+    border-bottom:1px solid var(--rule);padding:7px 20px 9px 2px;font-family:var(--font);font-weight:300;
+    font-size:15px;color:var(--ink);cursor:pointer;text-align:left;letter-spacing:0;text-transform:none;
+    background-image:url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%237F8757'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 2px center;-webkit-text-stroke:.2px currentColor;paint-order:stroke fill;}
+  .pais-btn:focus{outline:none;border-bottom:2px solid var(--accent);padding-bottom:8px;}
+  .bandera{width:22px;height:15px;flex:none;display:block;border-radius:1.5px;box-shadow:0 0 0 1px rgba(20,23,9,.14);}
+  .pais-lista{position:absolute;left:0;top:calc(100% + 4px);z-index:30;min-width:300px;max-height:300px;overflow:auto;
+    background:#fff;border:1px solid var(--rule);box-shadow:0 10px 26px rgba(30,34,14,.14);padding:6px 0;}
+  .pais-lista[hidden]{display:none;}
+  .pais-op{display:flex;align-items:center;gap:11px;width:100%;padding:9px 14px;background:none;border:none;
+    font-family:var(--font);font-size:14.5px;font-weight:300;color:var(--ink);cursor:pointer;text-align:left;
+    letter-spacing:0;text-transform:none;}
+  .pais-op:hover,.pais-op[aria-selected="true"]{background:#F4F3E8;}
+  .pais-op .cod{min-width:44px;font-variant-numeric:tabular-nums;}
+  .pais-op .nom{color:#5A5E44;white-space:nowrap;}
+  .variante .grid-2 .field{margin-bottom:0;}
+  .variante .grid-2{margin-bottom:26px;}
+  .progress.oculto{display:none;}
   .page{display:none;}
   .page.active{display:block;}
 
@@ -294,46 +372,135 @@
   <p class="kicker">Multi-family office · San José, Costa Rica</p>
   <h1>Perfil de riesgo y planificación financiera</h1>
   <div class="rule-accent"></div>
-  <p class="lede" id="lede">Esta información nos permite construir su perfil de inversionista y proyectar el comportamiento de su portafolio en el horizonte que usted defina. Completarlo toma entre 5 y 8 minutos.</p>
+  <p class="lede" id="lede">Esta información nos permite construir su perfil de inversionista y proyectar el comportamiento de su portafolio en el horizonte que usted defina. Completarlo toma entre 8 y 12 minutos.</p>
 </div>
 
-<div class="progress">
+<div class="progress oculto" id="progress">
   <div class="progress-bar">
     <span class="seg on" id="seg-1"></span>
     <span class="seg" id="seg-2"></span>
     <span class="seg" id="seg-3"></span>
   </div>
-  <div class="progress-label" id="progress-label">Paso 1 de 3 — Información personal</div>
+  <div class="progress-label" id="progress-label"></div>
 </div>
 
 <div class="sheet">
   <div class="sheet-pad">
     <form id="form">
 
-      <!-- ============ PASO 1 ============ -->
-      <div class="page active" data-page="1">
+      <!-- ============ PÁGINA 0 · ENTRADA ============ -->
+      <div class="page active" data-page="0">
         <div class="section-head">
-          <h2>Información personal</h2>
-          <p>Estos datos identifican su expediente ante su asesor.</p>
+          <p>Seleccione el tipo de cliente. El cuestionario se ajusta a cada caso.</p>
         </div>
-        <fieldset>
-          <div class="field">
-            <label for="nombre">Nombre completo</label>
-            <input required id="nombre" name="Nombre" placeholder="Nombre y apellidos">
+        <div class="tipos">
+          <button type="button" class="tipo" data-tipo="persona">
+            <span class="tipo-tit">Familias y personas</span>
+            <span class="tipo-desc">Planificación patrimonial para usted y su familia: perfil de riesgo y proyección de su portafolio hasta y durante el retiro.</span>
+            <span class="tipo-ir">Comenzar</span>
+          </button>
+          <button type="button" class="tipo" data-tipo="institucion">
+            <span class="tipo-tit">Instituciones</span>
+            <span class="tipo-desc">Asociaciones, cooperativas, fondos, fundaciones y empresas: perfil de riesgo y proyección del portafolio institucional.</span>
+            <span class="tipo-ir">Comenzar</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ============ PASO 1 ============ -->
+      <div class="page" data-page="1">
+
+        <!-- Familias y personas -->
+        <div class="variante" data-para="persona">
+          <div class="section-head">
+            <h2>Información personal</h2>
+            <p>Estos datos identifican su expediente ante su asesor.</p>
           </div>
-          <div class="grid-2">
-            <div class="field">
-              <label for="correo">Correo electrónico</label>
-              <input required type="email" id="correo" name="Correo" placeholder="nombre@correo.com">
+          <fieldset>
+            <div class="grid-2">
+              <div class="field">
+                <label for="nombres">Nombre</label>
+                <input data-req id="nombres" name="Nombre" placeholder="Nombre" autocomplete="given-name">
+              </div>
+              <div class="field">
+                <label for="apellidos">Apellidos</label>
+                <input data-req id="apellidos" name="Apellidos" placeholder="Primer y segundo apellido" autocomplete="family-name">
+              </div>
+              <div class="field">
+                <label for="cedula">Cédula</label>
+                <input data-req id="cedula" name="Cédula" placeholder="1-2345-6789" inputmode="numeric" maxlength="11">
+              </div>
+              <div class="field">
+                <label for="nacimiento">Fecha de nacimiento</label>
+                <input data-req type="date" id="nacimiento" name="Fecha de nacimiento">
+              </div>
+              <div class="field">
+                <label for="ocupacion">Ocupación</label>
+                <input data-req id="ocupacion" name="Ocupación" placeholder="Gerente general, médico, empresario…">
+              </div>
+              <div class="field">
+                <label for="estado-civil">Estado civil</label>
+                <select data-req id="estado-civil" name="Estado civil">
+                  <option value="" disabled selected>Seleccione una opción</option>
+                  <option value="soltero">Soltero(a)</option>
+                  <option value="casado">Casado(a)</option>
+                  <option value="union">Unión libre</option>
+                  <option value="divorciado">Divorciado(a) o separado(a)</option>
+                  <option value="viudo">Viudo(a)</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="telefono">Teléfono</label>
+                <div class="tel">
+                  <div class="pais" data-campo="tel-codigo"></div><input type="hidden" id="tel-codigo" value="+506">
+                  <input data-req id="telefono" name="Teléfono" placeholder="8888 8888" inputmode="tel">
+                </div>
+              </div>
+              <div class="field">
+                <label for="correo">Correo electrónico</label>
+                <input data-req type="email" id="correo" name="Correo" placeholder="nombre@correo.com" pattern="[^@\s]+@[^@\s]+\.[A-Za-z]{2,}" title="Incluya el dominio completo, por ejemplo nombre@correo.com">
+              </div>
             </div>
             <div class="field">
-              <label for="telefono">Teléfono</label>
-              <input required id="telefono" name="Teléfono" placeholder="8888 8888">
+              <label for="direccion">Dirección</label>
+              <input data-req id="direccion" name="Dirección" placeholder="Provincia, cantón, distrito y otras señas" autocomplete="street-address">
             </div>
+          </fieldset>
+        </div>
+
+        <!-- Instituciones -->
+        <div class="variante" data-para="institucion" hidden>
+          <div class="section-head">
+            <h2>Información de la institución</h2>
+            <p>Estos datos identifican el expediente de la institución ante su asesor.</p>
           </div>
-        </fieldset>
+          <fieldset>
+            <div class="field">
+              <label for="inst-nombre">Nombre de la institución</label>
+              <input data-req id="inst-nombre" name="Nombre de la institución" placeholder="Razón social o nombre de la institución">
+            </div>
+            <div class="grid-2">
+              <div class="field">
+                <label for="inst-telefono">Teléfono</label>
+                <div class="tel">
+                  <div class="pais" data-campo="inst-tel-codigo"></div><input type="hidden" id="inst-tel-codigo" value="+506">
+                  <input data-req id="inst-telefono" name="Teléfono" placeholder="2222 2222" inputmode="tel">
+                </div>
+              </div>
+              <div class="field">
+                <label for="inst-correo">Correo electrónico</label>
+                <input data-req type="email" id="inst-correo" name="Correo" placeholder="contacto@institucion.com" pattern="[^@\s]+@[^@\s]+\.[A-Za-z]{2,}" title="Incluya el dominio completo, por ejemplo contacto@institucion.com">
+              </div>
+            </div>
+            <div class="field">
+              <label for="inst-direccion">Dirección</label>
+              <input data-req id="inst-direccion" name="Dirección" placeholder="Provincia, cantón, distrito y otras señas">
+            </div>
+          </fieldset>
+        </div>
+
         <div class="nav">
-          <span></span>
+          <button type="button" class="btn btn-back" onclick="goTo(0)">Atrás</button>
           <button type="button" class="btn btn-primary" onclick="goTo(2)">Continuar</button>
         </div>
       </div>
@@ -510,20 +677,27 @@
       <!-- ============ PASO 3 ============ -->
       <div class="page" data-page="3">
         <div class="section-head">
-          <h2>Planificación financiera</h2>
-          <p>Estas respuestas alimentan directamente la proyección de su portafolio. Indique cada monto en la moneda en que lo percibe o lo gasta.</p>
+          <h2 id="p3-titulo">Planificación financiera</h2>
+          <p id="p3-texto">Estas respuestas permiten proyectar su portafolio y dimensionar su situación patrimonial. Indique cada monto en la moneda en que lo percibe o lo paga.</p>
         </div>
         <div class="q-avance"><span class="pista"><span data-barra></span></span><span data-contador>0 respondidas</span></div>
+        <div class="variante" data-para="persona">
         <fieldset>
+
+          <!-- ===== A. Composición del hogar ===== -->
+          <div class="block-title">Composición del hogar</div>
 
           <div class="q">
             <span class="q-num">01</span>
             <div>
-              <span class="qlabel">¿Cuál es su salario o ingreso mensual?</span>
+              <span class="qlabel">¿A qué edad desea retirarse?</span>
+              <input type="hidden" id="edad" name="Edad actual">
               <div class="amount">
-                <input required type="number" min="0" id="salario-monto" name="C10 - Salario o ingreso mensual (monto)" placeholder="2.700.000">
-                <select id="salario-moneda" name="C10 - Salario o ingreso mensual (moneda)"><option>CRC</option><option>USD</option></select>
+                <input required type="number" min="30" max="100" id="edad_retiro" name="Edad deseada de retiro" placeholder="65">
+                <div class="unit">años</div>
               </div>
+              <p class="hint" id="edad-nota"></p>
+              <p class="hint" id="retiro-nota"></p>
               <p class="q-falta">Falta responder esta pregunta.</p>
             </div>
           </div>
@@ -531,33 +705,71 @@
           <div class="q">
             <span class="q-num">02</span>
             <div>
-              <span class="qlabel">¿Cuál es su gasto familiar mensual actual?</span>
-              <div class="amount">
-                <input required type="number" min="0" id="gasto-monto" name="C11 - Gasto familiar mensual (monto)" placeholder="10.000">
-                <select id="gasto-moneda" name="C11 - Gasto familiar mensual (moneda)"><option>USD</option><option>CRC</option></select>
+              <span class="qlabel">¿La planificación es individual o conjunta con su pareja?</span>
+              <select required id="plan" name="Tipo de planificación">
+                <option value="" disabled selected>Seleccione una opción</option>
+                <option value="individual">Individual</option>
+                <option value="conjunta">Conjunta con mi pareja</option>
+              </select>
+              <div class="sub-q" id="pareja-detalle" hidden>
+                <div class="fila-grid">
+                  <div><span class="mini">Edad de su pareja</span>
+                    <div class="amount"><input type="number" min="18" max="100" id="edad-pareja" name="Edad de la pareja" placeholder="43"><div class="unit">años</div></div></div>
+                  <div><span class="mini">Ingreso mensual de su pareja</span>
+                    <div class="amount"><input type="number" min="0" id="ingreso-pareja-monto" name="Ingreso mensual de la pareja (monto)" placeholder="1.500.000">
+                    <select id="ingreso-pareja-moneda" name="Ingreso mensual de la pareja (moneda)"><option>CRC</option><option>USD</option></select></div></div>
+                </div>
+                <p class="hint">Si su pareja no percibe ingresos, escriba 0.</p>
               </div>
               <p class="q-falta">Falta responder esta pregunta.</p>
-              <p class="hint">Este gasto se proyecta con la inflación hasta su edad de retiro y determina el retiro anual del portafolio durante la jubilación.</p>
             </div>
           </div>
 
           <div class="q">
             <span class="q-num">03</span>
             <div>
-              <span class="qlabel">¿Cuántas personas dependen económicamente de usted?</span>
-              <div class="amount">
-                <input required type="number" min="0" max="30" id="c4" name="C2 - Dependientes económicos" placeholder="2">
-                <div class="unit">personas</div>
+              <span class="qlabel">¿Quiénes dependen económicamente de usted?</span>
+              <div class="fila-grid">
+                <div><span class="mini">Hijos</span>
+                  <select required id="hijos-n" name="Cantidad de hijos"><option value="" disabled selected>Seleccione una opción</option><option value="0">No tengo hijos</option><option value="1">1 hijo</option><option value="2">2 hijos</option><option value="3">3 hijos</option><option value="4">4 hijos</option><option value="5">5 hijos</option><option value="6">6 hijos o más</option></select></div>
+                <div><span class="mini">Otras personas (padres u otros familiares)</span>
+                  <select required id="otros-dep-n" name="Otros dependientes económicos"><option value="" disabled selected>Seleccione una opción</option><option value="0">Ninguna</option><option value="1">1 persona</option><option value="2">2 personas</option><option value="3">3 personas</option><option value="4">4 personas o más</option></select></div>
+              </div>
+              <div class="sub-q filas" id="hijos-filas" hidden></div>
+              <div class="sub-q" id="otros-dep-detalle" hidden>
+                <span class="mini">¿Cuánto entrega cada mes, en total, a esas otras personas para sus gastos?</span>
+                <div class="amount">
+                  <input type="number" min="0" id="otros-dep-monto" name="Aporte mensual a otros dependientes (monto)" placeholder="300.000">
+                  <select id="otros-dep-moneda" name="Aporte mensual a otros dependientes (moneda)"><option>CRC</option><option>USD</option></select>
+                </div>
+                <p class="hint">Sume lo que destina cada mes a manutención, salud, vivienda u otros gastos de esas personas. No incluya lo que gasta en sus hijos.</p>
               </div>
               <p class="q-falta">Falta responder esta pregunta.</p>
             </div>
           </div>
 
+          <!-- ===== B. Ingresos, gastos y retiro ===== -->
+          <div class="block-title">Ingresos, gastos y retiro</div>
+
           <div class="q">
             <span class="q-num">04</span>
             <div>
-              <span class="qlabel">¿Qué tan predecible es su ingreso anual?</span>
-              <select required name="C1 - Predecibilidad del ingreso" id="c3">
+              <span class="qlabel">¿Cuál es su ingreso mensual, de dónde proviene y qué tan predecible es?</span>
+              <span class="mini">Ingreso mensual</span>
+              <div class="amount">
+                <input required type="number" min="0" id="salario-monto" name="Ingreso mensual del titular (monto)" placeholder="2.700.000">
+                <select id="salario-moneda" name="Ingreso mensual del titular (moneda)"><option>CRC</option><option>USD</option></select>
+              </div>
+              <span class="mini espacio">Fuente principal</span>
+              <select required id="fuente-ingreso" name="Fuente principal del ingreso">
+                <option value="" disabled selected>Seleccione una opción</option>
+                <option value="salario">Salario</option>
+                <option value="empresa">Empresa propia</option>
+                <option value="honorarios">Honorarios profesionales</option>
+                <option value="rentas">Rentas</option>
+              </select>
+              <span class="mini espacio">Predictibilidad del ingreso de su hogar</span>
+              <select required name="Predecibilidad del ingreso del hogar" id="c3">
                 <option value="" disabled selected>Seleccione una opción</option>
                 <option value="0">Varía de forma importante de un año a otro</option>
                 <option value="3">Varía de manera moderada según los resultados del año</option>
@@ -571,11 +783,20 @@
           <div class="q">
             <span class="q-num">05</span>
             <div>
-              <span class="qlabel">¿Qué monto destinaría inicialmente a este portafolio?</span>
+              <span class="qlabel">¿Cuál es su gasto familiar mensual y cómo espera que cambie en el retiro?</span>
+              <span class="mini">Gasto familiar mensual actual</span>
               <div class="amount">
-                <input required type="number" min="0" id="capital-monto" name="C12 - Capital inicial invertido (monto)" placeholder="250.000">
-                <select id="capital-moneda" name="C12 - Capital inicial invertido (moneda)"><option>USD</option><option>CRC</option></select>
+                <input required type="number" min="1" id="gasto-monto" name="Gasto familiar mensual (monto)" placeholder="10.000">
+                <select id="gasto-moneda" name="Gasto familiar mensual (moneda)"><option>USD</option><option>CRC</option></select>
               </div>
+              <p class="hint">Este gasto se proyecta con la inflación hasta su edad de retiro y determina el retiro anual del portafolio durante la jubilación.</p>
+              <span class="mini espacio">En el retiro, ese gasto será</span>
+              <select required id="gasto-retiro" name="Gasto esperado en el retiro">
+                <option value="" disabled selected>Seleccione una opción</option>
+                <option value="menor">Menor que el actual</option>
+                <option value="igual">Similar al actual</option>
+                <option value="mayor">Mayor que el actual</option>
+              </select>
               <p class="q-falta">Falta responder esta pregunta.</p>
             </div>
           </div>
@@ -583,71 +804,68 @@
           <div class="q">
             <span class="q-num">06</span>
             <div>
-              <span class="qlabel">¿Cuánto estima aportar al portafolio cada año?</span>
-              <div class="amount">
-                <input required type="number" min="0" id="aporte-monto" name="C13 - Aporte anual estimado (monto)" placeholder="100.000">
-                <select id="aporte-moneda" name="C13 - Aporte anual estimado (moneda)"><option>USD</option><option>CRC</option></select>
+              <span class="qlabel">¿Qué pensión espera recibir y qué hará con sus fondos ROP y FCL?</span>
+              <span class="mini">Régimen de pensión</span>
+              <select required id="pension-regimen" name="Régimen de pensión">
+                <option value="" disabled selected>Seleccione una opción</option>
+                <option value="ivm">Régimen de IVM de la CCSS</option>
+                <option value="otro">Otro régimen (Magisterio, Poder Judicial u otro)</option>
+                <option value="ninguno">No cotizo a ningún régimen de pensión</option>
+              </select>
+              <div class="sub-q" id="pension-detalle" hidden>
+                <span class="mini">Monto mensual estimado de la pensión, en valor de hoy</span>
+                <div class="amount">
+                  <input type="number" min="1" id="pension-monto" name="Pensión mensual estimada (monto)" placeholder="800.000">
+                  <select id="pension-moneda" name="Pensión mensual estimada (moneda)"><option>CRC</option><option>USD</option></select>
+                </div>
               </div>
-              <p class="q-falta">Falta responder esta pregunta.</p>
-              <p class="hint">Monto que destina al portafolio cada año durante la etapa de acumulación. <strong>No incluya aquí los saldos del ROP ni del FCL</strong>: esos se piden por separado en la pregunta siguiente.</p>
-            </div>
-          </div>
-
-          <div class="q">
-            <span class="q-num">07</span>
-            <div>
-              <span class="qlabel">¿Piensa incorporar a este portafolio los saldos de su ROP o de su FCL?</span>
-              <select required name="C7 - Incorporación de ROP y FCL" id="rop">
+              <span class="mini espacio">¿Incorporará a este portafolio los saldos de su ROP o FCL?</span>
+              <select required name="Incorporación de ROP y FCL" id="rop">
                 <option value="" disabled selected>Seleccione una opción</option>
                 <option value="ninguno">No, los mantendré fuera de este portafolio</option>
                 <option value="fcl">Sí, solo el FCL</option>
                 <option value="rop">Sí, solo el ROP</option>
                 <option value="ambos">Sí, ambos</option>
               </select>
-              <p class="hint">Indique el saldo aproximado de cada fondo. Su asesor definirá en qué momento entran a la proyección, según las reglas vigentes de cada régimen.</p>
               <div class="sub-q" id="fcl-detalle" hidden>
-                <span class="qlabel">Saldo aproximado del FCL, en dólares de hoy</span>
+                <span class="mini">Saldo aproximado del FCL, en dólares de hoy</span>
                 <div class="amount">
-                  <input type="number" min="0" id="fcl-monto" name="C7b - Saldo del FCL (US$ de hoy)" placeholder="8.000">
+                  <input type="number" min="0" id="fcl-monto" name="Saldo del FCL (US$ de hoy)" placeholder="8.000">
                   <div class="unit">US$</div>
                 </div>
               </div>
               <div class="sub-q" id="rop-detalle" hidden>
-                <span class="qlabel">Saldo aproximado del ROP, en dólares de hoy</span>
+                <span class="mini">Saldo aproximado del ROP, en dólares de hoy</span>
                 <div class="amount">
-                  <input type="number" min="0" id="rop-monto" name="C7c - Saldo del ROP (US$ de hoy)" placeholder="45.000">
+                  <input type="number" min="0" id="rop-monto" name="Saldo del ROP (US$ de hoy)" placeholder="45.000">
                   <div class="unit">US$</div>
                 </div>
               </div>
+              <p class="hint">Su asesor definirá en qué momento entran los saldos a la proyección, según las reglas vigentes de cada régimen.</p>
               <p class="q-falta">Falta responder esta pregunta.</p>
             </div>
           </div>
 
+          <!-- ===== C. Patrimonio y obligaciones ===== -->
+          <div class="block-title">Patrimonio y obligaciones</div>
+
           <div class="q">
-            <span class="q-num">08</span>
+            <span class="q-num">07</span>
             <div>
-              <span class="qlabel">¿En cuánto tiempo espera realizar el primer retiro de este portafolio?</span>
+              <span class="qlabel">¿Cuánto destinaría a este portafolio y qué peso tiene en su patrimonio?</span>
+              <span class="mini">Monto inicial</span>
               <div class="amount">
-                <input required type="number" min="0" max="80" id="c1" name="C7 - Años hasta el primer retiro" placeholder="5">
-                <div class="unit">años</div>
+                <input required type="number" min="0" id="capital-monto" name="Capital inicial invertido (monto)" placeholder="250.000">
+                <select id="capital-moneda" name="Capital inicial invertido (moneda)"><option>USD</option><option>CRC</option></select>
               </div>
-              <p class="hint">Se refiere a la primera salida de dinero de esta cartera, sea o no por jubilación: la compra de una propiedad, un aporte a un negocio o cualquier otro uso.</p>
-              <div class="sub-q">
-                <span class="qlabel">¿De cuánto sería ese retiro, en dólares de hoy?</span>
-                <div class="amount">
-                  <input required type="number" min="0" id="c1-monto" name="C7b - Monto del primer retiro (US$ de hoy)" placeholder="50.000">
-                  <div class="unit">US$</div>
-                </div>
+              <span class="mini espacio">Aporte anual estimado</span>
+              <div class="amount">
+                <input required type="number" min="0" id="aporte-monto" name="Aporte anual estimado (monto)" placeholder="100.000">
+                <select id="aporte-moneda" name="Aporte anual estimado (moneda)"><option>USD</option><option>CRC</option></select>
               </div>
-              <p class="q-falta">Falta responder esta pregunta.</p>
-            </div>
-          </div>
-
-          <div class="q">
-            <span class="q-num">09</span>
-            <div>
-              <span class="qlabel">¿Qué proporción de su patrimonio invertible total representa este portafolio?</span>
-              <select required name="C7 - Peso del portafolio en el patrimonio" id="c5">
+              <p class="hint">Monto que destina al portafolio cada año durante la etapa de acumulación. <strong>No incluya aquí los saldos del ROP ni del FCL</strong>: esos se indican en la pregunta de pensión.</p>
+              <span class="mini espacio">Proporción de su patrimonio invertible total que representa este portafolio</span>
+              <select required name="Peso del portafolio en el patrimonio" id="c5">
                 <option value="" disabled selected>Seleccione una opción</option>
                 <option value="0">Prácticamente todo</option>
                 <option value="3">Más de la mitad</option>
@@ -659,12 +877,78 @@
           </div>
 
           <div class="q">
+            <span class="q-num">08</span>
+            <div>
+              <span class="qlabel">¿En cuánto tiempo espera realizar el primer retiro de este portafolio, y de cuánto sería?</span>
+              <div class="fila-grid">
+                <div><span class="mini">Años hasta el primer retiro</span>
+                  <div class="amount"><input required type="number" min="0" max="80" id="c1" name="Años hasta el primer retiro" placeholder="5"><div class="unit">años</div></div></div>
+                <div><span class="mini">Monto, en dólares de hoy</span>
+                  <div class="amount"><input required type="number" min="0" id="c1-monto" name="Monto del primer retiro (US$ de hoy)" placeholder="50.000"><div class="unit">US$</div></div></div>
+              </div>
+              <p class="hint">Se refiere a la primera salida de dinero de esta cartera, sea o no por jubilación: la compra de una propiedad, un aporte a un negocio o cualquier otro uso.</p>
+              <p class="q-falta">Falta responder esta pregunta.</p>
+            </div>
+          </div>
+
+          <div class="q">
+            <span class="q-num">09</span>
+            <div>
+              <span class="qlabel">¿Cuál es la situación de su vivienda y qué otros inmuebles posee?</span>
+              <span class="mini">Vivienda principal</span>
+              <select required id="vivienda" name="Vivienda principal">
+                <option value="" disabled selected>Seleccione una opción</option>
+                <option value="propia">Propia, sin deuda</option>
+                <option value="hipoteca">Propia, con hipoteca</option>
+                <option value="alquilada">Alquilada</option>
+              </select>
+              <div class="sub-q" id="hipoteca-detalle" hidden>
+                <span class="mini">Saldo pendiente de la hipoteca</span>
+                <div class="amount">
+                  <input type="number" min="0" id="hipoteca-saldo" name="Saldo de la hipoteca (monto)" placeholder="120.000">
+                  <select id="hipoteca-saldo-moneda" name="Saldo de la hipoteca (moneda)"><option>USD</option><option>CRC</option></select>
+                </div>
+                <span class="mini espacio">Cuota mensual de la hipoteca</span>
+                <div class="amount">
+                  <input type="number" min="0" id="hipoteca-cuota" name="Cuota de la hipoteca (monto)" placeholder="1.200">
+                  <select id="hipoteca-cuota-moneda" name="Cuota de la hipoteca (moneda)"><option>USD</option><option>CRC</option></select>
+                </div>
+              </div>
+              <span class="mini espacio">Inmuebles de inversión (locales, apartamentos, lotes u otros)</span>
+              <select required id="inmuebles-n" name="Cantidad de inmuebles de inversión"><option value="" disabled selected>Seleccione una opción</option><option value="0">No poseo inmuebles de inversión</option><option value="1">1 inmueble</option><option value="2">2 inmuebles</option><option value="3">3 inmuebles</option><option value="4">4 inmuebles</option><option value="5">5 inmuebles o más</option></select>
+              <div class="sub-q" id="inmuebles-detalle" hidden>
+                <span class="mini">Moneda de los montos</span>
+                <select id="inmuebles-moneda" name="Moneda de los inmuebles"><option>USD</option><option>CRC</option></select>
+                <div class="filas" id="inmuebles-filas"></div>
+              </div>
+              <p class="q-falta">Falta responder esta pregunta.</p>
+            </div>
+          </div>
+
+          <div class="q">
             <span class="q-num">10</span>
             <div>
-              <span class="qlabel">¿Cuál es su edad actual?</span>
-              <div class="amount">
-                <input required type="number" min="18" max="90" id="edad" name="C8 - Edad actual" placeholder="45">
-                <div class="unit">años</div>
+              <span class="qlabel">¿Es propietario de una empresa?</span>
+              <select required id="empresa" name="Propietario de empresa">
+                <option value="" disabled selected>Seleccione una opción</option>
+                <option value="no">No</option>
+                <option value="si">Sí</option>
+              </select>
+              <div class="sub-q" id="empresa-detalle" hidden>
+                <span class="mini">¿Prevé venderla o traspasarla?</span>
+                <select id="empresa-plan" name="Plan sobre la empresa">
+                  <option value="" disabled selected>Seleccione una opción</option>
+                  <option value="vender">Sí, prevé venderla</option>
+                  <option value="traspasar">Sí, prevé traspasarla a su familia o socios</option>
+                  <option value="mantener">No lo prevé por ahora</option>
+                </select>
+                <div id="empresa-anios-detalle" hidden>
+                  <span class="mini espacio">¿En cuántos años, aproximadamente?</span>
+                  <div class="amount">
+                    <input type="number" min="0" max="60" id="empresa-anios" name="Años hasta la venta o traspaso" placeholder="10">
+                    <div class="unit">años</div>
+                  </div>
+                </div>
               </div>
               <p class="q-falta">Falta responder esta pregunta.</p>
             </div>
@@ -673,20 +957,76 @@
           <div class="q">
             <span class="q-num">11</span>
             <div>
-              <span class="qlabel">¿A qué edad desea retirarse?</span>
-              <div class="amount">
-                <input required type="number" min="30" max="90" id="edad_retiro" name="C9 - Edad deseada de retiro" placeholder="65">
-                <div class="unit">años</div>
+              <span class="qlabel">¿Cuáles son sus deudas y con qué reserva de liquidez cuenta?</span>
+              <div class="fila-grid">
+                <div><span class="mini">Saldo total de deudas</span>
+                  <div class="amount"><input required type="number" min="0" id="deudas-saldo" name="Deudas: saldo total (monto)" placeholder="0">
+                  <select id="deudas-saldo-moneda" name="Deudas: saldo total (moneda)"><option>USD</option><option>CRC</option></select></div></div>
+                <div><span class="mini">Cuota mensual total</span>
+                  <div class="amount"><input required type="number" min="0" id="deudas-cuota" name="Deudas: cuota mensual (monto)" placeholder="0">
+                  <select id="deudas-cuota-moneda" name="Deudas: cuota mensual (moneda)"><option>USD</option><option>CRC</option></select></div></div>
+              </div>
+              <p class="hint">Préstamos personales, prendarios, tarjetas de crédito u otros, sin incluir la hipoteca. Escriba 0 si no tiene deudas.</p>
+              <span class="mini espacio">Reserva de liquidez fuera de este portafolio</span>
+              <select required id="reserva" name="Reserva de liquidez">
+                <option value="" disabled selected>Seleccione una opción</option>
+                <option value="ninguna">No mantengo una reserva</option>
+                <option value="menos3">Menos de 3 meses de gasto</option>
+                <option value="3a6">Entre 3 y 6 meses de gasto</option>
+                <option value="6a12">Entre 6 y 12 meses de gasto</option>
+                <option value="mas12">Más de 12 meses de gasto</option>
+              </select>
+              <p class="q-falta">Falta responder esta pregunta.</p>
+            </div>
+          </div>
+
+          <!-- ===== D. Protección ===== -->
+          <div class="block-title">Protección</div>
+
+          <div class="q">
+            <span class="q-num">12</span>
+            <div>
+              <span class="qlabel">¿Qué seguros tiene vigentes?</span>
+              <div class="multi" id="seguros-multi">
+                <button type="button" class="multi-btn" aria-expanded="false"><span class="multi-txt vacio">Seleccione una o varias opciones</span></button>
+                <div class="multi-panel" hidden>
+                  <label class="opcion"><input type="checkbox" id="seguro-vida" value="vida"> Vida</label>
+                  <label class="opcion"><input type="checkbox" id="seguro-medico" value="gastosMedicos"> Gastos médicos</label>
+                  <label class="opcion"><input type="checkbox" id="seguro-invalidez" value="invalidez"> Invalidez</label>
+                  <label class="opcion"><input type="checkbox" id="seguro-ninguno" value="ninguno"> Ninguno de los anteriores</label>
+                </div>
+              </div>
+              <input type="hidden" required id="seguros-sel" name="Seguros vigentes">
+              <div class="sub-q" id="vida-detalle" hidden>
+                <span class="mini">Suma asegurada del seguro de vida</span>
+                <div class="amount">
+                  <input type="number" min="0" id="vida-suma" name="Suma asegurada de vida (monto)" placeholder="250.000">
+                  <select id="vida-moneda" name="Suma asegurada de vida (moneda)"><option>USD</option><option>CRC</option></select>
+                </div>
               </div>
               <p class="q-falta">Falta responder esta pregunta.</p>
             </div>
           </div>
 
+          <!-- ===== E. Metas y preferencias ===== -->
+          <div class="block-title">Metas y preferencias</div>
+
           <div class="q">
-            <span class="q-num">12</span>
+            <span class="q-num">13</span>
+            <div>
+              <span class="qlabel">¿Cuántas metas específicas desea financiar con su patrimonio?</span>
+              <select required id="metas-n" name="Cantidad de metas específicas"><option value="" disabled selected>Seleccione una opción</option><option value="0">Ninguna</option><option value="1">1 meta</option><option value="2">2 metas</option><option value="3">3 metas</option><option value="4">4 metas</option><option value="5">5 metas o más</option></select>
+              <p class="hint">Por ejemplo, la educación de sus hijos, la compra de una propiedad o un viaje.</p>
+              <div class="sub-q filas" id="metas-filas" hidden></div>
+              <p class="q-falta">Falta responder esta pregunta.</p>
+            </div>
+          </div>
+
+          <div class="q">
+            <span class="q-num">14</span>
             <div>
               <span class="qlabel">¿Qué desea que ocurra con este patrimonio al final de su horizonte de vida?</span>
-              <select required name="C7 - Destino del patrimonio" id="herencia">
+              <select required name="Destino del patrimonio" id="herencia">
                 <option value="" disabled selected>Seleccione una opción</option>
                 <option value="herencia">Dejar una herencia a mis hijos o herederos</option>
                 <option value="consumir">Utilizarlo durante mi vida, sin destinar un monto a herencia</option>
@@ -694,9 +1034,9 @@
               </select>
               <p class="q-falta">Falta responder esta pregunta.</p>
               <div class="sub-q" id="herencia-detalle" hidden>
-                <span class="qlabel">¿De cuánto, en dólares de hoy?</span>
+                <span class="mini">Monto de la herencia, en dólares de hoy</span>
                 <div class="amount">
-                  <input type="number" min="0" id="herencia-monto" name="C7b - Monto de la herencia (US$ de hoy)" placeholder="500.000">
+                  <input type="number" min="0" id="herencia-monto" name="Monto de la herencia (US$ de hoy)" placeholder="500.000">
                   <div class="unit">US$</div>
                 </div>
                 <p class="hint">Exprese el monto en poder adquisitivo actual. La proyección lo compara contra el portafolio en términos reales.</p>
@@ -705,10 +1045,10 @@
           </div>
 
           <div class="q">
-            <span class="q-num">13</span>
+            <span class="q-num">15</span>
             <div>
               <span class="qlabel">¿En qué moneda prefiere mantener la mayor parte de este portafolio?</span>
-              <select required name="C5 - Preferencia de moneda" id="moneda">
+              <select required name="Preferencia de moneda" id="moneda">
                 <option value="" disabled selected>Seleccione una opción</option>
                 <option value="Principalmente en colones (₡)">Principalmente en colones (₡)</option>
                 <option value="Principalmente en dólares (US$)">Principalmente en dólares (US$)</option>
@@ -719,16 +1059,165 @@
           </div>
 
           <div class="q">
-            <span class="q-num">14</span>
+            <span class="q-num">16</span>
             <div>
-              <span class="qlabel">¿Tiene metas adicionales o comentarios que su asesor deba considerar?</span>
-              <input id="comentarios" name="C14 - Metas adicionales o comentarios" placeholder="Compra de vivienda, educación, sucesión patrimonial…">
+              <span class="qlabel">¿Tiene comentarios adicionales que su asesor deba considerar?</span>
+              <input id="comentarios" name="Comentarios adicionales" placeholder="Sucesión patrimonial, cambios previstos en su situación laboral…">
               <p class="q-falta">Falta responder esta pregunta.</p>
               <p class="hint">Opcional.</p>
             </div>
           </div>
 
         </fieldset>
+        </div>
+        <div class="variante" data-para="institucion" hidden>
+        <fieldset>
+
+          <!-- ===== A. La institución ===== -->
+          <div class="block-title">La institución</div>
+          <div class="q">
+            <span class="q-num">01</span>
+            <div>
+              <span class="qlabel">¿Qué tipo de institución es?</span>
+              <select required id="i3-tipo" name="Tipo de institución"><option value="" disabled selected>Seleccione una opción</option><option value="asociacion">Asociación solidarista</option><option value="cooperativa">Cooperativa</option><option value="fondo">Fondo de ahorro o de pensión</option><option value="fundacion">Fundación u organización sin fines de lucro</option><option value="empresa">Empresa</option><option value="otra">Otra</option></select>
+              
+              <p class="q-falta">Falta responder esta pregunta.</p>
+            </div>
+          </div>
+          <div class="q">
+            <span class="q-num">02</span>
+            <div>
+              <span class="qlabel">¿Cuál es el objetivo principal del portafolio?</span>
+              <select required id="i3-objetivo" name="Objetivo del portafolio"><option value="" disabled selected>Seleccione una opción</option><option value="preservar">Preservar el capital</option><option value="rentas">Generar rentas para gastos operativos</option><option value="crecimiento">Crecimiento de largo plazo</option><option value="respaldo">Respaldo de obligaciones</option></select>
+              
+              <p class="q-falta">Falta responder esta pregunta.</p>
+            </div>
+          </div>
+
+          <!-- ===== B. Datos de la proyección ===== -->
+          <div class="block-title">Datos de la proyección</div>
+          <div class="q">
+            <span class="q-num">03</span>
+            <div>
+              <span class="qlabel">¿Qué monto destinaría inicialmente al portafolio?</span>
+              <div class="amount">
+                <input required type="number" min="0" id="i3-capital" name="Capital inicial (monto)" placeholder="500.000">
+                <select id="i3-capital-moneda" name="Capital inicial (moneda)"><option>USD</option><option>CRC</option></select>
+              </div>
+              
+              <p class="q-falta">Falta responder esta pregunta.</p>
+            </div>
+          </div>
+          <div class="q">
+            <span class="q-num">04</span>
+            <div>
+              <span class="qlabel">¿En cuántos años necesita los recursos?</span>
+              <div class="amount">
+                <input required type="number" min="1" max="60" id="i3-horizonte" name="Horizonte de inversión" placeholder="10">
+                <div class="unit">años</div>
+              </div>
+              <p class="hint">Horizonte de inversión del portafolio, hasta 60 años.</p>
+              <p class="q-falta">Falta responder esta pregunta.</p>
+            </div>
+          </div>
+          <div class="q">
+            <span class="q-num">05</span>
+            <div>
+              <span class="qlabel">¿Cuánto espera aportar al portafolio cada año?</span>
+              <div class="amount">
+                <input required type="number" min="0" id="i3-aporte" name="Aporte anual (monto)" placeholder="50.000">
+                <select id="i3-aporte-moneda" name="Aporte anual (moneda)"><option>USD</option><option>CRC</option></select>
+              </div>
+              <p class="hint">Se ajusta cada año por inflación. Escriba 0 si no prevé aportes.</p>
+              <p class="q-falta">Falta responder esta pregunta.</p>
+            </div>
+          </div>
+          <div class="q">
+            <span class="q-num">06</span>
+            <div>
+              <span class="qlabel">¿Cuánto espera retirar del portafolio cada año?</span>
+              <div class="amount">
+                <input required type="number" min="0" id="i3-retiro" name="Retiro anual (monto)" placeholder="30.000">
+                <select id="i3-retiro-moneda" name="Retiro anual (moneda)"><option>USD</option><option>CRC</option></select>
+              </div>
+              <p class="hint">Gastos operativos, beneficios u otras salidas recurrentes. Se ajusta cada año por inflación. Escriba 0 si no prevé retiros.</p>
+              <p class="q-falta">Falta responder esta pregunta.</p>
+            </div>
+          </div>
+          <div class="q">
+            <span class="q-num">07</span>
+            <div>
+              <span class="qlabel">¿Prevé retiros extraordinarios del portafolio?</span>
+              <select required id="i3-extra-n" name="Cantidad de retiros extraordinarios"><option value="" disabled selected>Seleccione una opción</option><option value="0">No prevé retiros extraordinarios</option><option value="1">1 retiro</option><option value="2">2 retiros</option><option value="3">3 retiros</option></select>
+              <div class="sub-q filas" id="i3-extra-filas" hidden></div>
+              <p class="hint">Salidas puntuales, como una inversión en infraestructura o el pago de una obligación.</p>
+              <p class="q-falta">Falta responder esta pregunta.</p>
+            </div>
+          </div>
+          <div class="q">
+            <span class="q-num">08</span>
+            <div>
+              <span class="qlabel">¿Qué capital mínimo debe conservar al final del horizonte?</span>
+              <div class="amount">
+                <input required type="number" min="0" id="i3-minimo" name="Capital mínimo final (US$ de hoy)" placeholder="400.000">
+                <div class="unit">US$</div>
+              </div>
+              <p class="hint">En dólares de hoy, es decir, en poder adquisitivo actual. Escriba 0 si no requiere un mínimo.</p>
+              <p class="q-falta">Falta responder esta pregunta.</p>
+            </div>
+          </div>
+
+          <!-- ===== C. Capacidad ===== -->
+          <div class="block-title">Capacidad</div>
+          <div class="q">
+            <span class="q-num">09</span>
+            <div>
+              <span class="qlabel">¿Qué proporción de sus activos o reservas totales representa este portafolio?</span>
+              <select required id="i3-peso" name="Peso del portafolio en los activos"><option value="" disabled selected>Seleccione una opción</option><option value="0">Prácticamente todo</option><option value="3">Más de la mitad</option><option value="7">Entre un cuarto y la mitad</option><option value="10">Menos de un cuarto</option></select>
+              
+              <p class="q-falta">Falta responder esta pregunta.</p>
+            </div>
+          </div>
+          <div class="q">
+            <span class="q-num">10</span>
+            <div>
+              <span class="qlabel">¿Qué tan estables son los ingresos de la institución?</span>
+              <select required id="i3-estabilidad" name="Estabilidad de los ingresos"><option value="" disabled selected>Seleccione una opción</option><option value="0">Varían de forma importante de un año a otro</option><option value="3">Varían de manera moderada según los resultados del año</option><option value="7">Son estables, con variaciones menores</option><option value="10">Son fijos, o provienen de rentas ya consolidadas</option></select>
+              
+              <p class="q-falta">Falta responder esta pregunta.</p>
+            </div>
+          </div>
+          <div class="q">
+            <span class="q-num">11</span>
+            <div>
+              <span class="qlabel">¿Tiene una política de inversión o una regulación que limite en qué puede invertir?</span>
+              <select required id="i3-regulacion" name="Política o regulación de inversión"><option value="" disabled selected>Seleccione una opción</option><option value="regulada">Sí, está regulada por SUGEF, SUPEN o SUGEVAL</option><option value="politica">Sí, tiene una política interna aprobada por su junta</option><option value="ninguna">No tiene restricciones formales</option></select>
+              
+              <p class="q-falta">Falta responder esta pregunta.</p>
+            </div>
+          </div>
+          <div class="q">
+            <span class="q-num">12</span>
+            <div>
+              <span class="qlabel">¿En qué moneda prefiere mantener la mayor parte del portafolio?</span>
+              <select required id="i3-moneda" name="Preferencia de moneda"><option value="" disabled selected>Seleccione una opción</option><option value="Principalmente en colones (₡)">Principalmente en colones (₡)</option><option value="Principalmente en dólares (US$)">Principalmente en dólares (US$)</option><option value="Distribución equilibrada entre ambas">Distribución equilibrada entre ambas</option></select>
+              
+              <p class="q-falta">Falta responder esta pregunta.</p>
+            </div>
+          </div>
+
+          <div class="q">
+            <span class="q-num">13</span>
+            <div>
+              <span class="qlabel">¿Tiene comentarios adicionales que su asesor deba considerar?</span>
+              <input id="i3-comentarios" name="Comentarios adicionales" placeholder="Restricciones de liquidez, decisiones pendientes de junta…">
+              <p class="q-falta">Falta responder esta pregunta.</p>
+              <p class="hint">Opcional.</p>
+            </div>
+          </div>
+
+        </fieldset>
+        </div>
         <div class="aviso" data-aviso hidden></div>
         <div class="nav">
           <button type="button" class="btn btn-back" onclick="goTo(2)">Atrás</button>
@@ -769,18 +1258,166 @@
 const GH_OWNER  = "jzunigachoto";
 const GH_REPO   = "chotocruzco-FinancePlanning";
 const GH_BRANCH = "main";
-const PASOS = ['Información personal','Perfil de riesgo','Planificación financiera'];
+const PASOS = {
+  persona:     ['Información personal','Perfil de riesgo','Planificación financiera'],
+  institucion: ['Información de la institución','Perfil de riesgo','Planificación financiera']
+};
+// Tipo de cliente elegido en la página 0: define la versión de la página 1,
+// la página 3 que corresponde y la carpeta donde se guardan las respuestas.
+let tipoCliente = 'persona';
+document.addEventListener('DOMContentLoaded', () => elegirTipo(tipoCliente));
+function elegirTipo(t){
+  tipoCliente = t;
+  document.querySelectorAll('.variante').forEach(function(v){
+    const activa = v.dataset.para === t;
+    v.hidden = !activa;
+    v.querySelectorAll('[data-req]').forEach(x => x.toggleAttribute('required', activa));
+    // La versión que no aplica queda desactivada: el navegador no la valida ni la envía
+    v.querySelectorAll('fieldset').forEach(f => f.disabled = !activa);
+  });
+  const tit = document.getElementById('p3-titulo'), txt = document.getElementById('p3-texto');
+  if(tit){
+    tit.textContent = t === 'institucion' ? 'Planificación del portafolio institucional' : 'Planificación financiera';
+    txt.textContent = t === 'institucion'
+      ? 'Estas respuestas permiten proyectar el portafolio de la institución en el horizonte que defina. Indique cada monto en la moneda en que lo administra.'
+      : 'Estas respuestas permiten proyectar su portafolio y dimensionar su situación patrimonial. Indique cada monto en la moneda en que lo percibe o lo paga.';
+  }
+  if(typeof renumerar === 'function'){ renumerar(); marcarRespondidas(); }
+}
+document.querySelectorAll('.tipo').forEach(function(b){
+  b.addEventListener('click', function(){ elegirTipo(b.dataset.tipo); goTo(1); });
+});
+
+// Código de país: lista propia con banderas dibujadas en SVG
+// (las listas nativas no muestran imágenes y Windows no dibuja emojis de banderas).
+const franjasH = (cs) => cs.map((c,i)=>`<rect y="${i*20/cs.length}" width="30" height="${20/cs.length+.1}" fill="${c}"/>`).join('');
+const franjasV = (cs) => cs.map((c,i)=>`<rect x="${i*30/cs.length}" width="${30/cs.length+.1}" height="20" fill="${c}"/>`).join('');
+const estrella = (x,y,r,c) => { let d=''; for(let i=0;i<10;i++){ const a=-Math.PI/2+i*Math.PI/5, rr=i%2?r*.42:r; d+=(i?'L':'M')+(x+rr*Math.cos(a)).toFixed(2)+' '+(y+rr*Math.sin(a)).toFixed(2); } return `<path d="${d}Z" fill="${c}"/>`; };
+const BANDERAS = {
+  '+506': `<rect width="30" height="20" fill="#002B7F"/><rect y="3.33" width="30" height="13.34" fill="#fff"/><rect y="6.67" width="30" height="6.66" fill="#CE1126"/>`,
+  '+1':   franjasH(['#B22234','#fff','#B22234','#fff','#B22234','#fff','#B22234']) + `<rect width="13" height="10.8" fill="#3C3B6E"/>` + [[2.6,2.2],[6.5,2.2],[10.4,2.2],[4.5,5.4],[8.5,5.4],[2.6,8.6],[6.5,8.6],[10.4,8.6]].map(p=>estrella(p[0],p[1],1.1,'#fff')).join(''),
+  '+507': `<rect width="30" height="20" fill="#fff"/><rect x="15" width="15" height="10" fill="#DA121A"/><rect y="10" width="15" height="10" fill="#072357"/>` + estrella(7.5,5,2.6,'#072357') + estrella(22.5,15,2.6,'#DA121A'),
+  '+505': franjasH(['#0067C6','#fff','#0067C6']) + `<circle cx="15" cy="10" r="2" fill="#C9A227"/>`,
+  '+502': franjasV(['#4997D0','#fff','#4997D0']) + `<circle cx="15" cy="10" r="2" fill="#6A9E3A"/>`,
+  '+503': franjasH(['#0F47AF','#fff','#0F47AF']) + `<circle cx="15" cy="10" r="2" fill="#C9A227"/>`,
+  '+504': franjasH(['#18C3DF','#fff','#18C3DF']) + [[15,10],[11,8],[11,12],[19,8],[19,12]].map(p=>estrella(p[0],p[1],1.1,'#18C3DF')).join(''),
+  '+52':  franjasV(['#006847','#fff','#CE1126']) + `<circle cx="15" cy="10" r="2" fill="#8C6A2E"/>`,
+  '+57':  `<rect width="30" height="10" fill="#FCD116"/><rect y="10" width="30" height="5" fill="#003893"/><rect y="15" width="30" height="5" fill="#CE1126"/>`,
+  '+34':  `<rect width="30" height="20" fill="#AA151B"/><rect y="5" width="30" height="10" fill="#F1BF00"/>`,
+  'otro': `<rect width="30" height="20" fill="#E8E7DC"/><circle cx="15" cy="10" r="6" fill="none" stroke="#7F8757" stroke-width="1.2"/><ellipse cx="15" cy="10" rx="2.6" ry="6" fill="none" stroke="#7F8757" stroke-width="1.1"/><path d="M9 10h12" stroke="#7F8757" stroke-width="1.1"/>`
+};
+const PAISES = [
+  ['+506','Costa Rica'],['+1','Estados Unidos y Canadá'],['+507','Panamá'],['+505','Nicaragua'],
+  ['+502','Guatemala'],['+503','El Salvador'],['+504','Honduras'],['+52','México'],
+  ['+57','Colombia'],['+34','España'],['otro','Otro país']
+];
+const bandera = cod => `<svg class="bandera" viewBox="0 0 30 20" preserveAspectRatio="none" aria-hidden="true">${BANDERAS[cod]}</svg>`;
+function pintarPais(caja){
+  const campo = document.getElementById(caja.dataset.campo);
+  const cod = campo.value || '+506';
+  const nombre = (PAISES.find(p => p[0] === cod) || [,''])[1];
+  caja.innerHTML = `<button type="button" class="pais-btn" aria-haspopup="listbox" aria-label="Código de país: ${nombre}">
+      ${bandera(cod)}<span>${cod === 'otro' ? 'Otro' : cod}</span></button>
+    <div class="pais-lista" role="listbox" hidden>` +
+    PAISES.map(p => `<button type="button" class="pais-op" role="option" data-cod="${p[0]}" aria-selected="${p[0]===cod}">
+      ${bandera(p[0])}<span class="cod">${p[0]==='otro' ? '' : p[0]}</span><span class="nom">${p[1]}</span></button>`).join('') +
+    `</div>`;
+}
+document.querySelectorAll('.pais').forEach(pintarPais);
+document.addEventListener('click', function(e){
+  document.querySelectorAll('.pais').forEach(function(caja){
+    const lista = caja.querySelector('.pais-lista');
+    const op = e.target.closest('.pais-op');
+    if(op && caja.contains(op)){
+      const campo = document.getElementById(caja.dataset.campo);
+      campo.value = op.dataset.cod;
+      pintarPais(caja);
+      validarIdentificacion();
+      caja.querySelector('.pais-btn').focus();
+    }else if(e.target.closest('.pais-btn') && caja.contains(e.target)){
+      lista.hidden = !lista.hidden;
+    }else{
+      lista.hidden = true;
+    }
+  });
+});
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape') document.querySelectorAll('.pais-lista').forEach(l => l.hidden = true);
+});
+
+// Cédula con formato 1-2345-6789 mientras se escribe
+document.addEventListener('input', function(e){
+  if(!e.target || e.target.id !== 'cedula') return;
+  const d = soloDigitos(e.target.value).slice(0, 9);
+  e.target.value = d.length > 5 ? d[0]+'-'+d.slice(1,5)+'-'+d.slice(5)
+                 : d.length > 1 ? d[0]+'-'+d.slice(1) : d;
+});
+
+// Los montos admiten decimales (centavos); edades, años y cantidades siguen siendo enteros.
+const ENTEROS = new Set(['edad_retiro','edad-pareja','c1','i3-horizonte','empresa-anios']);
+function montosConDecimales(raiz){
+  (raiz || document).querySelectorAll('input[type="number"]').forEach(function(x){
+    const k = x.dataset.k;
+    if(ENTEROS.has(x.id) || k === 'anio' || k === 'edad') return;
+    x.step = 'any';
+  });
+}
+document.addEventListener('DOMContentLoaded', () => montosConDecimales());
+
+// Validaciones de la página 1
+const soloDigitos = v => (v || '').replace(/\D/g, '');
+function validarIdentificacion(){
+  const ced = document.getElementById('cedula');
+  if(ced){
+    const n = soloDigitos(ced.value).length;
+    ced.setCustomValidity(ced.value && (n !== 9 || soloDigitos(ced.value)[0] === '0')
+      ? 'La cédula debe tener 9 dígitos, con el formato 1-2345-6789, y no puede empezar en 0.' : '');
+  }
+  [['tel-codigo','telefono'],['inst-tel-codigo','inst-telefono']].forEach(function(par){
+    const cod = document.getElementById(par[0]), tel = document.getElementById(par[1]);
+    if(!cod || !tel) return;
+    const n = soloDigitos(tel.value).length;
+    const mal = tel.value && (cod.value === '+506' ? n !== 8 : (n < 6 || n > 15));
+    tel.setCustomValidity(mal ? (cod.value === '+506'
+      ? 'Los teléfonos de Costa Rica tienen 8 dígitos.' : 'Revise el número de teléfono.') : '');
+  });
+  const nac = document.getElementById('nacimiento');
+  if(nac){
+    const e = edadDesde(nac.value);
+    nac.setCustomValidity(nac.value && (e === null || e < 18 || e > 100)
+      ? 'Revise la fecha: el titular debe ser mayor de edad.' : '');
+    document.getElementById('edad').value = e === null ? '' : e;
+    const nota = document.getElementById('edad-nota');
+    if(nota) nota.textContent = e === null ? '' : 'Su edad actual, según su fecha de nacimiento, es de ' + e + ' años.';
+  }
+}
+function edadDesde(fecha){
+  if(!fecha) return null;
+  const f = new Date(fecha + 'T00:00:00'), h = new Date();
+  if(isNaN(f)) return null;
+  let e = h.getFullYear() - f.getFullYear();
+  if(h.getMonth() < f.getMonth() || (h.getMonth() === f.getMonth() && h.getDate() < f.getDate())) e--;
+  return e;
+}
+['input','change'].forEach(ev => document.addEventListener(ev, function(e){
+  if(e.target && ['cedula','telefono','tel-codigo','inst-telefono','inst-tel-codigo','nacimiento'].includes(e.target.id)){
+    validarIdentificacion(); validarEdades();
+  }
+}));
 
 
 // Valida los campos obligatorios de una página antes de avanzar.
 // Sin esto, un campo vacío en una página oculta impide el envío sin mostrar aviso,
 // porque el navegador no puede enfocar un control que no está visible.
+// Preguntas de la versión vigente (personas o instituciones) de una página
+function visibles(pag){ return [...pag.querySelectorAll('.q')].filter(q => !q.closest('.variante[hidden]')); }
+
 function validarPagina(n){
   const pag = document.querySelector('.page[data-page="'+n+'"]');
   const faltantes = [];
 
   // Preguntas numeradas: se marcan todas las que falten, no solo la primera.
-  pag.querySelectorAll('.q').forEach(function(q){
+  visibles(pag).forEach(function(q){
     // Una pregunta puede tener más de un control obligatorio (por ejemplo el monto
     // condicional de la herencia), así que se revisan todos, no solo el primero.
     // Se valida también el formato (mínimos, máximos, reglas cruzadas), no solo que
@@ -825,7 +1462,7 @@ function validarPagina(n){
 // Marca cada pregunta contestada y actualiza el avance del bloque.
 function marcarRespondidas(){
   document.querySelectorAll('.page').forEach(function(pag){
-    const qs = pag.querySelectorAll('.q');
+    const qs = visibles(pag);
     if(!qs.length) return;
     // Las preguntas opcionales se marcan igual, pero no cuentan para el avance
     const obligatorias = [...qs].filter(q => q.querySelector('[required]'));
@@ -835,7 +1472,9 @@ function marcarRespondidas(){
       const ok = campos.length ? [...campos].every(x => x.value !== '')
                                : !!(q.querySelector('select, input') || {}).value;
       q.classList.toggle('contestada', ok);
-      if(ok){ q.classList.remove('pendiente'); if(obligatorias.includes(q)) n++; }
+      if(ok && obligatorias.includes(q)) n++;
+      // La marca de error se quita en cuanto el dato queda completo y válido
+      if(ok && [...campos].every(x => x.checkValidity())) q.classList.remove('pendiente');
     });
     const cont = pag.querySelector('[data-contador]');
     if(cont) cont.textContent = n + ' de ' + obligatorias.length + ' respondidas';
@@ -847,39 +1486,157 @@ function marcarRespondidas(){
 }
 document.addEventListener('change', marcarRespondidas);
 
-// El monto de la herencia solo se muestra —y solo se exige— si el cliente
-// escogió dejarla. Así no aparece un campo obligatorio que no le aplica.
 // Campos que solo se muestran —y solo se exigen— según lo que el cliente escoja.
+// Cuando dejan de aplicar se vacían, para no enviar datos que el cliente descartó.
 const CONDICIONALES = [
-  {control:'herencia', detalle:'herencia-detalle', monto:'herencia-monto', aplica: v => v === 'herencia'},
-  {control:'rop',      detalle:'fcl-detalle',      monto:'fcl-monto',      aplica: v => v === 'fcl' || v === 'ambos'},
-  {control:'rop',      detalle:'rop-detalle',      monto:'rop-monto',      aplica: v => v === 'rop' || v === 'ambos'}
+  {control:'plan',            detalle:'pareja-detalle',        campos:['edad-pareja','ingreso-pareja-monto'], aplica: v => v === 'conjunta'},
+  {control:'otros-dep-n',     detalle:'otros-dep-detalle',     campos:['otros-dep-monto'],             aplica: v => +v > 0},
+  {control:'pension-regimen', detalle:'pension-detalle',       campos:['pension-monto'],               aplica: v => v === 'ivm' || v === 'otro'},
+  {control:'rop',             detalle:'fcl-detalle',           campos:['fcl-monto'],                   aplica: v => v === 'fcl' || v === 'ambos'},
+  {control:'rop',             detalle:'rop-detalle',           campos:['rop-monto'],                   aplica: v => v === 'rop' || v === 'ambos'},
+  {control:'vivienda',        detalle:'hipoteca-detalle',      campos:['hipoteca-saldo','hipoteca-cuota'], aplica: v => v === 'hipoteca'},
+  {control:'inmuebles-n',     detalle:'inmuebles-detalle',     campos:[],                              aplica: v => +v > 0},
+  {control:'empresa',         detalle:'empresa-detalle',       campos:['empresa-plan'],                aplica: v => v === 'si'},
+  {control:'empresa-plan',    detalle:'empresa-anios-detalle', campos:['empresa-anios'],               aplica: v => v === 'vender' || v === 'traspasar'},
+  {control:'seguro-vida',     detalle:'vida-detalle',          campos:['vida-suma'],                   aplica: v => v === true},
+  {control:'herencia',        detalle:'herencia-detalle',      campos:['herencia-monto'],              aplica: v => v === 'herencia'}
 ];
+const valorDe = el => el.type === 'checkbox' ? el.checked : el.value;
 function sincronizarCondicionales(){
   CONDICIONALES.forEach(function(c){
-    const sel = document.getElementById(c.control);
+    const ctl = document.getElementById(c.control);
     const det = document.getElementById(c.detalle);
-    const monto = document.getElementById(c.monto);
-    if(!sel || !det || !monto) return;
-    const aplica = c.aplica(sel.value);
+    if(!ctl || !det) return;
+    const aplica = c.aplica(valorDe(ctl));
     det.hidden = !aplica;
-    monto.toggleAttribute('required', aplica);
-    if(!aplica) monto.value = '';
+    c.campos.forEach(function(id){
+      const campo = document.getElementById(id);
+      if(!campo) return;
+      campo.toggleAttribute('required', aplica);
+      if(!aplica) campo.value = '';
+    });
+  });
+  renumerar();
+}
+
+// Filas repetibles: el cliente indica cuántos elementos tiene y aparece una fila por cada uno.
+// Las filas ya escritas se conservan al subir o bajar la cantidad.
+const ANIO_ACTUAL = new Date().getFullYear();
+const REPETIBLES = [
+  {control:'hijos-n', contenedor:'hijos-filas', max:15, fila: i => `
+    <div class="fila-rep">
+      <span class="mini">Edad del hijo ${i+1}</span>
+      <div class="amount"><input required type="number" min="0" max="80" data-k="edad" name="Edad del hijo ${i+1}" placeholder="12"><div class="unit">años</div></div>
+    </div>`},
+  {control:'inmuebles-n', contenedor:'inmuebles-filas', max:10, fila: i => `
+    <div class="fila-rep"><span class="fila-tit">Inmueble ${i+1}</span><div class="fila-grid c3">
+      <div><span class="mini">Valor estimado</span><input required type="number" min="0" data-k="valor" name="Inmueble ${i+1}: valor estimado" placeholder="180.000"></div>
+      <div><span class="mini">Renta mensual neta</span><input required type="number" min="0" data-k="renta" name="Inmueble ${i+1}: renta mensual neta" placeholder="1.100"></div>
+      <div><span class="mini">Saldo de deuda</span><input required type="number" min="0" data-k="deuda" name="Inmueble ${i+1}: saldo de deuda" placeholder="0"></div>
+    </div></div>`},
+  {control:'i3-extra-n', contenedor:'i3-extra-filas', max:3, fila: i => `
+    <div class="fila-rep"><span class="fila-tit">Retiro extraordinario ${i+1}</span><div class="fila-grid">
+      <div><span class="mini">Monto, en dólares de hoy</span><input required type="number" min="1" data-k="monto" name="Retiro extraordinario ${i+1}: monto (US$ de hoy)" placeholder="100.000"></div>
+      <div><span class="mini">Año en que ocurriría</span><input required type="number" min="${ANIO_ACTUAL}" max="${ANIO_ACTUAL+60}" data-k="anio" name="Retiro extraordinario ${i+1}: año" placeholder="${ANIO_ACTUAL+3}"></div>
+    </div></div>`},
+  {control:'metas-n', contenedor:'metas-filas', max:8, fila: i => `
+    <div class="fila-rep"><span class="fila-tit">Meta ${i+1}</span><div class="fila-grid">
+      <div><span class="mini">Tipo de meta</span><select required data-k="tipo" name="Meta ${i+1}: tipo">
+        <option value="" disabled selected>Seleccione</option>
+        <option value="educacion">Educación</option><option value="vivienda">Vivienda o propiedad</option>
+        <option value="vehiculo">Vehículo</option><option value="viaje">Viaje</option>
+        <option value="negocio">Negocio o emprendimiento</option><option value="otra">Otra</option></select></div>
+      <div><span class="mini">Monto, en dólares de hoy</span><input required type="number" min="1" data-k="monto" name="Meta ${i+1}: monto (US$ de hoy)" placeholder="40.000"></div>
+      <div><span class="mini">Año estimado</span><input required type="number" min="${ANIO_ACTUAL}" max="2100" data-k="anio" name="Meta ${i+1}: año estimado" placeholder="${ANIO_ACTUAL+5}"></div>
+      <div><span class="mini">Prioridad</span><select required data-k="prioridad" name="Meta ${i+1}: prioridad">
+        <option value="" disabled selected>Seleccione</option>
+        <option value="esencial">Esencial</option><option value="deseable">Deseable</option></select></div>
+    </div></div>`}
+];
+function sincronizarFilas(){
+  REPETIBLES.forEach(function(r){
+    const ctl = document.getElementById(r.control), cont = document.getElementById(r.contenedor);
+    if(!ctl || !cont) return;
+    const n = Math.max(0, Math.min(r.max, Math.floor(+ctl.value) || 0));
+    while(cont.children.length > n) cont.lastElementChild.remove();
+    while(cont.children.length < n) cont.insertAdjacentHTML('beforeend', r.fila(cont.children.length));
+    if(cont.classList.contains('sub-q')) cont.hidden = n === 0;
+    montosConDecimales(cont);
   });
 }
+const leerFilas = id => [...document.getElementById(id).children].map(function(f){
+  const o = {};
+  f.querySelectorAll('[data-k]').forEach(x => { o[x.dataset.k] = x.type === 'number' ? +x.value : x.value; });
+  return o;
+});
+
+// Seguros: selección múltiple. «Ninguno» excluye a los demás. El campo oculto
+// lleva la selección para que la validación general lo trate como cualquier otra pregunta.
+const SEGUROS = ['seguro-vida','seguro-medico','seguro-invalidez'];
+function sincronizarSeguros(e){
+  const ninguno = document.getElementById('seguro-ninguno');
+  if(!ninguno) return;
+  if(e && e.target === ninguno && ninguno.checked) SEGUROS.forEach(id => document.getElementById(id).checked = false);
+  if(e && SEGUROS.includes(e.target.id) && e.target.checked) ninguno.checked = false;
+  const sel = [...SEGUROS, 'seguro-ninguno'].map(id => document.getElementById(id)).filter(x => x.checked).map(x => x.value);
+  document.getElementById('seguros-sel').value = sel.join(',');
+  // Texto visible de la lista cerrada: lo marcado, o la indicación inicial
+  const txt = document.querySelector('#seguros-multi .multi-txt');
+  const nombres = [...SEGUROS, 'seguro-ninguno'].map(id => document.getElementById(id))
+    .filter(x => x.checked).map(x => x.parentElement.textContent.trim());
+  txt.textContent = nombres.length ? nombres.join(' · ') : 'Seleccione una o varias opciones';
+  txt.classList.toggle('vacio', !nombres.length);
+  if(e && e.target === ninguno && ninguno.checked) abrirMulti(false);
+}
+function abrirMulti(abrir){
+  const m = document.getElementById('seguros-multi');
+  if(!m) return;
+  m.querySelector('.multi-panel').hidden = !abrir;
+  m.querySelector('.multi-btn').setAttribute('aria-expanded', abrir);
+}
+document.addEventListener('click', function(e){
+  const m = document.getElementById('seguros-multi');
+  if(!m) return;
+  if(e.target.closest('.multi-btn') && m.contains(e.target)){
+    abrirMulti(m.querySelector('.multi-panel').hidden);
+  }else if(!m.contains(e.target)){
+    abrirMulti(false);
+  }
+});
+document.addEventListener('keydown', function(e){ if(e.key === 'Escape') abrirMulti(false); });
+
+// La numeración sigue a las preguntas visibles: si la del ingreso de la pareja
+// no aplica, no queda un salto en los números.
+function renumerar(){
+  document.querySelectorAll('.page').forEach(function(pag){
+    let k = 0;
+    visibles(pag).forEach(function(q){
+      if(q.hidden) return;
+      const num = q.querySelector('.q-num');
+      if(num) num.textContent = String(++k).padStart(2, '0');
+    });
+  });
+}
+
 function validarEdades(){
+  // Un cliente ya jubilado indica la edad a la que se retiró: no se bloquea, se le avisa
+  // que su proyección arranca en fase de retiro.
   const e = document.getElementById('edad'), r = document.getElementById('edad_retiro');
   if(!e || !r) return;
-  r.setCustomValidity(e.value && r.value && +r.value <= +e.value
-    ? 'La edad de retiro debe ser mayor que la edad actual.' : '');
+  r.setCustomValidity('');
+  const nota = document.getElementById('retiro-nota');
+  if(nota) nota.textContent = (e.value && r.value && +r.value <= +e.value)
+    ? 'Indicó una edad igual o menor a la actual: la proyección considerará que ya está retirado.' : '';
 }
 document.addEventListener('input', function(e){
   if(e.target && (e.target.id === 'edad' || e.target.id === 'edad_retiro')) validarEdades();
+  // Solo se refresca mientras escribe si la pregunta ya estaba señalada
+  if(e.target && e.target.closest && e.target.closest('.q.pendiente')) marcarRespondidas();
 });
 
 // Si el navegador restaura el formulario (volver atrás, recargar), los campos
 // condicionales deben reflejar lo que ya estaba marcado.
-function restaurarEstado(){ validarEdades(); sincronizarCondicionales(); marcarRespondidas(); }
+function restaurarEstado(){ const t = document.querySelector('.variante:not([hidden])'); elegirTipo(t ? t.dataset.para : tipoCliente); validarIdentificacion(); validarEdades(); sincronizarSeguros(); sincronizarCondicionales(); sincronizarFilas(); marcarRespondidas(); }
 window.addEventListener('pageshow', restaurarEstado);
 
 // El botón de envío pasa por la misma validación que los botones de continuar,
@@ -889,13 +1646,23 @@ document.getElementById('submit-btn').addEventListener('click', function(e){
   if(!validarPagina(3)) e.preventDefault();
 });
 
-document.addEventListener('change', function(e){
-  if(e.target && CONDICIONALES.some(c => c.control === e.target.id)){
-    sincronizarCondicionales(); marcarRespondidas();
-  }
+function alCambiar(e){
+  if(!e.target) return;
+  const id = e.target.id;
+  if(id && id.startsWith('seguro-')) sincronizarSeguros(e);
+  if(CONDICIONALES.some(c => c.control === id) || (id && id.startsWith('seguro-'))) sincronizarCondicionales();
+  if(REPETIBLES.some(r => r.control === id)) sincronizarFilas();
+  marcarRespondidas();
+}
+document.addEventListener('change', alCambiar);
+// Las cantidades (hijos, dependientes, inmuebles, metas) reaccionan mientras se escriben
+document.addEventListener('input', function(e){
+  const id = e.target && e.target.id;
+  if(REPETIBLES.some(r => r.control === id) || id === 'otros-dep-n') alCambiar(e);
 });
 
 function goTo(page){
+  validarIdentificacion();
   const actual = document.querySelector('.page.active');
   if(actual && page > +actual.dataset.page && !validarPagina(+actual.dataset.page)) return;
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -904,9 +1671,12 @@ function goTo(page){
     document.getElementById('seg-'+i).classList.toggle('on', page>=i);
   }
   document.getElementById('lede').classList.toggle('hide', page>1);
+  document.getElementById('progress').classList.toggle('oculto', page === 0);
   const label = document.getElementById('progress-label');
-  if(page<=3){
-    label.textContent = 'Paso '+page+' de 3 — '+PASOS[page-1];
+  if(page === 0){
+    label.textContent = '';
+  } else if(page<=3){
+    label.textContent = 'Paso '+page+' de 3 — '+PASOS[tipoCliente][page-1];
   } else {
     label.textContent = 'Cuestionario completado';
   }
@@ -957,19 +1727,30 @@ document.getElementById('form').addEventListener('submit', async function(e){
   const btn = document.getElementById('submit-btn');
   const val = id => document.getElementById(id).value;
 
-  const nombre = val('nombre').trim();
-  const cliente = {
-    id: 'c-' + Date.now() + '-' + Math.random().toString(36).slice(2,7),
+  const esPersona = tipoCliente === 'persona';
+  const nombre = esPersona
+    ? (val('nombres').trim() + ' ' + val('apellidos').trim()).trim()
+    : val('inst-nombre').trim();
+  const cliente = esPersona ? clientePersona() : clienteInstitucion();
+  function clientePersona(){ return {
+    id: (esPersona ? 'c-' : 'i-') + Date.now() + '-' + Math.random().toString(36).slice(2,7),
+    tipoCliente,
     nombre,
-    correo: val('correo').trim(),
-    telefono: val('telefono').trim(),
+    correo: val(esPersona ? 'correo' : 'inst-correo').trim(),
+    telefono: val(esPersona ? 'tel-codigo' : 'inst-tel-codigo') + ' ' + val(esPersona ? 'telefono' : 'inst-telefono').trim(),
+    direccion: val(esPersona ? 'direccion' : 'inst-direccion').trim(),
+    identificacion: esPersona ? {
+      nombres: val('nombres').trim(),
+      apellidos: val('apellidos').trim(),
+      cedula: val('cedula').trim(),
+      fechaNacimiento: val('nacimiento'),
+      ocupacion: val('ocupacion').trim(),
+      estadoCivil: val('estado-civil')
+    } : null,
     edad: +val('edad'),
     edadRetiro: +val('edad_retiro'),
-    // Página 2 — tolerancia y apetito (escala 0-10 por reactivo).
-    // q5 admite 'na' (el cliente no ha pasado por una pérdida): se guarda como
-    // null y el dashboard la excluye del denominador en lugar de imputarle un valor.
     // Página 2 — escala 0-10 por reactivo.
-    //   Tolerancia: q1 a q5   ·   Apetito: q6 a q9
+    //   Tolerancia: q1, q2, q4, q5, q9   ·   Apetito: q3, q6, q7, q8
     // q4 admite 'na' (el cliente no ha pasado por una pérdida): se guarda como null
     // y el dashboard la excluye del denominador en lugar de imputarle un valor.
     respuestas: {
@@ -981,7 +1762,8 @@ document.getElementById('form').addEventListener('submit', async function(e){
     // Página 3 — capacidad objetiva y datos de planificación.
     capacidad: {
       fuenteIngreso:     +val('c3'),        // escala 0-10
-      dependientes:      +val('c4'),        // cifra abierta
+      // Personas que dependen del cliente: hijos más otros dependientes (preguntas 3 y 4).
+      dependientes:      (+val('hijos-n') || 0) + (+val('otros-dep-n') || 0),
       pesoDelPortafolio: +val('c5'),        // escala 0-10: qué tanto del patrimonio total es este portafolio
       // Primer retiro del PORTAFOLIO, distinto de la edad de retiro laboral:
       // marca el horizonte efectivo de la inversión.
@@ -1012,8 +1794,99 @@ document.getElementById('form').addEventListener('submit', async function(e){
     aporteMonto: +val('aporte-monto'),
     aporteMoneda: val('aporte-moneda'),
     comentarios: val('comentarios').trim(),
+    // Página 3 ampliada. Se registran para el análisis del asesor; por ahora no
+    // alteran la proyección ni las fórmulas del Excel.
+    hogar: {
+      planificacion: val('plan'),
+      edadPareja: val('plan') === 'conjunta' ? +val('edad-pareja') : null,
+      hijos: leerFilas('hijos-filas').map(h => h.edad),
+      otrosDependientes: {
+        cantidad: +val('otros-dep-n'),
+        aporteMensual: +val('otros-dep-n') > 0 ? +val('otros-dep-monto') : null,
+        moneda: +val('otros-dep-n') > 0 ? val('otros-dep-moneda') : null
+      }
+    },
+    ingresos: {
+      fuentePrincipal: val('fuente-ingreso'),
+      ingresoPareja: val('plan') === 'conjunta'
+        ? {monto: +val('ingreso-pareja-monto'), moneda: val('ingreso-pareja-moneda')} : null,
+      gastoEnRetiro: val('gasto-retiro')
+    },
+    pension: {
+      regimen: val('pension-regimen'),
+      montoMensual: val('pension-regimen') === 'ninguno' ? null : +val('pension-monto'),
+      moneda: val('pension-regimen') === 'ninguno' ? null : val('pension-moneda')
+    },
+    patrimonio: {
+      vivienda: {
+        situacion: val('vivienda'),
+        hipoteca: val('vivienda') === 'hipoteca' ? {
+          saldo: +val('hipoteca-saldo'), saldoMoneda: val('hipoteca-saldo-moneda'),
+          cuotaMensual: +val('hipoteca-cuota'), cuotaMoneda: val('hipoteca-cuota-moneda')
+        } : null
+      },
+      inmuebles: {
+        moneda: +val('inmuebles-n') > 0 ? val('inmuebles-moneda') : null,
+        lista: leerFilas('inmuebles-filas').map(f => ({valor: f.valor, rentaMensualNeta: f.renta, saldoDeuda: f.deuda}))
+      },
+      empresa: {
+        propietario: val('empresa') === 'si',
+        plan: val('empresa') === 'si' ? val('empresa-plan') : null,
+        aniosHastaEvento: (val('empresa-plan') === 'vender' || val('empresa-plan') === 'traspasar') ? +val('empresa-anios') : null
+      },
+      deudas: {
+        saldo: +val('deudas-saldo'), saldoMoneda: val('deudas-saldo-moneda'),
+        cuotaMensual: +val('deudas-cuota'), cuotaMoneda: val('deudas-cuota-moneda')
+      },
+      reservaLiquidez: val('reserva')
+    },
+    proteccion: {
+      seguros: val('seguros-sel').split(',').filter(x => x && x !== 'ninguno'),
+      vidaSumaAsegurada: document.getElementById('seguro-vida').checked
+        ? {monto: +val('vida-suma'), moneda: val('vida-moneda')} : null
+    },
+    metas: leerFilas('metas-filas').map(m => ({tipo: m.tipo, montoUsdHoy: m.monto, anio: m.anio, prioridad: m.prioridad})),
     creadoEn: Date.now()
-  };
+  }; }
+  function base(){
+    return {
+      id: (esPersona ? 'c-' : 'i-') + Date.now() + '-' + Math.random().toString(36).slice(2,7),
+      tipoCliente, nombre,
+      correo: val(esPersona ? 'correo' : 'inst-correo').trim(),
+      telefono: val(esPersona ? 'tel-codigo' : 'inst-tel-codigo') + ' ' + val(esPersona ? 'telefono' : 'inst-telefono').trim(),
+      direccion: val(esPersona ? 'direccion' : 'inst-direccion').trim()
+    };
+  }
+  // Institución: página 2 común (perfil de riesgo) y página 3 institucional.
+  // La capacidad se mide con la estabilidad de ingresos, el peso del portafolio y el horizonte.
+  function clienteInstitucion(){
+    return Object.assign(base(), {
+      respuestas: {
+        q1:+val('q1'), q2:+val('q2'), q3:+val('q3'),
+        q4: val('q4')==='na' ? null : +val('q4'),
+        q5:+val('q5'), q6:+val('q6'), q7:+val('q7'), q8:+val('q8'), q9:+val('q9')
+      },
+      capacidad: {
+        fuenteIngreso:     +val('i3-estabilidad'),
+        pesoDelPortafolio: +val('i3-peso'),
+        conocimiento:      +val('c6')
+      },
+      institucional: {
+        tipo: val('i3-tipo'),
+        objetivo: val('i3-objetivo'),
+        capitalMonto: +val('i3-capital'),  capitalMoneda: val('i3-capital-moneda'),
+        horizonteAnios: +val('i3-horizonte'),
+        aporteMonto: +val('i3-aporte'),    aporteMoneda: val('i3-aporte-moneda'),
+        retiroMonto: +val('i3-retiro'),    retiroMoneda: val('i3-retiro-moneda'),
+        extraordinarios: leerFilas('i3-extra-filas').map(r => ({montoUsdHoy: r.monto, anio: r.anio})),
+        capitalMinimoUsdHoy: +val('i3-minimo'),
+        regulacion: val('i3-regulacion')
+      },
+      preferenciaMoneda: val('i3-moneda'),
+      comentarios: val('i3-comentarios').trim(),
+      creadoEn: Date.now()
+    });
+  }
 
   const token = getToken();
   if(!token){
@@ -1024,6 +1897,8 @@ document.getElementById('form').addEventListener('submit', async function(e){
 
   btn.disabled = true; statusEl.className='status'; statusEl.textContent='Registrando…';
   try{
+    // Personas e instituciones llegan a la misma carpeta; el campo tipoCliente las distingue
+    // y el dashboard las presenta por separado.
     const path = `data/clientes/${cliente.id}.json`;
     const url = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${path}`;
     const res = await fetch(url, {
