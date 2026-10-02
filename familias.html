@@ -318,6 +318,21 @@
   .sub-bloque{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#918042;font-weight:600;margin:6px 0 18px;}
   .field[hidden]{display:none;}
   select:disabled{opacity:.55;}
+  /* Página 0: portada */
+  .intro[hidden]{display:none;}
+  .intro[hidden] ~ .progress{padding-top:38px;}
+  .progress.oculto + .sheet{margin-top:56px;margin-bottom:56px;}
+  .portada{max-width:540px;margin:0 auto;padding:46px 0 40px;text-align:center;}
+  .portada-kicker{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#918042;font-weight:500;margin:0 0 22px;}
+  .portada-tit{font-size:31px;line-height:1.22;font-weight:300;letter-spacing:-.015em;color:#141709;margin:0 auto 24px;max-width:20ch;}
+  .portada-regla{width:46px;height:1px;background:#918042;margin:0 auto 26px;}
+  .portada-texto{font-size:15px;line-height:1.75;color:#3A3F24;font-weight:300;margin:0 0 14px;}
+  .portada-nota{font-size:12px;letter-spacing:.06em;color:#7F8757;margin:22px 0 34px;}
+  .portada .btn-primary{padding-left:38px;padding-right:38px;}
+  .portada-borrador{border-top:1px solid var(--rule);padding-top:22px;}
+  .portada-borrador p{font-size:13.5px;color:#3A3F24;margin:0 0 18px;}
+  .portada-borrador-acciones{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;}
+  @media (max-width:560px){ .portada{padding:26px 0 22px;} .portada-tit{font-size:26px;} }
   .progress.oculto{display:none;}
   .page{display:none;}
   .page.active{display:block;}
@@ -378,14 +393,14 @@
   </div>
 </div>
 
-<div class="intro">
+<div class="intro" id="intro" hidden>
   <p class="kicker">Multi-family office · San José, Costa Rica · Familias y personas</p>
   <h1>Perfil de riesgo y planificación financiera</h1>
   <div class="rule-accent"></div>
-  <p class="lede" id="lede">Esta información nos permite construir su perfil de inversionista y proyectar el comportamiento de su portafolio en el horizonte que usted defina. Primero responderá el perfil de riesgo y la planificación financiera; al final, sus datos personales. Completarlo toma entre 8 y 12 minutos.</p>
+  <p class="lede" id="lede">Esta información nos permite construir su perfil de inversionista y proyectar el comportamiento de su portafolio en el horizonte que usted defina.</p>
 </div>
 
-<div class="progress" id="progress">
+<div class="progress oculto" id="progress">
   <div class="progress-bar">
     <span class="seg on" id="seg-1"></span>
     <span class="seg" id="seg-2"></span>
@@ -398,9 +413,29 @@
   <div class="sheet-pad">
     <form id="form">
 
+      <!-- ============ PÁGINA 0 · PORTADA ============ -->
+      <div class="page active" data-page="0">
+        <div class="portada">
+          <p class="portada-kicker">Chotocruz &amp; Co. · Familias y personas</p>
+          <h2 class="portada-tit">Perfil de riesgo y planificación financiera</h2>
+          <div class="portada-regla"></div>
+          <p class="portada-texto">Esta información nos permite construir su perfil de inversionista y proyectar el comportamiento de su portafolio en el horizonte que usted defina.</p>
+          <p class="portada-texto">El cuestionario se completa en tres etapas: su perfil de riesgo, su planificación financiera y, al final, sus datos personales. Sus respuestas llegan directamente a su asesor.</p>
+          <p class="portada-nota">Duración aproximada: entre 8 y 12 minutos · su avance se guarda en este dispositivo</p>
+          <div id="portada-inicio"><button type="button" class="btn btn-primary" onclick="goTo(1)">Comenzar</button></div>
+          <div class="portada-borrador" id="borrador" hidden>
+            <p>Tiene un cuestionario sin terminar, guardado el <span id="borrador-fecha"></span>.</p>
+            <div class="portada-borrador-acciones">
+              <button type="button" class="btn btn-back" id="borrador-nuevo">Empezar de nuevo</button>
+              <button type="button" class="btn btn-primary" id="borrador-seguir">Continuar donde lo dejé</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- ============ PASO 1 · PERFIL DE RIESGO ============ -->
 
-      <div class="page active" data-page="1">
+      <div class="page" data-page="1">
         <div class="section-head">
           <h2>Perfil de riesgo</h2>
           <p>No existen respuestas correctas o incorrectas. Escoja en cada caso la opción que mejor describa lo que usted realmente haría.</p>
@@ -415,9 +450,9 @@
               <select required name="Q1 - Asociación con el riesgo" id="q1">
                 <option value="" disabled selected>Seleccione una opción</option>
                 <option value="0">Pérdida</option>
-                <option value="3">Incertidumbre</option>
-                <option value="7">Oportunidad</option>
-                <option value="10">Emoción</option>
+                <option value="3.33">Preocupación</option>
+                <option value="6.67">Incertidumbre</option>
+                <option value="10">Oportunidad</option>
               </select>
               <p class="q-falta">Falta responder esta pregunta.</p>
             </div>
@@ -429,10 +464,10 @@
               <span class="qlabel">Cuando debe decidir sobre una inversión y no tiene toda la información que quisiera, ¿qué hace normalmente?</span>
               <select required name="Q5 - Decisión con información incompleta" id="q5">
                 <option value="" disabled selected>Seleccione una opción</option>
-                <option value="0">Espero a tener la información completa, aunque se pase la oportunidad</option>
-                <option value="3">Consulto con varias personas antes de decidir</option>
-                <option value="7">Decido con la información disponible y ajusto sobre la marcha</option>
-                <option value="10">Decido rápido, porque la información completa nunca llega</option>
+                <option value="0">Prefiero esperar hasta contar con más información, aunque pueda perder la oportunidad</option>
+                <option value="3.33">Busco una segunda opinión o asesoría antes de tomar la decisión</option>
+                <option value="6.67">Decido con la información disponible y reviso la decisión conforme aparece nueva información</option>
+                <option value="10">Tomo la decisión con rapidez si considero que la oportunidad lo justifica</option>
               </select>
               <p class="q-falta">Falta responder esta pregunta.</p>
             </div>
@@ -445,9 +480,9 @@
               <select required name="Q2 - Frecuencia de revisión" id="q2">
                 <option value="" disabled selected>Seleccione una opción</option>
                 <option value="0">Varias veces por semana</option>
-                <option value="3">Una vez al mes</option>
-                <option value="7">Una vez por trimestre</option>
-                <option value="10">Una o dos veces al año</option>
+                <option value="3.33">Una vez por semana</option>
+                <option value="6.67">Una vez al mes</option>
+                <option value="10">Cada tres meses o con menor frecuencia</option>
               </select>
               <p class="q-falta">Falta responder esta pregunta.</p>
             </div>
@@ -460,8 +495,8 @@
               <select required name="Q3 - Pérdida frente a ganancia no obtenida" id="q3">
                 <option value="" disabled selected>Seleccione una opción</option>
                 <option value="0">Que mi portafolio pierda 20% en un año</option>
-                <option value="5">Ambas por igual</option>
                 <option value="10">Que mi portafolio deje de ganar el 20% que sí ganó el mercado</option>
+                <option value="5">Ambas por igual</option>
               </select>
               <p class="q-falta">Falta responder esta pregunta.</p>
             </div>
@@ -473,11 +508,11 @@
               <span class="qlabel">¿Cuál combinación de retorno esperado y caída máxima en un año le parece aceptable?</span>
               <select required name="Q6 - Retorno esperado y caída máxima" id="q6">
                 <option value="" disabled selected>Seleccione una opción</option>
-                <option value="0">Retorno de 4% a 5% anual · caída máxima esperada −2%</option>
-                <option value="3">Retorno de 5% a 6,5% anual · caída máxima esperada −7%</option>
-                <option value="6">Retorno de 6,5% a 8% anual · caída máxima esperada −14%</option>
-                <option value="8">Retorno de 8% a 10% anual · caída máxima esperada −22%</option>
-                <option value="10">Retorno superior a 10% anual · caída máxima esperada −32%</option>
+                <option value="0">Retorno esperado de 5% a 5,5% anual · pérdida aproximada de hasta −5%</option>
+                <option value="2.5">Retorno esperado de 6% a 6,5% anual · pérdida aproximada de hasta −7%</option>
+                <option value="5">Retorno esperado de 7% a 7,5% anual · pérdida aproximada de hasta −9%</option>
+                <option value="7.5">Retorno esperado de 8% a 8,5% anual · pérdida aproximada de hasta −12%</option>
+                <option value="10">Retorno esperado de 9% a 9,5% anual · pérdida aproximada de hasta −16%</option>
               </select>
               <p class="q-falta">Falta responder esta pregunta.</p>
             </div>
@@ -486,13 +521,13 @@
           <div class="q">
             <span class="q-num">06</span>
             <div>
-              <span class="qlabel">Para alcanzar las metas que se propuso hay dos palancas: cuánto aporta usted y cuánto rinde el portafolio. ¿Cómo prefiere repartir el esfuerzo?</span>
+              <span class="qlabel">Para alcanzar sus metas financieras, puede depender más de sus aportes o asumir más riesgo buscando un mayor rendimiento del portafolio. ¿Qué prefiere?</span>
               <select required name="Q7 - Aporte frente a rendimiento" id="q7">
                 <option value="" disabled selected>Seleccione una opción</option>
-                <option value="0">Prefiero aportar más y pedirle poco al portafolio</option>
-                <option value="3">Me inclino por aportar más, con un rendimiento moderado del portafolio</option>
-                <option value="7">Me inclino por apoyarme en el rendimiento, aportando lo que ya tengo previsto</option>
-                <option value="10">Prefiero que el rendimiento haga el trabajo y no cambiar mi nivel de gasto</option>
+                <option value="0">Prefiero aumentar mis aportes y asumir un nivel bajo de riesgo en el portafolio</option>
+                <option value="3.33">Prefiero aportar un poco más y mantener un nivel moderado de riesgo</option>
+                <option value="6.67">Prefiero mantener mis aportes previstos y aceptar un mayor nivel de riesgo para buscar más rendimiento</option>
+                <option value="10">Prefiero depender más del rendimiento del portafolio, aun si eso implica asumir fluctuaciones mayores</option>
               </select>
               <p class="q-falta">Falta responder esta pregunta.</p>
             </div>
@@ -504,11 +539,11 @@
               <span class="qlabel">La última vez que una inversión, un negocio o una propiedad suya perdió valor de forma importante, ¿qué hizo?</span>
               <select required name="Q4 - Conducta ante una pérdida previa" id="q4">
                 <option value="" disabled selected>Seleccione una opción</option>
-                <option value="0">Vendí o salí de la posición</option>
-                <option value="3">Reduje mi exposición</option>
-                <option value="7">Mantuve todo sin cambios</option>
-                <option value="10">Aproveché para aumentar mi exposición</option>
-                <option value="na">No aplica — no he pasado por una situación así</option>
+                <option value="0">Vendí o salí de la inversión</option>
+                <option value="3.33">Reduje parte de mi exposición</option>
+                <option value="6.67">Mantuve mi posición sin hacer cambios</option>
+                <option value="10">Aumenté mi exposición aprovechando la caída</option>
+                <option value="na">No aplica: no he vivido una situación similar</option>
               </select>
               <p class="q-falta">Falta responder esta pregunta.</p>
             </div>
@@ -520,11 +555,11 @@
               <span class="qlabel">Después de un año excepcionalmente bueno en su empresa o en su portafolio, ¿qué suele hacer con ese excedente?</span>
               <select required name="Q8 - Destino del excedente" id="q8">
                 <option value="" disabled selected>Seleccione una opción</option>
-                <option value="0">Lo reservo en liquidez, por si el siguiente año es malo</option>
-                <option value="2">Lo uso para reducir deuda o compromisos</option>
-                <option value="5">Lo reparto entre varios destinos, sin uno predominante</option>
-                <option value="8">Lo reinvierto en el portafolio con la misma estrategia</option>
-                <option value="10">Lo destino a una oportunidad nueva de mayor potencial</option>
+                <option value="0">Lo mantengo en liquidez para contar con una reserva</option>
+                <option value="2.5">Lo utilizo para reducir deuda u otros compromisos financieros</option>
+                <option value="5">Lo distribuyo entre ahorro, inversión y otros objetivos</option>
+                <option value="7.5">Lo reinvierto manteniendo una estrategia similar</option>
+                <option value="10">Lo destino a nuevas oportunidades con mayor potencial y mayor riesgo</option>
               </select>
               <p class="q-falta">Falta responder esta pregunta.</p>
             </div>
@@ -533,13 +568,14 @@
           <div class="q">
             <span class="q-num">09</span>
             <div>
-              <span class="qlabel">Si su portafolio pasara varios años seguidos sin recuperar el valor que llegó a tener, ¿hasta cuándo mantendría la estrategia?</span>
-              <select required name="Q9 - Duración tolerada de la caída" id="q9">
+              <span class="qlabel">Después de un año excepcionalmente malo en su portafolio, ¿qué suele hacer?</span>
+              <select required name="Q9 - Reacción ante un año malo" id="q9">
                 <option value="" disabled selected>Seleccione una opción</option>
-                <option value="0">Menos de un año</option>
-                <option value="3">Alrededor de dos años</option>
-                <option value="7">Entre tres y cuatro años</option>
-                <option value="10">El tiempo que haga falta</option>
+                <option value="0">Reduzco mi exposición y aumento la liquidez</option>
+                <option value="2.5">Hago algunos ajustes para disminuir el riesgo</option>
+                <option value="5">Mantengo la estrategia sin cambios importantes</option>
+                <option value="7.5">Rebalanceo y aprovecho algunas oportunidades</option>
+                <option value="10">Aumento mi exposición buscando beneficiarme de la recuperación</option>
               </select>
               <p class="q-falta">Falta responder esta pregunta.</p>
             </div>
@@ -548,13 +584,13 @@
           <div class="q">
             <span class="q-num">10</span>
             <div>
-              <span class="qlabel">¿Cómo describe su conocimiento y experiencia en instrumentos de inversión?</span>
-              <select required name="C6 - Conocimiento y experiencia" id="c6">
+              <span class="qlabel">Si tuviera que invertir una parte de su patrimonio en una sola alternativa durante varios años, ¿cuál elegiría? No puede combinar varias opciones.</span>
+              <select required name="Q10 - Alternativa de inversión preferida" id="q10">
                 <option value="" disabled selected>Seleccione una opción</option>
-                <option value="0">Ninguno</option>
-                <option value="3">Limitado — cuentas de ahorro y certificados a plazo</option>
-                <option value="7">Bueno — fondos de inversión o bonos</option>
-                <option value="10">Extenso — acciones, mercados internacionales o activos alternativos</option>
+                <option value="0">Certificado de depósito bancario · rendimiento esperado de 3% a 4% anual · sin fluctuaciones de mercado</option>
+                <option value="3.33">Bonos de alta calidad · rendimiento esperado de 4% a 5% anual · fluctuaciones anuales de aproximadamente ±3%</option>
+                <option value="6.67">Inversión inmobiliaria diversificada · rendimiento esperado de 6% a 7% anual · fluctuaciones anuales de aproximadamente ±8%</option>
+                <option value="10">Acciones globales diversificadas · rendimiento esperado de 8% a 9% anual · fluctuaciones anuales de aproximadamente ±15%</option>
               </select>
               <p class="q-falta">Falta responder esta pregunta.</p>
             </div>
@@ -563,7 +599,7 @@
         </fieldset>
         <div class="aviso" data-aviso hidden></div>
         <div class="nav">
-          <span></span>
+          <button type="button" class="btn btn-back" onclick="goTo(0)">Atrás</button>
           <button type="button" class="btn btn-primary" onclick="goTo(2)">Continuar</button>
         </div>
       </div>
@@ -664,8 +700,8 @@
               <select required name="Predecibilidad del ingreso del hogar" id="c3">
                 <option value="" disabled selected>Seleccione una opción</option>
                 <option value="0">Varía de forma importante de un año a otro</option>
-                <option value="3">Varía de manera moderada según los resultados del año</option>
-                <option value="7">Es estable, con variaciones menores</option>
+                <option value="3.33">Varía de manera moderada según los resultados del año</option>
+                <option value="6.67">Es estable, con variaciones menores</option>
                 <option value="10">Es fijo, o proviene de rentas ya consolidadas</option>
               </select>
               <p class="q-falta">Falta responder esta pregunta.</p>
@@ -760,8 +796,8 @@
               <select required name="Peso del portafolio en el patrimonio" id="c5">
                 <option value="" disabled selected>Seleccione una opción</option>
                 <option value="0">Prácticamente todo</option>
-                <option value="3">Más de la mitad</option>
-                <option value="7">Entre un cuarto y la mitad</option>
+                <option value="3.33">Más de la mitad</option>
+                <option value="6.67">Entre un cuarto y la mitad</option>
                 <option value="10">Menos de un cuarto</option>
               </select>
               <p class="q-falta">Falta responder esta pregunta.</p>
@@ -933,6 +969,21 @@
                 </div>
                 <p class="hint">Exprese el monto en poder adquisitivo actual. La proyección lo compara contra el portafolio en términos reales.</p>
               </div>
+            </div>
+          </div>
+
+          <div class="q">
+            <span class="q-num">15</span>
+            <div>
+              <span class="qlabel">¿Cómo describe su conocimiento y experiencia en instrumentos de inversión?</span>
+              <select required name="Conocimiento y experiencia en inversiones" id="conocimiento">
+                <option value="" disabled selected>Seleccione una opción</option>
+                <option value="0">Ninguno</option>
+                <option value="3.33">Limitado — cuentas de ahorro y certificados a plazo</option>
+                <option value="6.67">Bueno — fondos de inversión o bonos</option>
+                <option value="10">Extenso — acciones, mercados internacionales o activos alternativos</option>
+              </select>
+              <p class="q-falta">Falta responder esta pregunta.</p>
             </div>
           </div>
 
@@ -1587,14 +1638,18 @@ function goTo(page){
   for(let i=1;i<=3;i++){
     document.getElementById('seg-'+i).classList.toggle('on', page>=i);
   }
-  document.getElementById('lede').classList.toggle('hide', page>1);
+  document.getElementById('intro').hidden = true;
+  document.getElementById('progress').classList.toggle('oculto', page === 0);
   const label = document.getElementById('progress-label');
-  if(page<=3){
+  if(page === 0){
+    label.textContent = '';
+  } else if(page<=3){
     label.textContent = 'Paso '+page+' de 3 — '+PASOS[tipoCliente][page-1];
   } else {
     label.textContent = 'Cuestionario completado';
   }
   window.scrollTo({top:0, behavior:'smooth'});
+  if(typeof guardarBorrador === 'function' && page >= 1 && page <= 3) guardarBorrador();
 }
 
 // El token se solicita una sola vez y queda SOLO en este navegador (localStorage);
@@ -1629,6 +1684,35 @@ document.getElementById('reset-token').addEventListener('click', function(e){
   alert('Token borrado. Se solicitará uno nuevo en el próximo envío.');
 });
 
+// Registra cada pregunta respondida de las páginas 1 y 2 con el texto que vio el cliente,
+// para que el asesor la consulte en el dashboard tal como fue contestada.
+function respuestasEnTexto(){
+  const out = [];
+  [[1, 'Perfil de riesgo'], [2, PASOS[tipoCliente][1]]].forEach(function([n, nombre]){
+    const pag = document.querySelector('.page[data-page="' + n + '"]');
+    visibles(pag).filter(q => !q.hidden && !q.closest('[hidden]')).forEach(function(q){
+      const detalle = [];
+      const marcados = [];
+      q.querySelectorAll('input, select, textarea').forEach(function(c){
+        if(c.type === 'hidden' || c.disabled) return;
+        // las casillas viven en un panel desplegable que se cierra: se leen aunque esté oculto
+        if(c.type !== 'checkbox' && (!c.name || c.closest('[hidden]'))) return;
+        if(c.type === 'checkbox'){ if(c.checked){ const l = c.closest('label'); marcados.push((l ? l.textContent : c.name).trim()); } return; }
+        if(c.value === '') return;
+        const valor = c.tagName === 'SELECT' ? c.selectedOptions[0].textContent.trim() : c.value.trim();
+        detalle.push({id: c.id || '', campo: c.name, valor: valor, codigo: c.value});
+      });
+      if(marcados.length) detalle.push({id: 'seleccion', campo: 'Selección', valor: marcados.join(' · '), codigo: ''});
+      if(!detalle.length) return;
+      const etiqueta = q.querySelector('.qlabel');
+      const primero = q.querySelector('input:not([type=hidden]), select, textarea');
+      out.push({pagina: n, seccion: nombre, n: (q.querySelector('.q-num') || {}).textContent || '',
+                clave: primero ? primero.id : '', pregunta: etiqueta ? etiqueta.textContent.trim() : '', detalle});
+    });
+  });
+  return out;
+}
+
 function b64EncodeUnicode(str){
   return btoa(unescape(encodeURIComponent(str)));
 }
@@ -1657,6 +1741,7 @@ document.getElementById('form').addEventListener('submit', async function(e){
       : r.senas + (r.pais ? ' · ' + r.pais : '');
   }
   const cliente = esPersona ? clientePersona() : clienteInstitucion();
+  cliente.respuestasTexto = respuestasEnTexto();
   function clientePersona(){ return {
     id: (esPersona ? 'c-' : 'i-') + Date.now() + '-' + Math.random().toString(36).slice(2,7),
     tipoCliente,
@@ -1683,11 +1768,12 @@ document.getElementById('form').addEventListener('submit', async function(e){
     //   Tolerancia: q1, q2, q4, q5, q9   ·   Apetito: q3, q6, q7, q8
     // q4 admite 'na' (el cliente no ha pasado por una pérdida): se guarda como null
     // y el dashboard la excluye del denominador en lugar de imputarle un valor.
+    versionPerfil: 2,   // escala lineal 0-10 y pesos por tipo de pregunta (metodología v2)
     respuestas: {
       q1:+val('q1'), q2:+val('q2'), q3:+val('q3'),
       q4: val('q4')==='na' ? null : +val('q4'),
       q5:+val('q5'),
-      q6:+val('q6'), q7:+val('q7'), q8:+val('q8'), q9:+val('q9')
+      q6:+val('q6'), q7:+val('q7'), q8:+val('q8'), q9:+val('q9'), q10:+val('q10')
     },
     // Página 3 — capacidad objetiva y datos de planificación.
     capacidad: {
@@ -1706,7 +1792,7 @@ document.getElementById('form').addEventListener('submit', async function(e){
       },
       aniosPrimerRetiro: +val('c1'),
       montoPrimerRetiroUsdHoy: +val('c1-monto'),
-      conocimiento:      +val('c6')         // escala 0-10, se pregunta en la página 2
+      conocimiento:      +val('conocimiento')   // escala 0-10, pregunta de la página 2
     },
     // Destino del patrimonio. El monto se expresa en dólares de hoy, es decir en
     // poder adquisitivo actual, para compararlo contra el portafolio en términos reales.
@@ -1792,15 +1878,16 @@ document.getElementById('form').addEventListener('submit', async function(e){
   // La capacidad se mide con la estabilidad de ingresos, el peso del portafolio y el horizonte.
   function clienteInstitucion(){
     return Object.assign(base(), {
+      versionPerfil: 2,
       respuestas: {
         q1:+val('q1'), q2:+val('q2'), q3:+val('q3'),
         q4: val('q4')==='na' ? null : +val('q4'),
-        q5:+val('q5'), q6:+val('q6'), q7:+val('q7'), q8:+val('q8'), q9:+val('q9')
+        q5:+val('q5'), q6:+val('q6'), q7:+val('q7'), q8:+val('q8'), q9:+val('q9'), q10:+val('q10')
       },
       capacidad: {
         fuenteIngreso:     +val('i3-estabilidad'),
         pesoDelPortafolio: +val('i3-peso'),
-        conocimiento:      +val('c6')
+        conocimiento:      +val('i3-conocimiento')
       },
       institucional: {
         tipo: val('i3-tipo'),
@@ -1852,6 +1939,7 @@ document.getElementById('form').addEventListener('submit', async function(e){
       }
       throw new Error('GitHub respondió '+res.status);
     }
+    enviado = true; borrarBorrador();
     goTo(4);
   }catch(err){
     statusEl.className='status err';
@@ -1859,6 +1947,64 @@ document.getElementById('form').addEventListener('submit', async function(e){
     btn.disabled = false;
   }
 });
+
+// ---- Avance guardado en este dispositivo ----
+const CLAVE_BORRADOR = 'chyco_borrador_' + tipoCliente;
+let respondio = false, enviado = false, tGuardar = null;
+const camposForm = () => [...document.querySelectorAll('#form input, #form select, #form textarea')]
+  .filter(c => !c.classList.contains('pais-buscar') && (c.id || c.name));
+const claveCampo = c => c.id || ('n:' + c.name);
+function guardarBorrador(){
+  if(enviado || !respondio) return;
+  const datos = {};
+  camposForm().forEach(c => { if(c.type === 'checkbox') datos[claveCampo(c)] = c.checked; else if(c.value !== '') datos[claveCampo(c)] = c.value; });
+  const act = document.querySelector('.page.active');
+  const pagina = act ? Math.min(3, Math.max(1, +act.dataset.page || 1)) : 1;
+  try{ localStorage.setItem(CLAVE_BORRADOR, JSON.stringify({v:1, guardado: Date.now(), pagina, datos})); }catch(e){}
+}
+function programarGuardado(){ respondio = true; clearTimeout(tGuardar); tGuardar = setTimeout(guardarBorrador, 400); }
+['input','change'].forEach(ev => document.addEventListener(ev, function(e){
+  if(e.target && e.target.closest && e.target.closest('#form') && !e.target.classList.contains('pais-buscar')) programarGuardado();
+}));
+document.addEventListener('click', function(e){ if(e.target.closest && e.target.closest('.pais-op')) programarGuardado(); });
+window.addEventListener('pagehide', guardarBorrador);
+function leerBorrador(){ try{ const b = JSON.parse(localStorage.getItem(CLAVE_BORRADOR) || 'null'); return b && b.datos ? b : null; }catch(e){ return null; } }
+function borrarBorrador(){ try{ localStorage.removeItem(CLAVE_BORRADOR); }catch(e){} }
+function aplicarDatos(datos){
+  camposForm().forEach(c => { const k = claveCampo(c); if(!(k in datos)) return;
+    if(c.type === 'checkbox') c.checked = !!datos[k]; else c.value = datos[k]; });
+}
+function restaurarBorrador(b){
+  // Varias pasadas: las filas repetibles, los campos condicionales y los listados de
+  // cantón y distrito aparecen solo después de fijar el dato del que dependen.
+  for(let i = 0; i < 3; i++){
+    aplicarDatos(b.datos);
+    sincronizarFilas(); sincronizarCondicionales();
+    if(typeof sincronizarIdentificacion === 'function') sincronizarIdentificacion();
+  }
+  aplicarDatos(b.datos);
+  document.querySelectorAll('.pais').forEach(pintarPais);
+  if(typeof sincronizarSeguros === 'function') sincronizarSeguros();
+  montosConDecimales();
+  validarIdentificacion(); validarEdades(); marcarRespondidas();
+  respondio = true;
+  goTo(b.pagina || 1);
+}
+(function(){
+  const b = leerBorrador();
+  if(!b) return;
+  document.getElementById('portada-inicio').hidden = true;
+  document.getElementById('borrador').hidden = false;
+  document.getElementById('borrador-fecha').textContent = new Date(b.guardado).toLocaleString('es-CR',
+    {day:'numeric', month:'long', hour:'2-digit', minute:'2-digit'});
+  document.getElementById('borrador-seguir').onclick = () => restaurarBorrador(b);
+  document.getElementById('borrador-nuevo').onclick = () => {
+    borrarBorrador();
+    document.getElementById('borrador').hidden = true;
+    document.getElementById('portada-inicio').hidden = false;
+    goTo(1);
+  };
+})();
 </script>
 </body>
 </html>

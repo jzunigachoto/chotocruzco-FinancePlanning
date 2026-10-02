@@ -97,6 +97,57 @@
   .avisos-perfil p::before{content:'';position:absolute;left:0;top:7px;width:5px;height:5px;border-radius:50%;background:#918042;}
   .avisos-perfil p:last-child{margin-bottom:0;}
   .donut-card{border:1px solid var(--rule-2);padding:20px;margin-bottom:26px;}
+  /* Respuestas del cliente: secciones plegables */
+  .resp-intro{font-size:13.5px;color:var(--ink-45);margin:0 0 18px;}
+  .resp-lista{border-top:1px solid var(--ink);}
+  .resp-bloque{border-bottom:1px solid var(--rule);}
+  .resp-cab{display:flex;align-items:center;gap:16px;}
+  .resp-abrir{flex:1;display:grid;grid-template-columns:auto 1fr 18px;align-items:baseline;gap:18px;background:none;border:none;
+    padding:22px 4px;cursor:pointer;text-align:left;font-family:var(--font);color:var(--ink);}
+  .resp-abrir:hover .resp-tit{color:var(--gold);}
+  .resp-abrir:focus-visible{outline:2px solid var(--gold);outline-offset:2px;}
+  .resp-tit{font-size:17px;font-weight:600;letter-spacing:-.01em;color:var(--black);transition:color .15s;}
+  .resp-meta{font-size:12.5px;color:var(--ink-45);}
+  .resp-chev{width:9px;height:9px;border-right:1.5px solid var(--gold);border-bottom:1.5px solid var(--gold);
+    transform:rotate(45deg);align-self:center;justify-self:end;transition:transform .2s;margin-top:-4px;}
+  .resp-bloque.abierto .resp-chev{transform:rotate(-135deg);margin-top:4px;}
+  .resp-cuerpo{padding:4px 4px 30px;}
+  .resp-cuerpo[hidden]{display:none;}
+  .resp-resumen{display:grid;grid-template-columns:1.2fr repeat(4,1fr) 1.3fr;border:1px solid var(--rule-2);margin:6px 0 14px;}
+  .resp-resumen > div{padding:14px 16px;display:flex;flex-direction:column;gap:2px;}
+  .resp-resumen > div + div{border-left:1px solid var(--rule-2);}
+  .resp-resumen .rr-total{background:#F4F5EE;}
+  .resp-resumen .rr-disp{background:#2B3014;} .resp-resumen .rr-disp .rr-et{color:#D8C98A;} .resp-resumen .rr-disp .rr-val{color:#fff;} .resp-resumen .rr-disp .rr-peso{color:#C9CDB5;}
+  .rq-tipo{font-size:11px;color:var(--ink-45);}
+  .rq-total{border-bottom:none;border-top:1px solid var(--ink);font-weight:600;color:var(--black);font-size:13px;}
+  .rr-et{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);font-weight:600;}
+  .rr-val{font-size:22px;font-weight:300;color:var(--black);font-variant-numeric:tabular-nums;line-height:1.3;}
+  .rr-peso{font-size:11.5px;color:var(--ink-45);}
+  .resp-nota{font-size:12.5px;color:var(--ink-45);margin:0 0 18px;line-height:1.6;max-width:90ch;}
+  .resp-nota strong{color:var(--black);font-weight:600;}
+  .resp-sub{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:600;margin:30px 0 6px;}
+  .rq{display:grid;grid-template-columns:34px minmax(0,1fr) 150px 64px 56px 60px;gap:0 14px;align-items:baseline;
+    padding:13px 0;border-bottom:1px solid var(--rule-2);}
+  .rq-encab,.rp-encab{padding:0 0 8px;border-bottom:1px solid var(--ink);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-45);font-weight:600;}
+  .rq-encab span:nth-child(n+4){text-align:right;}
+  .rq-n{font-size:11.5px;color:var(--gold);font-weight:600;font-variant-numeric:tabular-nums;}
+  .rq-txt{min-width:0;}
+  .rq-preg{margin:0;font-size:13px;line-height:1.5;color:var(--ink-45);}
+  .rq-resp{margin:3px 0 0;font-size:14px;line-height:1.5;color:var(--black);font-weight:500;}
+  .rq-dim{font-size:12.5px;color:var(--ink-70);}
+  .rq-regla{font-size:11.5px;color:var(--ink-45);line-height:1.5;}
+  .rq-num{text-align:right;font-size:13.5px;font-variant-numeric:tabular-nums;color:var(--black);}
+  .rp{display:grid;grid-template-columns:34px minmax(0,1fr) 230px;gap:0 18px;align-items:baseline;padding:14px 0;border-bottom:1px solid var(--rule-2);}
+  .rp-datos{display:grid;grid-template-columns:240px 1fr;gap:3px 16px;margin:7px 0 0;}
+  .rp-datos dt{font-size:12.5px;color:var(--ink-45);}
+  .rp-datos dd{margin:0;font-size:13.5px;color:var(--black);font-weight:500;}
+  .rp-uso{font-size:12px;color:var(--ink-70);line-height:1.5;border-left:2px solid var(--rule);padding-left:10px;}
+  @media (max-width:760px){
+    .resp-resumen{grid-template-columns:1fr 1fr;}
+    .rq{grid-template-columns:28px 1fr 52px 48px 52px;} .rq .rq-dim{display:none;} .rq-encab span:nth-child(3){display:none;}
+    .rp{grid-template-columns:28px 1fr;} .rp-uso{grid-column:2;margin-top:8px;} .rp-datos{grid-template-columns:1fr;gap:0;} .rp-datos dd{margin-bottom:6px;}
+    .resp-cab{flex-wrap:wrap;} .resp-abrir{grid-template-columns:1fr 18px;} .resp-meta{grid-column:1;}
+  }
   .paginas-nav{display:flex;gap:0;margin:6px 0 22px;border-bottom:1px solid var(--rule-2);}
   .pag-btn{background:none;border:none;border-bottom:2px solid transparent;padding:10px 18px 9px;margin-bottom:-1px;
     font:inherit;font-size:13px;color:var(--ink-45);cursor:pointer;}
@@ -726,21 +777,54 @@ const PERFILES = {
 // pueden BAJAR el perfil resultante, nunca subirlo.
 const REACTIVOS = {
   tolerancia: ['q1','q2','q4','q5','q9'],   // q4 admite null cuando el cliente marca «no aplica»
-  apetito:    ['q3','q6','q7','q8']
+  apetito:    ['q3','q6','q7','q8','q10']
 };
+// Metodología v2. Cada respuesta se puntúa en escala lineal de 0 a 10 (pasos iguales entre
+// opciones ordenadas por riesgo). Las preguntas de conducta revelada o de decisión concreta
+// con pérdidas pesan el doble que las de percepción (ver el documento de metodología).
+const PESO_REACTIVO = {q1:1, q2:1, q5:1, q7:1, q8:1, q3:2, q4:2, q6:2, q9:2, q10:2};
+// Cortes simétricos de la disposición: tres perfiles de igual amplitud en la escala 0-10.
+const CORTES = [10/3, 20/3];
+// Zona de frontera: a menos de esta distancia de un corte, el perfil se confirma con el cliente.
+const FRONTERA = 0.75;
+// Dispersión de respuestas (desviación estándar ponderada, en escala 0-1) que activa la revisión.
+const DISPERSION_MAX = 0.30;
 
-// Promedia los reactivos presentes. Un reactivo nulo sale del denominador en vez
-// de recibir un puntaje inventado, que sesgaría al cliente hacia el centro.
+// Promedio ponderado de los reactivos presentes. Un reactivo nulo sale del denominador
+// en vez de recibir un puntaje inventado, que sesgaría al cliente hacia el centro.
 function promedioReactivos(q, ids){
-  const vals = ids.map(k => q[k]).filter(v => v !== null && v !== undefined && !isNaN(v));
-  return {valor: vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : null,
-          usados: vals.length, total: ids.length};
+  const ok = ids.filter(k => q[k] !== null && q[k] !== undefined && !isNaN(q[k]));
+  const sw = ok.reduce((a,k) => a + PESO_REACTIVO[k], 0);
+  return {valor: sw ? ok.reduce((a,k) => a + q[k]*PESO_REACTIVO[k], 0)/sw : null,
+          usados: ok.length, total: ids.length, pesos: sw};
+}
+// Registros respondidos con la escala anterior (0·3·7·10 y similares): se llevan a la escala
+// lineal por la posición de la respuesta, para que todos los clientes se midan igual.
+const ESCALA_V1 = {q1:[0,3,7,10], q2:[0,3,7,10], q4:[0,3,7,10], q5:[0,3,7,10], q7:[0,3,7,10],
+  q3:[0,5,10], q6:[0,3,6,8,10], q8:[0,2,5,8,10], q9:[0,3,7,10]};
+const ESCALA_V1_CAP = [0,3,7,10];
+function aLineal(v, escala){
+  if(v === null || v === undefined || isNaN(v)) return v;
+  const i = escala.indexOf(+v);
+  return i < 0 ? v : Math.round(i/(escala.length-1)*10*100)/100;
+}
+function aMetodologiaV2(o){
+  if(+o.versionPerfil >= 2 || !o.respuestas) return o;
+  const q = Object.assign({}, o.respuestas);
+  Object.keys(ESCALA_V1).forEach(k => {
+    // la pregunta 9 tuvo una versión de cinco opciones (0·2·5·8·10)
+    const esc = k === 'q9' && [2,5,8].includes(+q[k]) ? [0,2,5,8,10] : ESCALA_V1[k];
+    q[k] = aLineal(q[k], esc);
+  });
+  const cap = Object.assign({}, o.capacidad || {});
+  ['fuenteIngreso','pesoDelPortafolio','conocimiento'].forEach(k => { cap[k] = aLineal(cap[k], ESCALA_V1_CAP); });
+  return Object.assign({}, o, {respuestas: q, capacidad: o.capacidad ? cap : o.capacidad, versionPerfilOriginal: o.versionPerfil || 1});
 }
 
 // Tramos de capacidad. Viven aquí, del lado del analista, para poder moverlos
 // sin volver a pedirle nada al cliente ni invalidar respuestas ya recogidas.
-function puntajeHorizonte(a){ return a < 5 ? 0 : a < 10 ? 3 : a < 15 ? 7 : 10; }
-function puntajeDependientes(n){ return n >= 4 ? 0 : n === 3 ? 3 : n >= 1 ? 7 : 10; }
+function puntajeHorizonte(a){ return a < 5 ? 0 : a < 10 ? 3.33 : a < 15 ? 6.67 : 10; }
+function puntajeDependientes(n){ return n >= 4 ? 0 : n === 3 ? 3.33 : n >= 1 ? 6.67 : 10; }
 // El peso del portafolio dentro del patrimonio total ya llega como escala 0-10
 // desde el cuestionario: cuanto menor sea la porción que representa, mayor el colchón.
 
@@ -770,7 +854,7 @@ function calcularCapacidad(c, sup){
 }
 
 const ESCALA = ['conservador','moderado','agresivo'];
-function nivel(v){ return v < 4 ? 0 : v <= 7 ? 1 : 2; }
+function nivel(v){ return v < CORTES[0] ? 0 : v < CORTES[1] ? 1 : 2; }
 
 function calcularPerfil(c, sup){
   const q = c.respuestas || {};
@@ -781,20 +865,24 @@ function calcularPerfil(c, sup){
   const cap = calcularCapacidad(c, sup);
   const con = (c.capacidad || {}).conocimiento;
 
-  const disposicion = (tol.valor != null && ape.valor != null) ? (tol.valor + ape.valor)/2
-                    : (tol.valor != null ? tol.valor : ape.valor);
+  // Disposición: promedio ponderado de las diez preguntas del perfil de riesgo.
+  const todos = promedioReactivos(q, REACTIVOS.tolerancia.concat(REACTIVOS.apetito));
+  const disposicion = todos.valor;
   let idx = disposicion == null ? 1 : nivel(disposicion);
 
   const limitantes = [];
   if(cap.valor != null && nivel(cap.valor) < idx){ limitantes.push('capacidad'); idx = nivel(cap.valor); }
   if(con != null && !isNaN(con)){
-    const techoCon = con <= 0 ? 0 : con <= 3 ? 1 : 2;
+    const techoCon = con <= 0 ? 0 : con < 5 ? 1 : 2;
     if(techoCon < idx){ limitantes.push('conocimiento'); idx = techoCon; }
   }
 
   // Señales para el analista: divergencias que conviene conversar con el cliente
   // antes de proponer una cartera, en lugar de promediarlas en silencio.
   const avisos = [];
+  if(c.versionPerfilOriginal && !formatoAnterior){
+    avisos.push('Este cliente respondió con la escala anterior del cuestionario; sus respuestas se llevaron a la escala lineal de la metodología vigente.');
+  }
   if(formatoAnterior){
     avisos.push('Este cliente respondió una versión anterior del cuestionario. Su perfil no es comparable con el de los demás.');
   }
@@ -803,8 +891,27 @@ function calcularPerfil(c, sup){
       ? 'Apetito por encima de la tolerancia: quiere más riesgo del que su conducta sugiere que sostendría.'
       : 'Tolerancia por encima del apetito: sostendría más riesgo del que declara querer.');
   }
-  if(q.q6 >= 8 && q.q9 != null && q.q9 <= 3){
-    avisos.push('Acepta una caída profunda pero la sostendría alrededor de dos años o menos. Conviene revisar la magnitud con el cliente.');
+  // Zona de frontera y consistencia de las respuestas (metodología v2)
+  let frontera = null;
+  if(disposicion != null){
+    const cerca = CORTES.findIndex(cv => Math.abs(disposicion - cv) < FRONTERA);
+    if(cerca >= 0){
+      frontera = [ESCALA[cerca], ESCALA[cerca + 1]];
+      avisos.push('Perfil en zona de frontera: la disposición (' + disposicion.toFixed(2) + ') está a menos de ' + FRONTERA
+        + ' puntos del corte entre ' + PERFILES[ESCALA[cerca]].label.toLowerCase() + ' y ' + PERFILES[ESCALA[cerca + 1]].label.toLowerCase()
+        + '. Confirme el perfil con ' + (c.institucional ? 'la institución.' : 'el cliente.'));
+    }
+  }
+  const ids10 = REACTIVOS.tolerancia.concat(REACTIVOS.apetito).filter(k => q[k] !== null && q[k] !== undefined && !isNaN(q[k]));
+  let dispersion = null;
+  if(ids10.length >= 5 && disposicion != null){
+    const sw = ids10.reduce((a,k) => a + PESO_REACTIVO[k], 0);
+    dispersion = Math.sqrt(ids10.reduce((a,k) => a + PESO_REACTIVO[k]*Math.pow((q[k] - disposicion)/10, 2), 0)/sw);
+    if(dispersion > DISPERSION_MAX)
+      avisos.push('Respuestas poco consistentes entre sí (dispersión ' + dispersion.toFixed(2) + '): el perfil promedio puede no representar ' + (c.institucional ? 'a la institución' : 'al cliente') + '. Revise las respuestas antes de proponer una cartera.');
+  }
+  if(q.q6 >= 7.5 && q.q9 != null && q.q9 <= 2.5){
+    avisos.push('Acepta pérdidas de 12% o más, pero después de un año malo reduciría su exposición. Conviene revisar con el cliente la pérdida que realmente sostendría.');
   }
   const ins = c.institucional;
   if(ins){
@@ -847,7 +954,7 @@ function calcularPerfil(c, sup){
       avisos.push('El FCL no entra en la proyección: su año de ingreso queda fuera del horizonte.');
   }
   if(tol.usados < tol.total){
-    avisos.push('La pregunta sobre pérdidas previas quedó como «no aplica»; la tolerancia se calculó con ' + tol.usados + ' de ' + tol.total + ' reactivos.');
+    avisos.push('La pregunta sobre pérdidas previas quedó como «no aplica»; la tolerancia y la disposición se calcularon sin ella.');
   }
   limitantes.forEach(n => avisos.push(n === 'capacidad'
     ? 'El perfil quedó limitado por la capacidad financiera, no por las preferencias ' + (ins ? 'de la institución.' : 'del cliente.')
@@ -865,7 +972,7 @@ function calcularPerfil(c, sup){
   const puntajeCliente = sumaPesos
     ? componentes.reduce((a,[v,k]) => a + v*PESOS[k], 0) / sumaPesos : null;
 
-  return {puntajeCliente,
+  return {puntajeCliente, frontera, dispersion, pesoTol: tol.pesos, pesoApe: ape.pesos,
           tolerancia: tol.valor, apetito: ape.valor, capacidad: cap.valor,
           conocimiento: con, disposicion, horizonte: cap.horizonte,
           perfil: ESCALA[idx], limitantes, avisos, formatoAnterior,
@@ -990,7 +1097,7 @@ function mostrarSegmento(){
 
 // Normaliza respuestas viejas (montos ya convertidos a USD) y nuevas (monto + moneda)
 function normalizar(c){
-  const o = Object.assign({}, c);
+  const o = aMetodologiaV2(Object.assign({}, c));
   // La edad se recalcula con la fecha de nacimiento: un registro abierto años después
   // proyecta con la edad vigente, no con la que tenía el día que llenó el cuestionario.
   const fn = (o.identificacion || {}).fechaNacimiento;
@@ -1058,8 +1165,344 @@ function seleccionar(id){
   if(c) (tipoDe(c) === 'institucion' ? renderInstitucion(c) : renderDetalle(c));
 }
 
+// ================= Respuestas del cliente y su ponderación =================
+// Texto de cada pregunta y de cada opción, tomado de los cuestionarios. Sirve para mostrar
+// la respuesta de cualquier cliente, aun de los que respondieron antes de que el
+// cuestionario guardara el texto (para ellos solo existe el valor numérico).
+const CATALOGO = {"q1": {"pregunta": "Cuando escucha la palabra «riesgo» referida a su patrimonio, ¿qué es lo primero que le viene a la mente?", "opciones": {"0": "Pérdida", "3.33": "Preocupación", "6.67": "Incertidumbre", "10": "Oportunidad"}}, "q2": {"pregunta": "Si su portafolio estuviera invertido hoy, ¿con qué frecuencia sentiría la necesidad de revisar su valor?", "opciones": {"0": "Varias veces por semana", "3.33": "Una vez por semana", "6.67": "Una vez al mes", "10": "Cada tres meses o con menor frecuencia"}}, "q3": {"pregunta": "¿Cuál de estas dos situaciones le incomodaría más?", "opciones": {"0": "Que mi portafolio pierda 20% en un año", "10": "Que mi portafolio deje de ganar el 20% que sí ganó el mercado", "5": "Ambas por igual"}}, "q4": {"pregunta": "La última vez que una inversión, un negocio o una propiedad suya perdió valor de forma importante, ¿qué hizo?", "opciones": {"0": "Vendí o salí de la inversión", "3.33": "Reduje parte de mi exposición", "6.67": "Mantuve mi posición sin hacer cambios", "10": "Aumenté mi exposición aprovechando la caída", "na": "No aplica: no he vivido una situación similar"}}, "q5": {"pregunta": "Cuando debe decidir sobre una inversión y no tiene toda la información que quisiera, ¿qué hace normalmente?", "opciones": {"0": "Prefiero esperar hasta contar con más información, aunque pueda perder la oportunidad", "3.33": "Busco una segunda opinión o asesoría antes de tomar la decisión", "6.67": "Decido con la información disponible y reviso la decisión conforme aparece nueva información", "10": "Tomo la decisión con rapidez si considero que la oportunidad lo justifica"}}, "q6": {"pregunta": "¿Cuál combinación de retorno esperado y caída máxima en un año le parece aceptable?", "opciones": {"0": "Retorno esperado de 5% a 5,5% anual · pérdida aproximada de hasta −5%", "2.5": "Retorno esperado de 6% a 6,5% anual · pérdida aproximada de hasta −7%", "5": "Retorno esperado de 7% a 7,5% anual · pérdida aproximada de hasta −9%", "7.5": "Retorno esperado de 8% a 8,5% anual · pérdida aproximada de hasta −12%", "10": "Retorno esperado de 9% a 9,5% anual · pérdida aproximada de hasta −16%"}}, "q7": {"pregunta": "Para alcanzar sus metas financieras, puede depender más de sus aportes o asumir más riesgo buscando un mayor rendimiento del portafolio. ¿Qué prefiere?", "opciones": {"0": "Prefiero aumentar mis aportes y asumir un nivel bajo de riesgo en el portafolio", "3.33": "Prefiero aportar un poco más y mantener un nivel moderado de riesgo", "6.67": "Prefiero mantener mis aportes previstos y aceptar un mayor nivel de riesgo para buscar más rendimiento", "10": "Prefiero depender más del rendimiento del portafolio, aun si eso implica asumir fluctuaciones mayores"}}, "q8": {"pregunta": "Después de un año excepcionalmente bueno en su empresa o en su portafolio, ¿qué suele hacer con ese excedente?", "opciones": {"0": "Lo mantengo en liquidez para contar con una reserva", "2.5": "Lo utilizo para reducir deuda u otros compromisos financieros", "5": "Lo distribuyo entre ahorro, inversión y otros objetivos", "7.5": "Lo reinvierto manteniendo una estrategia similar", "10": "Lo destino a nuevas oportunidades con mayor potencial y mayor riesgo"}}, "q9": {"pregunta": "Después de un año excepcionalmente malo en su portafolio, ¿qué suele hacer?", "opciones": {"0": "Reduzco mi exposición y aumento la liquidez", "2.5": "Hago algunos ajustes para disminuir el riesgo", "5": "Mantengo la estrategia sin cambios importantes", "7.5": "Rebalanceo y aprovecho algunas oportunidades", "10": "Aumento mi exposición buscando beneficiarme de la recuperación"}}, "q10": {"pregunta": "Si tuviera que invertir una parte de su patrimonio en una sola alternativa durante varios años, ¿cuál elegiría? No puede combinar varias opciones.", "opciones": {"0": "Certificado de depósito bancario · rendimiento esperado de 3% a 4% anual · sin fluctuaciones de mercado", "3.33": "Bonos de alta calidad · rendimiento esperado de 4% a 5% anual · fluctuaciones anuales de aproximadamente ±3%", "6.67": "Inversión inmobiliaria diversificada · rendimiento esperado de 6% a 7% anual · fluctuaciones anuales de aproximadamente ±8%", "10": "Acciones globales diversificadas · rendimiento esperado de 8% a 9% anual · fluctuaciones anuales de aproximadamente ±15%"}}, "conocimiento": {"pregunta": "¿Cómo describe su conocimiento y experiencia en instrumentos de inversión?", "opciones": {"0": "Ninguno", "3.33": "Limitado — cuentas de ahorro y certificados a plazo", "6.67": "Bueno — fondos de inversión o bonos", "10": "Extenso — acciones, mercados internacionales o activos alternativos"}}, "c3": {"pregunta": "¿Cuál es su ingreso mensual, de dónde proviene y qué tan predecible es?", "opciones": {"0": "Varía de forma importante de un año a otro", "3.33": "Varía de manera moderada según los resultados del año", "6.67": "Es estable, con variaciones menores", "10": "Es fijo, o proviene de rentas ya consolidadas"}}, "c5": {"pregunta": "¿Cuánto destinaría a este portafolio y qué peso tiene en su patrimonio?", "opciones": {"0": "Prácticamente todo", "3.33": "Más de la mitad", "6.67": "Entre un cuarto y la mitad", "10": "Menos de un cuarto"}}, "i3-conocimiento": {"pregunta": "¿Cómo describe el conocimiento y la experiencia de quienes deciden las inversiones de la institución en instrumentos de inversión?", "opciones": {"0": "Ninguno", "3.33": "Limitado — cuentas de ahorro y certificados a plazo", "6.67": "Bueno — fondos de inversión o bonos", "10": "Extenso — acciones, mercados internacionales o activos alternativos"}}, "i3-peso": {"pregunta": "¿Qué proporción de sus activos o reservas totales representa este portafolio?", "opciones": {"0": "Prácticamente todo", "3.33": "Más de la mitad", "6.67": "Entre un cuarto y la mitad", "10": "Menos de un cuarto"}}, "i3-estabilidad": {"pregunta": "¿Qué tan estables son los ingresos de la institución?", "opciones": {"0": "Varían de forma importante de un año a otro", "3.33": "Varían de manera moderada según los resultados del año", "6.67": "Son estables, con variaciones menores", "10": "Son fijos, o provienen de rentas ya consolidadas"}}};
+const ORDEN_RIESGO = ['q1','q5','q2','q3','q6','q7','q4','q8','q9','q10'];   // orden en que aparecen en la página 1
+const DIM_DE = {q1:'tolerancia',q2:'tolerancia',q4:'tolerancia',q5:'tolerancia',q9:'tolerancia',
+                q3:'apetito',q6:'apetito',q7:'apetito',q8:'apetito',q10:'apetito'};
+const DIM_TXT = {tolerancia:'Tolerancia', apetito:'Apetito', conocimiento:'Conocimiento', capacidad:'Capacidad'};
+const NIVEL_TXT = v => v == null ? '—' : PERFILES[ESCALA[nivel(v)]].label;
+const valido = v => v !== null && v !== undefined && v !== '' && !isNaN(v);
+const textoOpcion = (id, v) => {
+  const ops = (CATALOGO[id] || {}).opciones || {};
+  if(ops[String(v)]) return ops[String(v)];
+  const k = Object.keys(ops).find(x => x !== 'na' && Math.abs(+x - v) < 0.02);   // 3.33 frente a 3.3333…
+  return k ? ops[k] : (valido(v) ? String(v) : '—');
+};
+
+// Texto de la respuesta tal como la vio el cliente (cuestionarios que lo guardan)
+function textoGuardado(c, id){
+  const r = (c.respuestasTexto || []).find(x => x.pagina === 1 && x.clave === id);
+  return r && r.detalle && r.detalle[0] ? r.detalle[0].valor : '';
+}
+// Perfil de riesgo: peso de cada pregunta en la disposición (conducta 2, percepción 1).
+function ponderacionRiesgo(c){
+  const q = c.respuestas || {};
+  const valor = id => q[id];
+  const sw = ORDEN_RIESGO.filter(id => valido(valor(id))).reduce((a, id) => a + PESO_REACTIVO[id], 0);
+  return ORDEN_RIESGO.map((id, i) => {
+    const v = valor(id), ok = valido(v), dim = DIM_DE[id];
+    const peso = ok ? PESO_REACTIVO[id] / sw : 0;
+    const rg = (c.respuestasTexto || []).find(x => x.pagina === 1 && x.clave === id);
+    return {n: i + 1, id, pregunta: rg && rg.pregunta ? rg.pregunta : CATALOGO[id].pregunta,
+            respuesta: (textoGuardado(c, id)) || (ok ? textoOpcion(id, v) : (id === 'q4' && c.respuestas && c.respuestas.q4 === null ? 'No aplica (sale del promedio)' : '—')),
+            dimension: DIM_TXT[dim], tipo: PESO_REACTIVO[id] === 2 ? 'Conducta' : 'Percepción', puntaje: ok ? +v : null, peso, aporte: ok ? v * peso : null};
+  });
+}
+// Capacidad financiera: promedio simple de sus componentes.
+function ponderacionCapacidad(c){
+  const cap = c.capacidad || {}, inst = c.tipoCliente === 'institucion';
+  let filas;
+  if(inst){
+    const h = +((c.institucional || {}).horizonteAnios) || 0;
+    filas = [
+      {componente:'Horizonte de inversión', respuesta: h + ' años', puntaje: puntajeHorizonte(h), regla:'Menos de 5 años 0 · 5 a 9 años 3,33 · 10 a 14 años 6,67 · 15 o más 10'},
+      {componente:'Estabilidad de los ingresos', respuesta: textoOpcion('i3-estabilidad', cap.fuenteIngreso), puntaje: cap.fuenteIngreso, regla:'Escala de la respuesta'},
+      {componente:'Peso del portafolio en los activos', respuesta: textoOpcion('i3-peso', cap.pesoDelPortafolio), puntaje: cap.pesoDelPortafolio, regla:'Escala de la respuesta'}];
+  } else {
+    const h = Math.max(0, (+c.edadRetiro || 0) - (+c.edad || 0));
+    const dep = cap.dependientes;
+    filas = [
+      {componente:'Horizonte hasta el retiro', respuesta: h + ' años (de los ' + c.edad + ' a los ' + c.edadRetiro + ')', puntaje: puntajeHorizonte(h), regla:'Menos de 5 años 0 · 5 a 9 años 3,33 · 10 a 14 años 6,67 · 15 o más 10'},
+      {componente:'Predictibilidad del ingreso', respuesta: textoOpcion('c3', cap.fuenteIngreso), puntaje: cap.fuenteIngreso, regla:'Escala de la respuesta'},
+      {componente:'Dependientes económicos', respuesta: valido(dep) ? (dep === 0 ? 'Ninguno' : dep + (dep === 1 ? ' persona' : ' personas')) : '—', puntaje: valido(dep) ? puntajeDependientes(dep) : null, regla:'4 o más 0 · 3 → 3,33 · 1 o 2 → 6,67 · ninguno 10'},
+      {componente:'Peso del portafolio en el patrimonio', respuesta: textoOpcion('c5', cap.pesoDelPortafolio), puntaje: cap.pesoDelPortafolio, regla:'Escala de la respuesta'}];
+  }
+  const nOk = filas.filter(f => valido(f.puntaje)).length;
+  filas.forEach(f => { const ok = valido(f.puntaje); f.peso = ok ? 1 / nOk : 0; f.aporte = ok ? f.puntaje / nOk : null; });
+  return filas;
+}
+// Resumen: cuatro dimensiones con el mismo peso en el puntaje del cliente.
+function resumenPerfil(c){
+  // Las cuatro dimensiones pesan 25% en el puntaje del cliente; la disposición (que define
+  // el perfil) es el promedio ponderado de las diez preguntas y se informa aparte.
+  const d = c.diag || {};
+  const dims = [['Tolerancia', d.tolerancia], ['Apetito', d.apetito], ['Capacidad financiera', d.capacidad], ['Conocimiento y experiencia', d.conocimiento]];
+  const nOk = dims.filter(x => valido(x[1])).length;
+  return dims.map(([t, v]) => ({dimension: t, puntaje: valido(v) ? v : null, peso: valido(v) ? 1 / nOk : 0, aporte: valido(v) ? v / nOk : null}));
+}
+// Uso de cada pregunta de planificación en el modelo (por el primer campo de la pregunta)
+const USO_PLAN = {
+  'edad_retiro':'Proyección: inicio del retiro y año del ROP · Capacidad: horizonte',
+  'plan':'Descriptivo', 'hijos-n':'Capacidad: dependientes',
+  'salario-monto':'Proyección: salario (referencial) · Capacidad: predictibilidad del ingreso',
+  'gasto-monto':'Proyección: gasto anual y retiro en la jubilación (con su factor)',
+  'pension-regimen':'Proyección: pensión, ROP y FCL',
+  'capital-monto':'Proyección: capital inicial y aportes · Capacidad: peso del portafolio',
+  'c1':'Descriptivo; aviso si ocurre más de 5 años antes del retiro',
+  'vivienda':'Descriptivo', 'empresa':'Descriptivo', 'deudas-saldo':'Descriptivo', 'seguro-vida':'Descriptivo', 'seguro-ninguno':'Descriptivo',
+  'metas-n':'Proyección: salidas por metas', 'herencia':'Rendimiento de equilibrio: meta de herencia',
+  'moneda':'Descriptivo', 'comentarios':'Descriptivo',
+  'i3-tipo':'Descriptivo', 'i3-objetivo':'Descriptivo', 'i3-capital':'Proyección: saldo inicial',
+  'i3-horizonte':'Proyección: años proyectados · Capacidad: horizonte', 'i3-aporte':'Proyección: aporte anual indexado',
+  'i3-retiro':'Proyección: retiro anual indexado', 'i3-extra-n':'Proyección: retiros extraordinarios',
+  'i3-minimo':'Rendimiento de equilibrio: capital mínimo', 'i3-peso':'Capacidad: peso del portafolio',
+  'i3-estabilidad':'Capacidad: estabilidad de los ingresos', 'i3-regulacion':'Descriptivo', 'i3-moneda':'Descriptivo', 'i3-comentarios':'Descriptivo'
+};
+// Respuestas de planificación en texto. El monto y su moneda se presentan juntos.
+function respuestasPlanificacion(c){
+  return (c.respuestasTexto || []).filter(r => r.pagina === 2).map(r => {
+    const partes = [], det = r.detalle || [];
+    for(let i = 0; i < det.length; i++){
+      const a = det[i], b = det[i + 1];
+      // separador de miles solo en montos; años, edades y cantidades se dejan tal cual
+      const num = (v, campo) => /^-?\d+(\.\d+)?$/.test(v) && !/año|Año|edad|Edad|Cantidad|cantidad/.test(campo || '')
+        ? Number(v).toLocaleString('es-CR', {maximumFractionDigits: 2}) : v;
+      if(/\(monto\)$/.test(a.campo) && b && b.campo === a.campo.replace('(monto)', '(moneda)')){
+        partes.push({campo: a.campo.replace(' (monto)', ''), valor: num(a.valor, a.campo) + ' ' + b.valor}); i++;
+      } else partes.push({campo: a.campo.replace(/^Q\d+ - |^C\d+ - /, ''), valor: num(a.valor, a.campo)});
+    }
+    return {n: r.n, pregunta: r.pregunta, partes, uso: USO_PLAN[r.clave] || 'Descriptivo'};
+  });
+}
+const f1 = v => valido(v) ? (Math.round(v * 100) / 100).toFixed(2) : '—';
+const fp = v => valido(v) ? (v * 100).toFixed(1) + '%' : '—';
+
+function respuestasHTML(c){
+  const inst = c.tipoCliente === 'institucion';
+  const rr = ponderacionRiesgo(c), cap = ponderacionCapacidad(c), plan = respuestasPlanificacion(c);
+  const d = c.diag || {};
+  const n1 = v => valido(v) ? (Math.round(v * 10) / 10).toFixed(1) : '—';
+  const pc = d.puntajeCliente;
+  const nivelPc = pc == null ? '' : pc >= 7 ? 'alto' : pc >= 4 ? 'medio' : 'bajo';
+  const lim = (d.limitantes || []).length ? 'limitado por ' + d.limitantes.map(l => l === 'capacidad' ? 'la capacidad financiera' : 'el conocimiento').join(' y ') : 'sin factor limitante';
+  const nombrePlan = inst ? 'Planificación del portafolio institucional' : 'Planificación financiera';
+  const cab = (id, tit, meta) => `
+      <div class="resp-cab">
+        <button type="button" class="resp-abrir" aria-expanded="false" data-cuerpo="${id}">
+          <span class="resp-tit">${tit}</span><span class="resp-meta">${meta}</span><span class="resp-chev" aria-hidden="true"></span>
+        </button>
+        <button type="button" class="btn btn-ghost btn-sm" data-descargar="${id}">Descargar en Excel</button>
+      </div>`;
+  const filaR = f => `
+          <div class="rq">
+            <span class="rq-n">${String(f.n).padStart(2, '0')}</span>
+            <div class="rq-txt"><p class="rq-preg">${esc(f.pregunta)}</p><p class="rq-resp">${esc(f.respuesta)}</p></div>
+            <span class="rq-dim">${f.dimension}<br><span class="rq-tipo">${f.tipo}</span></span>
+            <span class="rq-num">${valido(f.puntaje) ? (+f.puntaje).toFixed(2) : '—'}</span>
+            <span class="rq-num">${valido(f.peso) && f.peso ? (f.peso * 100).toFixed(1) + '%' : '—'}</span>
+            <span class="rq-num">${valido(f.aporte) ? f.aporte.toFixed(2) : '—'}</span>
+          </div>`;
+  const encab = (a, b) => `<div class="rq rq-encab"><span></span><span>${a}</span><span>${b}</span><span>Puntaje</span><span>Peso</span><span>Aporte</span></div>`;
+  return `
+    <p class="resp-intro">Las respuestas de cada cuestionario se muestran al abrir su sección. Cada una puede descargarse en Excel por separado.</p>
+    <div class="resp-lista">
+      <section class="resp-bloque">${cab('riesgo', 'Perfil de riesgo', '10 preguntas · ' + (inst ? 'puntaje de la institución ' : 'puntaje del cliente ') + n1(pc) + ' · perfil ' + PERFILES[c.perfil].label.toLowerCase())}
+        <div class="resp-cuerpo" id="resp-riesgo" hidden>
+          <div class="resp-resumen">
+            <div class="rr-disp"><span class="rr-et">Disposición</span><span class="rr-val">${n1(d.disposicion)}</span><span class="rr-peso">Define el perfil · ${NIVEL_TXT(d.disposicion).toLowerCase()}</span></div>
+            ${[['Tolerancia', d.tolerancia], ['Apetito', d.apetito], ['Capacidad', d.capacidad], ['Conocimiento', d.conocimiento]].map(([t, v]) =>
+              `<div><span class="rr-et">${t}</span><span class="rr-val">${n1(v)}</span><span class="rr-peso">25% del puntaje</span></div>`).join('')}
+            <div class="rr-total"><span class="rr-et">${inst ? 'Puntaje de la institución' : 'Puntaje del cliente'}</span><span class="rr-val">${n1(pc)}</span><span class="rr-peso">Nivel ${nivelPc}</span></div>
+          </div>
+          <p class="resp-nota">Perfil asignado <strong>${PERFILES[c.perfil].label.toLowerCase()}</strong>, ${lim}. La disposición es el promedio ponderado de las diez preguntas: las de conducta o decisión concreta pesan el doble que las de percepción. El aporte es el puntaje por su peso, y la suma de los aportes es la disposición. Cortes: conservador por debajo de 3,33; agresivo desde 6,67.</p>
+          <div class="rq-tabla">${encab('Pregunta y respuesta', 'Dimensión y tipo')}${rr.map(filaR).join('')}
+            <div class="rq rq-total"><span></span><span>Disposición al riesgo</span><span></span><span></span><span class="rq-num">100%</span><span class="rq-num">${valido(d.disposicion) ? d.disposicion.toFixed(2) : '—'}</span></div>
+          </div>
+          <h4 class="resp-sub">Capacidad financiera</h4>
+          <p class="resp-nota">Se calcula con datos de la planificación. Es el promedio simple de sus componentes y solo puede bajar el perfil.</p>
+          <div class="rq-tabla">${encab('Componente y respuesta', 'Regla')}
+            ${cap.map(f => `
+            <div class="rq">
+              <span class="rq-n"></span>
+              <div class="rq-txt"><p class="rq-preg">${f.componente}</p><p class="rq-resp">${esc(f.respuesta)}</p></div>
+              <span class="rq-dim rq-regla">${f.regla}</span>
+              <span class="rq-num">${valido(f.puntaje) ? (+f.puntaje).toFixed(2) : '—'}</span>
+              <span class="rq-num">${f.peso ? (f.peso * 100).toFixed(1) + '%' : '—'}</span>
+              <span class="rq-num">${valido(f.aporte) ? f.aporte.toFixed(2) : '—'}</span>
+            </div>`).join('')}
+          </div>
+        </div>
+      </section>
+      <section class="resp-bloque">${cab('planificacion', nombrePlan, plan.length ? plan.length + ' preguntas respondidas' : 'Registro de una versión anterior')}
+        <div class="resp-cuerpo" id="resp-planificacion" hidden>
+          ${plan.length ? `<div class="rp-tabla">
+            <div class="rp rp-encab"><span></span><span>Pregunta y respuesta</span><span>Uso en el modelo</span></div>
+            ${plan.map(r => `
+            <div class="rp">
+              <span class="rq-n">${esc(r.n)}</span>
+              <div class="rq-txt"><p class="rq-preg">${esc(r.pregunta)}</p>
+                <dl class="rp-datos">${r.partes.map(x => `<dt>${esc(x.campo)}</dt><dd>${esc(x.valor)}</dd>`).join('')}</dl></div>
+              <span class="rp-uso">${r.uso}</span>
+            </div>`).join('')}
+          </div>` : `<p class="resp-nota">Este registro proviene de una versión anterior del cuestionario, que no guardaba el texto de las respuestas de planificación. Los datos declarados se consultan en la página 2 y en el Excel del modelo.</p>`}
+        </div>
+      </section>
+    </div>`;
+}
+function activarRespuestas(c){
+  document.querySelectorAll('#detail .resp-abrir').forEach(b => b.onclick = () => {
+    const cuerpo = document.getElementById('resp-' + b.dataset.cuerpo);
+    const abrir = cuerpo.hidden;
+    cuerpo.hidden = !abrir; b.setAttribute('aria-expanded', abrir ? 'true' : 'false');
+    b.closest('.resp-bloque').classList.toggle('abierto', abrir);
+  });
+  document.querySelectorAll('#detail [data-descargar]').forEach(b => b.onclick = () => descargarRespuestas(c, b.dataset.descargar));
+}
+
+// Excel de respuestas: un libro por cuestionario, independiente de las plantillas del modelo.
+async function descargarRespuestas(c, cual){
+  const inst = c.tipoCliente === 'institucion', d = c.diag || {};
+  // Estilos
+  const S = {titulo:1, sub:2, banda:3, enc:4, encC:5, txt:6, txtB:7, ent:8, dec:9, pct:10, totT:11, totD:12, totP:13, et:14, val:15, txtS:16, entS:17, txtSB:18, pie:19, datoL:20, respS:21, int:22};
+  const xf = (o) => `<xf numFmtId="${o.num||0}" fontId="${o.f||0}" fillId="${o.fill||0}" borderId="${o.b||0}" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment vertical="${o.v||'top'}"${o.h?` horizontal="${o.h}"`:''}${o.w?' wrapText="1"':''}${o.i?` indent="${o.i}"`:''}/></xf>`;
+  const estilos = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">`
+    + `<numFmts count="3"><numFmt numFmtId="164" formatCode="0.00"/><numFmt numFmtId="165" formatCode="0.0%"/><numFmt numFmtId="166" formatCode="00"/></numFmts>`
+    + `<fonts count="7">`
+    + `<font><sz val="10"/><color rgb="FF23270F"/><name val="Calibri"/></font>`
+    + `<font><b/><sz val="10"/><color rgb="FF141709"/><name val="Calibri"/></font>`
+    + `<font><sz val="16"/><color rgb="FF2B3014"/><name val="Calibri Light"/></font>`
+    + `<font><sz val="9"/><color rgb="FF7F8757"/><name val="Calibri"/></font>`
+    + `<font><b/><sz val="9"/><color rgb="FFFFFFFF"/><name val="Calibri"/></font>`
+    + `<font><b/><sz val="9"/><color rgb="FF918042"/><name val="Calibri"/></font>`
+    + `<font><sz val="10"/><color rgb="FF5A5E44"/><name val="Calibri"/></font>`
+    + `</fonts>`
+    + `<fills count="4"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill>`
+    + `<fill><patternFill patternType="solid"><fgColor rgb="FF2B3014"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFF4F5EE"/></patternFill></fill></fills>`
+    + `<borders count="4"><border/><border><bottom style="thin"><color rgb="FFE2E5D6"/></bottom></border>`
+    + `<border><bottom style="thin"><color rgb="FF2B3014"/></bottom></border><border><top style="thin"><color rgb="FF2B3014"/></top></border></borders>`
+    + `<cellStyleXfs count="1"><xf/></cellStyleXfs><cellXfs count="23"><xf/>`
+    + xf({f:2, v:'center'})                                   // 1 título
+    + xf({f:3, v:'center'})                                   // 2 subtítulo
+    + xf({f:4, fill:2, v:'center', i:1})                      // 3 banda de sección
+    + xf({f:5, fill:3, b:2, v:'center', w:1})                 // 4 encabezado
+    + xf({f:5, fill:3, b:2, v:'center', h:'center', w:1})     // 5 encabezado centrado
+    + xf({b:1, w:1})                                          // 6 texto
+    + xf({f:1, b:1, w:1})                                     // 7 texto en negrita
+    + xf({num:166, f:5, b:1, h:'center'})                     // 8 número de pregunta
+    + xf({num:164, b:1, h:'center'})                          // 9 decimal
+    + xf({num:165, b:1, h:'center'})                          // 10 porcentaje
+    + xf({f:1, b:3, v:'center'})                              // 11 total: texto
+    + xf({num:164, f:1, b:3, v:'center', h:'center'})         // 12 total: decimal
+    + xf({num:165, f:1, b:3, v:'center', h:'center'})         // 13 total: porcentaje
+    + xf({f:3, v:'center'})                                   // 14 etiqueta
+    + xf({f:1, v:'center'})                                   // 15 valor
+    + xf({w:1})                                               // 16 texto sin línea
+    + xf({num:166, f:5, h:'center'})                          // 17 número sin línea
+    + xf({f:6, w:1})                                          // 18 texto secundario sin línea
+    + xf({f:3, w:1})                                          // 19 nota al pie
+    + xf({f:6, b:1, w:1})                                     // 20 dato (gris) con línea
+    + xf({f:1, w:1})                                          // 21 respuesta en negrita sin línea
+    + xf({num:1, b:1, h:'center'})                            // 22 entero
+    + `</cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>`;
+  const L = i => String.fromCharCode(65 + i);
+  const filas = [], merges = [];
+  let anchos;
+  const lineas = (t, w) => String(t == null ? '' : t).split('\n').reduce((s, p) => s + Math.max(1, Math.ceil(p.length / (w * 1.12))), 0);
+  const add = (celdas, ht) => { filas.push({celdas, ht}); return filas.length; };
+  const alto = (celdas) => { let n = 1; celdas.forEach((x, k) => { if(x && x[2] !== 'nomide' && typeof x[0] === 'string' && x[0]) n = Math.max(n, lineas(x[0], anchos[k])); }); return Math.max(17, n * 13.2 + 6); };
+  const fecha = c.creadoEn ? new Date(c.creadoEn).toLocaleDateString('es-CR', {day:'2-digit', month:'long', year:'numeric'}) : '';
+  const encabezado = (titulo, ncol) => {
+    add([[titulo, S.titulo]], 30);
+    add([[(inst ? 'Institución: ' : 'Cliente: ') + c.nombre + (fecha ? '   ·   Cuestionario respondido el ' + fecha : ''), S.sub]], 16);
+    add([], 10);
+  };
+  const banda = (t, ncol) => { const r = add([[t, S.banda], ...Array(ncol - 1).fill([null, S.banda])], 22); merges.push(`A${r}:${L(ncol - 1)}${r}`); };
+  let nombreHoja, archivo;
+  if(cual === 'riesgo'){
+    anchos = [6, 54, 40, 15, 10, 10, 10];
+    nombreHoja = 'Perfil de riesgo'; archivo = 'perfil de riesgo';
+    encabezado('Cuestionario de perfil de riesgo · respuestas y ponderación', 7);
+    banda('RESUMEN DEL PERFIL', 7);
+    add(['', 'Dimensión', 'Nivel', '', 'Puntaje', 'Peso', 'Aporte'].map((t, k) => [t, k >= 4 ? S.encC : S.enc]), 20);
+    resumenPerfil(c).forEach(f => {
+      const nivelTxt = f.dimension.startsWith('Conocimiento') ? (f.puntaje == null ? '—' : f.puntaje <= 0 ? 'Techo conservador' : f.puntaje <= 3 ? 'Techo moderado' : 'Sin límite') : NIVEL_TXT(f.puntaje);
+      const cel = [[null, S.txt], [f.dimension, S.txt], [nivelTxt, S.txt], [null, S.txt], [f.puntaje, S.dec], [f.peso, S.pct], [f.aporte, S.dec]];
+      add(cel, alto(cel));
+    });
+    add([[null, S.totT], [inst ? 'Puntaje de la institución' : 'Puntaje del cliente', S.totT], [d.puntajeCliente == null ? '—' : d.puntajeCliente >= 7 ? 'Alto' : d.puntajeCliente >= 4 ? 'Medio' : 'Bajo', S.totT], [null, S.totT], [d.puntajeCliente, S.totD], [1, S.totP], [d.puntajeCliente, S.totD]], 20);
+    add([], 8);
+    add([null, ['Perfil asignado', S.et], [PERFILES[c.perfil].label, S.val]], 17);
+    add([null, ['Disposición al riesgo (define el perfil)', S.et], [valido(d.disposicion) ? (Math.round(d.disposicion * 100) / 100).toFixed(2) + ' · ' + NIVEL_TXT(d.disposicion) : '—', S.val]], 17);
+    add([null, ['Factor limitante', S.et], [(d.limitantes || []).length ? d.limitantes.map(l => l === 'capacidad' ? 'Capacidad financiera' : 'Conocimiento').join(' y ') : 'Ninguno', S.val]], 17);
+    add([], 12);
+    banda('RESPUESTAS Y PONDERACIÓN', 7);
+    add(['N.º', 'Pregunta', 'Respuesta', 'Dimensión y tipo', 'Puntaje', 'Peso', 'Aporte'].map((t, k) => [t, k === 0 || k >= 4 ? S.encC : S.enc]), 20);
+    ponderacionRiesgo(c).forEach(f => {
+      const cel = [[f.n, S.ent], [f.pregunta, S.txt], [f.respuesta, S.txtB], [f.dimension + ' · ' + f.tipo.toLowerCase(), S.txt], [f.puntaje, S.dec], [f.peso, S.pct], [f.aporte, S.dec]];
+      add(cel, alto(cel));
+    });
+    add([[null, S.totT], ['Disposición al riesgo', S.totT], [NIVEL_TXT(d.disposicion), S.totT], [null, S.totT], [null, S.totT], [1, S.totP], [d.disposicion, S.totD]], 20);
+    add([], 12);
+    banda('CAPACIDAD FINANCIERA (DATOS DE LA PLANIFICACIÓN)', 7);
+    add(['', 'Componente', 'Respuesta', 'Regla de puntaje', 'Puntaje', 'Peso', 'Aporte'].map((t, k) => [t, k >= 4 ? S.encC : S.enc]), 20);
+    ponderacionCapacidad(c).forEach(f => {
+      const cel = [[null, S.txt], [f.componente, S.txt], [f.respuesta, S.txtB], [f.regla, S.txt], [f.puntaje, S.dec], [f.peso, S.pct], [f.aporte, S.dec]];
+      add(cel, alto(cel));
+    });
+    add([[null, S.totT], ['Capacidad financiera', S.totT], [NIVEL_TXT(d.capacidad), S.totT], [null, S.totT], [d.capacidad, S.totD], [1, S.totP], [d.capacidad, S.totD]], 20);
+    add([], 10);
+    const nota = add([null, ['Metodología v2: cada respuesta se puntúa en escala lineal de 0 a 10. La disposición es el promedio ponderado de las diez preguntas (conducta 2, percepción 1) y define el perfil con cortes en 3,33 y 6,67. La capacidad y el conocimiento solo pueden bajar el perfil. El puntaje del cliente pondera las cuatro dimensiones con 25% cada una.', S.pie]], 30);
+    merges.push(`B${nota}:G${nota}`);
+  } else {
+    anchos = [6, 46, 30, 34, 38];
+    const nombrePlan = inst ? 'Planificación del portafolio institucional' : 'Planificación financiera';
+    nombreHoja = 'Planificación'; archivo = 'planificacion';
+    encabezado('Cuestionario de ' + nombrePlan.toLowerCase() + ' · respuestas', 5);
+    banda('RESPUESTAS', 5);
+    add(['N.º', 'Pregunta', 'Dato', 'Respuesta', 'Uso en el modelo'].map((t, k) => [t, k === 0 ? S.encC : S.enc]), 20);
+    const plan = respuestasPlanificacion(c);
+    if(!plan.length) add([null, ['Registro de una versión anterior del cuestionario: no guardaba el texto de las respuestas de planificación.', S.txt]], 30);
+    plan.forEach(r => {
+      const k = r.partes.length, r0 = filas.length + 1;
+      r.partes.forEach((x, i) => {
+        const ult = i === k - 1;
+        const cel = [[i ? null : +r.n, ult ? S.ent : S.entS], [i ? null : r.pregunta, ult ? S.txt : S.txtS],
+                     [x.campo, ult ? S.datoL : S.txtSB], [x.valor, ult ? S.txtB : S.respS], [i ? null : r.uso, ult ? S.txt : S.txtS]];
+        // la pregunta y el uso se combinan en vertical: no cuentan para la altura de cada fila
+        add(cel, alto([null, null, cel[2], cel[3], null]));
+      });
+      if(k > 1){ ['A', 'B', 'E'].forEach(col => merges.push(`${col}${r0}:${col}${r0 + k - 1}`)); }
+      // si la pregunta necesita más alto que sus filas, se agranda la última
+      const necesita = Math.max(lineas(r.pregunta, anchos[1]), lineas(r.uso, anchos[4])) * 13.2 + 6;
+      const tiene = filas.slice(r0 - 1, r0 - 1 + k).reduce((s, f) => s + f.ht, 0);
+      if(necesita > tiene) filas[r0 + k - 2].ht += necesita - tiene;
+    });
+  }
+  const celdaX = (ref, v, s) => {
+    const est = s ? ` s="${s}"` : '';
+    if(v === null || v === undefined || v === '') return s ? `<c r="${ref}"${est}/>` : '';
+    if(typeof v === 'number') return `<c r="${ref}"${est}><v>${v}</v></c>`;
+    return `<c r="${ref}"${est} t="inlineStr"><is><t xml:space="preserve">${xEsc(v)}</t></is></c>`;
+  };
+  const cuerpo = filas.map((f, i) => `<row r="${i + 1}" ht="${(f.ht || 15).toFixed(1)}" customHeight="1">`
+    + f.celdas.map((x, k) => x == null ? '' : Array.isArray(x) ? celdaX(L(k) + (i + 1), x[0], x[1]) : celdaX(L(k) + (i + 1), x, S.txt)).join('') + `</row>`).join('');
+  const hojaXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>`
+    + `<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">`
+    + `<sheetPr><pageSetUpPr fitToPage="1"/></sheetPr>`
+    + `<sheetViews><sheetView workbookViewId="0" showGridLines="0" zoomScale="110"/></sheetViews>`
+    + `<cols>` + anchos.map((w, k) => `<col min="${k + 1}" max="${k + 1}" width="${w}" customWidth="1"/>`).join('') + `</cols>`
+    + `<sheetData>${cuerpo}</sheetData>`
+    + (merges.length ? `<mergeCells count="${merges.length}">` + merges.map(m => `<mergeCell ref="${m}"/>`).join('') + `</mergeCells>` : '')
+    + `<pageMargins left="0.5" right="0.5" top="0.6" bottom="0.6" header="0.3" footer="0.3"/>`
+    + `<pageSetup orientation="landscape" fitToWidth="1" fitToHeight="0"/></worksheet>`;
+  const zip = new JSZip();
+  zip.file('[Content_Types].xml', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>`);
+  zip.file('_rels/.rels', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>`);
+  zip.file('xl/workbook.xml', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="${nombreHoja}" sheetId="1" r:id="rId1"/></sheets></workbook>`);
+  zip.file('xl/_rels/workbook.xml.rels', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`);
+  zip.file('xl/styles.xml', estilos);
+  zip.file('xl/worksheets/sheet1.xml', hojaXml);
+  const blob = await zip.generateAsync({type:'blob', compression:'DEFLATE', mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+  descargar(blob, `ChyCo - ${limpiar(c.nombre)} - respuestas ${archivo}.xlsx`);
+}
+
 // El detalle del cliente se lee en dos páginas, en el mismo orden que la ficha PDF:
 // 1) posición, puntaje y rendimiento de equilibrio; 2) carteras y proyección.
+// Una tercera pestaña reúne las respuestas del cliente y su ponderación.
 let paginaPanel = 1;
 function activarPaginas(p){
   const mostrar = n => {
@@ -1076,15 +1519,15 @@ function posicionHTML(c, titulo){
   const inst = tipoDe(c) === 'institucion';
   return `    <div class="donut-card">
       <h2 class="section-title" style="font-size:16px;">${titulo}</h2>
-      <p class="section-sub" style="margin-bottom:18px;">Tolerancia frente a apetito de riesgo, en escala de 0 a 10. La capacidad financiera y el conocimiento no se grafican: no ubican ${inst ? 'a la institución' : 'al cliente'} en el plano, solo limitan hasta dónde puede llegar el perfil.</p>
+      <p class="section-sub" style="margin-bottom:18px;">Tolerancia frente a apetito de riesgo, en escala de 0 a 10. Las franjas son los perfiles que resultan de la disposición (promedio ponderado de las diez preguntas), con cortes en 3,33 y 6,67. La capacidad financiera y el conocimiento no se grafican: solo limitan hasta dónde puede llegar el perfil.</p>
       <div class="donut-row matriz-row">
         <canvas id="matriz" style="width:340px;height:340px;"></canvas>
         <div class="alloc-legend">
-          ${[['Tolerancia', c.diag.tolerancia],['Apetito', c.diag.apetito],
+          ${[['Tolerancia', c.diag.tolerancia],['Apetito', c.diag.apetito],['Disposición', c.diag.disposicion],
              ['Capacidad financiera', c.diag.capacidad],['Conocimiento', c.diag.conocimiento]]
             .map(([n,v])=>`
             <div class="alloc-item">
-              <span class="alloc-dot" style="background:${n==='Tolerancia'?'#2B3014':n==='Apetito'?'#918042':'#B3BC80'}"></span>
+              <span class="alloc-dot" style="background:${n==='Tolerancia'?'#2B3014':n==='Apetito'?'#918042':n==='Disposición'?'#7F8757':'#B3BC80'}"></span>
               <span class="alloc-name">${n}</span>
               <span class="alloc-pct">${v==null||isNaN(v) ? '—' : (Math.round(v*10)/10).toFixed(1)}</span>
             </div>`).join('')}
@@ -1201,6 +1644,7 @@ function renderInstitucion(c){
     <div class="paginas-nav" role="tablist">
       <button type="button" class="pag-btn activa" data-pag="1" role="tab">Página 1 · Perfil y rendimiento de equilibrio</button>
       <button type="button" class="pag-btn" data-pag="2" role="tab">Página 2 · Carteras y proyección</button>
+      <button type="button" class="pag-btn" data-pag="3" role="tab">Respuestas de la institución</button>
     </div>
 
     <div class="pagina" data-pag="1">
@@ -1284,6 +1728,10 @@ function renderInstitucion(c){
       </table>
     </div>
     </div>
+
+    <div class="pagina" data-pag="3" hidden>
+${respuestasHTML(c)}
+    </div>
   `;
   dibujarGrafico(p);
   activarPaginas(p);
@@ -1292,6 +1740,7 @@ function renderInstitucion(c){
   dibujarPastel('pastel-asig', asig);
   dibujarPastel('pastel-eq', redondeoAsig(carteraEquilibrio(eq).asig));
   document.getElementById('btn-excel').onclick = ()=>exportarExcelInst(c, p, asig);
+  activarRespuestas(c);
   document.getElementById('btn-pdf').onclick = ()=>exportarFicha(c, p, asig);
 }
 
@@ -1368,6 +1817,7 @@ function renderDetalle(c){
     <div class="paginas-nav" role="tablist">
       <button type="button" class="pag-btn activa" data-pag="1" role="tab">Página 1 · Perfil y rendimiento de equilibrio</button>
       <button type="button" class="pag-btn" data-pag="2" role="tab">Página 2 · Carteras y proyección</button>
+      <button type="button" class="pag-btn" data-pag="3" role="tab">Respuestas del cliente</button>
     </div>
 
     <div class="pagina" data-pag="1">
@@ -1490,6 +1940,10 @@ function renderDetalle(c){
       </table>
     </div>
     </div>
+
+    <div class="pagina" data-pag="3" hidden>
+${respuestasHTML(c)}
+    </div>
   `;
   dibujarGrafico(p);
   activarPaginas(p);
@@ -1498,6 +1952,7 @@ function renderDetalle(c){
   dibujarPastel('pastel-asig', asig);
   dibujarPastel('pastel-eq', redondeoAsig(carteraEquilibrio(eq).asig));
   document.getElementById('btn-excel').onclick = ()=>exportarExcel(c, p, asig);
+  activarRespuestas(c);
   document.getElementById('btn-pdf').onclick = ()=>exportarFicha(c, p, asig);
 }
 
@@ -1683,40 +2138,45 @@ function dibujarMatriz(d){
   const X = v => padL + w*Math.min(Math.max(v,0),10)/10;
   const Y = v => padT + h - h*Math.min(Math.max(v,0),10)/10;
 
-  // casilla del cliente, para resaltarla
-  const idxDe = v => v == null ? -1 : (v < 5 ? 0 : 1);
-  const ct = idxDe(d.tolerancia), ca = idxDe(d.apetito);
-
-  for(let i=0;i<NIVELES.length;i++){   // i = tolerancia (columna)
-    for(let j=0;j<NIVELES.length;j++){ // j = apetito (fila)
-      const perfil = ESCALA[nivel((NIVELES[i].centro + NIVELES[j].centro)/2)];
-      const x0 = X(NIVELES[i].desde), x1 = X(NIVELES[i].hasta);
-      const y1 = Y(NIVELES[j].desde), y0 = Y(NIVELES[j].hasta);
-      g.fillStyle = TONO[perfil]; g.fillRect(x0, y0, x1-x0, y1-y0);
-      if(i===ct && j===ca){
-        g.strokeStyle='#2B3014'; g.lineWidth=1.6;
-        g.strokeRect(x0+0.8, y0+0.8, x1-x0-1.6, y1-y0-1.6);
-      }
-      g.fillStyle = perfil==='agresivo' ? '#2B3014' : '#6B6C55';
-      g.font = '11px Satoshi, sans-serif'; g.textAlign='center';
-      g.fillText(PERFILES[perfil].label, (x0+x1)/2, (y0+y1)/2+3.5);
+  // La disposición es el promedio ponderado de las diez preguntas, que equivale a
+  // (pesoTol·tolerancia + pesoApe·apetito) / (pesoTol + pesoApe). Por eso los perfiles
+  // forman franjas diagonales y el punto del cliente cae siempre en la franja de su perfil.
+  const wt = d.pesoTol || 7, wa = d.pesoApe || 8;
+  const disp = (x, y) => (wt*x + wa*y)/(wt + wa);
+  const paso = 2;
+  for(let px = 0; px < w; px += paso){
+    for(let py = 0; py < h; py += paso){
+      const x = (px + paso/2)/w*10, y = 10 - (py + paso/2)/h*10;
+      g.fillStyle = TONO[ESCALA[nivel(disp(x, y))]];
+      g.fillRect(padL + px, padT + py, paso + 0.5, paso + 0.5);
     }
   }
-
-  // rejilla en los umbrales
-  g.strokeStyle='#FFFFFF'; g.lineWidth=1;
-  [5].forEach(u=>{
-    g.beginPath(); g.moveTo(X(u), padT); g.lineTo(X(u), padT+h);
-    g.moveTo(padL, Y(u)); g.lineTo(padL+w, Y(u)); g.stroke();
+  // líneas de corte: wt·x + wa·y = corte·(wt + wa)
+  g.strokeStyle = '#FFFFFF'; g.lineWidth = 1.4;
+  CORTES.forEach(cc => {
+    const yEn = x => (cc*(wt + wa) - wt*x)/wa;
+    g.beginPath();
+    let primero = true;
+    for(let x = 0; x <= 10.0001; x += 0.05){
+      const y = yEn(x); if(y < 0 || y > 10) continue;
+      if(primero){ g.moveTo(X(x), Y(y)); primero = false; } else g.lineTo(X(x), Y(y));
+    }
+    g.stroke();
   });
-  g.strokeStyle='#AEB694'; g.strokeRect(padL, padT, w, h);
+  g.strokeStyle='#AEB694'; g.lineWidth = 1; g.strokeRect(padL, padT, w, h);
+  // nombres de los perfiles sobre su franja
+  g.font = '11px Satoshi, sans-serif'; g.textAlign = 'center';
+  [['conservador', 1.4, 1.4], ['moderado', 5, 5], ['agresivo', 8.6, 8.6]].forEach(([k, x, y]) => {
+    g.fillStyle = k === 'agresivo' ? '#2B3014' : '#6B6C55';
+    g.fillText(PERFILES[k].label, X(x), Y(y) + 3.5);
+  });
 
-  // rótulos de nivel
+  // escala de los ejes
   g.font='10px Satoshi, sans-serif'; g.fillStyle='#6B6C55';
   g.textAlign='center';
-  NIVELES.forEach(n=> g.fillText(n.nombre, (X(n.desde)+X(n.hasta))/2, padT+h+16));
+  [0, 5, 10].forEach(v => g.fillText(String(v), X(v), padT+h+16));
   g.textAlign='right';
-  NIVELES.forEach(n=> g.fillText(n.masc, padL-10, (Y(n.desde)+Y(n.hasta))/2+3.5));
+  [0, 5, 10].forEach(v => g.fillText(String(v), padL-10, Y(v)+3.5));
 
   // títulos de eje
   g.fillStyle='#2B3014'; g.font='11px Satoshi, sans-serif'; g.textAlign='center';
@@ -1889,8 +2349,9 @@ function xmlCliente(c, p, asig, sup){
   Fnum('Retorno esperado anual', p.retorno, EST.pct);
   Fnum('Tolerancia al riesgo (0 a 10)', c.diag.tolerancia, EST.dec2);
   Fnum('Apetito de riesgo (0 a 10)', c.diag.apetito, EST.dec2);
+  Fnum('Disposición al riesgo (0 a 10)', c.diag.disposicion, EST.dec2);
   Fnum('Capacidad financiera (0 a 10)', c.diag.capacidad, EST.dec2);
-  Fnum('Conocimiento y experiencia (0 a 10)', c.diag.conocimiento, EST.ent);
+  Fnum('Conocimiento y experiencia (0 a 10)', c.diag.conocimiento, EST.dec2);
   Fnum('Puntaje del cliente (0 a 10)', c.diag.puntajeCliente, EST.dec2);
   // Rendimiento de equilibrio: se resuelve en el dashboard (es una búsqueda, no
   // una fórmula), por eso va como valor. La proyección de la hoja 2 no depende de él.
@@ -2136,8 +2597,20 @@ function xmlDatos(c, p, asig, eq){
   pon('A7', c.nombre || 'Cliente');
   if(d.tolerancia != null) pon('B7', +d.tolerancia.toFixed(2), EST.dec2);
   if(d.apetito != null) pon('C7', +d.apetito.toFixed(2), EST.dec2);
-  [['Moderado',2.5,7.5],['Agresivo',7.5,7.5],['Conservador',2.5,2.5],['Moderado',7.5,2.5]].forEach(([t,x,y],i)=>{
+  // rótulos de los perfiles sobre sus franjas (la fila 12 queda vacía)
+  [['Conservador',1.4,1.4],['Moderado',5,5],['Agresivo',8.6,8.6]].forEach(([t,x,y],i)=>{
     const r = 9+i; pon('A'+r, t); pon('B'+r, x); pon('C'+r, y);
+  });
+  // líneas de corte de la disposición: pesoTol·x + pesoApe·y = corte·(pesoTol + pesoApe)
+  const wt = d.pesoTol || 7, wa = d.pesoApe || 8;
+  pon('L1','Corte conservador–moderado'); pon('N1','Corte moderado–agresivo');
+  CORTES.forEach((cc, j) => {
+    const T = cc*(wt + wa), pts = [];
+    [[0, T/wa], [10, (T - 10*wt)/wa], [T/wt, 0], [(T - 10*wa)/wt, 10]].forEach(([x, y]) => {
+      if(x >= -1e-9 && x <= 10 + 1e-9 && y >= -1e-9 && y <= 10 + 1e-9 && !pts.some(p => Math.abs(p[0]-x) < 1e-6 && Math.abs(p[1]-y) < 1e-6)) pts.push([x, y]);
+    });
+    pts.slice(0, 2).forEach(([x, y], i) => { const col = j ? ['N','O'] : ['L','M'];
+      pon(col[0] + (2 + i), +x.toFixed(4), EST.dec2); pon(col[1] + (2 + i), +y.toFixed(4), EST.dec2); });
   });
   // curva de carteras modelo
   pon('E1','Volatilidad'); pon('F1','Rendimiento');
@@ -2243,8 +2716,9 @@ function xmlInstitucion(c, p, asig, sup){
   Fnum('Retorno esperado anual', p.retorno, EST.pct);
   Fnum('Tolerancia al riesgo (0 a 10)', c.diag.tolerancia, EST.dec2);
   Fnum('Apetito de riesgo (0 a 10)', c.diag.apetito, EST.dec2);
+  Fnum('Disposición al riesgo (0 a 10)', c.diag.disposicion, EST.dec2);
   Fnum('Capacidad financiera (0 a 10)', c.diag.capacidad, EST.dec2);
-  Fnum('Conocimiento y experiencia (0 a 10)', c.diag.conocimiento, EST.ent);
+  Fnum('Conocimiento y experiencia (0 a 10)', c.diag.conocimiento, EST.dec2);
   Fnum('Puntaje de la institución (0 a 10)', c.diag.puntajeCliente, EST.dec2);
   const eq = rendimientoEquilibrioInst(c, sup), req = perfilRequerido(eq);
   if(eq.estado === 'inalcanzable') Ftxt('Rendimiento de equilibrio', 'Más de 30%: no alcanzable');
@@ -2578,7 +3052,7 @@ async function exportarFicha(c, p, asig){
     const dg = c.diag || {};
     const un = v => v == null || isNaN(v) ? '-' : (Math.round(v*10)/10).toFixed(1) + ' de 10';
     let yS = yPos + 6;
-    [['Tolerancia al riesgo', dg.tolerancia], ['Apetito de riesgo', dg.apetito],
+    [['Tolerancia al riesgo', dg.tolerancia], ['Apetito de riesgo', dg.apetito], ['Disposición al riesgo', dg.disposicion],
      ['Capacidad financiera', dg.capacidad], ['Conocimiento y experiencia', dg.conocimiento]].forEach(([n2, v]) => {
       doc.setFontSize(8.2); doc.setTextColor(...GRIS); doc.text(n2, xS, yS);
       doc.setTextColor(...NEGRO); doc.setFont('helvetica','bold'); doc.text(un(v), W - M, yS, {align:'right'});
