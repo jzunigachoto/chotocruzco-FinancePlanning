@@ -1,0 +1,1114 @@
+{
+  "id": "c-1791235709865-u4dxl",
+  "tipoCliente": "persona",
+  "nombre": "Francinie Soto",
+  "correo": "jzuniga@chotocruzco.com",
+  "telefono": "+506 40821820",
+  "telefonoPais": "CR",
+  "direccion": "San José, Santa Ana, Santa Ana · Casa 46",
+  "residencia": {
+    "pais": "Costa Rica",
+    "provincia": "San José",
+    "canton": "Santa Ana",
+    "distrito": "Santa Ana",
+    "senas": "Casa 46"
+  },
+  "identificacion": {
+    "nombres": "Francinie",
+    "apellidos": "Soto",
+    "tipoDocumento": "cedula",
+    "cedula": "1-1395-0804",
+    "pasaporte": "",
+    "paisEmisor": "",
+    "fechaNacimiento": "1989-07-06",
+    "ocupacion": "Asesora",
+    "estadoCivil": "casado"
+  },
+  "edad": 37,
+  "edadRetiro": 55,
+  "versionPerfil": 2,
+  "respuestas": {
+    "q1": 6.67,
+    "q2": 10,
+    "q3": 10,
+    "q4": 6.67,
+    "q5": 6.67,
+    "q6": 10,
+    "q7": 6.67,
+    "q8": 7.5,
+    "q9": 7.5,
+    "q10": 10
+  },
+  "capacidad": {
+    "fuenteIngreso": 0,
+    "dependientes": 3,
+    "pesoDelPortafolio": 6.67,
+    "aniosPrimerRetiro": 5,
+    "montoPrimerRetiroUsdHoy": 2000
+  },
+  "fondos": {
+    "rop": {
+      "saldo": 12000000,
+      "saldoMoneda": "CRC",
+      "aporteMensual": 150000,
+      "aporteMoneda": "CRC",
+      "traslado": "no",
+      "anio": null
+    },
+    "fcl": {
+      "saldo": 12000000,
+      "saldoMoneda": "CRC",
+      "aporteMensual": 150000,
+      "aporteMoneda": "CRC",
+      "traslado": "independencia",
+      "anio": null
+    },
+    "voluntaria": {
+      "saldo": 12000000,
+      "saldoMoneda": "CRC",
+      "aporteMensual": 150000,
+      "aporteMoneda": "CRC",
+      "traslado": "independencia",
+      "anio": null
+    }
+  },
+  "otrosIngresosRetiro": null,
+  "aportesExtraordinarios": [
+    {
+      "montoUsdHoy": 50000,
+      "anio": 2029
+    },
+    {
+      "montoUsdHoy": 50000,
+      "anio": 2029
+    }
+  ],
+  "apoyosDependientes": [
+    {
+      "beneficiario": "hijo",
+      "motivo": "manutencion",
+      "montoAnualUsdHoy": 12000,
+      "anioInicio": 2030,
+      "anios": 5
+    }
+  ],
+  "legado": {
+    "destino": "herencia",
+    "montoUsdHoy": 50000
+  },
+  "preferenciaMoneda": "50% en dólares y 50% en colones",
+  "porcentajeUsd": 50,
+  "salarioMonto": 8000,
+  "salarioMoneda": "USD",
+  "gastoMonto": 10000,
+  "gastoMoneda": "USD",
+  "capitalMonto": 250000,
+  "capitalMoneda": "USD",
+  "aporteMonto": 10000,
+  "aporteMoneda": "USD",
+  "comentarios": "Posee inversiones en acciones de empresas que espera hacer liquida en los proximos años",
+  "hogar": {
+    "planificacion": "conjunta",
+    "edadPareja": 40,
+    "hijos": [
+      0
+    ],
+    "otrosDependientes": {
+      "cantidad": 2,
+      "detalle": {
+        "pareja": 0,
+        "padres": 1,
+        "hermanos": 0,
+        "tios": 0,
+        "abuelos": 0,
+        "otros": 1
+      },
+      "aporteMensual": 300000,
+      "moneda": "CRC"
+    }
+  },
+  "ingresos": {
+    "fuentePrincipal": "rentas",
+    "ingresoPareja": {
+      "monto": 3000,
+      "moneda": "USD"
+    },
+    "gastoEnRetiro": "menor"
+  },
+  "pension": {
+    "regimen": "ivm",
+    "montoMensual": 800000,
+    "moneda": "CRC"
+  },
+  "patrimonio": {
+    "vivienda": {
+      "situacion": "hipoteca",
+      "hipoteca": {
+        "saldo": 120000,
+        "saldoMoneda": "USD",
+        "cuotaMensual": 1200,
+        "cuotaMoneda": "USD"
+      }
+    },
+    "inmuebles": {
+      "moneda": "USD",
+      "lista": [
+        {
+          "valor": 18000,
+          "rentaMensualNeta": 0,
+          "saldoDeuda": 0
+        },
+        {
+          "valor": 180000,
+          "rentaMensualNeta": 1100,
+          "saldoDeuda": 0
+        },
+        {
+          "valor": 180000,
+          "rentaMensualNeta": 0,
+          "saldoDeuda": 60000
+        }
+      ]
+    },
+    "empresa": {
+      "propietario": true,
+      "plan": "vender",
+      "aniosHastaEvento": 10
+    },
+    "deudas": {
+      "saldo": 250000,
+      "saldoMoneda": "USD",
+      "cuotaMensual": 2500,
+      "cuotaMoneda": "USD"
+    },
+    "reservaLiquidez": "3a6"
+  },
+  "proteccion": {
+    "seguros": [
+      "vida",
+      "gastosMedicos",
+      "invalidez"
+    ],
+    "vidaSumaAsegurada": {
+      "monto": 250000,
+      "moneda": "USD"
+    }
+  },
+  "metas": [
+    {
+      "tipo": "educacion",
+      "montoUsdHoy": 40000,
+      "anio": 2044,
+      "prioridad": "esencial"
+    },
+    {
+      "tipo": "vehiculo",
+      "montoUsdHoy": 40000,
+      "anio": 2028,
+      "prioridad": "deseable"
+    }
+  ],
+  "creadoEn": 1791235709865,
+  "respuestasTexto": [
+    {
+      "pagina": 1,
+      "seccion": "Perfil de riesgo",
+      "n": "01",
+      "clave": "q1",
+      "pregunta": "Cuando escucha la palabra «riesgo» referida a su patrimonio, ¿qué es lo primero que le viene a la mente?",
+      "detalle": [
+        {
+          "id": "q1",
+          "campo": "Q1 - Asociación con el riesgo",
+          "valor": "Incertidumbre",
+          "codigo": "6.67"
+        }
+      ]
+    },
+    {
+      "pagina": 1,
+      "seccion": "Perfil de riesgo",
+      "n": "02",
+      "clave": "q5",
+      "pregunta": "Cuando debe decidir sobre una inversión y no tiene toda la información que quisiera, ¿qué hace normalmente?",
+      "detalle": [
+        {
+          "id": "q5",
+          "campo": "Q5 - Decisión con información incompleta",
+          "valor": "Decido con la información disponible y reviso la decisión conforme aparece nueva información",
+          "codigo": "6.67"
+        }
+      ]
+    },
+    {
+      "pagina": 1,
+      "seccion": "Perfil de riesgo",
+      "n": "03",
+      "clave": "q2",
+      "pregunta": "Si su portafolio estuviera invertido hoy, ¿con qué frecuencia sentiría la necesidad de revisar su valor?",
+      "detalle": [
+        {
+          "id": "q2",
+          "campo": "Q2 - Frecuencia de revisión",
+          "valor": "Cada tres meses o con menor frecuencia",
+          "codigo": "10"
+        }
+      ]
+    },
+    {
+      "pagina": 1,
+      "seccion": "Perfil de riesgo",
+      "n": "04",
+      "clave": "q3",
+      "pregunta": "¿Cuál de estas dos situaciones le incomodaría más?",
+      "detalle": [
+        {
+          "id": "q3",
+          "campo": "Q3 - Pérdida frente a ganancia no obtenida",
+          "valor": "Que mi portafolio deje de ganar el 20% que sí ganó el mercado",
+          "codigo": "10"
+        }
+      ]
+    },
+    {
+      "pagina": 1,
+      "seccion": "Perfil de riesgo",
+      "n": "05",
+      "clave": "q6",
+      "pregunta": "¿Cuál combinación de retorno esperado y caída máxima en un año le parece aceptable?",
+      "detalle": [
+        {
+          "id": "q6",
+          "campo": "Q6 - Retorno esperado y caída máxima",
+          "valor": "Retorno esperado de 9% a 9,5% anual · pérdida aproximada de hasta −16%",
+          "codigo": "10"
+        }
+      ]
+    },
+    {
+      "pagina": 1,
+      "seccion": "Perfil de riesgo",
+      "n": "06",
+      "clave": "q7",
+      "pregunta": "Para alcanzar sus metas financieras, puede depender más de sus aportes o asumir más riesgo buscando un mayor rendimiento del portafolio. ¿Qué prefiere?",
+      "detalle": [
+        {
+          "id": "q7",
+          "campo": "Q7 - Aporte frente a rendimiento",
+          "valor": "Prefiero mantener mis aportes previstos y aceptar un mayor nivel de riesgo para buscar más rendimiento",
+          "codigo": "6.67"
+        }
+      ]
+    },
+    {
+      "pagina": 1,
+      "seccion": "Perfil de riesgo",
+      "n": "07",
+      "clave": "q4",
+      "pregunta": "La última vez que una inversión, un negocio o una propiedad suya perdió valor de forma importante, ¿qué hizo?",
+      "detalle": [
+        {
+          "id": "q4",
+          "campo": "Q4 - Conducta ante una pérdida previa",
+          "valor": "Mantuve mi posición sin hacer cambios",
+          "codigo": "6.67"
+        }
+      ]
+    },
+    {
+      "pagina": 1,
+      "seccion": "Perfil de riesgo",
+      "n": "08",
+      "clave": "q8",
+      "pregunta": "Después de un año excepcionalmente bueno en su empresa o en su portafolio, ¿qué suele hacer con ese excedente?",
+      "detalle": [
+        {
+          "id": "q8",
+          "campo": "Q8 - Destino del excedente",
+          "valor": "Lo reinvierto manteniendo una estrategia similar",
+          "codigo": "7.5"
+        }
+      ]
+    },
+    {
+      "pagina": 1,
+      "seccion": "Perfil de riesgo",
+      "n": "09",
+      "clave": "q9",
+      "pregunta": "Después de un año excepcionalmente malo en su portafolio, ¿qué suele hacer?",
+      "detalle": [
+        {
+          "id": "q9",
+          "campo": "Q9 - Reacción ante un año malo",
+          "valor": "Rebalanceo y aprovecho algunas oportunidades",
+          "codigo": "7.5"
+        }
+      ]
+    },
+    {
+      "pagina": 1,
+      "seccion": "Perfil de riesgo",
+      "n": "10",
+      "clave": "q10",
+      "pregunta": "Si tuviera que invertir una parte de su patrimonio en una sola alternativa durante varios años, ¿cuál elegiría? No puede combinar varias opciones.",
+      "detalle": [
+        {
+          "id": "q10",
+          "campo": "Q10 - Alternativa de inversión preferida",
+          "valor": "Acciones globales diversificadas · rendimiento esperado de 8% a 9% anual · fluctuaciones anuales de aproximadamente ±15%",
+          "codigo": "10"
+        }
+      ]
+    },
+    {
+      "pagina": 2,
+      "seccion": "Planificación financiera",
+      "n": "01",
+      "clave": "edad_retiro",
+      "pregunta": "¿A qué edad espera, o desearía, ser financieramente independiente? Es decir (ya no necesito trabajar o trabajo porque quiero).",
+      "detalle": [
+        {
+          "id": "edad_retiro",
+          "campo": "Edad de independencia financiera",
+          "valor": "55",
+          "codigo": "55"
+        }
+      ]
+    },
+    {
+      "pagina": 2,
+      "seccion": "Planificación financiera",
+      "n": "02",
+      "clave": "plan",
+      "pregunta": "¿La planificación es individual o conjunta con su pareja?",
+      "detalle": [
+        {
+          "id": "plan",
+          "campo": "Tipo de planificación",
+          "valor": "Conjunta con mi pareja",
+          "codigo": "conjunta"
+        },
+        {
+          "id": "edad-pareja",
+          "campo": "Edad de la pareja",
+          "valor": "40",
+          "codigo": "40"
+        },
+        {
+          "id": "ingreso-pareja-monto",
+          "campo": "Ingreso mensual de la pareja (monto)",
+          "valor": "3,000",
+          "codigo": "3,000"
+        },
+        {
+          "id": "ingreso-pareja-moneda",
+          "campo": "Ingreso mensual de la pareja (moneda)",
+          "valor": "USD",
+          "codigo": "USD"
+        }
+      ]
+    },
+    {
+      "pagina": 2,
+      "seccion": "Planificación financiera",
+      "n": "03",
+      "clave": "hijos-n",
+      "pregunta": "¿Quiénes dependen económicamente de usted?",
+      "detalle": [
+        {
+          "id": "hijos-n",
+          "campo": "Cantidad de hijos",
+          "valor": "1",
+          "codigo": "1"
+        },
+        {
+          "id": "dep-padres",
+          "campo": "Dependientes: padre o madre",
+          "valor": "1",
+          "codigo": "1"
+        },
+        {
+          "id": "dep-otros",
+          "campo": "Dependientes: otros familiares",
+          "valor": "1",
+          "codigo": "1"
+        },
+        {
+          "id": "",
+          "campo": "Edad del hijo 1",
+          "valor": "0",
+          "codigo": "0"
+        },
+        {
+          "id": "otros-dep-monto",
+          "campo": "Aporte mensual a otros dependientes (monto)",
+          "valor": "300.000",
+          "codigo": "300.000"
+        },
+        {
+          "id": "otros-dep-moneda",
+          "campo": "Aporte mensual a otros dependientes (moneda)",
+          "valor": "CRC",
+          "codigo": "CRC"
+        }
+      ]
+    },
+    {
+      "pagina": 2,
+      "seccion": "Planificación financiera",
+      "n": "04",
+      "clave": "apoyos-n",
+      "pregunta": "¿Prevé retirar dinero de este portafolio para apoyar a las personas que dependen de usted?",
+      "detalle": [
+        {
+          "id": "apoyos-n",
+          "campo": "Cantidad de apoyos a dependientes",
+          "valor": "1 apoyo",
+          "codigo": "1"
+        },
+        {
+          "id": "",
+          "campo": "Apoyo 1: beneficiario",
+          "valor": "Hijo o hija",
+          "codigo": "hijo"
+        },
+        {
+          "id": "",
+          "campo": "Apoyo 1: motivo",
+          "valor": "Manutención",
+          "codigo": "manutencion"
+        },
+        {
+          "id": "",
+          "campo": "Apoyo 1: monto anual (US$ de hoy)",
+          "valor": "12,000",
+          "codigo": "12,000"
+        },
+        {
+          "id": "",
+          "campo": "Apoyo 1: año de inicio",
+          "valor": "2030",
+          "codigo": "2030"
+        },
+        {
+          "id": "",
+          "campo": "Apoyo 1: años de duración",
+          "valor": "5",
+          "codigo": "5"
+        }
+      ]
+    },
+    {
+      "pagina": 2,
+      "seccion": "Planificación financiera",
+      "n": "05",
+      "clave": "salario-monto",
+      "pregunta": "¿Cuál es su ingreso mensual, de dónde proviene y qué tan predecible es?",
+      "detalle": [
+        {
+          "id": "salario-monto",
+          "campo": "Ingreso mensual del titular (monto)",
+          "valor": "8,000",
+          "codigo": "8,000"
+        },
+        {
+          "id": "salario-moneda",
+          "campo": "Ingreso mensual del titular (moneda)",
+          "valor": "USD",
+          "codigo": "USD"
+        },
+        {
+          "id": "fuente-ingreso",
+          "campo": "Fuente principal del ingreso",
+          "valor": "Rentas",
+          "codigo": "rentas"
+        },
+        {
+          "id": "c3",
+          "campo": "Predecibilidad del ingreso del hogar",
+          "valor": "Varía de forma importante de un año a otro",
+          "codigo": "0"
+        }
+      ]
+    },
+    {
+      "pagina": 2,
+      "seccion": "Planificación financiera",
+      "n": "06",
+      "clave": "gasto-monto",
+      "pregunta": "¿Cuál es su gasto familiar mensual y cómo espera que cambie en el retiro?",
+      "detalle": [
+        {
+          "id": "gasto-monto",
+          "campo": "Gasto familiar mensual (monto)",
+          "valor": "10,000",
+          "codigo": "10,000"
+        },
+        {
+          "id": "gasto-moneda",
+          "campo": "Gasto familiar mensual (moneda)",
+          "valor": "USD",
+          "codigo": "USD"
+        },
+        {
+          "id": "gasto-retiro",
+          "campo": "Gasto esperado en el retiro",
+          "valor": "Menor que el actual",
+          "codigo": "menor"
+        }
+      ]
+    },
+    {
+      "pagina": 2,
+      "seccion": "Planificación financiera",
+      "n": "07",
+      "clave": "pension-regimen",
+      "pregunta": "¿Qué pensión espera recibir y qué otros ingresos tendrá cuando sea financieramente independiente?",
+      "detalle": [
+        {
+          "id": "pension-regimen",
+          "campo": "Régimen de pensión",
+          "valor": "Régimen de IVM de la CCSS",
+          "codigo": "ivm"
+        },
+        {
+          "id": "pension-monto",
+          "campo": "Pensión mensual estimada (monto)",
+          "valor": "800.000",
+          "codigo": "800.000"
+        },
+        {
+          "id": "pension-moneda",
+          "campo": "Pensión mensual estimada (moneda)",
+          "valor": "CRC",
+          "codigo": "CRC"
+        },
+        {
+          "id": "otros-ing",
+          "campo": "Otros ingresos en el retiro",
+          "valor": "No",
+          "codigo": "no"
+        }
+      ]
+    },
+    {
+      "pagina": 2,
+      "seccion": "Planificación financiera",
+      "n": "08",
+      "clave": "f-rop-tiene",
+      "pregunta": "¿Tiene saldos en el ROP, el FCL o una pensión voluntaria, y qué hará con ellos?",
+      "detalle": [
+        {
+          "id": "f-rop-tiene",
+          "campo": "ROP: ¿tiene saldo?",
+          "valor": "Sí, tengo saldo en el ROP",
+          "codigo": "si"
+        },
+        {
+          "id": "f-rop-saldo",
+          "campo": "ROP: saldo actual (monto)",
+          "valor": "12.000.000",
+          "codigo": "12.000.000"
+        },
+        {
+          "id": "f-rop-saldo-moneda",
+          "campo": "ROP: saldo actual (moneda)",
+          "valor": "CRC",
+          "codigo": "CRC"
+        },
+        {
+          "id": "f-rop-aporte",
+          "campo": "ROP: aporte mensual (monto)",
+          "valor": "150.000",
+          "codigo": "150.000"
+        },
+        {
+          "id": "f-rop-aporte-moneda",
+          "campo": "ROP: aporte mensual (moneda)",
+          "valor": "CRC",
+          "codigo": "CRC"
+        },
+        {
+          "id": "f-rop-traslado",
+          "campo": "ROP: traslado al portafolio",
+          "valor": "No lo trasladaré a este portafolio",
+          "codigo": "no"
+        },
+        {
+          "id": "f-fcl-tiene",
+          "campo": "FCL: ¿tiene saldo?",
+          "valor": "Sí, tengo saldo en el FCL",
+          "codigo": "si"
+        },
+        {
+          "id": "f-fcl-saldo",
+          "campo": "FCL: saldo actual (monto)",
+          "valor": "12.000.000",
+          "codigo": "12.000.000"
+        },
+        {
+          "id": "f-fcl-saldo-moneda",
+          "campo": "FCL: saldo actual (moneda)",
+          "valor": "CRC",
+          "codigo": "CRC"
+        },
+        {
+          "id": "f-fcl-aporte",
+          "campo": "FCL: aporte mensual (monto)",
+          "valor": "150.000",
+          "codigo": "150.000"
+        },
+        {
+          "id": "f-fcl-aporte-moneda",
+          "campo": "FCL: aporte mensual (moneda)",
+          "valor": "CRC",
+          "codigo": "CRC"
+        },
+        {
+          "id": "f-fcl-traslado",
+          "campo": "FCL: traslado al portafolio",
+          "valor": "Al ser financieramente independiente",
+          "codigo": "independencia"
+        },
+        {
+          "id": "f-vol-tiene",
+          "campo": "Pensión voluntaria: ¿tiene saldo?",
+          "valor": "Sí, tengo saldo en una pensión voluntaria",
+          "codigo": "si"
+        },
+        {
+          "id": "f-vol-saldo",
+          "campo": "Pensión voluntaria: saldo actual (monto)",
+          "valor": "12.000.000",
+          "codigo": "12.000.000"
+        },
+        {
+          "id": "f-vol-saldo-moneda",
+          "campo": "Pensión voluntaria: saldo actual (moneda)",
+          "valor": "CRC",
+          "codigo": "CRC"
+        },
+        {
+          "id": "f-vol-aporte",
+          "campo": "Pensión voluntaria: aporte mensual (monto)",
+          "valor": "150.000",
+          "codigo": "150.000"
+        },
+        {
+          "id": "f-vol-aporte-moneda",
+          "campo": "Pensión voluntaria: aporte mensual (moneda)",
+          "valor": "CRC",
+          "codigo": "CRC"
+        },
+        {
+          "id": "f-vol-traslado",
+          "campo": "Pensión voluntaria: traslado al portafolio",
+          "valor": "Al ser financieramente independiente",
+          "codigo": "independencia"
+        }
+      ]
+    },
+    {
+      "pagina": 2,
+      "seccion": "Planificación financiera",
+      "n": "09",
+      "clave": "capital-monto",
+      "pregunta": "¿Cuánto destinaría a este portafolio y qué peso tiene en su patrimonio?",
+      "detalle": [
+        {
+          "id": "capital-monto",
+          "campo": "Capital inicial invertido (monto)",
+          "valor": "250,000",
+          "codigo": "250,000"
+        },
+        {
+          "id": "capital-moneda",
+          "campo": "Capital inicial invertido (moneda)",
+          "valor": "USD",
+          "codigo": "USD"
+        },
+        {
+          "id": "aporte-monto",
+          "campo": "Aporte anual estimado (monto)",
+          "valor": "10,000",
+          "codigo": "10,000"
+        },
+        {
+          "id": "aporte-moneda",
+          "campo": "Aporte anual estimado (moneda)",
+          "valor": "USD",
+          "codigo": "USD"
+        },
+        {
+          "id": "aportes-extra-n",
+          "campo": "Cantidad de aportes extraordinarios",
+          "valor": "2 aportes",
+          "codigo": "2"
+        },
+        {
+          "id": "",
+          "campo": "Aporte extraordinario 1: monto (US$ de hoy)",
+          "valor": "50,000",
+          "codigo": "50,000"
+        },
+        {
+          "id": "",
+          "campo": "Aporte extraordinario 1: año",
+          "valor": "2029",
+          "codigo": "2029"
+        },
+        {
+          "id": "",
+          "campo": "Aporte extraordinario 2: monto (US$ de hoy)",
+          "valor": "50,000",
+          "codigo": "50,000"
+        },
+        {
+          "id": "",
+          "campo": "Aporte extraordinario 2: año",
+          "valor": "2029",
+          "codigo": "2029"
+        },
+        {
+          "id": "c5",
+          "campo": "Peso del portafolio en el patrimonio",
+          "valor": "Entre un cuarto y la mitad",
+          "codigo": "6.67"
+        }
+      ]
+    },
+    {
+      "pagina": 2,
+      "seccion": "Planificación financiera",
+      "n": "10",
+      "clave": "c1",
+      "pregunta": "¿En cuánto tiempo espera realizar el primer retiro de este portafolio, y de cuánto sería?",
+      "detalle": [
+        {
+          "id": "c1",
+          "campo": "Años hasta el primer retiro",
+          "valor": "5",
+          "codigo": "5"
+        },
+        {
+          "id": "c1-monto",
+          "campo": "Monto del primer retiro (US$ de hoy)",
+          "valor": "2,000",
+          "codigo": "2,000"
+        }
+      ]
+    },
+    {
+      "pagina": 2,
+      "seccion": "Planificación financiera",
+      "n": "11",
+      "clave": "vivienda",
+      "pregunta": "¿Cuál es la situación de su vivienda y qué otros inmuebles posee?",
+      "detalle": [
+        {
+          "id": "vivienda",
+          "campo": "Vivienda principal",
+          "valor": "Propia, con hipoteca",
+          "codigo": "hipoteca"
+        },
+        {
+          "id": "hipoteca-saldo",
+          "campo": "Saldo de la hipoteca (monto)",
+          "valor": "120,000",
+          "codigo": "120,000"
+        },
+        {
+          "id": "hipoteca-saldo-moneda",
+          "campo": "Saldo de la hipoteca (moneda)",
+          "valor": "USD",
+          "codigo": "USD"
+        },
+        {
+          "id": "hipoteca-cuota",
+          "campo": "Cuota de la hipoteca (monto)",
+          "valor": "1,200",
+          "codigo": "1,200"
+        },
+        {
+          "id": "hipoteca-cuota-moneda",
+          "campo": "Cuota de la hipoteca (moneda)",
+          "valor": "USD",
+          "codigo": "USD"
+        },
+        {
+          "id": "inmuebles-n",
+          "campo": "Cantidad de inmuebles de inversión",
+          "valor": "3 inmuebles",
+          "codigo": "3"
+        },
+        {
+          "id": "inmuebles-moneda",
+          "campo": "Moneda de los inmuebles",
+          "valor": "USD",
+          "codigo": "USD"
+        },
+        {
+          "id": "",
+          "campo": "Inmueble 1: valor estimado",
+          "valor": "18,000",
+          "codigo": "18,000"
+        },
+        {
+          "id": "",
+          "campo": "Inmueble 1: renta mensual neta",
+          "valor": "0",
+          "codigo": "0"
+        },
+        {
+          "id": "",
+          "campo": "Inmueble 1: saldo de deuda",
+          "valor": "0",
+          "codigo": "0"
+        },
+        {
+          "id": "",
+          "campo": "Inmueble 2: valor estimado",
+          "valor": "180,000",
+          "codigo": "180,000"
+        },
+        {
+          "id": "",
+          "campo": "Inmueble 2: renta mensual neta",
+          "valor": "1,100",
+          "codigo": "1,100"
+        },
+        {
+          "id": "",
+          "campo": "Inmueble 2: saldo de deuda",
+          "valor": "0",
+          "codigo": "0"
+        },
+        {
+          "id": "",
+          "campo": "Inmueble 3: valor estimado",
+          "valor": "180,000",
+          "codigo": "180,000"
+        },
+        {
+          "id": "",
+          "campo": "Inmueble 3: renta mensual neta",
+          "valor": "0",
+          "codigo": "0"
+        },
+        {
+          "id": "",
+          "campo": "Inmueble 3: saldo de deuda",
+          "valor": "60,000",
+          "codigo": "60,000"
+        }
+      ]
+    },
+    {
+      "pagina": 2,
+      "seccion": "Planificación financiera",
+      "n": "12",
+      "clave": "empresa",
+      "pregunta": "¿Es propietario de una empresa?",
+      "detalle": [
+        {
+          "id": "empresa",
+          "campo": "Propietario de empresa",
+          "valor": "Sí",
+          "codigo": "si"
+        },
+        {
+          "id": "empresa-plan",
+          "campo": "Plan sobre la empresa",
+          "valor": "Sí, prevé venderla",
+          "codigo": "vender"
+        },
+        {
+          "id": "empresa-anios",
+          "campo": "Años hasta la venta o traspaso",
+          "valor": "10",
+          "codigo": "10"
+        }
+      ]
+    },
+    {
+      "pagina": 2,
+      "seccion": "Planificación financiera",
+      "n": "13",
+      "clave": "deudas-saldo",
+      "pregunta": "¿Cuáles son sus deudas y con qué reserva de liquidez cuenta?",
+      "detalle": [
+        {
+          "id": "deudas-saldo",
+          "campo": "Deudas: saldo total (monto)",
+          "valor": "250,000",
+          "codigo": "250,000"
+        },
+        {
+          "id": "deudas-saldo-moneda",
+          "campo": "Deudas: saldo total (moneda)",
+          "valor": "USD",
+          "codigo": "USD"
+        },
+        {
+          "id": "deudas-cuota",
+          "campo": "Deudas: cuota mensual (monto)",
+          "valor": "2,500",
+          "codigo": "2,500"
+        },
+        {
+          "id": "deudas-cuota-moneda",
+          "campo": "Deudas: cuota mensual (moneda)",
+          "valor": "USD",
+          "codigo": "USD"
+        },
+        {
+          "id": "reserva",
+          "campo": "Reserva de liquidez",
+          "valor": "Entre 3 y 6 meses de gasto",
+          "codigo": "3a6"
+        }
+      ]
+    },
+    {
+      "pagina": 2,
+      "seccion": "Planificación financiera",
+      "n": "14",
+      "clave": "seguro-vida",
+      "pregunta": "¿Qué seguros tiene vigentes?",
+      "detalle": [
+        {
+          "id": "vida-suma",
+          "campo": "Suma asegurada de vida (monto)",
+          "valor": "250,000",
+          "codigo": "250,000"
+        },
+        {
+          "id": "vida-moneda",
+          "campo": "Suma asegurada de vida (moneda)",
+          "valor": "USD",
+          "codigo": "USD"
+        },
+        {
+          "id": "seleccion",
+          "campo": "Selección",
+          "valor": "Vida · Gastos médicos · Invalidez",
+          "codigo": ""
+        }
+      ]
+    },
+    {
+      "pagina": 2,
+      "seccion": "Planificación financiera",
+      "n": "15",
+      "clave": "metas-n",
+      "pregunta": "¿Cuántas metas específicas desea financiar con su patrimonio?",
+      "detalle": [
+        {
+          "id": "metas-n",
+          "campo": "Cantidad de metas específicas",
+          "valor": "2 metas",
+          "codigo": "2"
+        },
+        {
+          "id": "",
+          "campo": "Meta 1: tipo",
+          "valor": "Educación",
+          "codigo": "educacion"
+        },
+        {
+          "id": "",
+          "campo": "Meta 1: monto (US$ de hoy)",
+          "valor": "40,000",
+          "codigo": "40,000"
+        },
+        {
+          "id": "",
+          "campo": "Meta 1: año estimado",
+          "valor": "2044",
+          "codigo": "2044"
+        },
+        {
+          "id": "",
+          "campo": "Meta 1: prioridad",
+          "valor": "Esencial",
+          "codigo": "esencial"
+        },
+        {
+          "id": "",
+          "campo": "Meta 2: tipo",
+          "valor": "Vehículo",
+          "codigo": "vehiculo"
+        },
+        {
+          "id": "",
+          "campo": "Meta 2: monto (US$ de hoy)",
+          "valor": "40,000",
+          "codigo": "40,000"
+        },
+        {
+          "id": "",
+          "campo": "Meta 2: año estimado",
+          "valor": "2028",
+          "codigo": "2028"
+        },
+        {
+          "id": "",
+          "campo": "Meta 2: prioridad",
+          "valor": "Deseable",
+          "codigo": "deseable"
+        }
+      ]
+    },
+    {
+      "pagina": 2,
+      "seccion": "Planificación financiera",
+      "n": "16",
+      "clave": "herencia",
+      "pregunta": "¿Qué desea que ocurra con este patrimonio al final de su horizonte de vida?",
+      "detalle": [
+        {
+          "id": "herencia",
+          "campo": "Destino del patrimonio",
+          "valor": "Dejar una herencia a mis hijos o herederos",
+          "codigo": "herencia"
+        },
+        {
+          "id": "herencia-monto",
+          "campo": "Monto de la herencia (US$ de hoy)",
+          "valor": "50,000",
+          "codigo": "50,000"
+        }
+      ]
+    },
+    {
+      "pagina": 2,
+      "seccion": "Planificación financiera",
+      "n": "17",
+      "clave": "moneda",
+      "pregunta": "¿En qué proporción de dólares y colones prefiere mantener este portafolio?",
+      "detalle": [
+        {
+          "id": "moneda",
+          "campo": "Preferencia de moneda",
+          "valor": "50% en dólares y 50% en colones",
+          "codigo": "50% en dólares y 50% en colones"
+        }
+      ]
+    },
+    {
+      "pagina": 2,
+      "seccion": "Planificación financiera",
+      "n": "18",
+      "clave": "comentarios",
+      "pregunta": "¿Tiene comentarios adicionales que su asesor deba considerar?",
+      "detalle": [
+        {
+          "id": "comentarios",
+          "campo": "Comentarios adicionales",
+          "valor": "Posee inversiones en acciones de empresas que espera hacer liquida en los proximos años",
+          "codigo": "Posee inversiones en acciones de empresas que espera hacer liquida en los proximos años"
+        }
+      ]
+    }
+  ]
+}
