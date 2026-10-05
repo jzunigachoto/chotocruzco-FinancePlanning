@@ -2784,6 +2784,13 @@ function xmlFondos(c, p, sup){
   return hoja(x, {cols, vistas, combinadas});
 }
 
+// Hoja de fondos cuando el cliente no traslada ningún fondo al portafolio
+function xmlSinFondos(){
+  return hoja(`<row r="1">` + celda('B1', 'Fondos de pensión complementaria', EST.titulo) + `</row>`
+    + `<row r="2">` + celda('B2', 'El cliente no declaró saldos de ROP, FCL o pensión voluntaria que se trasladen a este portafolio.') + `</row>`,
+    {cols: `<cols><col width="2" customWidth="1" min="1" max="1"/><col width="110" customWidth="1" min="2" max="2"/></cols>`,
+     vistas: `<sheetViews><sheetView workbookViewId="0" showGridLines="0"/></sheetViews>`});
+}
 function xmlProyeccion(c, p, sup){
   const tc = sup.tipoCambio;
   const salUsd  = aUsd(c.salarioMonto, c.salarioMoneda, tc);
@@ -2870,7 +2877,7 @@ function xmlProyeccion(c, p, sup){
   const retiro = r => conFactor ? `-H${r}*$L$3` : `-H${r}`;
 
   x += `<row r="${SEC}">` + celda('E'+SEC,'Ingresos en ₡',EST.seccion) + celda('G'+SEC,'Gastos',EST.seccion)
-     + celda('K'+SEC,'Proyección Base',EST.seccion) + celda('S'+SEC, extras.length ? 'Flujos adicionales' : 'Control de agotamiento', EST.seccion) + `</row>`;
+     + celda('K'+SEC,'Proyección Base',EST.seccion) + celda('Q'+SEC,'Valor nominal',EST.bold) + celda('R'+SEC,'Términos reales',EST.bold) + celda('S'+SEC, extras.length ? 'Flujos adicionales' : 'Control de agotamiento', EST.seccion) + `</row>`;
   const cab = [['B','Año'],['C', c.nombre||'Edad'],['D','Período'],['E','Salario mensual ₡'],
     ['G','Gasto Familiar ₡'],['H','Gasto Familiar en $'],['I','Total Gasto Mensual'],
     ['K','Portafolio Inicial'],['L','Aportes/Retiros'],['M','Gasto % del Portafolio'],
@@ -3215,23 +3222,22 @@ async function exportarExcel(c, p, asig){
     const eqX = rendimientoEquilibrio(c, supuestos);
     zip.file('xl/worksheets/sheet3.xml', xmlDatos(c, p, asig, eqX));
     await colorEquilibrio(zip, p, eqX);
-    // Con columnas adicionales (fondos, pensión, otros ingresos, aportes, apoyos, metas),
-    // la gráfica se corre a la derecha
+    // La gráfica de la proyección se ubica a la derecha de las columnas adicionales (fondos,
+    // pensión, otros ingresos, aportes, apoyos, metas y gasto no cubierto)
     const nExtras = [p.traeFondos, p.traePension, p.traeOtros, p.traeAportesExtra, p.traeApoyos, p.traeMetas].filter(Boolean).length + 1;
-    if(nExtras){
-      const dib = await zip.file('xl/drawings/drawing2.xml').async('string');
-      zip.file('xl/drawings/drawing2.xml', dib.replace('<col>19</col>', '<col>' + (19 + nExtras + 1) + '</col>'));
-    }
-    // La gráfica de la proyección lee exactamente las filas del horizonte
+    const dib = await zip.file('xl/drawings/drawing2.xml').async('string');
+    zip.file('xl/drawings/drawing2.xml', dib.replace(/<from><col>\d+<\/col>/, '<from><col>' + (19 + nExtras + 1) + '</col>'));
+    // La gráfica de la proyección lee exactamente las filas del horizonte (sirve con la
+    // plantilla vigente y con la anterior)
     const ultima = PROY_F0 + p.filas.length - 1;
     const g2 = await zip.file('xl/charts/chart2.xml').async('string');
     zip.file('xl/charts/chart2.xml', g2
-      .replace(/'Proyección'!([QR])8</g, `'Proyección'!$1${PROY_F0 - 1}<`)
-      .replace(/'Proyección'!\$([A-Z])\$9:\$([A-Z])\$138/g, `'Proyección'!$$$1$$${PROY_F0}:$$$2$$${ultima}`));
-    // Hoja de fondos de pensión, solo si el cliente traslada alguno al portafolio
-    if(p.traeFondos){
-      zip.file('xl/worksheets/sheet4.xml', xmlFondos(c, p, supuestos));
-      const wb = await zip.file('xl/workbook.xml').async('string');
+      .replace(/'Proyección'!([QR])\d+</g, `'Proyección'!$1${PROY_F0 - 2}<`)
+      .replace(/'Proyección'!\$([A-Z])\$\d+:\$([A-Z])\$\d+/g, `'Proyección'!$$$1$$${PROY_F0}:$$$2$$${ultima}`));
+    // Hoja de fondos de pensión: la plantilla vigente ya la trae; con la anterior, se agrega
+    zip.file('xl/worksheets/sheet4.xml', p.traeFondos ? xmlFondos(c, p, supuestos) : xmlSinFondos());
+    const wb = await zip.file('xl/workbook.xml').async('string');
+    if(!/name="Fondos de pensi/.test(wb)){
       zip.file('xl/workbook.xml', wb.replace(/(<sheet [^>]*name="Proyección"[^>]*\/>)/,
         `$1<sheet xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" name="Fondos de pensión" sheetId="4" state="visible" r:id="rId6"/>`));
       const rels = await zip.file('xl/_rels/workbook.xml.rels').async('string');
