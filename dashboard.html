@@ -281,7 +281,7 @@
   th:first-child,td:first-child{text-align:left;}
   td{text-align:right;padding:7px 8px;border-bottom:1px solid var(--rule-2);white-space:nowrap;}
   tr.retiro td{background:#FBF7F0;}
-  td.neg{color:var(--alert);}
+  td.neg, .dato-valor.neg{color:var(--alert);}
   .table-wrap{overflow:auto;max-height:420px;border:1px solid var(--rule-2);}
 
   .empty{color:var(--ink-45);font-size:14px;padding:50px 10px;text-align:center;line-height:1.7;}
@@ -380,6 +380,31 @@
         </div>
       </div>
 
+      <div class="block-title">Fondos de pensión complementaria</div>
+      <div class="grid-3">
+        <div class="field">
+          <label for="s-rend-fondos">Rendimiento anual de ROP, FCL y pensión voluntaria</label>
+          <div class="amount"><input type="number" step="0.1" min="0" max="20" id="s-rend-fondos" value="6"><span class="unit">%</span></div>
+          <p class="hint">Rendimiento nominal con el que crecen los saldos hasta su traslado al portafolio.</p>
+        </div>
+        <div class="field">
+          <label for="s-rop-pct">Aporte al ROP, si el cliente no lo indica</label>
+          <div class="amount"><input type="number" step="0.01" min="0" max="20" id="s-rop-pct" value="4.25"><span class="unit">% del salario</span></div>
+        </div>
+        <div class="field">
+          <label for="s-fcl-pct">Aporte al FCL, si el cliente no lo indica</label>
+          <div class="amount"><input type="number" step="0.01" min="0" max="20" id="s-fcl-pct" value="1.5"><span class="unit">% del salario</span></div>
+          <p class="hint">Se aplican sobre el salario mensual declarado, solo si su fuente principal es el salario. Verifique los porcentajes vigentes.</p>
+        </div>
+      </div>
+      <div class="grid-3">
+        <div class="field">
+          <label for="s-edad-pension">Edad de inicio de la pensión</label>
+          <div class="amount"><input type="number" step="1" min="50" max="80" id="s-edad-pension" value="65"><span class="unit">años</span></div>
+          <p class="hint">IVM: 65 años. La pensión se cobra desde esta edad o desde la independencia financiera, lo que ocurra después.</p>
+        </div>
+      </div>
+
       <div class="block-title">Horizonte</div>
       <div class="grid-3">
         <div class="field">
@@ -394,7 +419,7 @@
         <div class="field">
           <label for="s-fcl">Año de ingreso del FCL</label>
           <input type="number" min="1" max="60" id="s-fcl" value="5">
-          <p class="hint">Año de la proyección en que el cliente traslada su FCL al portafolio. El ROP ingresa al cumplir la edad de retiro, por su propia regla.</p>
+          <p class="hint">Solo para cuestionarios anteriores, que no indicaban el año de traslado del FCL. Los actuales lo declaran.</p>
         </div>
       </div>
 
@@ -493,6 +518,13 @@ const SUPUESTOS_EXCEL = {
   // Gasto en el retiro respecto del gasto actual, según lo que declare el cliente
   // («menor» o «mayor»). Si declara «similar», el retiro es el gasto completo.
   factorGastoMenor: 80, factorGastoMayor: 110,
+  // Fondos de pensión complementaria (ROP, FCL y pensión voluntaria): rendimiento anual
+  // nominal en dólares y aporte estimado como porcentaje del salario cuando el cliente
+  // no conoce su aporte mensual.
+  rendimientoFondos: 6, aporteRopPct: 4.25, aporteFclPct: 1.5,
+  // Edad desde la que se cobra la pensión (IVM: 65 años). Si el cliente es independiente
+  // antes, esos años se cubren solo con el portafolio y sus otros ingresos.
+  edadPension: 65,
   asignacion: {conservador:{rv:20,rf:50,ef:30}, moderado:{rv:60,rf:35,ef:5}, agresivo:{rv:95,rf:0,ef:5}}
 };
 const STORAGE_KEY = 'chyco_supuestos_v1';
@@ -502,9 +534,41 @@ const STORAGE_KEY = 'chyco_supuestos_v1';
 //   E Salario · G/H/I Gasto familiar · K Portafolio inicial · L Aportes/Retiros
 //   M Gasto % del portafolio · N/O Retorno · P Resultado neto
 //   Q Portafolio nominal final · R Portafolio en términos reales
+// Fondos de pensión complementaria declarados por el cliente, en dólares. Admite el
+// formato anterior del cuestionario (solo saldos de ROP y FCL en dólares de hoy).
+function fondosDe(c, sup, aniosAcum){
+  const tc = sup.tipoCambio, out = [];
+  const salUsd = aUsd(c.salarioMonto, c.salarioMoneda, tc);
+  const NOMBRES = {rop:'ROP', fcl:'FCL', voluntaria:'Pensión voluntaria'};
+  // El aporte al ROP y al FCL es un porcentaje del salario: solo se estima si la fuente
+  // principal del ingreso es el salario (empresarios y rentistas no cotizan sobre él).
+  const esSalario = ((c.ingresos || {}).fuentePrincipal || 'salario') === 'salario';
+  const PCT = {rop: esSalario ? (sup.aporteRopPct ?? 4.25)/100 : 0, fcl: esSalario ? (sup.aporteFclPct ?? 1.5)/100 : 0, voluntaria: 0};
+  const tIndep = aniosAcum + 1;
+  if(c.fondos){
+    ['rop','fcl','voluntaria'].forEach(k => {
+      const f = c.fondos[k]; if(!f || f.traslado === 'no') return;
+      const estimado = f.aporteMensual === null || f.aporteMensual === undefined || isNaN(f.aporteMensual);
+      const aporte = estimado ? salUsd * PCT[k] : aUsd(f.aporteMensual, f.aporteMoneda, tc);
+      const tAnio = f.traslado === 'anio' && +f.anio ? Math.max(1, +f.anio - sup.anioInicio + 1) : tIndep;
+      out.push({k, nombre: NOMBRES[k], saldo: aUsd(f.saldo, f.saldoMoneda, tc), saldoMoneda: f.saldoMoneda, saldoOriginal: +f.saldo || 0,
+        aporteMensual: aporte, aporteEstimado: estimado && aniosAcum > 0 && PCT[k] > 0, sinEstimar: estimado && aniosAcum > 0 && !PCT[k] && k !== 'voluntaria', aporteMoneda: f.aporteMoneda, aporteOriginal: estimado ? null : +f.aporteMensual,
+        tTraslado: tAnio, traslado: f.traslado});
+    });
+    return out;
+  }
+  const fl = (c.capacidad || {}).fondosLaborales || {};
+  if(fl.incorpora === 'fcl' || fl.incorpora === 'ambos')
+    out.push({k:'fcl', nombre:'FCL', saldo: +fl.fclUsdHoy || 0, saldoMoneda:'USD', saldoOriginal: +fl.fclUsdHoy || 0, aporteMensual: 0, aporteEstimado: false,
+      aporteMoneda:'USD', aporteOriginal: 0, tTraslado: Math.max(1, Math.round(sup.anioIngresoFcl || 5)), traslado:'anio'});
+  if(fl.incorpora === 'rop' || fl.incorpora === 'ambos')
+    out.push({k:'rop', nombre:'ROP', saldo: +fl.ropUsdHoy || 0, saldoMoneda:'USD', saldoOriginal: +fl.ropUsdHoy || 0, aporteMensual: 0, aporteEstimado: false,
+      aporteMoneda:'USD', aporteOriginal: 0, tTraslado: tIndep, traslado:'independencia'});
+  return out;
+}
+
 function proyectar(c, sup, opts){
   const inf     = sup.inflacion/100;
-  const infIng  = sup.inflacionIngresos/100;
   // Por defecto, el retorno del perfil asignado. El cálculo del equilibrio pasa
   // otros valores para probar; la proyección que ve el cliente no cambia.
   const retorno = (opts && opts.retorno != null) ? opts.retorno : PERFILES[c.perfil].retorno;
@@ -518,30 +582,38 @@ function proyectar(c, sup, opts){
   const aniosAcum   = Math.max(0, c.edadRetiro - c.edad);
   // Igual que el Excel: la fila 1 corresponde a la edad actual y la última a la edad final
   const totalAnios  = Math.max(1, sup.edadFinal - c.edad + 1);
+  const tIndep = aniosAcum + 1;
 
-  // Fondos laborales que el cliente trae al portafolio. Son ingresos puntuales,
-  // no un flujo anual: el ROP entra al cumplir la edad de retiro y el FCL en el año
-  // que fije el analista. Los montos se declaran en dólares de hoy, así que se
-  // ajustan por inflación hasta el año de ingreso para conservar su valor real.
-  const fl = (c.capacidad || {}).fondosLaborales || {};
-  const traeFondos = !!fl.incorpora && fl.incorpora !== 'ninguno';
-  const anioFcl = Math.max(1, Math.round(sup.anioIngresoFcl || 5));
-  const anioRop = aniosAcum + 1;                       // primer año con la edad de retiro
-  const montoFcl = (fl.incorpora === 'fcl' || fl.incorpora === 'ambos') ? (+fl.fclUsdHoy || 0) : 0;
-  const montoRop = (fl.incorpora === 'rop' || fl.incorpora === 'ambos') ? (+fl.ropUsdHoy || 0) : 0;
+  // Fondos de pensión complementaria: crecen con sus aportes (mientras el cliente trabaja,
+  // indexados con la inflación) y con su rendimiento, y se trasladan al portafolio en el año
+  // indicado. Después de un traslado anticipado, los aportes nuevos siguen acumulándose y el
+  // saldo restante se traslada al ser financieramente independiente.
+  const rf = (sup.rendimientoFondos ?? 6)/100;
+  const fondos = fondosDe(c, sup, aniosAcum);
+  const filasFondos = fondos.map(() => []);
+  const saldoF = fondos.map(f => f.saldo);
 
-  // Pensión: monto mensual declarado en valor de hoy; se anualiza y se indexa con la
-  // inflación de pensión (supuesto D4). Entra como ingreso desde el primer año de retiro.
+  // Pensión: monto mensual declarado en valor de hoy; se indexa con la inflación de pensión.
   const pen = c.pension || {};
   const pensionMensual = (pen.regimen && pen.regimen !== 'ninguno' && +pen.montoMensual > 0)
     ? aUsd(pen.montoMensual, pen.moneda, sup.tipoCambio) : 0;
   const infPen = (sup.inflacionPension || 0)/100;
+  // Primer período con pensión: al ser independiente o al cumplir la edad de pensión, lo
+  // que ocurra después. El monto declarado en valor de hoy se lleva con la inflación general
+  // hasta el primer pago; desde ahí se indexa con la inflación de pensión.
+  const edadPen = sup.edadPension ?? 65;
+  const tPension = Math.max(aniosAcum + 1, edadPen - c.edad + 1);
+  // Otros ingresos en el retiro (alquileres, rentas, negocio): valor de hoy, inflación general
+  const oi = c.otrosIngresosRetiro;
+  const otrosIngresosMensual = oi && +oi.montoMensual > 0 ? aUsd(oi.montoMensual, oi.moneda, sup.tipoCambio) : 0;
   // Gasto en el retiro: factor sobre el gasto del año, según lo que declaró el cliente
   const gr = (c.ingresos || {}).gastoEnRetiro;
   const factorGasto = gr === 'menor' ? (sup.factorGastoMenor ?? 80)/100
                     : gr === 'mayor' ? (sup.factorGastoMayor ?? 110)/100 : 1;
-  // Metas: salidas puntuales en dólares de hoy, indexadas a la inflación general hasta su año
+  // Salidas y entradas puntuales en dólares de hoy, indexadas a la inflación general hasta su año
   const metas = (c.metas || []).filter(m => +m.montoUsdHoy > 0 && +m.anio > 0).slice(0, 8);
+  const aportesExtra = (c.aportesExtraordinarios || []).filter(a => +a.montoUsdHoy > 0 && +a.anio > 0).slice(0, 5);
+  const apoyos = (c.apoyosDependientes || []).filter(a => +a.montoAnualUsdHoy > 0 && +a.anioInicio > 0 && +a.anios > 0).slice(0, 5);
 
   const filas = [];
   let portafolio = capital;
@@ -550,46 +622,76 @@ function proyectar(c, sup, opts){
     const edad = c.edad + t - 1;      // fila 1 = edad actual, como en el Excel
     const anio = sup.anioInicio + t - 1;
     const enRetiro = t > aniosAcum;
+    const idx = Math.pow(1 + inf, t - 1);
 
-    // Excel: el gasto del año 1 es el gasto actual; crece (t−1) veces
-    const gastoAnual   = gastoAnual1 * Math.pow(1 + inf, t - 1);
-    const salarioMes   = enRetiro ? null : salarioMensual * Math.pow(1 + inf, t - 1);  // el Excel usa $D$3
+    const gastoAnual   = gastoAnual1 * idx;
+    const salarioMes   = enRetiro ? null : salarioMensual * idx;  // el Excel usa $D$3
+
+    // fondos del año
+    let traslado = 0;
+    fondos.forEach((f, k) => {
+      const si = saldoF[k];
+      const ap = t <= aniosAcum ? f.aporteMensual * 12 * idx : 0;
+      const re = si * rf;
+      // se traslada en su año, al ser independiente o, si ambos quedan fuera del horizonte, en el último año
+      const tr = (t === f.tTraslado || t === tIndep || t === totalAnios) ? si + ap + re : 0;
+      const sf = si + ap + re - tr;
+      filasFondos[k].push({t, saldoInicial: si, aporte: ap, rendimiento: re, traslado: tr, saldoFinal: sf});
+      saldoF[k] = sf; traslado += tr;
+    });
 
     const portafolioInicial = portafolio;                       // K
     const aporteRetiro = enRetiro ? -gastoAnual * factorGasto : aporte;       // L
     const gastoPct = portafolioInicial ? aporteRetiro / portafolioInicial : 0;  // M
     const retornoMonto = portafolioInicial * retorno;           // O
     const resultadoNeto = retornoMonto + aporteRetiro;          // P
-    // S: ingreso extraordinario del año. Vale 0 en todos los años para un cliente
-    // que no trae fondos, de modo que Q queda exactamente igual que antes.
-    const extraordinario =
-        (montoFcl && t === anioFcl ? montoFcl * Math.pow(1 + inf, t - 1) : 0)
-      + (montoRop && t === anioRop ? montoRop * Math.pow(1 + inf, t - 1) : 0);
-    const pension = (pensionMensual && enRetiro) ? pensionMensual * 12 * Math.pow(1 + infPen, t - 1) : 0;
-    const salidaMetas = -metas.filter(m => +m.anio === anio).reduce((a,m) => a + (+m.montoUsdHoy), 0) * Math.pow(1 + inf, t - 1);
-    const portafolioFinal = portafolioInicial + resultadoNeto + extraordinario + pension + salidaMetas;  // Q
+    const extraordinario = traslado;                            // traslado de fondos de pensión
+    const pension = (pensionMensual && t >= tPension) ? pensionMensual * 12 * Math.pow(1 + inf, tPension - 1) * Math.pow(1 + infPen, t - tPension) : 0;
+    const otrosIngresos = (otrosIngresosMensual && enRetiro) ? otrosIngresosMensual * 12 * idx : 0;
+    const aporteExtra = aportesExtra.filter(a => +a.anio === anio).reduce((s2, a) => s2 + (+a.montoUsdHoy), 0) * idx;
+    const salidaApoyos = -apoyos.filter(a => anio >= +a.anioInicio && anio < +a.anioInicio + (+a.anios)).reduce((s2, a) => s2 + (+a.montoAnualUsdHoy), 0) * idx;
+    const salidaMetas = -metas.filter(m => +m.anio === anio).reduce((a,m) => a + (+m.montoUsdHoy), 0) * idx;
+    // El portafolio no puede ser negativo: si las salidas superan el saldo, se agota (0) y la
+    // diferencia es gasto no cubierto. Así no se calculan rendimientos sobre saldos negativos.
+    const saldoBruto = portafolioInicial + resultadoNeto + extraordinario + pension + otrosIngresos + aporteExtra + salidaApoyos + salidaMetas;
+    const deficit = Math.max(0, -saldoBruto);
+    const portafolioFinal = saldoBruto + deficit;  // Q
     // R: valor en dólares de hoy, descontado con la inflación general en todos los años.
-    // (El machote usaba Q−Q×inflación en el primer año, una aproximación del descuento.)
     const portafolioReal = portafolioFinal / Math.pow(1 + inf, t);
 
     filas.push({t, anio, edad, fase: enRetiro ? 'Retiro' : 'Acumulación',
       salarioMes, gastoAnual, gastoMensual: gastoAnual/12,
       portafolioInicial, aporteRetiro, gastoPct, retornoMonto,
-      resultadoNeto, extraordinario, pension, metas: salidaMetas, portafolioFinal, portafolioReal});
+      resultadoNeto, extraordinario, pension, otrosIngresos, aporteExtra, apoyos: salidaApoyos, metas: salidaMetas, deficit,
+      portafolioFinal, portafolioReal});
 
     portafolio = portafolioFinal;
   }
 
-  const agota = filas.find(f => f.portafolioFinal < 0);
+  const agota = filas.find(f => f.deficit > 1e-6);
+  const suma = k => filas.reduce((a, f) => a + (f[k] || 0), 0);
   return {
     filas, aniosAcum, totalAnios, retorno,
-    traeFondos, anioFcl, anioRop, montoFcl, montoRop,
+    traeFondos: fondos.length > 0, fondos, filasFondos, rendimientoFondos: rf,
     pensionMensual, infPen, factorGasto, gastoEnRetiro: gr || null, metas,
+    otrosIngresosMensual, aportesExtra, apoyos,
     traePension: pensionMensual > 0, traeMetas: metas.length > 0,
+    traeOtros: otrosIngresosMensual > 0, traeAportesExtra: aportesExtra.length > 0, traeApoyos: apoyos.length > 0,
     // Portafolio al retiro, acotado al horizonte: si el retiro cae después de la edad
     // final se toma el último año proyectado; si ya está retirado, el capital inicial.
     alRetiro: aniosAcum === 0 ? capital : filas[Math.min(aniosAcum, filas.length) - 1].portafolioFinal,
-    totalExtraordinario: filas.reduce((a,f)=>a+f.extraordinario, 0),
+    totalExtraordinario: suma('extraordinario'),
+    // Descomposición del flujo: capital + entradas + rendimientos − salidas = saldo final
+    resumen: {
+      capital, aportesOrdinarios: filas.reduce((a, f) => a + Math.max(0, f.aporteRetiro), 0),
+      aportesExtra: suma('aporteExtra'), trasladoFondos: suma('extraordinario'),
+      pension: suma('pension'), otrosIngresos: suma('otrosIngresos'),
+      rendimientos: suma('retornoMonto'), retirosGasto: filas.reduce((a, f) => a + Math.min(0, f.aporteRetiro), 0),
+      apoyos: suma('apoyos'), metas: suma('metas'), deficit: suma('deficit')
+    },
+    deficitTotal: suma('deficit'),
+    deficitReal: filas.reduce((a, f) => a + f.deficit / Math.pow(1 + inf, f.t), 0),
+    tPension, edadPension: edadPen,
     capital, aporte, salarioMensual, gastoMensual,
     maxNominal: Math.max(...filas.map(f=>f.portafolioFinal)),
     finalNominal: filas[filas.length-1].portafolioFinal,
@@ -597,6 +699,54 @@ function proyectar(c, sup, opts){
     edadAgota: agota ? agota.edad : null,
     tasaRetiroInicial: filas[aniosAcum] ? Math.abs(filas[aniosAcum].gastoPct) : null
   };
+}
+
+// ¿Alcanza el plan? El mismo criterio del rendimiento de equilibrio, aplicado a la
+// cartera asignada: el portafolio no queda negativo en ningún año y, si el cliente
+// pidió herencia, termina con al menos ese monto en dólares de hoy.
+function alcanzaPlan(c, p, fm){
+  fm = fm || usd;
+  const leg = c.legado || {};
+  const meta = (leg.destino === 'herencia' && +leg.montoUsdHoy > 0) ? +leg.montoUsdHoy : 0;
+  const ok = p.deficitTotal <= 1e-6 && p.finalReal >= meta;
+  let texto;
+  if(p.aniosAcum >= p.totalAnios) texto = (ok ? 'Sí alcanza' : 'No alcanza') + ', con una salvedad: la independencia financiera queda fuera del horizonte proyectado, así que no hay años de retiro que evaluar.';
+  else if(ok) texto = meta ? 'Sí alcanza: el portafolio cubre todos los años y deja ' + fm(p.finalReal) + ' en dólares de hoy, por encima de la herencia de ' + fm(meta) + '.'
+                      : 'Sí alcanza: el portafolio cubre todos los años de la proyección y termina con ' + fm(p.finalReal) + ' en dólares de hoy.';
+  else if(p.edadAgota) texto = 'No alcanza: el portafolio se agota a los ' + p.edadAgota + ' años y deja sin cubrir ' + fm(p.deficitReal) + ' de gasto, en dólares de hoy.';
+  else texto = 'No alcanza: el portafolio cubre todos los años, pero termina con ' + fm(p.finalReal) + ' en dólares de hoy, por debajo de la herencia de ' + fm(meta) + '.';
+  return {ok, meta, texto};
+}
+
+// Descomposición del flujo: de dónde sale el saldo final y si alcanza.
+function filasFlujo(p){
+  const r = p.resumen;
+  return [
+    ['Capital inicial', r.capital],
+    ['Aportes ordinarios', r.aportesOrdinarios],
+    p.traeAportesExtra ? ['Aportes extraordinarios', r.aportesExtra] : null,
+    p.traeFondos ? ['Traslado de fondos de pensión', r.trasladoFondos] : null,
+    ['Rendimientos del portafolio', r.rendimientos],
+    p.traePension ? ['Pensión', r.pension] : null,
+    p.traeOtros ? ['Otros ingresos', r.otrosIngresos] : null,
+    ['Retiros para el gasto', r.retirosGasto],
+    p.traeApoyos ? ['Apoyos a dependientes', r.apoyos] : null,
+    p.traeMetas ? ['Metas', r.metas] : null,
+    r.deficit > 0.5 ? ['Gasto no cubierto por el portafolio', r.deficit] : null
+  ].filter(Boolean);
+}
+function flujoHTML(c, p){
+  const al = alcanzaPlan(c, p);
+  return `
+    <div class="donut-card">
+      <h2 class="section-title" style="font-size:16px;">¿Alcanza el plan?</h2>
+      <p class="section-sub" style="margin-bottom:14px;">Suma de los flujos de toda la proyección, en dólares nominales. El saldo final es el capital inicial más las entradas y los rendimientos, menos las salidas. El portafolio no baja de cero: si se agota, el gasto que ya no puede pagar aparece como gasto no cubierto.</p>
+      <div class="datos-grid">
+        ${filasFlujo(p).map(([t, v]) => `<div class="dato"><div class="dato-label">${t}</div><div class="dato-valor ${v < 0 ? 'neg' : ''}">${usd(v)}</div></div>`).join('')}
+        <div class="dato"><div class="dato-label">Saldo final nominal</div><div class="dato-valor ${p.finalNominal < 0 ? 'neg' : ''}">${usd(p.finalNominal)}</div><div class="dato-extra">${usd(p.finalReal)} en dólares de hoy</div></div>
+      </div>
+      <p class="veredicto ${al.ok ? 'ok' : 'alerta'}">${esc(al.texto)}</p>
+    </div>`;
 }
 
 // ============ rendimiento de equilibrio ============
@@ -622,14 +772,15 @@ function proyectarInst(c, sup, opts){
     const ap = aporte * idx, re = -retiro * idx;
     const ex = -extras.filter(x => +x.anio === anio).reduce((a,x) => a + (+x.montoUsdHoy), 0) * idx;
     const rend = saldo * r;
-    const fin = saldo + rend + ap + re + ex;
+    // el saldo no baja de cero: lo que falta queda como retiro no cubierto
+    const bruto = saldo + rend + ap + re + ex, deficit = Math.max(0, -bruto), fin = bruto + deficit;
     const real = fin / Math.pow(1 + inf, t);
-    filas.push({t, anio, saldoInicial: saldo, aporte: ap, retiro: re, extraordinario: ex, rendimiento: rend,
+    filas.push({t, anio, saldoInicial: saldo, aporte: ap, retiro: re, extraordinario: ex, rendimiento: rend, deficit,
       saldoFinal: fin, saldoReal: real, metaNominal: minimo * Math.pow(1 + inf, t), metaReal: minimo,
       portafolioFinal: fin, portafolioReal: real, edad: anio});
     saldo = fin;
   }
-  const ult = filas[filas.length - 1], agota = filas.find(f => f.saldoFinal < 0);
+  const ult = filas[filas.length - 1], agota = filas.find(f => f.deficit > 1e-6);
   return {institucional: true, filas, retorno: r, horizonte: H, totalAnios: H, aniosAcum: H + 1,
     capital, aporte, retiro, minimo, extras,
     finalNominal: ult.saldoFinal, finalReal: ult.saldoReal,
@@ -641,7 +792,7 @@ function proyectarInst(c, sup, opts){
 function rendimientoEquilibrioInst(c, sup){
   const meta = +((c.institucional || {}).capitalMinimoUsdHoy) || 0;
   const cumple = r => { const pr = proyectarInst(c, sup, {retorno: r});
-    return pr.filas.every(f => f.saldoFinal >= 0) && pr.finalReal >= meta; };
+    return pr.filas.every(f => f.deficit <= 1e-6) && pr.finalReal >= meta; };
   const MIN = 0, MAX = 0.30;
   if(cumple(MIN)) return {r: 0, meta, estado: 'sin-rendimiento'};
   if(!cumple(MAX)) return {r: null, meta, estado: 'inalcanzable'};
@@ -660,7 +811,7 @@ function rendimientoEquilibrio(c, sup){
   const meta = (leg.destino === 'herencia' && +leg.montoUsdHoy > 0) ? +leg.montoUsdHoy : 0;
   const cumple = r => {
     const pr = proyectar(c, sup, {retorno: r});
-    return pr.filas.every(f => f.portafolioFinal >= 0) && pr.finalReal >= meta;
+    return pr.filas.every(f => f.deficit <= 1e-6) && pr.finalReal >= meta;
   };
   const MIN = 0, MAX = 0.30;
   if(cumple(MIN)) return {r: 0, meta, estado: 'sin-rendimiento'};
@@ -863,7 +1014,13 @@ function calcularPerfil(c, sup){
   const tol = promedioReactivos(q, REACTIVOS.tolerancia);
   const ape = promedioReactivos(q, REACTIVOS.apetito);
   const cap = calcularCapacidad(c, sup);
-  const con = (c.capacidad || {}).conocimiento;
+  // Conocimiento: las instituciones (y los cuestionarios de familias anteriores) lo declaran
+  // en una pregunta propia, que funciona como techo del perfil. El cuestionario vigente de
+  // familias lo mide con la pregunta 10 del perfil de riesgo, que ya entra a la disposición;
+  // por eso ahí se informa, pero no se vuelve a aplicar como techo.
+  const conDeclarado = (c.capacidad || {}).conocimiento;
+  const conDesdeQ10 = (conDeclarado == null && c.capacidad && c.tipoCliente !== 'institucion' && q.q10 != null);
+  const con = conDesdeQ10 ? +q.q10 : conDeclarado;
 
   // Disposición: promedio ponderado de las diez preguntas del perfil de riesgo.
   const todos = promedioReactivos(q, REACTIVOS.tolerancia.concat(REACTIVOS.apetito));
@@ -872,7 +1029,7 @@ function calcularPerfil(c, sup){
 
   const limitantes = [];
   if(cap.valor != null && nivel(cap.valor) < idx){ limitantes.push('capacidad'); idx = nivel(cap.valor); }
-  if(con != null && !isNaN(con)){
+  if(!conDesdeQ10 && con != null && !isNaN(con)){
     const techoCon = con <= 0 ? 0 : con < 5 ? 1 : 2;
     if(techoCon < idx){ limitantes.push('conocimiento'); idx = techoCon; }
   }
@@ -945,13 +1102,16 @@ function calcularPerfil(c, sup){
   if(er && ef && er >= ef){
     avisos.push('La edad de retiro (' + er + ') alcanza o supera la edad final de la proyección (' + ef + '): no hay años de retiro proyectados.');
   }
-  const flx = (c.capacidad || {}).fondosLaborales || {};
-  if(flx.incorpora && flx.incorpora !== 'ninguno' && ed && ef){
-    const total = ef - ed + 1;
-    if((flx.incorpora === 'rop' || flx.incorpora === 'ambos') && (er - ed + 1) > total)
-      avisos.push('El ROP no entra en la proyección: la edad de retiro queda fuera del horizonte.');
-    if((flx.incorpora === 'fcl' || flx.incorpora === 'ambos') && (sup.anioIngresoFcl || 5) > total)
-      avisos.push('El FCL no entra en la proyección: su año de ingreso queda fuera del horizonte.');
+  if(ed && ef && !ins){
+    const total = ef - ed + 1, aniosAcumF = Math.max(0, er - ed);
+    fondosDe(c, sup, aniosAcumF).forEach(f => {
+      if(f.tTraslado > total && aniosAcumF + 1 > total)
+        avisos.push('El traslado del ' + f.nombre + ' queda fuera del horizonte: su saldo se traslada en el último año proyectado.');
+      if(f.aporteEstimado)
+        avisos.push('El aporte mensual al ' + f.nombre + ' no se declaró: se estimó con el ' + (f.k === 'rop' ? sup.aporteRopPct : sup.aporteFclPct) + '% del salario.');
+      if(f.sinEstimar)
+        avisos.push('El aporte mensual al ' + f.nombre + ' no se declaró y el ingreso principal no es salario: se proyecta sin aportes nuevos. Conviene confirmarlo con el cliente.');
+    });
   }
   if(tol.usados < tol.total){
     avisos.push('La pregunta sobre pérdidas previas quedó como «no aplica»; la tolerancia y la disposición se calcularon sin ella.');
@@ -974,7 +1134,7 @@ function calcularPerfil(c, sup){
 
   return {puntajeCliente, frontera, dispersion, pesoTol: tol.pesos, pesoApe: ape.pesos,
           tolerancia: tol.valor, apetito: ape.valor, capacidad: cap.valor,
-          conocimiento: con, disposicion, horizonte: cap.horizonte,
+          conocimiento: con, conocimientoDesdeQ10: conDesdeQ10, disposicion, horizonte: cap.horizonte,
           perfil: ESCALA[idx], limitantes, avisos, formatoAnterior,
           reactivosTolerancia: tol};
 }
@@ -990,7 +1150,8 @@ function esc(s){ return (s||'').toString().replace(/[&<>"']/g, m=>({'&':'&amp;',
 const CAMPOS = {tipoCambio:'s-tc', inflacion:'s-inf', inflacionIngresos:'s-inf-ing',
   inflacionPension:'s-inf-pen', inflacionSalud:'s-inf-sal', ajusteAlquileres:'s-alq',
   anioInicio:'s-anio', edadFinal:'s-edad-final', anioIngresoFcl:'s-fcl',
-  factorGastoMenor:'s-gasto-menor', factorGastoMayor:'s-gasto-mayor'};
+  factorGastoMenor:'s-gasto-menor', factorGastoMayor:'s-gasto-mayor',
+  rendimientoFondos:'s-rend-fondos', aporteRopPct:'s-rop-pct', aporteFclPct:'s-fcl-pct', edadPension:'s-edad-pension'};
 
 // Composición sugerida por perfil (renta variable / renta fija / efectivo)
 const ALLOC_SCHWAB = {
@@ -1216,7 +1377,7 @@ function ponderacionCapacidad(c){
     const h = Math.max(0, (+c.edadRetiro || 0) - (+c.edad || 0));
     const dep = cap.dependientes;
     filas = [
-      {componente:'Horizonte hasta el retiro', respuesta: h + ' años (de los ' + c.edad + ' a los ' + c.edadRetiro + ')', puntaje: puntajeHorizonte(h), regla:'Menos de 5 años 0 · 5 a 9 años 3,33 · 10 a 14 años 6,67 · 15 o más 10'},
+      {componente:'Horizonte hasta la independencia financiera', respuesta: h + ' años (de los ' + c.edad + ' a los ' + c.edadRetiro + ')', puntaje: puntajeHorizonte(h), regla:'Menos de 5 años 0 · 5 a 9 años 3,33 · 10 a 14 años 6,67 · 15 o más 10'},
       {componente:'Predictibilidad del ingreso', respuesta: textoOpcion('c3', cap.fuenteIngreso), puntaje: cap.fuenteIngreso, regla:'Escala de la respuesta'},
       {componente:'Dependientes económicos', respuesta: valido(dep) ? (dep === 0 ? 'Ninguno' : dep + (dep === 1 ? ' persona' : ' personas')) : '—', puntaje: valido(dep) ? puntajeDependientes(dep) : null, regla:'4 o más 0 · 3 → 3,33 · 1 o 2 → 6,67 · ninguno 10'},
       {componente:'Peso del portafolio en el patrimonio', respuesta: textoOpcion('c5', cap.pesoDelPortafolio), puntaje: cap.pesoDelPortafolio, regla:'Escala de la respuesta'}];
@@ -1230,18 +1391,21 @@ function resumenPerfil(c){
   // Las cuatro dimensiones pesan 25% en el puntaje del cliente; la disposición (que define
   // el perfil) es el promedio ponderado de las diez preguntas y se informa aparte.
   const d = c.diag || {};
-  const dims = [['Tolerancia', d.tolerancia], ['Apetito', d.apetito], ['Capacidad financiera', d.capacidad], ['Conocimiento y experiencia', d.conocimiento]];
+  const dims = [['Tolerancia', d.tolerancia], ['Apetito', d.apetito], ['Capacidad financiera', d.capacidad],
+    [d.conocimientoDesdeQ10 ? 'Conocimiento y experiencia (pregunta 10)' : 'Conocimiento y experiencia', d.conocimiento]];
   const nOk = dims.filter(x => valido(x[1])).length;
   return dims.map(([t, v]) => ({dimension: t, puntaje: valido(v) ? v : null, peso: valido(v) ? 1 / nOk : 0, aporte: valido(v) ? v / nOk : null}));
 }
 // Uso de cada pregunta de planificación en el modelo (por el primer campo de la pregunta)
 const USO_PLAN = {
-  'edad_retiro':'Proyección: inicio del retiro y año del ROP · Capacidad: horizonte',
+  'edad_retiro':'Proyección: independencia financiera, fin de los aportes y traslado de los fondos · Capacidad: horizonte',
   'plan':'Descriptivo', 'hijos-n':'Capacidad: dependientes',
+  'apoyos-n':'Proyección: retiros para apoyar a dependientes, indexados con la inflación',
   'salario-monto':'Proyección: salario (referencial) · Capacidad: predictibilidad del ingreso',
   'gasto-monto':'Proyección: gasto anual y retiro en la jubilación (con su factor)',
-  'pension-regimen':'Proyección: pensión, ROP y FCL',
-  'capital-monto':'Proyección: capital inicial y aportes · Capacidad: peso del portafolio',
+  'pension-regimen':'Proyección: pensión y otros ingresos en el retiro',
+  'f-rop-tiene':'Proyección: saldo, aportes, rendimiento y traslado de ROP, FCL y pensión voluntaria',
+  'capital-monto':'Proyección: capital inicial, aportes ordinarios y extraordinarios · Capacidad: peso del portafolio',
   'c1':'Descriptivo; aviso si ocurre más de 5 años antes del retiro',
   'vivienda':'Descriptivo', 'empresa':'Descriptivo', 'deudas-saldo':'Descriptivo', 'seguro-vida':'Descriptivo', 'seguro-ninguno':'Descriptivo',
   'metas-n':'Proyección: salidas por metas', 'herencia':'Rendimiento de equilibrio: meta de herencia',
@@ -1419,7 +1583,7 @@ async function descargarRespuestas(c, cual){
     banda('RESUMEN DEL PERFIL', 7);
     add(['', 'Dimensión', 'Nivel', '', 'Puntaje', 'Peso', 'Aporte'].map((t, k) => [t, k >= 4 ? S.encC : S.enc]), 20);
     resumenPerfil(c).forEach(f => {
-      const nivelTxt = f.dimension.startsWith('Conocimiento') ? (f.puntaje == null ? '—' : f.puntaje <= 0 ? 'Techo conservador' : f.puntaje <= 3 ? 'Techo moderado' : 'Sin límite') : NIVEL_TXT(f.puntaje);
+      const nivelTxt = f.dimension.startsWith('Conocimiento') ? (f.puntaje == null ? '—' : d.conocimientoDesdeQ10 ? 'Sin techo: entra a la disposición' : f.puntaje <= 0 ? 'Techo conservador' : f.puntaje < 5 ? 'Techo moderado' : 'Sin límite') : NIVEL_TXT(f.puntaje);
       const cel = [[null, S.txt], [f.dimension, S.txt], [nivelTxt, S.txt], [null, S.txt], [f.puntaje, S.dec], [f.peso, S.pct], [f.aporte, S.dec]];
       add(cel, alto(cel));
     });
@@ -1519,7 +1683,7 @@ function posicionHTML(c, titulo){
   const inst = tipoDe(c) === 'institucion';
   return `    <div class="donut-card">
       <h2 class="section-title" style="font-size:16px;">${titulo}</h2>
-      <p class="section-sub" style="margin-bottom:18px;">Tolerancia frente a apetito de riesgo, en escala de 0 a 10. Las franjas son los perfiles que resultan de la disposición (promedio ponderado de las diez preguntas), con cortes en 3,33 y 6,67. La capacidad financiera y el conocimiento no se grafican: solo limitan hasta dónde puede llegar el perfil.</p>
+      <p class="section-sub" style="margin-bottom:18px;">Tolerancia frente a apetito de riesgo, en escala de 0 a 10. Las franjas son los perfiles que resultan de la disposición (promedio ponderado de las diez preguntas), con cortes en 3,33 y 6,67. Si la capacidad financiera o el conocimiento limitan el perfil, las franjas que el cliente no puede alcanzar aparecen rayadas, con el color del perfil asignado.</p>
       <div class="donut-row matriz-row">
         <canvas id="matriz" style="width:340px;height:340px;"></canvas>
         <div class="alloc-legend">
@@ -1783,7 +1947,7 @@ function renderDetalle(c){
     <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;">
       <div>
         <h2 class="section-title">${esc(c.nombre)}</h2>
-        <p class="section-sub">${c.edad} años · retiro a los ${c.edadRetiro} · ${Math.min(p.aniosAcum, p.totalAnios)} años de acumulación y ${Math.max(0, p.totalAnios - p.aniosAcum)} de retiro${c.correo ? ' · ' + esc(c.correo) : ''}</p>
+        <p class="section-sub">${c.edad} años · independencia financiera a los ${c.edadRetiro} · ${Math.min(p.aniosAcum, p.totalAnios)} años de acumulación y ${Math.max(0, p.totalAnios - p.aniosAcum)} de retiro${c.correo ? ' · ' + esc(c.correo) : ''}</p>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;">
         <button class="btn btn-ghost btn-sm" id="btn-pdf">Ficha PDF</button>
@@ -1798,9 +1962,9 @@ function renderDetalle(c){
         <div class="note">Retorno esperado ${pct(p.retorno)} anual · ${asig.rv}/${asig.rf}/${asig.ef} en renta variable, renta fija y efectivo</div>
       </div>
       <div class="card">
-        <div class="label">Portafolio al retiro</div>
+        <div class="label">Portafolio a la independencia</div>
         <div class="value">${usd(p.alRetiro)}</div>
-        <div class="note">${p.aniosAcum === 0 ? 'Ya retirado: capital actual' : 'Valor nominal al cumplir ' + c.edadRetiro + ' años'}</div>
+        <div class="note">${p.aniosAcum === 0 ? 'Ya es independiente: capital actual' : 'Valor nominal al cumplir ' + c.edadRetiro + ' años, con los fondos trasladados'}</div>
       </div>
       <div class="card">
         <div class="label">Tasa de retiro inicial</div>
@@ -1867,10 +2031,10 @@ function renderDetalle(c){
 
     <div class="donut-card">
       <h2 class="section-title" style="font-size:16px;">Permanencia del cliente</h2>
-      <p class="section-sub" style="margin-bottom:18px;">Respuestas del cuestionario sobre el compromiso del cliente con la cartera. La pensión, el gasto en el retiro y las metas, cuando el cliente los declara, entran a la proyección. Los saldos de ROP y FCL sí entran a la proyección como ingresos puntuales: el FCL en el año ${supuestos.anioIngresoFcl} y el ROP al cumplir la edad de retiro, ajustados por inflación desde dólares de hoy.</p>
+      <p class="section-sub" style="margin-bottom:18px;">Respuestas del cuestionario sobre el compromiso del cliente con la cartera. Los fondos de pensión complementaria crecen con sus aportes y un rendimiento de ${supuestos.rendimientoFondos}% anual, y se trasladan al portafolio en el año que indicó el cliente o al ser financieramente independiente. La pensión, los otros ingresos, el gasto en el retiro, los aportes extraordinarios, los apoyos a dependientes y las metas entran a la proyección; los montos en dólares de hoy se indexan con la inflación.</p>
       <div class="datos-grid">
         ${(()=>{
-          const cap = c.capacidad || {}, fl = cap.fondosLaborales || {}, leg = c.legado || {};
+          const cap = c.capacidad || {}, leg = c.legado || {};
           const num = v => (v===null || v===undefined || isNaN(v)) ? '—' : usd(v);
           const enUsd = (m, mon) => aUsd(m, mon, supuestos.tipoCambio);
           const filas = [
@@ -1881,10 +2045,16 @@ function renderDetalle(c){
             ['Primer retiro del portafolio',
              cap.aniosPrimerRetiro!=null ? 'En ' + cap.aniosPrimerRetiro + ' años' : '—',
              cap.montoPrimerRetiroUsdHoy!=null ? num(cap.montoPrimerRetiroUsdHoy) + ' en dólares de hoy' : ''],
-            ['Fondos laborales',
-             ({ninguno:'No los incorpora', fcl:'Solo el FCL', rop:'Solo el ROP', ambos:'FCL y ROP'})[fl.incorpora] || '—',
-             [fl.fclUsdHoy!=null ? 'FCL ' + num(fl.fclUsdHoy) : '', fl.ropUsdHoy!=null ? 'ROP ' + num(fl.ropUsdHoy) : '']
-               .filter(Boolean).join(' · ')],
+            ['Fondos de pensión complementaria',
+             p.traeFondos ? p.fondos.map(f => f.nombre).join(', ') : 'No los traslada al portafolio',
+             p.fondos.map(f => f.nombre + ' ' + num(f.saldo) + ' + ' + num(f.aporteMensual) + '/mes' + (f.aporteEstimado ? ' (estimado)' : '')
+               + ' · traslado ' + (f.traslado === 'anio' ? 'en ' + (supuestos.anioInicio + f.tTraslado - 1) : 'a la independencia')).join(' · ')],
+            ['Aportes extraordinarios',
+             p.traeAportesExtra ? p.aportesExtra.length + (p.aportesExtra.length === 1 ? ' aporte' : ' aportes') : 'Ninguno',
+             p.aportesExtra.map(a2 => num(+a2.montoUsdHoy) + ' en ' + a2.anio).join(' · ')],
+            ['Apoyos a dependientes',
+             p.traeApoyos ? p.apoyos.length + (p.apoyos.length === 1 ? ' retiro previsto' : ' retiros previstos') : 'Ninguno',
+             p.apoyos.map(a2 => num(+a2.montoAnualUsdHoy) + ' al año, ' + a2.anioInicio + (+a2.anios > 1 ? '–' + (+a2.anioInicio + +a2.anios - 1) : '')).join(' · ')],
             ['Destino del patrimonio',
              ({herencia:'Deja herencia', consumir:'Lo consume en vida', indistinto:'Sin preferencia'})[leg.destino] || '—',
              leg.montoUsdHoy!=null ? 'Meta de ' + num(leg.montoUsdHoy) + ' en dólares de hoy' : ''],
@@ -1894,6 +2064,9 @@ function renderDetalle(c){
             ['Pensión',
              p.traePension ? num(p.pensionMensual) + ' al mes' : (({ninguno:'No cotiza'})[(c.pension||{}).regimen] || '—'),
              p.traePension ? 'Dólares de hoy, indexada al ' + (supuestos.inflacionPension) + '% anual desde el retiro' : ''],
+            ['Otros ingresos en el retiro',
+             p.traeOtros ? num(p.otrosIngresosMensual) + ' al mes' : 'Ninguno',
+             p.traeOtros ? 'Dólares de hoy, indexados con la inflación general' : ''],
             ['Metas específicas',
              p.traeMetas ? p.metas.length + (p.metas.length === 1 ? ' meta' : ' metas') : 'Ninguna',
              p.metas.map(m => num(m.montoUsdHoy) + ' en ' + m.anio).join(' · ')]
@@ -1908,6 +2081,8 @@ function renderDetalle(c){
       </div>
     </div>
 
+    ${flujoHTML(c, p)}
+
     <div class="block-title">Detalle año a año</div>
     <div class="table-wrap">
       <table>
@@ -1915,9 +2090,13 @@ function renderDetalle(c){
           <th>Año</th><th>Período</th><th>Edad</th><th>Fase</th><th>Salario mensual</th>
           <th>Gasto mensual</th><th>Portafolio inicial</th><th>Aportes / retiros</th>
           <th>Gasto % portafolio</th><th>Retorno</th><th>Resultado neto</th>
-          ${p.traeFondos ? '<th>Ingreso extraordinario</th>' : ''}
+          ${p.traeFondos ? '<th>Traslado de fondos</th>' : ''}
           ${p.traePension ? '<th>Pensión</th>' : ''}
+          ${p.traeOtros ? '<th>Otros ingresos</th>' : ''}
+          ${p.traeAportesExtra ? '<th>Aportes extraordinarios</th>' : ''}
+          ${p.traeApoyos ? '<th>Apoyos a dependientes</th>' : ''}
           ${p.traeMetas ? '<th>Metas</th>' : ''}
+          ${p.deficitTotal > 0.5 ? '<th>Gasto no cubierto</th>' : ''}
           <th>Portafolio nominal</th><th>Portafolio real</th>
         </tr></thead>
         <tbody>
@@ -1932,7 +2111,11 @@ function renderDetalle(c){
             <td class="${f.resultadoNeto<0?'neg':''}">${usd(f.resultadoNeto)}</td>
             ${p.traeFondos ? `<td>${f.extraordinario ? usd(f.extraordinario) : '—'}</td>` : ''}
             ${p.traePension ? `<td>${f.pension ? usd(f.pension) : '—'}</td>` : ''}
+            ${p.traeOtros ? `<td>${f.otrosIngresos ? usd(f.otrosIngresos) : '—'}</td>` : ''}
+            ${p.traeAportesExtra ? `<td>${f.aporteExtra ? usd(f.aporteExtra) : '—'}</td>` : ''}
+            ${p.traeApoyos ? `<td class="${f.apoyos<0?'neg':''}">${f.apoyos ? usd(f.apoyos) : '—'}</td>` : ''}
             ${p.traeMetas ? `<td class="${f.metas<0?'neg':''}">${f.metas ? usd(f.metas) : '—'}</td>` : ''}
+            ${p.deficitTotal > 0.5 ? `<td class="${f.deficit>0.5?'neg':''}">${f.deficit > 0.5 ? usd(f.deficit) : '—'}</td>` : ''}
             <td class="${f.portafolioFinal<0?'neg':''}">${usd(f.portafolioFinal)}</td>
             <td class="${f.portafolioReal<0?'neg':''}">${usd(f.portafolioReal)}</td>
           </tr>`).join('')}
@@ -1977,13 +2160,16 @@ function dibujarFrontera(c, p, eq, destino, escala){
   const X = x => padL + w*Math.max(0, Math.min(x, xMax))/xMax;
   const Y = y => padT + h - h*Math.max(0, Math.min(y, yMax))/yMax;
 
-  // franjas: separadores verticales y nombre del perfil bajo el eje
+  // franjas: separadores verticales y nombre del perfil bajo el eje. Solo se sombrea la
+  // franja del perfil asignado, para que el gráfico coincida con el perfil del cliente.
   let desde = 0;
   pts.forEach((pt, i) => {
-    g.fillStyle = i % 2 ? '#F6F7F0' : '#FFFFFF';
+    const propia = pt.perfil === c.perfil;
+    g.fillStyle = propia ? '#EEF1E4' : '#FFFFFF';
     g.fillRect(X(desde), padT, X(pt.x) - X(desde), h);
-    g.fillStyle = '#2B3014'; g.font = '11px Satoshi, sans-serif'; g.textAlign = 'center';
+    g.fillStyle = '#2B3014'; g.font = (propia ? '600 ' : '') + '11px Satoshi, sans-serif'; g.textAlign = 'center';
     g.fillText(PERFILES[pt.perfil].label, (X(desde) + X(pt.x))/2, padT + h + 34);
+    if(propia){ g.font = '9.5px Satoshi, sans-serif'; g.fillStyle = '#666653'; g.fillText('Perfil asignado', (X(desde) + X(pt.x))/2, padT + h + 46); }
     desde = pt.x;
   });
   g.strokeStyle = '#B7BD9E'; g.lineWidth = 1;
@@ -2143,12 +2329,20 @@ function dibujarMatriz(d){
   // forman franjas diagonales y el punto del cliente cae siempre en la franja de su perfil.
   const wt = d.pesoTol || 7, wa = d.pesoApe || 8;
   const disp = (x, y) => (wt*x + wa*y)/(wt + wa);
+  // Si la capacidad financiera o el conocimiento limitan el perfil, las franjas que quedan
+  // por encima del perfil asignado toman su color y se rayan: el mapa muestra el perfil que
+  // el cliente puede recibir, y el punto cae siempre en una zona del color de su perfil.
+  const tope = (d.limitantes || []).length && ESCALA.includes(d.perfil) ? ESCALA.indexOf(d.perfil) : ESCALA.length - 1;
   const paso = 2;
   for(let px = 0; px < w; px += paso){
     for(let py = 0; py < h; py += paso){
       const x = (px + paso/2)/w*10, y = 10 - (py + paso/2)/h*10;
-      g.fillStyle = TONO[ESCALA[nivel(disp(x, y))]];
+      const n = nivel(disp(x, y));
+      g.fillStyle = TONO[ESCALA[Math.min(n, tope)]];
       g.fillRect(padL + px, padT + py, paso + 0.5, paso + 0.5);
+      if(n > tope && (px + (h - py)) % 10 < 2){
+        g.fillStyle = 'rgba(43,48,20,.13)'; g.fillRect(padL + px, padT + py, paso + 0.5, paso + 0.5);
+      }
     }
   }
   // líneas de corte: wt·x + wa·y = corte·(wt + wa)
@@ -2167,8 +2361,13 @@ function dibujarMatriz(d){
   // nombres de los perfiles sobre su franja
   g.font = '11px Satoshi, sans-serif'; g.textAlign = 'center';
   [['conservador', 1.4, 1.4], ['moderado', 5, 5], ['agresivo', 8.6, 8.6]].forEach(([k, x, y]) => {
-    g.fillStyle = k === 'agresivo' ? '#2B3014' : '#6B6C55';
-    g.fillText(PERFILES[k].label, X(x), Y(y) + 3.5);
+    const limitada = ESCALA.indexOf(k) > tope;
+    g.fillStyle = k === 'agresivo' && !limitada ? '#2B3014' : '#6B6C55';
+    if(!limitada){ g.fillText(PERFILES[k].label, X(x), Y(y) + 3.5); return; }
+    g.font = '10px Satoshi, sans-serif';
+    g.fillText(PERFILES[k].label + ', limitado', X(x), Y(y) - 2);
+    g.fillText('a ' + PERFILES[ESCALA[tope]].label.toLowerCase(), X(x), Y(y) + 10);
+    g.font = '11px Satoshi, sans-serif';
   });
 
   // escala de los ejes
@@ -2193,6 +2392,19 @@ function dibujarMatriz(d){
   g.beginPath(); g.arc(px,py,5.5,0,Math.PI*2);
   g.fillStyle='#2B3014'; g.fill();
   g.strokeStyle='#FFFFFF'; g.lineWidth=2; g.stroke();
+  // perfil asignado junto al punto
+  if(d.perfil && PERFILES[d.perfil]){
+    const txt = PERFILES[d.perfil].label;
+    g.font = '600 11px Satoshi, sans-serif';
+    const tw = g.measureText(txt).width + 12, th = 18;
+    let bx = px + 12, by = py - th - 6;
+    if(bx + tw > padL + w) bx = px - 12 - tw;
+    if(by < padT) by = py + 8;
+    g.fillStyle = '#2B3014'; g.beginPath();
+    if(g.roundRect) g.roundRect(bx, by, tw, th, 4); else g.rect(bx, by, tw, th);
+    g.fill();
+    g.fillStyle = '#FFFFFF'; g.textAlign = 'center'; g.fillText(txt, bx + tw/2, by + 12.5);
+  }
 }
 
 function escalaRedonda(min, max, objetivo){
@@ -2302,7 +2514,7 @@ const COLS_PROY = `<cols>` + [[2,10],[3,12],[4,8],[5,18],[6,2],[7,20],[8,20],[9,
   [11,20],[12,18],[13,20],[14,14],[15,18],[16,18],[17,26],[18,26]]
   .map(([c,w])=>`<col width="${w}" customWidth="1" min="${c}" max="${c}"/>`).join('') + `</cols>`;
 const VISTA_PROY = `<sheetViews><sheetView workbookViewId="0">`
-  + `<pane ySplit="8" topLeftCell="A9" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>`;
+  + `<pane ySplit="9" topLeftCell="A10" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>`;
 const DRAWING = `<drawing r:id="rId1"/>`;
 
 // ---------- Hoja Cliente ----------
@@ -2342,7 +2554,7 @@ function xmlCliente(c, p, asig, sup){
     if(res.distrito) Ftxt('Distrito', res.distrito);
     if(res.senas) Ftxt(res.pais === 'Costa Rica' ? 'Otras señas' : 'Dirección', res.senas);
   } else if(c.direccion) Ftxt('Dirección', c.direccion);
-  Fnum('Edad actual', c.edad, EST.ent); Fnum('Edad de retiro', c.edadRetiro, EST.ent);
+  Fnum('Edad actual', c.edad, EST.ent); Fnum('Edad de independencia financiera', c.edadRetiro, EST.ent);
 
   sec('Perfil de riesgo');
   Ftxt('Perfil asignado', PERFILES[c.perfil].label);
@@ -2368,15 +2580,9 @@ function xmlCliente(c, p, asig, sup){
   // Datos de calificación del cliente. No entran en el cálculo de la proyección,
   // pero quedan en la pestaña porque describen su conducta y su compromiso con la cartera.
   sec('Perfil de permanencia y aportes');
-  const cap = c.capacidad || {}, fl = cap.fondosLaborales || {}, leg = c.legado || {};
+  const cap = c.capacidad || {}, leg = c.legado || {};
   Fnum('Años hasta el primer retiro', cap.aniosPrimerRetiro, EST.ent);
   Fnum('Monto del primer retiro (US$ de hoy)', cap.montoPrimerRetiroUsdHoy, EST.num);
-  Ftxt('Fondos laborales que incorpora', ({
-        ninguno:'Ninguno: los mantiene fuera del portafolio',
-        fcl:'Solo el FCL', rop:'Solo el ROP', ambos:'FCL y ROP'
-      })[fl.incorpora] || '—');
-  Fnum('Saldo del FCL (US$ de hoy)', fl.fclUsdHoy, EST.num);
-  Fnum('Saldo del ROP (US$ de hoy)', fl.ropUsdHoy, EST.num);
   Ftxt('Destino del patrimonio', ({
         herencia:'Dejar una herencia a sus herederos',
         consumir:'Utilizarlo durante su vida',
@@ -2385,12 +2591,29 @@ function xmlCliente(c, p, asig, sup){
   Fnum('Herencia deseada (US$ de hoy)', leg.montoUsdHoy, EST.num);
 
   // Variables que alimentan la proyección cuando el cliente las declara
-  sec('Retiro, pensión y metas');
+  sec('Retiro, pensión, fondos y flujos previstos');
   Ftxt('Gasto esperado en el retiro', ({menor:'Menor que el actual', igual:'Similar al actual', mayor:'Mayor que el actual'})[(c.ingresos||{}).gastoEnRetiro] || '—');
   Fnum('Gasto retirado cada año en la jubilación (% del gasto)', p.factorGasto, EST.pct0);
   const pn = c.pension || {};
   Ftxt('Régimen de pensión', ({ivm:'IVM de la CCSS', otro:'Otro régimen', ninguno:'No cotiza'})[pn.regimen] || '—');
   if(pn.montoMensual != null){ n++; filas += `<row r="${n}">` + celda('A'+n,'Pensión mensual estimada (valor de hoy)',EST.bold) + celda('B'+n,pn.montoMensual,EST.num) + celda('C'+n,pn.moneda) + `</row>`; }
+  const oiR = c.otrosIngresosRetiro;
+  if(oiR){ n++; filas += `<row r="${n}">` + celda('A'+n,'Otros ingresos mensuales en el retiro (valor de hoy)',EST.bold) + celda('B'+n,oiR.montoMensual,EST.num) + celda('C'+n,oiR.moneda) + `</row>`; }
+  // Fondos de pensión complementaria, en su moneda declarada; la hoja «Fondos de pensión» los lleva a dólares
+  const NOMF = {rop:'ROP', fcl:'FCL', voluntaria:'Pensión voluntaria'};
+  if(c.fondos) ['rop','fcl','voluntaria'].forEach(k => { const f = c.fondos[k]; if(!f) return;
+    const dest = f.traslado === 'no' ? 'no lo traslada al portafolio' : f.traslado === 'anio' ? 'traslado en ' + f.anio : 'traslado a la independencia financiera';
+    n++; filas += `<row r="${n}">` + celda('A'+n, NOMF[k] + ': saldo actual', EST.bold) + celda('B'+n, f.saldo, EST.num) + celda('C'+n, f.saldoMoneda + ' · ' + dest) + `</row>`;
+    n++; filas += `<row r="${n}">` + celda('A'+n, NOMF[k] + ': aporte mensual', EST.bold)
+      + (f.aporteMensual != null ? celda('B'+n, f.aporteMensual, EST.num) + celda('C'+n, f.aporteMoneda) : celda('C'+n, 'No lo indicó: se estima con el salario')) + `</row>`; });
+  else { const fl = cap.fondosLaborales || {};
+    Ftxt('Fondos laborales que incorpora (cuestionario anterior)', ({ninguno:'Ninguno', fcl:'Solo el FCL', rop:'Solo el ROP', ambos:'FCL y ROP'})[fl.incorpora] || '—');
+    Fnum('Saldo del FCL (US$ de hoy)', fl.fclUsdHoy, EST.num); Fnum('Saldo del ROP (US$ de hoy)', fl.ropUsdHoy, EST.num); }
+  (c.aportesExtraordinarios || []).forEach((a2,k) => { n++; filas += `<row r="${n}">` + celda('A'+n,'Aporte extraordinario ' + (k+1) + ' (US$ de hoy)',EST.bold) + celda('B'+n,+a2.montoUsdHoy,EST.num) + celda('C'+n,'Año ' + a2.anio) + `</row>`; });
+  const BEN = {hijo:'Hijo o hija', pareja:'Cónyuge o pareja', padres:'Padre o madre', hermano:'Hermano o hermana', otro:'Otro familiar'};
+  const MOT = {educacion:'educación', salud:'salud', vivienda:'vivienda', manutencion:'manutención', otro:'otro motivo'};
+  (c.apoyosDependientes || []).forEach((a2,k) => { n++; filas += `<row r="${n}">` + celda('A'+n,'Apoyo a dependientes ' + (k+1) + ' (US$ de hoy, por año)',EST.bold) + celda('B'+n,+a2.montoAnualUsdHoy,EST.num)
+    + celda('C'+n, (BEN[a2.beneficiario] || a2.beneficiario) + ' · ' + (MOT[a2.motivo] || a2.motivo) + ' · desde ' + a2.anioInicio + ' por ' + a2.anios + (+a2.anios === 1 ? ' año' : ' años')) + `</row>`; });
   (c.metas || []).forEach((m,k) => { n++; filas += `<row r="${n}">` + celda('A'+n,'Meta ' + (k+1) + ' (US$ de hoy)',EST.bold) + celda('B'+n,+m.montoUsdHoy,EST.num)
     + celda('C'+n, (({educacion:'Educación',vivienda:'Vivienda o propiedad',vehiculo:'Vehículo',viaje:'Viaje',negocio:'Negocio o emprendimiento',otra:'Otra'})[m.tipo]||m.tipo) + ' · año ' + m.anio + ' · ' + (m.prioridad === 'esencial' ? 'esencial' : 'deseable')) + `</row>`; });
 
@@ -2402,7 +2625,9 @@ function xmlCliente(c, p, asig, sup){
   if(ig.ingresoPareja){ n++; filas += `<row r="${n}">` + celda('A'+n,'Ingreso mensual de la pareja',EST.bold) + celda('B'+n,ig.ingresoPareja.monto,EST.num) + celda('C'+n,ig.ingresoPareja.moneda) + `</row>`; }
   if(hg.hijos) Ftxt('Hijos', hg.hijos.length ? hg.hijos.length + ' (edades: ' + hg.hijos.join(', ') + ')' : 'No tiene');
   if(hg.otrosDependientes){ n++; filas += `<row r="${n}">` + celda('A'+n,'Otros dependientes',EST.bold) + celda('B'+n,hg.otrosDependientes.cantidad,EST.ent)
-    + celda('C'+n, hg.otrosDependientes.aporteMensual != null ? 'Aporte mensual ' + fmt(hg.otrosDependientes.aporteMensual) + ' ' + hg.otrosDependientes.moneda : '') + `</row>`; }
+    + celda('C'+n, [Object.entries(hg.otrosDependientes.detalle || {}).filter(([,v]) => +v > 0)
+        .map(([k,v]) => ({pareja:'pareja',padres:'padres',hermanos:'hermanos',tios:'tíos',abuelos:'abuelos',otros:'otros'})[k] + ' ' + v).join(', '),
+      hg.otrosDependientes.aporteMensual != null ? 'aporte mensual ' + fmt(hg.otrosDependientes.aporteMensual) + ' ' + hg.otrosDependientes.moneda : ''].filter(Boolean).join(' · ')) + `</row>`; }
   if(ig.fuentePrincipal) Ftxt('Fuente principal del ingreso', ({salario:'Salario',empresa:'Empresa propia',honorarios:'Honorarios profesionales',rentas:'Rentas'})[ig.fuentePrincipal] || ig.fuentePrincipal);
   if(pt.vivienda) Ftxt('Vivienda principal', ({propia:'Propia, sin deuda',hipoteca:'Propia, con hipoteca',alquilada:'Alquilada'})[pt.vivienda.situacion] || '—');
   if(pt.vivienda && pt.vivienda.hipoteca){ const h = pt.vivienda.hipoteca;
@@ -2460,89 +2685,219 @@ function xmlCliente(c, p, asig, sup){
 }
 
 // ---------- Hoja Proyección: réplica con fórmulas ----------
+// Fila de la primera fila de datos de la hoja Proyección y de la hoja Fondos de pensión.
+// Proyección: insumos en las filas 1 a 7, títulos de sección en la 8, encabezados en la 9.
+const PROY_F0 = 10;
+const COLS_EXTRA = ['S','T','U','V','W','X','Y'];
+// Celda con fórmula que devuelve texto (el tipo str evita que Excel la lea como número)
+function celdaTexto(ref, v, s, formula){
+  if(typeof v === 'number') return celda(ref, v, s, formula);
+  const est = s ? ` s="${s}"` : '';
+  return `<c r="${ref}"${est} t="str"><f>${xEsc(formula)}</f><v>${xEsc(v)}</v></c>`;
+}
+
+// ---------- Hoja Fondos de pensión ----------
+// ROP, FCL y pensión voluntaria: saldo actual, aporte mensual, rendimiento y período de
+// traslado son insumos editables; la evolución anual se calcula con fórmulas y su
+// columna de traslados alimenta la columna «Traslado de fondos» de la hoja Proyección.
+function disenoFondos(p){
+  const n = p.fondos.length;
+  const R_IN = 11;                          // primera fila de los fondos declarados
+  const R_GRUPO = R_IN + n + 2;             // fila con los nombres de los fondos
+  const R_ENC = R_GRUPO + 1;                // encabezados de la evolución anual
+  const D0 = R_ENC + 1;                     // primera fila de la evolución anual
+  const colN = i => { let s = ''; i++; while(i > 0){ const m = (i - 1) % 26; s = String.fromCharCode(65 + m) + s; i = Math.floor((i - 1) / 26); } return s; };
+  // B = período, C = año; cada fondo ocupa 5 columnas desde la D; al final, el total trasladado
+  const bloques = p.fondos.map((f, k) => {
+    const base = 3 + k*5;                   // índice 0 de la columna D = 3
+    return {SI: colN(base), AP: colN(base+1), RE: colN(base+2), TR: colN(base+3), SF: colN(base+4), fila: R_IN + k};
+  });
+  const TOT = colN(3 + n*5);
+  return {n, R_IN, R_GRUPO, R_ENC, D0, bloques, TOT};
+}
+function xmlFondos(c, p, sup){
+  const d = disenoFondos(p), F0 = PROY_F0, nF = p.filas.length, ult = d.D0 + nF - 1;
+  const PROY = `'Proyección'`;
+  let x = '';
+  x += `<row r="1">` + celda('B1', 'Fondos de pensión complementaria', EST.titulo) + `</row>`;
+  x += `<row r="2">` + celda('B2', 'ROP, FCL y pensión voluntaria, en dólares. Los saldos crecen con los aportes y el rendimiento hasta que se trasladan al portafolio. Si el traslado ocurre antes de la independencia financiera, los aportes posteriores se acumulan y se trasladan al ser independiente; si ambos momentos quedan fuera del horizonte, el saldo se traslada en el último año. Las celdas de insumos pueden modificarse.') + `</row>`;
+  x += `<row r="4">` + celda('B4', 'Supuestos', EST.seccion) + `</row>`;
+  x += `<row r="5">` + celda('B5', 'Rendimiento anual de los fondos', EST.bold) + celda('E5', p.rendimientoFondos, EST.pct) + `</row>`;
+  x += `<row r="6">` + celda('B6', 'Crecimiento anual de los aportes (inflación)', EST.bold) + celda('E6', sup.inflacion/100, EST.pct, `${PROY}!$D$3`) + `</row>`;
+  x += `<row r="7">` + celda('B7', 'Años de aportes, hasta la independencia financiera', EST.bold) + celda('E7', p.aniosAcum, EST.ent) + `</row>`;
+  x += `<row r="8">` + celda('B8', 'Período de la independencia financiera', EST.bold) + celda('E8', p.aniosAcum + 1, EST.ent, 'E7+1') + `</row>`;
+
+  x += `<row r="10" ht="34" customHeight="1">` + [['B','Fondo'],['C','Saldo actual (US$)'],['D','Aporte mensual (US$)'],['E','Origen del aporte'],
+    ['F','Período de traslado'],['G','Año de traslado'],['H','Aportes acumulados'],['I','Rendimientos acumulados'],['J','Total trasladado al portafolio']]
+    .map(([col,t]) => celda(col+'10', t, EST.encab)).join('') + `</row>`;
+  p.fondos.forEach((f, k) => {
+    const r = d.R_IN + k, b = d.bloques[k], ff = p.filasFondos[k];
+    const sumaDe = col => ff.reduce((a, q) => a + q[col], 0);
+    // Saldos y aportes en colones quedan ligados al tipo de cambio de la hoja Proyección;
+    // el aporte estimado queda ligado al salario de esa hoja.
+    const pctF = f.k === 'rop' ? sup.aporteRopPct : sup.aporteFclPct;
+    const fSaldo = f.saldoMoneda === 'CRC' && f.saldoOriginal ? `${f.saldoOriginal}/${PROY}!$D$1` : null;
+    const fAporte = f.aporteEstimado ? `${PROY}!$E$${F0}/${PROY}!$D$1*${pctF/100}`
+      : (f.aporteMoneda === 'CRC' && f.aporteOriginal ? `${f.aporteOriginal}/${PROY}!$D$1` : null);
+    x += `<row r="${r}">` + celda('B'+r, f.nombre, EST.bold)
+      + celda('C'+r, f.saldo, EST.num, fSaldo)
+      + celda('D'+r, f.aporteMensual, EST.num, fAporte)
+      + celda('E'+r, f.aporteEstimado ? 'Estimado: ' + pctF + '% del salario'
+          : f.sinEstimar ? 'Sin aporte: el ingreso no es salario'
+          : (p.aniosAcum > 0 ? 'Declarado por el cliente' : 'Sin aportes: ya es independiente'))
+      + (f.traslado === 'anio' ? celda('F'+r, f.tTraslado, EST.ent) : celda('F'+r, p.aniosAcum + 1, EST.ent, '$E$8'))
+      + celda('G'+r, sup.anioInicio + Math.min(f.tTraslado, p.aniosAcum + 1) - 1, EST.ent, `${PROY}!$B$${F0}+MIN(F${r},$E$8)-1`)
+      + celda('H'+r, Math.round(sumaDe('aporte')), EST.num, `SUM(${b.AP}${d.D0}:${b.AP}${ult})`)
+      + celda('I'+r, Math.round(sumaDe('rendimiento')), EST.num, `SUM(${b.RE}${d.D0}:${b.RE}${ult})`)
+      + celda('J'+r, Math.round(sumaDe('traslado')), EST.num, `SUM(${b.TR}${d.D0}:${b.TR}${ult})`)
+      + `</row>`;
+  });
+
+  // Evolución anual
+  x += `<row r="${d.R_GRUPO}">` + celda('B'+d.R_GRUPO, 'Evolución anual', EST.seccion)
+    + p.fondos.map((f, k) => celda(d.bloques[k].SI + d.R_GRUPO, f.nombre, EST.seccion)).join('')
+    + celda(d.TOT + d.R_GRUPO, 'Total', EST.seccion) + `</row>`;
+  x += `<row r="${d.R_ENC}" ht="34" customHeight="1">` + celda('B'+d.R_ENC, 'Período', EST.encab) + celda('C'+d.R_ENC, 'Año', EST.encab)
+    + d.bloques.map(b => celda(b.SI+d.R_ENC, 'Saldo inicial', EST.encab) + celda(b.AP+d.R_ENC, 'Aportes', EST.encab)
+      + celda(b.RE+d.R_ENC, 'Rendimiento', EST.encab) + celda(b.TR+d.R_ENC, 'Traslado al portafolio', EST.encab)
+      + celda(b.SF+d.R_ENC, 'Saldo final', EST.encab)).join('')
+    + celda(d.TOT+d.R_ENC, 'Traslado total al portafolio', EST.encab) + `</row>`;
+  for(let i = 0; i < nF; i++){
+    const r = d.D0 + i, t = i + 1;
+    let tot = 0;
+    const celdas = d.bloques.map((b, k) => {
+      const q = p.filasFondos[k][i], fi = b.fila; tot += q.traslado;
+      return celda(b.SI+r, Math.round(q.saldoInicial), EST.num, i === 0 ? `C${fi}` : `${b.SF}${r-1}`)
+        + celda(b.AP+r, Math.round(q.aporte), EST.num, `IF(B${r}<=$E$7,$D$${fi}*12*(1+$E$6)^(B${r}-1),0)`)
+        + celda(b.RE+r, Math.round(q.rendimiento), EST.num, `${b.SI}${r}*$E$5`)
+        + celda(b.TR+r, Math.round(q.traslado), EST.num, `IF(OR(B${r}=$F$${fi},B${r}=$E$8,B${r}=${nF}),${b.SI}${r}+${b.AP}${r}+${b.RE}${r},0)`)
+        + celda(b.SF+r, Math.round(q.saldoFinal), EST.num, `${b.SI}${r}+${b.AP}${r}+${b.RE}${r}-${b.TR}${r}`);
+    }).join('');
+    x += `<row r="${r}">` + celda('B'+r, t, EST.ent) + celda('C'+r, sup.anioInicio + i, EST.ent, `${PROY}!B${F0+i}`)
+      + celdas + celda(d.TOT+r, Math.round(tot), EST.num, d.bloques.map(b => b.TR + r).join('+')) + `</row>`;
+  }
+  const anchos = [[1,2],[2,34],[3,16],[4,16],[5,22],[6,14],[7,14],[8,16],[9,16],[10,18]];
+  for(let k = 10; k <= 3 + d.n*5; k++) anchos.push([k+1, 16]);
+  const cols = `<cols>` + anchos.map(([cc,w]) => `<col width="${w}" customWidth="1" min="${cc}" max="${cc}"/>`).join('') + `</cols>`;
+  const vistas = `<sheetViews><sheetView workbookViewId="0" showGridLines="0"><pane ySplit="${d.R_ENC}" topLeftCell="A${d.D0}" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>`;
+  const combinadas = `<mergeCells count="4">` + [5,6,7,8].map(r => `<mergeCell ref="B${r}:D${r}"/>`).join('') + `</mergeCells>`;
+  return hoja(x, {cols, vistas, combinadas});
+}
+
 function xmlProyeccion(c, p, sup){
   const tc = sup.tipoCambio;
   const salUsd  = aUsd(c.salarioMonto, c.salarioMoneda, tc);
   const gasUsd  = aUsd(c.gastoMonto,   c.gastoMoneda,   tc);
   const capUsd  = aUsd(c.capitalMonto, c.capitalMoneda, tc);
   const aporUsd = aUsd(c.aporteMonto,  c.aporteMoneda,  tc);
-  const F0 = 9, nF = p.filas.length, filaRetiro = F0 + p.aniosAcum;
+  const F0 = PROY_F0, nF = p.filas.length, filaRetiro = F0 + p.aniosAcum, ult = F0 + nF - 1;
+  const SEC = F0 - 2, ENC = F0 - 1;
+  // Los montos declarados en colones quedan en colones y se convierten con el tipo de cambio
+  // de D1: si se edita D1, toda la proyección se recalcula.
+  const enUsd = (monto, moneda, usdVal) => moneda === 'CRC' && +monto
+    ? {v: usdVal, f: `${+monto}/$D$1`} : {v: usdVal, f: null};
+  const df = p.traeFondos ? disenoFondos(p) : null;
 
-  // Columnas adicionales al machote, solo si el cliente las necesita:
-  //   ROP/FCL (ingreso puntual) · Pensión (ingreso anual en el retiro) · Metas (salidas puntuales)
-  const LETRAS = ['S','T','U'];
+  // Columnas adicionales al machote, solo si el cliente las necesita
   const extras = [];
-  if(p.traeFondos)  extras.push({k:'fondos',  t:'Ingreso extraordinario (ROP y FCL)'});
-  if(p.traePension) extras.push({k:'pension', t:'Pensión anual'});
-  if(p.traeMetas)   extras.push({k:'metas',   t:'Metas (salidas)'});
-  extras.forEach((e,k) => e.col = LETRAS[k]);
+  if(p.traeFondos)       extras.push({k:'fondos',  t:'Traslado de fondos de pensión'});
+  if(p.traePension)      extras.push({k:'pension', t:'Pensión anual'});
+  if(p.traeOtros)        extras.push({k:'otros',   t:'Otros ingresos en el retiro'});
+  if(p.traeAportesExtra) extras.push({k:'extra',   t:'Aportes extraordinarios'});
+  if(p.traeApoyos)       extras.push({k:'apoyos',  t:'Apoyos a dependientes (salidas)'});
+  if(p.traeMetas)        extras.push({k:'metas',   t:'Metas (salidas)'});
+  extras.forEach((e,k) => e.col = COLS_EXTRA[k]);
+  // Gasto no cubierto: lo que falta cuando las salidas superan el saldo. El portafolio no
+  // baja de cero, así que no hay rendimientos sobre saldos negativos.
+  const colDef = COLS_EXTRA[extras.length];
   const colDe = k => (extras.find(e => e.k === k) || {}).col;
   const conFactor = Math.abs(p.factorGasto - 1) > 1e-9;
   const metasTab = p.metas.slice(0, 8);
-  const COLS_METAS = ['N','O','P','Q','R','S','T','U'];
+  const COLS_TAB = ['N','O','P','Q','R','S','T','U'];
+  const ultCol = n => COLS_TAB[Math.max(0, n - 1)];
 
-  let x = '';
-  // supuestos C1:D6 (bloque del machote)
-  const sups = [['Tipo de Cambio', tc, EST.tc], ['Inflación Ingresos', sup.inflacionIngresos/100, EST.pct],
-    ['Inflación', sup.inflacion/100, EST.pct], ['Inflación Pensión', sup.inflacionPension/100, EST.pct],
-    ['Inflación Salud', sup.inflacionSalud/100, EST.pct], ['Ajuste Anual Alquileres', sup.ajusteAlquileres/100, EST.pct]];
-  // G1:H4 ROP y FCL · K1:L2 pensión y factor de gasto · M1:U2 metas (año y monto)
-  const insumosFondos = p.traeFondos ? [
-    ['Saldo FCL (US$ de hoy)', p.montoFcl, EST.num], ['Año de ingreso del FCL', p.anioFcl, EST.ent],
-    ['Saldo ROP (US$ de hoy)', p.montoRop, EST.num], ['Año de ingreso del ROP', p.anioRop, EST.ent]] : [];
-  const insumosRetiro = [];
-  insumosRetiro[0] = p.traePension ? ['Pensión mensual (US$ de hoy)', p.pensionMensual, EST.num] : null;
-  insumosRetiro[1] = conFactor ? ['Gasto en el retiro (% del gasto)', p.factorGasto, EST.pct0] : null;
-  sups.forEach((sv,i)=>{ const r=i+1, f = insumosFondos[i], g = insumosRetiro[i];
-    let fila = celda('C'+r, sv[0], EST.bold) + celda('D'+r, sv[1], sv[2])
-       + (f ? celda('G'+r, f[0], EST.bold) + celda('H'+r, f[1], f[2]) : '')
-       + (g ? celda('K'+r, g[0], EST.bold) + celda('L'+r, g[1], g[2]) : '');
-    if(p.traeMetas && r <= 2){
-      fila += celda('M'+r, r === 1 ? 'Año de la meta' : 'Monto de la meta (US$ de hoy)', EST.bold)
-        + metasTab.map((m,k) => celda(COLS_METAS[k]+r, r === 1 ? +m.anio : +m.montoUsdHoy, r === 1 ? EST.ent : EST.num)).join('');
-    }
-    x += `<row r="${r}">` + fila + `</row>`; });
+  // Insumos: C1:D6 supuestos · K1:L3 pensión, otros ingresos y gasto en el retiro ·
+  // M1:U2 metas · M3:R4 aportes extraordinarios · M5:R7 apoyos a dependientes
+  const filasIn = {};
+  const pon = (r, s) => { filasIn[r] = (filasIn[r] || '') + s; };
+  [['Tipo de Cambio', tc, EST.tc], ['Inflación Ingresos (referencial)', sup.inflacionIngresos/100, EST.pct],
+   ['Inflación', sup.inflacion/100, EST.pct], ['Inflación Pensión', sup.inflacionPension/100, EST.pct],
+   ['Inflación Salud (referencial)', sup.inflacionSalud/100, EST.pct], ['Ajuste Alquileres (referencial)', sup.ajusteAlquileres/100, EST.pct]]
+    .forEach((sv, i) => pon(i+1, celda('C'+(i+1), sv[0], EST.bold) + celda('D'+(i+1), sv[1], sv[2])));
+  const pn = c.pension || {}, oi = c.otrosIngresosRetiro || {};
+  if(p.traePension){
+    const v = enUsd(pn.montoMensual, pn.moneda, p.pensionMensual);
+    pon(1, celda('K1', 'Pensión mensual (US$ de hoy)', EST.bold) + celda('L1', v.v, EST.num, v.f));
+    pon(4, celda('K4', 'Edad de inicio de la pensión', EST.bold) + celda('L4', p.edadPension, EST.ent));
+    pon(5, celda('K5', 'Período del primer pago de pensión', EST.bold) + celda('L5', p.tPension, EST.ent, `MAX(${p.aniosAcum + 1},L4-C${F0}+1)`));
+  }
+  if(p.traeOtros){
+    const v = enUsd(oi.montoMensual, oi.moneda, p.otrosIngresosMensual);
+    pon(2, celda('K2', 'Otros ingresos mensuales (US$ de hoy)', EST.bold) + celda('L2', v.v, EST.num, v.f));
+  }
+  if(conFactor)     pon(3, celda('K3', 'Gasto en el retiro (% del gasto)', EST.bold) + celda('L3', p.factorGasto, EST.pct0));
+  if(p.traeMetas){
+    pon(1, celda('M1', 'Año de la meta', EST.bold) + metasTab.map((m,k) => celda(COLS_TAB[k]+1, +m.anio, EST.ent)).join(''));
+    pon(2, celda('M2', 'Monto de la meta (US$ de hoy)', EST.bold) + metasTab.map((m,k) => celda(COLS_TAB[k]+2, +m.montoUsdHoy, EST.num)).join(''));
+  }
+  if(p.traeAportesExtra){
+    pon(3, celda('M3', 'Año del aporte extraordinario', EST.bold) + p.aportesExtra.map((a,k) => celda(COLS_TAB[k]+3, +a.anio, EST.ent)).join(''));
+    pon(4, celda('M4', 'Aporte extraordinario (US$ de hoy)', EST.bold) + p.aportesExtra.map((a,k) => celda(COLS_TAB[k]+4, +a.montoUsdHoy, EST.num)).join(''));
+  }
+  if(p.traeApoyos){
+    pon(5, celda('M5', 'Año de inicio del apoyo', EST.bold) + p.apoyos.map((a,k) => celda(COLS_TAB[k]+5, +a.anioInicio, EST.ent)).join(''));
+    pon(6, celda('M6', 'Años de apoyo', EST.bold) + p.apoyos.map((a,k) => celda(COLS_TAB[k]+6, +a.anios, EST.ent)).join(''));
+    pon(7, celda('M7', 'Apoyo anual (US$ de hoy)', EST.bold) + p.apoyos.map((a,k) => celda(COLS_TAB[k]+7, +a.montoAnualUsdHoy, EST.num)).join(''));
+  }
+  let x = Object.keys(filasIn).map(Number).sort((a,b)=>a-b).map(r => `<row r="${r}">${filasIn[r]}</row>`).join('');
 
   // Fórmulas de las columnas adicionales
-  const ultMeta = COLS_METAS[Math.max(0, metasTab.length - 1)];
+  const uM = ultCol(metasTab.length), uE = ultCol(p.aportesExtra.length), uA = ultCol(p.apoyos.length);
   const formula = {
-    fondos:  r => `IF(D${r}=$H$2,$H$1*(1+$D$3)^(D${r}-1),0)+IF(D${r}=$H$4,$H$3*(1+$D$3)^(D${r}-1),0)`,
-    pension: r => `IF(D${r}>${p.aniosAcum},$L$1*12*(1+$D$4)^(D${r}-1),0)`,
-    metas:   r => `-SUMIF($N$1:$${ultMeta}$1,B${r},$N$2:$${ultMeta}$2)*(1+$D$3)^(D${r}-1)`
+    fondos:  r => `'Fondos de pensión'!${df ? df.TOT : 'A'}${df ? df.D0 + (r - F0) : 1}`,
+    pension: r => `IF(D${r}>=$L$5,$L$1*12*(1+$D$3)^($L$5-1)*(1+$D$4)^(D${r}-$L$5),0)`,
+    otros:   r => `IF(D${r}>${p.aniosAcum},$L$2*12*(1+$D$3)^(D${r}-1),0)`,
+    extra:   r => `SUMIF($N$3:$${uE}$3,B${r},$N$4:$${uE}$4)*(1+$D$3)^(D${r}-1)`,
+    apoyos:  r => `-SUMPRODUCT(($N$5:$${uA}$5<=B${r})*($N$5:$${uA}$5+$N$6:$${uA}$6>B${r})*$N$7:$${uA}$7)*(1+$D$3)^(D${r}-1)`,
+    metas:   r => `-SUMIF($N$1:$${uM}$1,B${r},$N$2:$${uM}$2)*(1+$D$3)^(D${r}-1)`
   };
-  const valor = {fondos: f => f.extraordinario, pension: f => f.pension, metas: f => f.metas};
-  const sumaQ = r => `+K${r}+P${r}` + extras.map(e => `+${e.col}${r}`).join('');
-  const celdasExtra = (r, f) => extras.map(e => celda(e.col + r, Math.round(valor[e.k](f)), EST.num, formula[e.k](r))).join('');
-  const retiro = r => conFactor ? `-H${r}*$L$2` : `-H${r}`;
+  const valor = {fondos: f => f.extraordinario, pension: f => f.pension, otros: f => f.otrosIngresos,
+                 extra: f => f.aporteExtra, apoyos: f => f.apoyos, metas: f => f.metas};
+  const bruto = r => `K${r}+P${r}` + extras.map(e => `+${e.col}${r}`).join('');
+  const sumaQ = r => bruto(r) + `+${colDef}${r}`;
+  const celdasExtra = (r, f) => extras.map(e => celda(e.col + r, Math.round(valor[e.k](f)), EST.num, formula[e.k](r))).join('')
+    + celda(colDef + r, Math.round(f.deficit), EST.num, `MAX(0,-(${bruto(r)}))`);
+  const retiro = r => conFactor ? `-H${r}*$L$3` : `-H${r}`;
 
-  x += `<row r="7">` + celda('E7','Ingresos en ₡',EST.seccion) + celda('G7','Gastos',EST.seccion)
-     + celda('K7','Proyección Base',EST.seccion) + `</row>`;
-  const cab = [['B','Periodo'],['C', c.nombre||'Edad'],['D','Año'],['E','Salario'],
+  x += `<row r="${SEC}">` + celda('E'+SEC,'Ingresos en ₡',EST.seccion) + celda('G'+SEC,'Gastos',EST.seccion)
+     + celda('K'+SEC,'Proyección Base',EST.seccion) + celda('S'+SEC, extras.length ? 'Flujos adicionales' : 'Control de agotamiento', EST.seccion) + `</row>`;
+  const cab = [['B','Año'],['C', c.nombre||'Edad'],['D','Período'],['E','Salario mensual ₡'],
     ['G','Gasto Familiar ₡'],['H','Gasto Familiar en $'],['I','Total Gasto Mensual'],
     ['K','Portafolio Inicial'],['L','Aportes/Retiros'],['M','Gasto % del Portafolio'],
     ['N','Retorno Total'],['O','Retorno Total $'],['P','Resultado Neto'],
     ['Q','Portafolio Nominal Final $ (sin incluir inflación)'],['R','Portafolio en Términos Reales']]
-    .concat(extras.map(e => [e.col, e.t]));
-  x += `<row r="8" ht="34" customHeight="1">` + cab.map(([col,t])=>celda(col+'8', t, EST.encab)).join('') + `</row>`;
+    .concat(extras.map(e => [e.col, e.t])).concat([[colDef, 'Gasto no cubierto por el portafolio']]);
+  x += `<row r="${ENC}" ht="34" customHeight="1">` + cab.map(([col,t])=>celda(col+ENC, t, EST.encab)).join('') + `</row>`;
 
-  const f0 = p.filas[0];
-  x += `<row r="9">`
-    + celda('B9', sup.anioInicio, EST.ent) + celda('C9', c.edad, EST.ent) + celda('D9', 1, EST.ent)
-    + (p.aniosAcum > 0 ? celda('E9', Math.round(salUsd*tc), EST.num, `${salUsd}*D1`) : '')
-    + celda('G9', Math.round(gasUsd*12*tc), EST.num, `${gasUsd*12}*$D$1`)
-    + celda('H9', Math.round(gasUsd*12), EST.num, 'G9/$D$1')
-    + celda('I9', Math.round(gasUsd), EST.num, 'H9/12')
-    + celda('K9', capUsd, EST.num)
-    // Si la fila 1 ya es de retiro, L9 es el retiro (gasto con su factor), no el aporte
-    + (p.aniosAcum > 0 ? celda('L9', aporUsd, EST.num) : celda('L9', Math.round(f0.aporteRetiro), EST.num, retiro(9)))
-    + celda('M9', f0.gastoPct, EST.pct, capUsd ? 'L9/K9' : 'IF(K9=0,0,L9/K9)')
-    + celda('N9', p.retorno, EST.pct)
-    + celda('O9', Math.round(f0.retornoMonto), EST.num, '+K9*N9')
-    + celda('P9', Math.round(f0.resultadoNeto), EST.num, '+O9+L9')
-    + celda('Q9', Math.round(f0.portafolioFinal), EST.num, sumaQ(9))
-    // Valor real exacto también en el primer año (el machote usaba Q9−Q9×inflación)
-    + celda('R9', Math.round(f0.portafolioReal), EST.num, 'Q9/(1+$D$3)^D9')
-    + celdasExtra(9, f0)
+  const f0 = p.filas[0], r0 = F0;
+  x += `<row r="${r0}">`
+    + celda('B'+r0, sup.anioInicio, EST.ent) + celda('C'+r0, c.edad, EST.ent) + celda('D'+r0, 1, EST.ent)
+    + (p.aniosAcum > 0 ? (c.salarioMoneda === 'CRC' ? celda('E'+r0, +c.salarioMonto, EST.num) : celda('E'+r0, Math.round(salUsd*tc), EST.num, `${salUsd}*$D$1`)) : '')
+    + (c.gastoMoneda === 'CRC' ? celda('G'+r0, +c.gastoMonto*12, EST.num) : celda('G'+r0, Math.round(gasUsd*12*tc), EST.num, `${gasUsd*12}*$D$1`))
+    + celda('H'+r0, Math.round(gasUsd*12), EST.num, `G${r0}/$D$1`)
+    + celda('I'+r0, Math.round(gasUsd), EST.num, `H${r0}/12`)
+    + (c.capitalMoneda === 'CRC' && +c.capitalMonto ? celda('K'+r0, capUsd, EST.num, `${+c.capitalMonto}/$D$1`) : celda('K'+r0, capUsd, EST.num))
+    // Si la fila 1 ya es de retiro, la columna L es el retiro (gasto con su factor), no el aporte
+    + (p.aniosAcum > 0
+        ? (c.aporteMoneda === 'CRC' && +c.aporteMonto ? celda('L'+r0, aporUsd, EST.num, `${+c.aporteMonto}/$D$1`) : celda('L'+r0, aporUsd, EST.num))
+        : celda('L'+r0, Math.round(f0.aporteRetiro), EST.num, retiro(r0)))
+    + celda('M'+r0, f0.gastoPct, EST.pct, `IF(K${r0}<=0,0,L${r0}/K${r0})`)
+    + celda('N'+r0, p.retorno, EST.pct)
+    + celda('O'+r0, Math.round(f0.retornoMonto), EST.num, `+K${r0}*N${r0}`)
+    + celda('P'+r0, Math.round(f0.resultadoNeto), EST.num, `+O${r0}+L${r0}`)
+    + celda('Q'+r0, Math.round(f0.portafolioFinal), EST.num, sumaQ(r0))
+    + celda('R'+r0, Math.round(f0.portafolioReal), EST.num, `Q${r0}/(1+$D$3)^D${r0}`)
+    + celdasExtra(r0, f0)
     + `</row>`;
 
   for(let i=1;i<nF;i++){
@@ -2557,7 +2912,7 @@ function xmlProyeccion(c, p, sup){
       + celda('I'+r, Math.round(f.gastoMensual), EST.num, `H${r}/12`)
       + celda('K'+r, Math.round(f.portafolioInicial), EST.num, `+Q${a}`)
       + celda('L'+r, Math.round(f.aporteRetiro), EST.num, r>=filaRetiro ? retiro(r) : `L${a}`)
-      + celda('M'+r, f.gastoPct, EST.pct, Math.round(f.portafolioInicial) ? `L${r}/K${r}` : `IF(K${r}=0,0,L${r}/K${r})`)
+      + celda('M'+r, f.gastoPct, EST.pct, `IF(K${r}<=0,0,L${r}/K${r})`)
       + celda('N'+r, p.retorno, EST.pct, `+N${a}`)
       + celda('O'+r, Math.round(f.retornoMonto), EST.num, `+K${r}*N${r}`)
       + celda('P'+r, Math.round(f.resultadoNeto), EST.num, `+O${r}+L${r}`)
@@ -2566,10 +2921,53 @@ function xmlProyeccion(c, p, sup){
       + celdasExtra(r, f)
       + `</row>`;
   }
-  const cols = extras.length
-    ? COLS_PROY.replace('</cols>', extras.map((e,k)=>`<col width="24" customWidth="1" min="${19+k}" max="${19+k}"/>`).join('') + '</cols>')
-    : COLS_PROY;
-  return hoja(x, {cols, vistas: VISTA_PROY, drawing: DRAWING});
+
+  // Resumen del plan: de dónde sale el saldo final y si alcanza. Todo con fórmulas.
+  const rs = p.resumen, al = alcanzaPlan(c, p), rango = col => `${col}${F0}:${col}${ult}`;
+  const lineas = [
+    ['Capital inicial', rs.capital, `K${F0}`],
+    ['Aportes ordinarios', rs.aportesOrdinarios, `SUMIF(${rango('L')},">0")`],
+    p.traeAportesExtra ? ['Aportes extraordinarios', rs.aportesExtra, `SUM(${rango(colDe('extra'))})`] : null,
+    p.traeFondos ? ['Traslado de fondos de pensión', rs.trasladoFondos, `SUM(${rango(colDe('fondos'))})`] : null,
+    ['Rendimientos del portafolio', rs.rendimientos, `SUM(${rango('O')})`],
+    p.traePension ? ['Pensión', rs.pension, `SUM(${rango(colDe('pension'))})`] : null,
+    p.traeOtros ? ['Otros ingresos en el retiro', rs.otrosIngresos, `SUM(${rango(colDe('otros'))})`] : null,
+    ['Retiros para el gasto', rs.retirosGasto, `SUMIF(${rango('L')},"<0")`],
+    p.traeApoyos ? ['Apoyos a dependientes', rs.apoyos, `SUM(${rango(colDe('apoyos'))})`] : null,
+    p.traeMetas ? ['Metas', rs.metas, `SUM(${rango(colDe('metas'))})`] : null,
+    ['Gasto no cubierto por el portafolio', rs.deficit, `SUM(${rango(colDef)})`]
+  ].filter(Boolean);
+  let r = ult + 3;
+  const R_TIT = r, merges = [];
+  x += `<row r="${r}">` + celda('K'+r, 'Resumen del plan (US$ nominales, toda la proyección)', EST.seccion) + `</row>`;
+  const R_L1 = r + 1;
+  lineas.forEach(([t, v, fm]) => { r++; merges.push(`K${r}:L${r}`);
+    x += `<row r="${r}">` + celda('K'+r, t, EST.bold) + celda('M'+r, Math.round(v), EST.num, fm) + `</row>`; });
+  r++; merges.push(`K${r}:L${r}`);
+  const R_FIN = r;
+  x += `<row r="${r}">` + celda('K'+r, 'Saldo final nominal', EST.bold) + celda('M'+r, Math.round(p.finalNominal), EST.num, `SUM(M${R_L1}:M${r-1})`) + `</row>`;
+  r++; merges.push(`K${r}:L${r}`);
+  const R_REAL = r;
+  x += `<row r="${r}">` + celda('K'+r, 'Saldo final en dólares de hoy', EST.bold) + celda('M'+r, Math.round(p.finalReal), EST.num, `R${ult}`) + `</row>`;
+  r++; merges.push(`K${r}:L${r}`);
+  const R_MIN = r;
+  x += `<row r="${r}">` + celda('K'+r, 'Gasto no cubierto, en dólares de hoy', EST.bold) + celda('M'+r, Math.round(p.deficitReal), EST.num, `SUMPRODUCT(${rango(colDef)}/(1+$D$3)^${rango('D')})`) + `</row>`;
+  r++; merges.push(`K${r}:L${r}`);
+  const R_HER = r;
+  x += `<row r="${r}">` + celda('K'+r, 'Herencia deseada (US$ de hoy)', EST.bold) + celda('M'+r, al.meta, EST.num) + `</row>`;
+  r++; merges.push(`K${r}:L${r}`);
+  const edadAgota = p.edadAgota != null ? p.edadAgota : 'No se agota';
+  x += `<row r="${r}">` + celda('K'+r, 'Edad a la que se agota el portafolio', EST.bold)
+    + celdaTexto('M'+r, edadAgota, EST.ent, `IF(M${R_MIN}>0,SUMPRODUCT(MIN((${rango(colDef)}>0)*${rango('C')}+(${rango(colDef)}<=0)*1000)),"No se agota")`) + `</row>`;
+  r++; merges.push(`K${r}:L${r}`);
+  x += `<row r="${r}">` + celda('K'+r, '¿Alcanza el plan?', EST.seccion)
+    + celdaTexto('M'+r, al.ok ? 'Sí alcanza' : 'No alcanza', EST.seccion, `IF(AND(M${R_MIN}<=0,M${R_REAL}>=M${R_HER}),"Sí alcanza","No alcanza")`) + `</row>`;
+  r++; merges.push(`K${r}:R${r}`);
+  x += `<row r="${r}">` + celda('K'+r, 'Alcanza cuando el portafolio cubre todo el gasto de cada año (sin gasto no cubierto) y el saldo final en dólares de hoy cubre la herencia deseada.') + `</row>`;
+
+  const cols = COLS_PROY.replace('</cols>', extras.concat([{}]).map((e,k)=>`<col width="24" customWidth="1" min="${19+k}" max="${19+k}"/>`).join('') + '</cols>');
+  const combinadas = `<mergeCells count="${merges.length}">` + merges.map(m => `<mergeCell ref="${m}"/>`).join('') + `</mergeCells>`;
+  return hoja(x, {cols, vistas: VISTA_PROY, drawing: DRAWING, combinadas});
 }
 
 // ---------- Hoja Datos: alimenta el gráfico circular ----------
@@ -2594,12 +2992,14 @@ function xmlDatos(c, p, asig, eq){
   // matriz de posición (escala 0 a 10, cuadrantes divididos en 5)
   const d = c.diag || {};
   pon('A6','Matriz de posición'); pon('B6','Tolerancia'); pon('C6','Apetito');
-  pon('A7', c.nombre || 'Cliente');
+  pon('A7', (c.nombre || 'Cliente') + (PERFILES[c.perfil] ? ' · ' + PERFILES[c.perfil].label : ''));
   if(d.tolerancia != null) pon('B7', +d.tolerancia.toFixed(2), EST.dec2);
   if(d.apetito != null) pon('C7', +d.apetito.toFixed(2), EST.dec2);
   // rótulos de los perfiles sobre sus franjas (la fila 12 queda vacía)
+  const topeX = (d.limitantes || []).length && ESCALA.includes(c.perfil) ? ESCALA.indexOf(c.perfil) : 2;
   [['Conservador',1.4,1.4],['Moderado',5,5],['Agresivo',8.6,8.6]].forEach(([t,x,y],i)=>{
-    const r = 9+i; pon('A'+r, t); pon('B'+r, x); pon('C'+r, y);
+    const r = 9+i;
+    pon('A'+r, i > topeX ? t + ' (limitado a ' + PERFILES[ESCALA[topeX]].label.toLowerCase() + ')' : t); pon('B'+r, x); pon('C'+r, y);
   });
   // líneas de corte de la disposición: pesoTol·x + pesoApe·y = corte·(pesoTol + pesoApe)
   const wt = d.pesoTol || 7, wa = d.pesoApe || 8;
@@ -2684,7 +3084,7 @@ function xmlProyeccionInst(c, p, sup){
       + celda('F'+r, Math.round(f.retiro), EST.num, `-$D$6*${idx}`)
       + celda('G'+r, Math.round(f.extraordinario), EST.num, `-SUMIF($I$3:$I$5,C${r},$J$3:$J$5)*${idx}`)
       + celda('H'+r, Math.round(f.rendimiento), EST.num, `D${r}*$D$3`)
-      + celda('I'+r, Math.round(f.saldoFinal), EST.num, `D${r}+H${r}+E${r}+F${r}+G${r}`)
+      + celda('I'+r, Math.round(f.saldoFinal), EST.num, `MAX(0,D${r}+H${r}+E${r}+F${r}+G${r})`)
       + celda('J'+r, Math.round(f.saldoReal), EST.num, `I${r}/(1+$D$2)^B${r}`)
       + celda('K'+r, Math.round(f.metaNominal), EST.num, `$D$7*(1+$D$2)^B${r}`)
       + celda('L'+r, Math.round(f.metaReal), EST.num, `$D$7`)
@@ -2815,11 +3215,31 @@ async function exportarExcel(c, p, asig){
     const eqX = rendimientoEquilibrio(c, supuestos);
     zip.file('xl/worksheets/sheet3.xml', xmlDatos(c, p, asig, eqX));
     await colorEquilibrio(zip, p, eqX);
-    // Con columnas adicionales (ROP/FCL, pensión, metas), la gráfica se corre a la derecha
-    const nExtras = [p.traeFondos, p.traePension, p.traeMetas].filter(Boolean).length;
+    // Con columnas adicionales (fondos, pensión, otros ingresos, aportes, apoyos, metas),
+    // la gráfica se corre a la derecha
+    const nExtras = [p.traeFondos, p.traePension, p.traeOtros, p.traeAportesExtra, p.traeApoyos, p.traeMetas].filter(Boolean).length + 1;
     if(nExtras){
       const dib = await zip.file('xl/drawings/drawing2.xml').async('string');
       zip.file('xl/drawings/drawing2.xml', dib.replace('<col>19</col>', '<col>' + (19 + nExtras + 1) + '</col>'));
+    }
+    // La gráfica de la proyección lee exactamente las filas del horizonte
+    const ultima = PROY_F0 + p.filas.length - 1;
+    const g2 = await zip.file('xl/charts/chart2.xml').async('string');
+    zip.file('xl/charts/chart2.xml', g2
+      .replace(/'Proyección'!([QR])8</g, `'Proyección'!$1${PROY_F0 - 1}<`)
+      .replace(/'Proyección'!\$([A-Z])\$9:\$([A-Z])\$138/g, `'Proyección'!$$$1$$${PROY_F0}:$$$2$$${ultima}`));
+    // Hoja de fondos de pensión, solo si el cliente traslada alguno al portafolio
+    if(p.traeFondos){
+      zip.file('xl/worksheets/sheet4.xml', xmlFondos(c, p, supuestos));
+      const wb = await zip.file('xl/workbook.xml').async('string');
+      zip.file('xl/workbook.xml', wb.replace(/(<sheet [^>]*name="Proyección"[^>]*\/>)/,
+        `$1<sheet xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" name="Fondos de pensión" sheetId="4" state="visible" r:id="rId6"/>`));
+      const rels = await zip.file('xl/_rels/workbook.xml.rels').async('string');
+      zip.file('xl/_rels/workbook.xml.rels', rels.replace('</Relationships>',
+        `<Relationship Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="/xl/worksheets/sheet4.xml" Id="rId6"/></Relationships>`));
+      const ct = await zip.file('[Content_Types].xml').async('string');
+      zip.file('[Content_Types].xml', ct.replace('</Types>',
+        `<Override PartName="/xl/worksheets/sheet4.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>`));
     }
     const blob = await zip.generateAsync({type:'blob', compression:'DEFLATE',
       mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
@@ -2838,12 +3258,12 @@ function exportarConsolidado(){
   const txt = btn.textContent;
   btn.disabled = true; btn.textContent = 'Generando…';
   try{
-    const cab = ['Cliente','Correo','Telefono','Perfil','Retorno esperado','Rendimiento de equilibrio','Perfil requerido','Edad actual','Edad de retiro',
-      'Anios primer retiro','Monto primer retiro USD','Fondos laborales','Saldo FCL USD','Saldo ROP USD',
+    const cab = ['Cliente','Correo','Telefono','Perfil','Retorno esperado','Rendimiento de equilibrio','Perfil requerido','Edad actual','Edad de independencia financiera',
+      'Anios primer retiro','Monto primer retiro USD','Fondos que traslada','Saldo ROP USD','Saldo FCL USD','Saldo pension voluntaria USD',
       'Destino del patrimonio','Herencia deseada USD',
       'Renta variable %','Renta fija %','Efectivo %','Anio proyeccion','Periodo','Edad','Fase',
       'Salario mensual USD','Gasto mensual USD','Portafolio inicial USD','Aportes o retiros USD',
-      'Gasto % portafolio','Retorno USD','Resultado neto USD','Ingreso extraordinario USD','Pension USD','Metas USD','Portafolio nominal USD','Portafolio real USD',
+      'Gasto % portafolio','Retorno USD','Resultado neto USD','Traslado de fondos USD','Pension USD','Otros ingresos USD','Aportes extraordinarios USD','Apoyos a dependientes USD','Metas USD','Gasto no cubierto USD','Portafolio nominal USD','Portafolio real USD',
       'Cartera equilibrio RV %','Cartera equilibrio RF %','Cartera equilibrio EF %'];
     const lineas = [cab.join(',')];
     clientes.filter(c => tipoDe(c) === 'persona').forEach(c=>{
@@ -2858,15 +3278,15 @@ function exportarConsolidado(){
           p.retorno, eqC.r == null ? '' : eqC.r.toFixed(6), reqC ? PERFILES[reqC].label : 'Ninguno',
           c.edad, c.edadRetiro,
           cc.aniosPrimerRetiro ?? '', cc.montoPrimerRetiroUsdHoy ?? '',
-          (cc.fondosLaborales||{}).incorpora || '', (cc.fondosLaborales||{}).fclUsdHoy ?? '',
-          (cc.fondosLaborales||{}).ropUsdHoy ?? '',
+          csv(p.fondos.map(x => x.nombre).join(' y ')),
+          ...['rop','fcl','voluntaria'].map(k => { const x = p.fondos.find(y => y.k === k); return x ? Math.round(x.saldo) : ''; }),
           (c.legado||{}).destino || '', (c.legado||{}).montoUsdHoy ?? '',
           a.rv, a.rf, a.ef,
           f.t, f.anio, f.edad, f.fase,
           f.salarioMes!=null ? Math.round(f.salarioMes) : '',
           Math.round(f.gastoMensual), Math.round(f.portafolioInicial), Math.round(f.aporteRetiro),
           f.gastoPct.toFixed(6), Math.round(f.retornoMonto), Math.round(f.resultadoNeto), Math.round(f.extraordinario||0),
-          Math.round(f.pension||0), Math.round(f.metas||0),
+          Math.round(f.pension||0), Math.round(f.otrosIngresos||0), Math.round(f.aporteExtra||0), Math.round(f.apoyos||0), Math.round(f.metas||0), Math.round(f.deficit||0),
           Math.round(f.portafolioFinal), Math.round(f.portafolioReal), aeC.rv, aeC.rf, aeC.ef
         ].join(','));
       });
@@ -2975,7 +3395,7 @@ async function exportarFicha(c, p, asig){
       ? `${TXT_INST.tipo[(c.institucional||{}).tipo] || 'Institución'} · horizonte de ${p.horizonte} años, de ${supuestos.anioInicio} a ${anioFin}`
       : p.aniosAcum === 0
         ? `${c.edad} años · ya retirado · horizonte de ${p.totalAnios} años`
-        : `${c.edad} años · retiro proyectado a los ${c.edadRetiro} · horizonte de ${p.totalAnios} años`, M, y);
+        : `${c.edad} años · independencia financiera a los ${c.edadRetiro} · horizonte de ${p.totalAnios} años`, M, y);
     y += 4;
     doc.setDrawColor(...ORO); doc.setLineWidth(0.6);
     doc.line(M, y, M+22, y);
@@ -3072,8 +3492,10 @@ async function exportarFicha(c, p, asig){
     doc.setTextColor(...NEGRO); doc.setFont('helvetica','bold'); doc.text(PERFILES[c.perfil].label, W - M, yS, {align:'right'});
     doc.setFont('helvetica','normal');
     yS += 6;
-    const notaPos = 'La tolerancia y el apetito ubican a ' + sujeto + ' en el plano. La capacidad financiera y el conocimiento no se grafican: solo limitan hasta dónde puede llegar el perfil.'
-      + ((dg.limitantes || []).length ? ' En este caso, el perfil queda limitado por ' + dg.limitantes.map(l => l === 'capacidad' ? 'la capacidad financiera' : 'el conocimiento').join(' y ') + '.' : '');
+    const notaPos = 'La tolerancia y el apetito ubican a ' + sujeto + ' en el plano; las franjas son los perfiles que resultan de la disposición.'
+      + ((dg.limitantes || []).length ? ' Por sus preferencias, ' + sujeto + ' corresponde a ' + PERFILES[ESCALA[nivel(dg.disposicion)]].label.toLowerCase()
+        + ', pero el perfil queda limitado a ' + PERFILES[c.perfil].label.toLowerCase() + ' por ' + dg.limitantes.map(l => l === 'capacidad' ? 'la capacidad financiera' : 'el conocimiento').join(' y ')
+        + ': las franjas que no puede alcanzar aparecen rayadas, con el color del perfil asignado.' : '');
     doc.setFontSize(6.8); doc.setTextColor(...GRIS);
     doc.text(doc.splitTextToSize(notaPos, anchoS), xS, yS);
     y = yPos + ladoM + 9;
@@ -3177,9 +3599,7 @@ async function exportarFicha(c, p, asig){
           ? `Bajo estos supuestos, el portafolio se agota en ${p.anioAgota}.`
           : `Bajo estos supuestos, el portafolio cierra ${anioFin} con un saldo de ${usdPdf(p.finalReal)} en términos reales` +
             (p.minimo > 0 ? (p.cumpleMeta ? `, por encima del capital mínimo de ${usdPdf(p.minimo)}.` : `, por debajo del capital mínimo de ${usdPdf(p.minimo)}.`) : '.'))
-      : p.edadAgota
-      ? `Bajo estos supuestos, el portafolio se agota a los ${p.edadAgota} años.`
-      : `Bajo estos supuestos, el portafolio no se agota dentro del horizonte proyectado; el saldo final en términos reales asciende a ${usdPdf(p.finalReal)}.`;
+      : '¿Alcanza el plan? ' + alcanzaPlan(c, p, usdPdf).texto;
     const lineasCierre = doc.splitTextToSize(cierre, W-2*M);
     doc.text(lineasCierre, M, y);
     y += 4 + lineasCierre.length*4;
@@ -3195,7 +3615,10 @@ async function exportarFicha(c, p, asig){
       + `Inflación de ingresos ${supuestos.inflacionIngresos}% · Inflación de pensión ${supuestos.inflacionPension}% · `
       + `Inflación de salud ${supuestos.inflacionSalud}% · Ajuste de alquileres ${supuestos.ajusteAlquileres}% · `
       + `Horizonte hasta los ${supuestos.edadFinal} años` + (Math.abs(p.factorGasto - 1) > 1e-9 ? ` · Gasto en el retiro ${Math.round(p.factorGasto*100)}% del gasto actual` : '')
-      + (p.traePension ? ` · Pensión estimada ${usdPdf(p.pensionMensual)} mensuales en dólares de hoy` : '') + `. Montos expresados en dólares de los Estados Unidos.`;
+      + (p.traePension ? ` · Pensión estimada ${usdPdf(p.pensionMensual)} mensuales en dólares de hoy` : '')
+      + (p.traeOtros ? ` · Otros ingresos en el retiro ${usdPdf(p.otrosIngresosMensual)} mensuales en dólares de hoy` : '')
+      + (p.traeFondos ? ` · Fondos de pensión (${p.fondos.map(f => f.nombre).join(', ')}) con rendimiento de ${supuestos.rendimientoFondos}% anual hasta su traslado` : '')
+      + `. Montos expresados en dólares de los Estados Unidos.`;
     doc.text(doc.splitTextToSize(sup, W-2*M), M, y);
 
     piePagina(2);
