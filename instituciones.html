@@ -223,6 +223,26 @@
   #hijos-filas input{min-width:48px;}
   @media (max-width:560px){ #hijos-filas{grid-template-columns:1fr 1fr;} }
   .fila-grid{display:grid;gap:14px 18px;grid-template-columns:repeat(2,1fr);}
+  /* Dependientes: lista con contador */
+  .dep-lista{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 22px;margin:4px 0 2px;}
+  @media (max-width:560px){ .dep-lista{grid-template-columns:1fr;} }
+  .dep-fila{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 4px 8px 14px;
+    background:#fff;border:1px solid var(--rule);border-radius:8px;transition:border-color .15s, background .15s;}
+  .dep-fila.activo{border-color:var(--accent);background:#F2F3EA;}
+  .dep-fila .dep-nom{font-size:14.5px;color:var(--ink);}
+  .dep-fila.activo .dep-nom{font-weight:600;}
+  .dep-fila .dep-step{display:inline-flex;align-items:center;gap:4px;padding-right:6px;}
+  .dep-nadie-fila{grid-column:1/-1;}
+  .dep-nadie-btn{width:100%;text-align:left;background:#fff;border:1px dashed var(--rule);border-radius:8px;font:inherit;
+    font-size:14.5px;color:var(--ink);padding:10px 14px;cursor:pointer;}
+  .dep-nadie-btn.activo{border-style:solid;border-color:var(--accent);background:#F2F3EA;font-weight:600;}
+  .q.pendiente .dep-fila, .q.pendiente .dep-nadie-btn{border-color:#CFA48F;}
+  /* Preguntas obligatorias: alimentan la proyección */
+  .q.q-req .qlabel::after{content:" *";color:#A2543A;font-weight:600;}
+  .nota-req{font-size:13px;color:#5B5F45;margin:-8px 0 18px;}
+  .nota-req b{color:#A2543A;}
+  .fila-venta[hidden]{display:none;}
+  .equivale{font-size:13px;color:#7F8757;margin:6px 0 0;}
   .dep-chips{display:flex;flex-wrap:wrap;gap:10px;margin:4px 0 2px;}
   .dep-chip{display:inline-flex;align-items:center;background:#fff;border:1px solid var(--rule);border-radius:999px;
     transition:border-color .15s, background .15s;}
@@ -972,7 +992,8 @@ document.addEventListener('input', function(e){
 });
 
 // Los montos admiten decimales (centavos); edades, años y cantidades siguen siendo enteros.
-const ENTEROS = new Set(['edad_retiro','edad-pareja','c1','i3-horizonte','empresa-anios','f-rop-anio','f-fcl-anio','f-vol-anio']);
+const ENTEROS = new Set(['edad_retiro','edad-pareja','c1','i3-horizonte','empresa-anios','f-rop-anio','f-fcl-anio','f-vol-anio',
+  'pension-edad','hipoteca-plazo','hipoteca-tasa','aporte-pct','moneda-usd','moneda-crc']);
 // Montos con separadores mientras se escribe. La convención sigue la moneda del monto:
 // dólares 250,000.50 · colones 1.000.000,50. El valor numérico se lee con numDe().
 function monedaDe(x){
@@ -1181,17 +1202,17 @@ const CONDICIONALES = [
   {control:'plan',            detalle:'pareja-detalle',        campos:['edad-pareja','ingreso-pareja-monto'], aplica: v => v === 'conjunta'},
   {control:'otros-dep-n',     detalle:'otros-dep-detalle',     campos:['otros-dep-monto'],             aplica: v => +v > 0},
   {control:'otros-ing',       detalle:'otros-ing-detalle',     campos:['otros-ing-monto'],             aplica: v => v === 'si'},
-  {control:'f-rop-tiene',     detalle:'f-rop-detalle',         campos:['f-rop-saldo','f-rop-traslado'], aplica: v => v === 'si'},
+  {control:'f-rop-tiene',     detalle:'f-rop-detalle',         campos:['f-rop-saldo','f-rop-modalidad'], aplica: v => v === 'si'},
   {control:'f-fcl-tiene',     detalle:'f-fcl-detalle',         campos:['f-fcl-saldo','f-fcl-traslado'], aplica: v => v === 'si'},
   {control:'f-vol-tiene',     detalle:'f-vol-detalle',         campos:['f-vol-saldo','f-vol-aporte','f-vol-traslado'], aplica: v => v === 'si'},
-  {control:'f-rop-traslado',  detalle:'f-rop-anio-detalle',    campos:['f-rop-anio'],                  aplica: v => v === 'anio'},
-  {control:'f-fcl-traslado',  detalle:'f-fcl-anio-detalle',    campos:['f-fcl-anio'],                  aplica: v => v === 'anio'},
+  {control:'f-fcl-traslado',  detalle:'f-fcl-anio-detalle',    campos:['f-fcl-anio'],                  aplica: v => v === 'quinquenio'},
   {control:'f-vol-traslado',  detalle:'f-vol-anio-detalle',    campos:['f-vol-anio'],                  aplica: v => v === 'anio'},
-  {control:'pension-regimen', detalle:'pension-detalle',       campos:['pension-monto'],               aplica: v => v === 'ivm' || v === 'otro'},
-  {control:'vivienda',        detalle:'hipoteca-detalle',      campos:['hipoteca-saldo','hipoteca-cuota'], aplica: v => v === 'hipoteca'},
+  {control:'pension-regimen', detalle:'pension-detalle',       campos:['pension-monto','pension-edad'], aplica: v => !!v && v !== 'ninguno'},
+  {control:'vivienda',        detalle:'hipoteca-detalle',      campos:['hipoteca-saldo','hipoteca-cuota','hipoteca-tasa','hipoteca-plazo'], aplica: v => v === 'hipoteca'},
   {control:'inmuebles-n',     detalle:'inmuebles-detalle',     campos:[],                              aplica: v => +v > 0},
-  {control:'empresa',         detalle:'empresa-detalle',       campos:['empresa-plan'],                aplica: v => v === 'si'},
+  {control:'empresa',         detalle:'empresa-detalle',       campos:['empresa-valor','empresa-plan'], aplica: v => v === 'si'},
   {control:'empresa-plan',    detalle:'empresa-anios-detalle', campos:['empresa-anios'],               aplica: v => v === 'vender' || v === 'traspasar'},
+  {control:'empresa-plan',    detalle:'empresa-invierte-detalle', campos:['empresa-invierte'],         aplica: v => v === 'vender'},
   {control:'seguro-vida',     detalle:'vida-detalle',          campos:['vida-suma'],                   aplica: v => v === true},
   {control:'herencia',        detalle:'herencia-detalle',      campos:['herencia-monto'],              aplica: v => v === 'herencia'}
 ];
@@ -1230,25 +1251,35 @@ const REPETIBLES = [
       <div class="amount"><input required type="number" min="0" max="80" data-k="edad" name="Edad del hijo ${i+1}" placeholder="12"><div class="unit">años</div></div>
     </div>`},
   {control:'inmuebles-n', contenedor:'inmuebles-filas', max:10, fila: i => `
-    <div class="fila-rep"><span class="fila-tit">Inmueble ${i+1}</span><div class="fila-grid c3">
+    <div class="fila-rep"><span class="fila-tit">Inmueble ${i+1}</span>
+      <div><span class="mini">Nombre del inmueble</span><input required type="text" data-k="nombre" data-mayus="1" name="Inmueble ${i+1}: nombre" placeholder="APARTAMENTO ESCAZÚ" style="text-transform:uppercase"></div>
+      <div class="fila-grid c3" style="margin-top:12px;">
       <div><span class="mini">Valor estimado</span><input required type="number" min="0" data-k="valor" data-moneda-de="inmuebles-moneda" name="Inmueble ${i+1}: valor estimado" placeholder="180.000"></div>
       <div><span class="mini">Renta mensual neta</span><input required type="number" min="0" data-k="renta" data-moneda-de="inmuebles-moneda" name="Inmueble ${i+1}: renta mensual neta" placeholder="1.100"></div>
       <div><span class="mini">Saldo de deuda</span><input required type="number" min="0" data-k="deuda" data-moneda-de="inmuebles-moneda" name="Inmueble ${i+1}: saldo de deuda" placeholder="0"></div>
-    </div></div>`},
+    </div>
+      <div class="fila-grid" style="margin-top:12px;">
+        <div><span class="mini">¿Estima venderlo?</span><select required data-k="vende" data-venta="1" name="Inmueble ${i+1}: estima venderlo">
+          <option value="" disabled selected>Seleccione</option><option value="no">No</option><option value="si">Sí</option></select></div>
+        <div class="fila-venta" hidden><span class="mini">Año estimado de la venta</span><input type="number" min="${ANIO_ACTUAL}" max="2100" data-k="anio" data-req-venta="1" name="Inmueble ${i+1}: año de venta" placeholder="${ANIO_ACTUAL+5}"></div>
+      </div>
+      <div class="fila-venta" hidden style="margin-top:12px;"><span class="mini">¿Invertiría el dinero de la venta en este portafolio?</span><select data-k="invierte" data-req-venta="1" name="Inmueble ${i+1}: invierte la venta en el portafolio">
+        <option value="" disabled selected>Seleccione</option><option value="si">Sí, lo invertiría aquí</option><option value="no">No</option></select></div>
+    </div>`},
   {control:'apoyos-n', contenedor:'apoyos-filas', max:5, fila: i => `
-    <div class="fila-rep"><span class="fila-tit">Apoyo ${i+1}</span><div class="fila-grid">
-      <div><span class="mini">¿A quién?</span><select required data-k="beneficiario" name="Apoyo ${i+1}: beneficiario">
+    <div class="fila-rep"><span class="fila-tit">Dependiente ${i+1}</span><div class="fila-grid">
+      <div><span class="mini">¿Quién es?</span><select required data-k="beneficiario" name="Dependiente ${i+1}: parentesco">
         <option value="" disabled selected>Seleccione</option>
         <option value="hijo">Hijo o hija</option><option value="pareja">Cónyuge o pareja</option>
-        <option value="padres">Padre o madre</option><option value="hermano">Hermano o hermana</option><option value="otro">Otro familiar</option></select></div>
-      <div><span class="mini">Motivo</span><select required data-k="motivo" name="Apoyo ${i+1}: motivo">
+        <option value="padres">Padre o madre</option><option value="hermano">Hermano o hermana</option><option value="tia">Tía</option><option value="abuelo">Abuelo o abuela</option><option value="otro">Otro familiar</option></select></div>
+      <div><span class="mini">Motivo</span><select required data-k="motivo" name="Dependiente ${i+1}: motivo del retiro">
         <option value="" disabled selected>Seleccione</option>
         <option value="educacion">Educación</option><option value="salud">Salud</option><option value="vivienda">Vivienda</option>
         <option value="manutencion">Manutención</option><option value="otro">Otro</option></select></div>
-      <div><span class="mini">Monto por año, en dólares de hoy</span><input required type="number" min="1" data-k="monto" name="Apoyo ${i+1}: monto anual (US$ de hoy)" placeholder="12.000"></div>
+      <div><span class="mini">Monto por año, en dólares de hoy</span><input required type="number" min="1" data-k="monto" name="Dependiente ${i+1}: monto anual (US$ de hoy)" placeholder="12.000"></div>
       <div class="fila-grid" style="gap:0 14px;">
-        <div><span class="mini">Año en que empieza</span><input required type="number" min="${ANIO_ACTUAL}" max="2100" data-k="anio" name="Apoyo ${i+1}: año de inicio" placeholder="${ANIO_ACTUAL+4}"></div>
-        <div><span class="mini">Durante cuántos años</span><input required type="number" min="1" max="40" data-k="anios" name="Apoyo ${i+1}: años de duración" placeholder="5"></div>
+        <div><span class="mini">Año en que empieza</span><input required type="number" min="${ANIO_ACTUAL}" max="2100" data-k="anio" name="Dependiente ${i+1}: año de inicio" placeholder="${ANIO_ACTUAL+4}"></div>
+        <div><span class="mini">Durante cuántos años</span><input required type="number" min="1" max="40" data-k="anios" name="Dependiente ${i+1}: años de duración" placeholder="5"></div>
       </div>
     </div></div>`},
   {control:'aportes-extra-n', contenedor:'aportes-extra-filas', max:5, fila: i => `
@@ -1267,7 +1298,7 @@ const REPETIBLES = [
         <option value="" disabled selected>Seleccione</option>
         <option value="educacion">Educación</option><option value="vivienda">Vivienda o propiedad</option>
         <option value="vehiculo">Vehículo</option><option value="viaje">Viaje</option>
-        <option value="negocio">Negocio o emprendimiento</option><option value="otra">Otra</option></select></div>
+        <option value="negocio">Negocio o emprendimiento</option><option value="jubilacion">Jubilación</option><option value="otra">Otra</option></select></div>
       <div><span class="mini">Monto, en dólares de hoy</span><input required type="number" min="1" data-k="monto" name="Meta ${i+1}: monto (US$ de hoy)" placeholder="40.000"></div>
       <div><span class="mini">Año estimado</span><input required type="number" min="${ANIO_ACTUAL}" max="2100" data-k="anio" name="Meta ${i+1}: año estimado" placeholder="${ANIO_ACTUAL+5}"></div>
       <div><span class="mini">Prioridad</span><select required data-k="prioridad" name="Meta ${i+1}: prioridad">
@@ -1275,6 +1306,39 @@ const REPETIBLES = [
         <option value="esencial">Esencial</option><option value="deseable">Deseable</option></select></div>
     </div></div>`}
 ];
+// Inmuebles: la venta y su destino se piden solo si el cliente estima venderlo
+function sincronizarVentas(raiz){
+  (raiz || document).querySelectorAll('[data-venta]').forEach(function(sel){
+    const fila = sel.closest('.fila-rep'); if(!fila) return;
+    const aplica = sel.value === 'si';
+    fila.querySelectorAll('.fila-venta').forEach(d => { d.hidden = !aplica; });
+    fila.querySelectorAll('[data-req-venta]').forEach(c => { c.toggleAttribute('required', aplica); if(!aplica) c.value = ''; });
+  });
+}
+document.addEventListener('change', function(e){ if(e.target && e.target.dataset && e.target.dataset.venta) sincronizarVentas(e.target.closest('.fila-rep')); });
+// Nombres de inmuebles en mayúsculas, para que el Excel quede uniforme
+document.addEventListener('input', function(e){
+  const x = e.target; if(!x || !x.dataset || !x.dataset.mayus) return;
+  const p = x.selectionStart; x.value = x.value.toUpperCase(); try{ x.setSelectionRange(p, p); }catch(err){}
+});
+// Moneda: los dos porcentajes suman 100
+document.addEventListener('input', function(e){
+  const x = e.target; if(!x || (x.id !== 'moneda-usd' && x.id !== 'moneda-crc')) return;
+  const otro = document.getElementById(x.id === 'moneda-usd' ? 'moneda-crc' : 'moneda-usd');
+  const v = Math.max(0, Math.min(100, Math.round(+x.value)));
+  if(x.value === '') otro.value = ''; else { if(+x.value !== v) x.value = v; otro.value = 100 - v; }
+});
+// Aporte: equivalente en dinero según el ingreso declarado
+function equivalenteAporte(){
+  const out = document.getElementById('aporte-equivale'); if(!out) return;
+  const pct = document.getElementById('aporte-pct'), ing = document.getElementById('salario-monto');
+  const mon = (document.getElementById('salario-moneda') || {}).value || 'USD';
+  const n = numDe(ing), p = +pct.value;
+  out.textContent = (pct.value !== '' && !isNaN(n)) ? 'Equivale a ' + (mon === 'CRC' ? '₡' : 'US$') + formatoMonto(String(Math.round(n * 12 * p / 100)), mon) + ' al año, con su ingreso actual.' : '';
+}
+document.addEventListener('input', function(e){ if(e.target && /^(aporte-pct|salario-monto)$/.test(e.target.id)) equivalenteAporte(); });
+document.addEventListener('change', function(e){ if(e.target && e.target.id === 'salario-moneda') equivalenteAporte(); });
+
 function sincronizarFilas(){
   REPETIBLES.forEach(function(r){
     const ctl = document.getElementById(r.control), cont = document.getElementById(r.contenedor);
@@ -1284,11 +1348,12 @@ function sincronizarFilas(){
     while(cont.children.length < n) cont.insertAdjacentHTML('beforeend', r.fila(cont.children.length));
     if(cont.classList.contains('sub-q')) cont.hidden = n === 0;
     montosConDecimales(cont);
+    sincronizarVentas(cont);
   });
 }
 const leerFilas = id => [...document.getElementById(id).children].map(function(f){
   const o = {};
-  f.querySelectorAll('[data-k]').forEach(x => { o[x.dataset.k] = x.dataset.monto ? numDe(x) : (x.type === 'number' ? +x.value : x.value); });
+  f.querySelectorAll('[data-k]').forEach(x => { o[x.dataset.k] = x.dataset.monto ? numDe(x) : (x.type === 'number' ? (x.value === '' ? null : +x.value) : x.value); });
   return o;
 });
 
@@ -1304,15 +1369,15 @@ function depFijar(id, v){
   sel.value = String(v); sel.dispatchEvent(new Event('change', {bubbles:true}));
 }
 function depTodosEnCero(){
-  return [...document.querySelectorAll('#dep-chips .dep-chip[data-sel]')].every(ch => !(+document.getElementById(ch.dataset.sel).value > 0));
+  return [...document.querySelectorAll('#dep-chips .dep-fila[data-sel]')].every(ch => !(+document.getElementById(ch.dataset.sel).value > 0));
 }
 function sincronizarDependientes(){
   const caja = document.getElementById('dep-chips'); if(!caja) return;
-  caja.querySelectorAll('.dep-chip[data-sel]').forEach(ch => {
+  caja.querySelectorAll('.dep-fila[data-sel]').forEach(ch => {
     const v = +document.getElementById(ch.dataset.sel).value || 0, max = +ch.dataset.max;
     ch.classList.toggle('activo', v > 0);
     ch.querySelector('.dep-val').textContent = (v >= max && max > 2) ? v + '+' : v;
-    ch.querySelector('.dep-menos').disabled = v <= 1;
+    ch.querySelector('.dep-menos').disabled = v <= 0;
     ch.querySelector('.dep-mas').disabled = v >= max;
   });
   caja.querySelector('.dep-nadie').classList.toggle('activo', document.getElementById('hijos-n').value === '0' && depTodosEnCero());
@@ -1320,18 +1385,17 @@ function sincronizarDependientes(){
 document.addEventListener('click', function(e){
   const caja = document.getElementById('dep-chips');
   if(!caja || !caja.contains(e.target)) return;
-  const ch = e.target.closest('.dep-chip'); if(!ch) return;
   const btn = e.target.closest('button'); if(!btn) return;
-  if(ch.classList.contains('dep-nadie')){
-    const activar = !ch.classList.contains('activo');
-    caja.querySelectorAll('.dep-chip[data-sel]').forEach(c => depFijar(c.dataset.sel, 0));
+  if(btn.classList.contains('dep-nadie')){
+    const activar = !btn.classList.contains('activo');
+    caja.querySelectorAll('.dep-fila[data-sel]').forEach(c => depFijar(c.dataset.sel, 0));
     depFijar('hijos-n', activar ? '0' : '');
   } else {
+    const ch = btn.closest('.dep-fila'); if(!ch) return;
     const id = ch.dataset.sel, max = +ch.dataset.max, v = +document.getElementById(id).value || 0;
-    if(btn.classList.contains('dep-tog')) depFijar(id, v > 0 ? 0 : 1);
-    else if(btn.classList.contains('dep-mas')) depFijar(id, Math.min(max, v + 1));
-    else if(btn.classList.contains('dep-menos')) depFijar(id, Math.max(1, v - 1));
-    // Con algún grupo marcado, «Hijos» queda respondida (0 si no los marcó); sin ninguno, vuelve a quedar pendiente
+    if(btn.classList.contains('dep-mas')) depFijar(id, Math.min(max, v + 1));
+    else if(btn.classList.contains('dep-menos')) depFijar(id, Math.max(0, v - 1));
+    // Con algún grupo marcado, «Hijos» queda respondida (0 si no tiene hijos); sin ninguno, vuelve a quedar pendiente
     if(depTodosEnCero()) depFijar('hijos-n', '');
     else if(document.getElementById('hijos-n').value === '') depFijar('hijos-n', '0');
   }
@@ -1571,17 +1635,27 @@ document.getElementById('form').addEventListener('submit', async function(e){
       // marca el horizonte efectivo de la inversión.
       // Fondos de pensión y capitalización laboral que el cliente piensa traer al portafolio.
       // Entran como ingresos futuros; el momento lo define el analista en el dashboard.
-      aniosPrimerRetiro: +val('c1'),
-      montoPrimerRetiroUsdHoy: +val('c1-monto')
+      aniosPrimerRetiro: val('c1') === '' ? null : +val('c1'),
+      montoPrimerRetiroUsdHoy: val('c1-monto') === '' ? null : +val('c1-monto')
       // El conocimiento se mide con la pregunta 10 del perfil de riesgo.
     },
     // Fondos de pensión complementaria: saldo, aporte y año de traslado al portafolio.
     fondos: Object.fromEntries([['rop','rop'],['fcl','fcl'],['voluntaria','vol']].filter(([,k]) => val('f-' + k + '-tiene') === 'si').map(([n,k]) => [n, {
       saldo: +val('f-' + k + '-saldo') || 0, saldoMoneda: val('f-' + k + '-saldo-moneda'),
       aporteMensual: val('f-' + k + '-aporte') === '' ? null : +val('f-' + k + '-aporte'), aporteMoneda: val('f-' + k + '-aporte-moneda'),
-      traslado: val('f-' + k + '-traslado'), anio: val('f-' + k + '-traslado') === 'anio' ? +val('f-' + k + '-anio') : null }])),
+      // ROP: no se traslada; se recibe como pensión según la modalidad (ley 7983).
+      // FCL: quinquenios o al terminar la relación laboral. Voluntaria: desde los 57 años.
+      traslado: k === 'rop' ? 'pension' : val('f-' + k + '-traslado'),
+      modalidad: k === 'rop' ? val('f-rop-modalidad') : null,
+      anio: (k === 'fcl' && val('f-fcl-traslado') === 'quinquenio') || (k === 'vol' && val('f-vol-traslado') === 'anio') ? +val('f-' + k + '-anio') : null }])),
     otrosIngresosRetiro: val('otros-ing') === 'si' ? {montoMensual: +val('otros-ing-monto'), moneda: val('otros-ing-moneda')} : null,
     aportesExtraordinarios: leerFilas('aportes-extra-filas').map(r => ({montoUsdHoy: r.monto, anio: r.anio})),
+    // Ventas de inmuebles y de la empresa que el cliente invertiría en este portafolio
+    ventasActivos: [].concat(
+      leerFilas('inmuebles-filas').filter(f => f.vende === 'si' && f.invierte === 'si').map(f => ({concepto: 'Venta de ' + (f.nombre || 'inmueble'), anio: f.anio,
+        monto: Math.max(0, (+f.valor || 0) - (+f.deuda || 0)), moneda: val('inmuebles-moneda')})),
+      val('empresa') === 'si' && val('empresa-plan') === 'vender' && val('empresa-invierte') === 'si'
+        ? [{concepto: 'Venta de la empresa', anio: ANIO_ACTUAL + (+val('empresa-anios') || 0), monto: +val('empresa-valor') || 0, moneda: val('empresa-valor-moneda')}] : []),
     apoyosDependientes: leerFilas('apoyos-filas').map(r => ({beneficiario: r.beneficiario, motivo: r.motivo, montoAnualUsdHoy: r.monto, anioInicio: r.anio, anios: r.anios})),
     // Destino del patrimonio. El monto se expresa en dólares de hoy, es decir en
     // poder adquisitivo actual, para compararlo contra el portafolio en términos reales.
@@ -1589,16 +1663,18 @@ document.getElementById('form').addEventListener('submit', async function(e){
       destino: val('herencia'),
       montoUsdHoy: val('herencia') === 'herencia' ? (+val('herencia-monto') || 0) : null
     },
-    preferenciaMoneda: val('moneda'),
-    porcentajeUsd: (document.getElementById('moneda').selectedOptions[0] || {dataset:{}}).dataset.usd != null ? +document.getElementById('moneda').selectedOptions[0].dataset.usd : null,
+    preferenciaMoneda: val('moneda-usd') === '' ? '' : val('moneda-usd') + '% en dólares y ' + (100 - +val('moneda-usd')) + '% en colones',
+    porcentajeUsd: val('moneda-usd') === '' ? null : +val('moneda-usd'),
     salarioMonto: +val('salario-monto'),
     salarioMoneda: val('salario-moneda'),
     gastoMonto: +val('gasto-monto'),
     gastoMoneda: val('gasto-moneda'),
     capitalMonto: +val('capital-monto'),
     capitalMoneda: val('capital-moneda'),
-    aporteMonto: +val('aporte-monto'),
-    aporteMoneda: val('aporte-moneda'),
+    // El aporte se declara como porcentaje del ingreso; el monto anual se deriva de él
+    aportePctIngreso: +val('aporte-pct'),
+    aporteMonto: Math.round((+val('salario-monto') || 0) * 12 * (+val('aporte-pct') || 0) / 100 * 100) / 100,
+    aporteMoneda: val('salario-moneda'),
     comentarios: val('comentarios').trim(),
     // Página 3 ampliada. Se registran para el análisis del asesor; por ahora no
     // alteran la proyección ni las fórmulas del Excel.
@@ -1622,28 +1698,36 @@ document.getElementById('form').addEventListener('submit', async function(e){
     pension: {
       regimen: val('pension-regimen'),
       montoMensual: val('pension-regimen') === 'ninguno' ? null : +val('pension-monto'),
-      moneda: val('pension-regimen') === 'ninguno' ? null : val('pension-moneda')
+      moneda: val('pension-regimen') === 'ninguno' ? null : val('pension-moneda'),
+      edadInicio: val('pension-regimen') === 'ninguno' || val('pension-edad') === '' ? null : +val('pension-edad')
     },
     patrimonio: {
       vivienda: {
         situacion: val('vivienda'),
         hipoteca: val('vivienda') === 'hipoteca' ? {
           saldo: +val('hipoteca-saldo'), saldoMoneda: val('hipoteca-saldo-moneda'),
-          cuotaMensual: +val('hipoteca-cuota'), cuotaMoneda: val('hipoteca-cuota-moneda')
+          cuotaMensual: +val('hipoteca-cuota'), cuotaMoneda: val('hipoteca-cuota-moneda'),
+          tasaAnual: val('hipoteca-tasa') === '' ? null : +val('hipoteca-tasa'),
+          plazoRestanteAnios: val('hipoteca-plazo') === '' ? null : +val('hipoteca-plazo')
         } : null
       },
       inmuebles: {
         moneda: +val('inmuebles-n') > 0 ? val('inmuebles-moneda') : null,
-        lista: leerFilas('inmuebles-filas').map(f => ({valor: f.valor, rentaMensualNeta: f.renta, saldoDeuda: f.deuda}))
+        lista: leerFilas('inmuebles-filas').map(f => ({nombre: (f.nombre || '').toUpperCase(), valor: f.valor, rentaMensualNeta: f.renta, saldoDeuda: f.deuda,
+          estimaVender: f.vende === 'si', anioVenta: f.vende === 'si' ? f.anio : null, inviertePortafolio: f.vende === 'si' ? f.invierte === 'si' : null}))
       },
       empresa: {
         propietario: val('empresa') === 'si',
         plan: val('empresa') === 'si' ? val('empresa-plan') : null,
+        valor: val('empresa') === 'si' && val('empresa-valor') !== '' ? +val('empresa-valor') : null,
+        valorMoneda: val('empresa') === 'si' ? val('empresa-valor-moneda') : null,
+        inviertePortafolio: val('empresa-plan') === 'vender' ? val('empresa-invierte') === 'si' : null,
         aniosHastaEvento: (val('empresa-plan') === 'vender' || val('empresa-plan') === 'traspasar') ? +val('empresa-anios') : null
       },
       deudas: {
-        saldo: +val('deudas-saldo'), saldoMoneda: val('deudas-saldo-moneda'),
-        cuotaMensual: +val('deudas-cuota'), cuotaMoneda: val('deudas-cuota-moneda')
+        saldo: val('deudas-saldo') === '' ? null : +val('deudas-saldo'), saldoMoneda: val('deudas-saldo-moneda'),
+        cuotaMensual: val('deudas-cuota') === '' ? null : +val('deudas-cuota'), cuotaMoneda: val('deudas-cuota-moneda'),
+        detalle: val('deudas-detalle').trim()
       },
       reservaLiquidez: val('reserva')
     },
