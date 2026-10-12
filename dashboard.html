@@ -1879,6 +1879,7 @@ function renderInstitucion(c){
         <p class="section-sub">${TXT_INST.tipo[ins.tipo] || 'Institución'} · horizonte de ${p.horizonte} años${contacto ? ' · ' + contacto : ''}</p>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn btn-ghost btn-sm" id="btn-editar" title="Abre el cuestionario con las respuestas del cliente para corregirlas">Editar respuestas</button>
         <button class="btn btn-ghost btn-sm" id="btn-pdf">Ficha PDF</button>
         <button class="btn btn-sm" id="btn-excel">Descargar Excel</button>
       </div>
@@ -2006,6 +2007,8 @@ ${respuestasHTML(c)}
   dibujarPastel('pastel-asig', asig);
   dibujarPastel('pastel-eq', redondeoAsig(carteraEquilibrio(eq).asig));
   document.getElementById('btn-excel').onclick = ()=>exportarExcelInst(c, p, asig);
+  // Edición: abre el cuestionario con las respuestas guardadas; al guardar se actualiza el mismo registro
+  document.getElementById('btn-editar').onclick = ()=>window.open('instituciones.html?editar=' + encodeURIComponent(c.id), '_blank', 'noopener');
   activarRespuestas(c);
   document.getElementById('btn-pdf').onclick = ()=>exportarFicha(c, p, asig);
 }
@@ -2052,6 +2055,7 @@ function renderDetalle(c){
         <p class="section-sub">${c.edad} años · independencia financiera a los ${c.edadRetiro} · ${Math.min(p.aniosAcum, p.totalAnios)} años de acumulación y ${Math.max(0, p.totalAnios - p.aniosAcum)} de retiro${c.correo ? ' · ' + esc(c.correo) : ''}</p>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn btn-ghost btn-sm" id="btn-editar" title="Abre el cuestionario con las respuestas del cliente para corregirlas">Editar respuestas</button>
         <button class="btn btn-ghost btn-sm" id="btn-pdf">Ficha PDF</button>
         <button class="btn btn-sm" id="btn-excel">Descargar Excel</button>
       </div>
@@ -2243,6 +2247,8 @@ ${respuestasHTML(c)}
   dibujarPastel('pastel-asig', asig);
   dibujarPastel('pastel-eq', redondeoAsig(carteraEquilibrio(eq).asig));
   document.getElementById('btn-excel').onclick = ()=>exportarExcel(c, p, asig);
+  // Edición: abre el cuestionario con las respuestas guardadas; al guardar se actualiza el mismo registro
+  document.getElementById('btn-editar').onclick = ()=>window.open('familias.html?editar=' + encodeURIComponent(c.id), '_blank', 'noopener');
   activarRespuestas(c);
   document.getElementById('btn-pdf').onclick = ()=>exportarFicha(c, p, asig);
 }

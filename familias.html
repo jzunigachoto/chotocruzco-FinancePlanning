@@ -238,7 +238,21 @@
   .dep-nadie-btn.activo{border-style:solid;border-color:var(--accent);background:#F2F3EA;font-weight:600;}
   .q.pendiente .dep-fila, .q.pendiente .dep-nadie-btn{border-color:#CFA48F;}
   /* Preguntas obligatorias: alimentan la proyección */
-  .q.q-req .qlabel::after{content:" *";color:#A2543A;font-weight:600;}
+  /* Preguntas obligatorias: asterisco al inicio */
+  .q.q-req .qlabel::before{content:"* ";color:#A2543A;font-weight:600;}
+  .field:has(> [required]) > label::before, .field:has(.tel [required]) > label::before{content:"* ";color:#A2543A;font-weight:600;}
+  /* Pasos: se puede ir a cualquier página y volver */
+  .pasos-nav{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:14px auto 26px;max-width:760px;padding:0 16px;}
+  .pasos-nav[hidden]{display:none;}
+  .paso-btn{font:inherit;font-size:12.5px;background:transparent;border:1px solid var(--rule);border-radius:999px;
+    padding:6px 14px;color:#3A3F24;cursor:pointer;display:inline-flex;align-items:center;gap:8px;}
+  .paso-btn:hover{border-color:var(--accent);}
+  .paso-btn.actual{border-color:var(--accent);background:#F2F3EA;font-weight:600;}
+  .paso-btn .paso-estado{font-size:11px;color:#7F8757;font-weight:400;}
+  .paso-btn .paso-estado.falta{color:#A2543A;}
+  .edicion-banda{max-width:760px;margin:0 auto 26px;padding:12px 16px;border:1px solid #D9C27A;background:#FBF6E6;
+    border-radius:8px;font-size:13.5px;color:#3A3F24;}
+  .edicion-banda[hidden]{display:none;}
   .nota-req{font-size:13px;color:#5B5F45;margin:-8px 0 18px;}
   .nota-req b{color:#A2543A;}
   .fila-venta[hidden]{display:none;}
@@ -452,6 +466,8 @@
 
 <div class="sheet">
   <div class="sheet-pad">
+<nav class="pasos-nav" id="pasos-nav" hidden><button type="button" class="paso-btn" data-ir="1">1. <span data-paso-nombre="1"></span><span class="paso-estado" data-paso-estado="1"></span></button><button type="button" class="paso-btn" data-ir="2">2. <span data-paso-nombre="2"></span><span class="paso-estado" data-paso-estado="2"></span></button><button type="button" class="paso-btn" data-ir="3">3. <span data-paso-nombre="3"></span><span class="paso-estado" data-paso-estado="3"></span></button></nav>
+<div class="edicion-banda" id="edicion-banda" hidden></div>
     <form id="form">
 
       <!-- ============ PÁGINA 0 · PORTADA ============ -->
@@ -482,9 +498,10 @@
           <p>No existen respuestas correctas o incorrectas. Escoja en cada caso la opción que mejor describa lo que usted realmente haría.</p>
         </div>
         <div class="q-avance"><span class="pista"><span data-barra></span></span><span data-contador>0 respondidas</span></div>
+        <p class="nota-req">Las preguntas marcadas con <b>*</b> son obligatorias.</p>
         <fieldset>
 
-          <div class="q">
+          <div class="q q-req">
             <span class="q-num">01</span>
             <div>
               <span class="qlabel">Cuando escucha la palabra «riesgo» referida a su patrimonio, ¿qué es lo primero que le viene a la mente?</span>
@@ -499,7 +516,7 @@
             </div>
           </div>
 
-          <div class="q">
+          <div class="q q-req">
             <span class="q-num">02</span>
             <div>
               <span class="qlabel">Cuando debe decidir sobre una inversión y no tiene toda la información que quisiera, ¿qué hace normalmente?</span>
@@ -514,7 +531,7 @@
             </div>
           </div>
 
-          <div class="q">
+          <div class="q q-req">
             <span class="q-num">03</span>
             <div>
               <span class="qlabel">Si su portafolio estuviera invertido hoy, ¿con qué frecuencia sentiría la necesidad de revisar su valor?</span>
@@ -529,7 +546,7 @@
             </div>
           </div>
 
-          <div class="q">
+          <div class="q q-req">
             <span class="q-num">04</span>
             <div>
               <span class="qlabel">¿Cuál de estas dos situaciones le incomodaría más?</span>
@@ -543,7 +560,7 @@
             </div>
           </div>
 
-          <div class="q">
+          <div class="q q-req">
             <span class="q-num">05</span>
             <div>
               <span class="qlabel">¿Cuál combinación de retorno esperado y caída máxima en un año le parece aceptable?</span>
@@ -559,7 +576,7 @@
             </div>
           </div>
 
-          <div class="q">
+          <div class="q q-req">
             <span class="q-num">06</span>
             <div>
               <span class="qlabel">Para alcanzar sus metas financieras, puede depender más de sus aportes o asumir más riesgo buscando un mayor rendimiento del portafolio. ¿Qué prefiere?</span>
@@ -574,7 +591,7 @@
             </div>
           </div>
 
-          <div class="q">
+          <div class="q q-req">
             <span class="q-num">07</span>
             <div>
               <span class="qlabel">La última vez que una inversión, un negocio o una propiedad suya perdió valor de forma importante, ¿qué hizo?</span>
@@ -590,7 +607,7 @@
             </div>
           </div>
 
-          <div class="q">
+          <div class="q q-req">
             <span class="q-num">08</span>
             <div>
               <span class="qlabel">Después de un año excepcionalmente bueno en su empresa o en su portafolio, ¿qué suele hacer con ese excedente?</span>
@@ -606,7 +623,7 @@
             </div>
           </div>
 
-          <div class="q">
+          <div class="q q-req">
             <span class="q-num">09</span>
             <div>
               <span class="qlabel">Después de un año excepcionalmente malo en su portafolio, ¿qué suele hacer?</span>
@@ -622,7 +639,7 @@
             </div>
           </div>
 
-          <div class="q">
+          <div class="q q-req">
             <span class="q-num">10</span>
             <div>
               <span class="qlabel">Si tuviera que invertir una parte de su patrimonio en una sola alternativa durante varios años, ¿cuál elegiría? No puede combinar varias opciones.</span>
@@ -1197,7 +1214,8 @@
             <h2>Información personal</h2>
             <p>Estos datos identifican su expediente ante su asesor.</p>
           </div>
-          <fieldset>
+          <p class="nota-req">Las preguntas marcadas con <b>*</b> son obligatorias.</p>
+        <fieldset>
             <div class="grid-2">
               <div class="field">
                 <label for="nombres">Nombre</label>
@@ -1606,7 +1624,7 @@ function edadDesde(fecha){
 // Preguntas de la versión vigente (personas o instituciones) de una página
 function visibles(pag){ return [...pag.querySelectorAll('.q')].filter(q => !q.closest('.variante[hidden]')); }
 
-function validarPagina(n){
+function validarPagina(n, silencioso){
   const pag = document.querySelector('.page[data-page="'+n+'"]');
   const faltantes = [];
 
@@ -1644,6 +1662,7 @@ function validarPagina(n){
       : 'Faltan ' + total + ' respuestas o datos por corregir. Los señalamos más arriba.';
     aviso.hidden = false;
   }
+  if(silencioso) return false;
   const primero = faltantes[0] || sueltos[0];
   primero.scrollIntoView({block:'center', behavior:'smooth'});
   if(sueltos.length && !faltantes.length){
@@ -1965,7 +1984,12 @@ window.addEventListener('pageshow', restaurarEstado);
 // para que el cliente vea la pregunta marcada y el motivo, no una burbuja genérica.
 document.getElementById('submit-btn').addEventListener('click', function(e){
   validarIdentificacion(); validarEdades();
-  if(!validarPagina(3)) e.preventDefault();
+  const malas = paginasIncompletas();
+  if(!malas.length) return;
+  e.preventDefault();
+  const st = document.getElementById('form-status');
+  if(st){ st.className = 'status err'; st.textContent = ''; }
+  irAPendiente(malas);
 });
 
 function alCambiar(e){
@@ -1983,10 +2007,58 @@ document.addEventListener('input', function(e){
   if(REPETIBLES.some(r => r.control === id) || id === 'otros-dep-n') alCambiar(e);
 });
 
+// Cuántas respuestas obligatorias faltan en una página (sin marcar nada)
+function faltanEn(n){
+  const pag = document.querySelector('.page[data-page="'+n+'"]');
+  if(!pag) return 0;
+  let k = 0;
+  visibles(pag).forEach(q => { const cs = [...q.querySelectorAll('[required]')]; if(cs.some(x => x.value === '' || !x.checkValidity())) k++; });
+  pag.querySelectorAll('.field [required]').forEach(c => { if(!c.value || !c.checkValidity()) k++; });
+  return k;
+}
+var visitadas = new Set();
+function actualizarPasos(page){
+  const nav = document.getElementById('pasos-nav');
+  if(!nav) return;
+  if(page >= 1 && page <= 3) visitadas.add(page);
+  nav.hidden = !(page >= 1 && page <= 3);
+  nav.querySelectorAll('[data-ir]').forEach(b => {
+    const i = +b.dataset.ir;
+    b.classList.toggle('actual', i === page);
+    b.querySelector('[data-paso-nombre]').textContent = PASOS[tipoCliente][i-1];
+    const est = b.querySelector('[data-paso-estado]'), f = faltanEn(i);
+    est.classList.toggle('falta', f > 0 && visitadas.has(i) && i !== page);
+    est.textContent = !visitadas.has(i) ? '' : f ? (f === 1 ? 'falta 1' : 'faltan ' + f) : 'completo';
+  });
+}
+document.addEventListener('click', function(e){
+  const b = e.target.closest && e.target.closest('[data-ir]');
+  if(b) goTo(+b.dataset.ir);
+});
+['input','change'].forEach(ev => document.addEventListener(ev, function(){
+  const a = document.querySelector('.page.active'); if(a) setTimeout(() => actualizarPasos(+a.dataset.page), 0);
+}));
+// Páginas con respuestas obligatorias pendientes (se marcan para que el cliente las vea al volver)
+function paginasIncompletas(){
+  const malas = [];
+  [1, 2, 3].forEach(n => { if(!validarPagina(n, true)) malas.push(n); });
+  return malas;
+}
+function irAPendiente(malas){
+  [1, 2, 3].forEach(n => visitadas.add(n));
+  const nombres = malas.map(n => PASOS[tipoCliente][n-1].toLowerCase());
+  goTo(malas[0]);
+  validarPagina(malas[0]);
+  const aviso = document.querySelector('.page[data-page="'+malas[0]+'"] [data-aviso]');
+  if(aviso){
+    aviso.textContent = 'Antes de enviar, complete las respuestas obligatorias. Faltan en: ' + nombres.join(', ')
+      + '. Las señalamos en cada página; puede moverse entre páginas con los botones de arriba.';
+    aviso.hidden = false;
+  }
+}
 function goTo(page){
   validarIdentificacion();
   const actual = document.querySelector('.page.active');
-  if(actual && page > +actual.dataset.page && !validarPagina(+actual.dataset.page)) return;
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelector('.page[data-page="'+page+'"]').classList.add('active');
   for(let i=1;i<=3;i++){
@@ -2002,6 +2074,7 @@ function goTo(page){
   } else {
     label.textContent = 'Cuestionario completado';
   }
+  actualizarPasos(page);
   window.scrollTo({top:0, behavior:'smooth'});
   if(typeof guardarBorrador === 'function' && page >= 1 && page <= 3) guardarBorrador();
 }
@@ -2098,6 +2171,15 @@ document.getElementById('form').addEventListener('submit', async function(e){
   }
   const cliente = esPersona ? clientePersona() : clienteInstitucion();
   cliente.respuestasTexto = respuestasEnTexto();
+  // Foto de los campos del formulario: permite reabrirlo y corregirlo después
+  cliente.formulario = {};
+  camposForm().forEach(c => { if(c.type === 'checkbox') cliente.formulario[claveCampo(c)] = c.checked; else if(c.value !== '') cliente.formulario[claveCampo(c)] = c.value; });
+  if(editando){
+    cliente.id = editando.id;
+    cliente.creadoEn = editando.creadoEn || cliente.creadoEn;
+    cliente.modificadoEn = Date.now();
+    cliente.historialEdiciones = (editando.historialEdiciones || []).concat([Date.now()]);
+  }
   function clientePersona(){ return {
     id: (esPersona ? 'c-' : 'i-') + Date.now() + '-' + Math.random().toString(36).slice(2,7),
     tipoCliente,
@@ -2308,7 +2390,8 @@ document.getElementById('form').addEventListener('submit', async function(e){
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        message: 'Nuevo cuestionario: ' + (nombre || 'cliente sin nombre'),
+        message: (editando ? 'Actualización del cuestionario: ' : 'Nuevo cuestionario: ') + (nombre || 'cliente sin nombre'),
+        ...(editando && editando.sha ? {sha: editando.sha} : {}),
         content: b64EncodeUnicode(JSON.stringify(cliente, null, 2)),
         branch: GH_BRANCH
       })
@@ -2320,7 +2403,8 @@ document.getElementById('form').addEventListener('submit', async function(e){
       }
       throw new Error('GitHub respondió '+res.status);
     }
-    enviado = true; borrarBorrador();
+    enviado = true; if(!editando) borrarBorrador();
+    if(editando){ const t = document.querySelector('.page[data-page="4"] h2'); if(t) t.textContent = 'Respuestas actualizadas'; }
     goTo(4);
   }catch(err){
     statusEl.className='status err';
@@ -2332,11 +2416,13 @@ document.getElementById('form').addEventListener('submit', async function(e){
 // ---- Avance guardado en este dispositivo ----
 const CLAVE_BORRADOR = 'chyco_borrador_' + tipoCliente;
 let respondio = false, enviado = false, tGuardar = null;
+// Registro que se está corrigiendo (modo de edición desde el dashboard)
+var editando = null;
 const camposForm = () => [...document.querySelectorAll('#form input, #form select, #form textarea')]
   .filter(c => !c.classList.contains('pais-buscar') && (c.id || c.name));
 const claveCampo = c => c.id || ('n:' + c.name);
 function guardarBorrador(){
-  if(enviado || !respondio) return;
+  if(enviado || !respondio || editando) return;
   const datos = {};
   camposForm().forEach(c => { if(c.type === 'checkbox') datos[claveCampo(c)] = c.checked; else if(c.value !== '') datos[claveCampo(c)] = c.value; });
   const act = document.querySelector('.page.active');
@@ -2386,6 +2472,70 @@ function restaurarBorrador(b){
     document.getElementById('portada-inicio').hidden = false;
     goTo(1);
   };
+})();
+
+// ---- Edición de un cuestionario enviado (desde el dashboard: ?editar=<id>) ----
+function datosDesdeRegistro(r){
+  if(r.formulario) return Object.assign({}, r.formulario);
+  // Registros anteriores: se reconstruye con las respuestas guardadas y los datos de contacto
+  const d = {};
+  (r.respuestasTexto || []).forEach(q => (q.detalle || []).forEach(x => {
+    if(x.id === 'seleccion') return;
+    // nombres de la versión anterior del formulario
+    const campo = (x.campo || '').replace(/^Apoyo (\d+): beneficiario$/, 'Dependiente $1: parentesco')
+      .replace(/^Apoyo (\d+): motivo$/, 'Dependiente $1: motivo del retiro').replace(/^Apoyo (\d+): /, 'Dependiente $1: ');
+    const k = x.id ? x.id : (campo ? 'n:' + campo : null);
+    if(k && x.codigo !== undefined && x.codigo !== '') d[k] = x.codigo;
+  }));
+  const pon = (k, v) => { if(v !== undefined && v !== null && v !== '' && !(k in d)) d[k] = String(v); };
+  Object.entries(r.respuestas || {}).forEach(([k, v]) => pon(k, v));
+  if(tipoCliente === 'persona'){
+    const idn = r.identificacion || {}, res = r.residencia || {};
+    pon('nombres', idn.nombres); pon('apellidos', idn.apellidos); pon('tipo-doc', idn.tipoDocumento);
+    pon('cedula', idn.cedula); pon('pasaporte', idn.pasaporte); pon('pais-emisor', idn.paisEmisor);
+    pon('nacimiento', idn.fechaNacimiento); pon('ocupacion', idn.ocupacion); pon('estado-civil', idn.estadoCivil);
+    pon('correo', r.correo); pon('tel-codigo', r.telefonoPais);
+    pon('telefono', (r.telefono || '').replace(/^\+\d+\s*/, ''));
+    pon('pais-residencia', res.pais); pon('provincia', res.provincia); pon('canton', res.canton);
+    pon('distrito', res.distrito); pon('direccion', res.senas);
+  } else {
+    pon('inst-nombre', r.nombre); pon('inst-correo', r.correo); pon('inst-direccion', r.direccion);
+    pon('inst-tel-codigo', r.telefonoPais); pon('inst-telefono', (r.telefono || '').replace(/^\+\d+\s*/, ''));
+  }
+  return d;
+}
+(async function(){
+  const id = new URLSearchParams(location.search).get('editar');
+  if(!id) return;
+  const banda = document.getElementById('edicion-banda');
+  banda.hidden = false; banda.textContent = 'Cargando el cuestionario para corregirlo…';
+  document.getElementById('portada-inicio').hidden = true;
+  document.getElementById('borrador').hidden = true;
+  try{
+    if(!/^[ci]-[\w-]+$/.test(id)) throw new Error('identificador no válido');
+    const token = getToken();
+    if(!token) throw new Error('se requiere el token de GitHub');
+    const res = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/data/clientes/${id}.json?ref=${GH_BRANCH}`,
+      {headers: {'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json'}, cache: 'no-store'});
+    if(!res.ok) throw new Error('GitHub respondió ' + res.status);
+    const j = await res.json();
+    const bin = atob(j.content.replace(/\n/g, ''));
+    const r = JSON.parse(new TextDecoder().decode(Uint8Array.from(bin, ch => ch.charCodeAt(0))));
+    if((r.tipoCliente || 'persona') !== tipoCliente) throw new Error('este registro pertenece al otro cuestionario');
+    editando = {id: r.id, sha: j.sha, creadoEn: r.creadoEn, historialEdiciones: r.historialEdiciones};
+    restaurarBorrador({datos: datosDesdeRegistro(r), pagina: 1});
+    respondio = false;
+    [1, 2, 3].forEach(n => visitadas.add(n));
+    actualizarPasos(1);
+    banda.innerHTML = '';
+    const b = document.createElement('b'); b.textContent = 'Modo de edición: ' + (r.nombre || 'cliente') + '. ';
+    banda.appendChild(b);
+    banda.appendChild(document.createTextNode('Revise o corrija las respuestas y pulse «Guardar cambios»: se actualiza el mismo registro y la versión anterior queda en el historial del repositorio.'
+      + (r.formulario ? '' : ' Este cuestionario se envió con una versión anterior del formulario: revise las preguntas marcadas como pendientes.')));
+    document.getElementById('submit-btn').textContent = 'Guardar cambios';
+  }catch(err){
+    banda.textContent = 'No fue posible abrir el cuestionario para editarlo: ' + (err.message || 'error desconocido') + '.';
+  }
 })();
 </script>
 </body>
