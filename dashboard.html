@@ -200,6 +200,32 @@
     justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;
     border-bottom:1px solid var(--rule);}
   .assum-list{display:flex;gap:20px;flex-wrap:wrap;font-size:12px;color:#23270F;}
+  .assum-list[hidden]{display:none;}
+  .assum-bar{justify-content:flex-end;}
+  /* Lista de clientes: pantalla de entrada */
+  .layout.modo-tabla{grid-template-columns:1fr;}
+  .layout.modo-tabla aside{display:none;}
+  .tabla-cli{width:100%;border-collapse:collapse;font-size:14px;}
+  .tabla-cli th{text-align:left;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#918042;font-weight:600;
+    padding:0 12px 12px;border-bottom:1px solid var(--rule);}
+  .tabla-cli td{padding:15px 12px;border-bottom:1px solid #ECEEE3;color:#23270F;vertical-align:middle;}
+  .tabla-cli tbody tr{cursor:pointer;transition:background .15s;}
+  .tabla-cli tbody tr:hover{background:#F4F5EE;}
+  .tabla-cli td.nom{font-weight:600;}
+  .tabla-cli .estado{display:inline-block;font-size:12px;padding:3px 10px;border-radius:999px;background:#F2F3EA;color:#5B5F45;white-space:nowrap;}
+  .tabla-cli .estado.pend{background:#FBF1EA;color:#A2543A;}
+  .tabla-cli .ir{color:#918042;text-align:right;font-size:13px;white-space:nowrap;}
+  .tabla-intro{font-size:13.5px;color:#5B5F45;margin:0 0 20px;}
+  .link-todos{background:none;border:0;padding:0;margin-top:18px;font:inherit;font-size:13px;color:#918042;cursor:pointer;}
+  .link-todos:hover{text-decoration:underline;}
+  /* Supuestos del cliente: valores distintos a los de la firma */
+  .field.distinto input{border-bottom-color:#B8913A;background:#FBF6E6;}
+  .field .firma-nota{display:block;font-size:11.5px;color:#9A7A2C;margin-top:4px;}
+  .field[hidden], .sup-oculto{display:none !important;}
+  .sup-estado{font-size:13px;color:#5B5F45;margin:18px 0 0;text-align:right;}
+  .sup-estado.err{color:#A2543A;}
+  .sup-linea{font-size:12.5px;color:#5B5F45;margin:6px 0 0;}
+  .sup-linea button{background:none;border:0;padding:0;font:inherit;color:#918042;cursor:pointer;text-decoration:underline;}
   .assum-list b{font-weight:700;-webkit-text-stroke:.3px currentColor;paint-order:stroke fill;}
   @media (max-width:640px){.assum-bar{padding:14px 20px;}}
 
@@ -322,12 +348,12 @@
 </div>
 
 <!-- ==================== PANTALLA 1: SUPUESTOS ==================== -->
-<div class="screen active" id="screen-supuestos">
+<div class="screen" id="screen-supuestos">
   <div class="intro">
-    <p class="kicker">Paso previo</p>
-    <h1>Supuestos de proyección</h1>
+    <p class="kicker" id="sup-kicker">Supuestos</p>
+    <h1 id="sup-titulo">Supuestos de proyección</h1>
     <div class="rule-accent"></div>
-    <p class="lede">Defina los parámetros con los que se correrán todas las proyecciones de hoy. Estos valores no los aporta el cliente: los fija el analista y cambian con el mercado. Quedan guardados en este navegador para la próxima sesión.</p>
+    <p class="lede" id="sup-lede"></p>
   </div>
 
   <div class="sheet">
@@ -434,9 +460,11 @@
         </div>
       </div>
 
+      <p class="sup-estado" id="sup-estado" hidden></p>
       <div class="actions">
-        <button class="btn btn-ghost" id="btn-reset">Restablecer valores del Excel</button>
-        <button class="btn" id="btn-aplicar">Ver proyecciones</button>
+        <button class="btn btn-ghost" id="btn-sup-volver">Volver a clientes</button>
+        <button class="btn btn-ghost" id="btn-reset">Restablecer valores de la firma</button>
+        <button class="btn" id="btn-aplicar">Calcular proyección</button>
       </div>
     </div>
   </div>
@@ -455,11 +483,11 @@
 </div>
 
 <!-- ==================== PANTALLA 2: PANEL ==================== -->
-<div class="screen" id="screen-panel">
+<div class="screen active" id="screen-panel">
   <div class="assum-bar">
-    <div class="assum-list" id="assum-list"></div>
+    <div class="assum-list" id="assum-list" hidden></div>
     <div style="display:flex;gap:10px;">
-      <button class="btn btn-ghost btn-sm" id="btn-editar-sup">Editar supuestos</button>
+      <button class="btn btn-ghost btn-sm" id="btn-editar-sup">Valores de la firma</button>
       <button class="btn btn-ghost btn-sm" id="btn-todos" hidden>Familias y personas · CSV</button>
       <button class="btn btn-sm" id="btn-refresh">Actualizar datos</button>
     </div>
@@ -485,8 +513,10 @@
           </button>
           <div class="client-list" id="client-list" hidden></div>
           <p class="hint" id="selector-hint" style="margin-top:12px;">Seleccione un cliente para ver su proyección.</p>
+          <button type="button" class="link-todos" id="btn-ver-todos">← Todos los clientes</button>
         </aside>
         <main>
+          <div id="tabla-clientes" hidden></div>
           <div class="empty" id="empty-state">Cargando respuestas del repositorio…</div>
           <div id="detail" hidden></div>
         </main>
@@ -1265,6 +1295,15 @@ const CLASES = [
 ];
 
 let supuestos = cargarSupuestos();
+// Valores de la firma: punto de partida de los supuestos de cada cliente nuevo
+let firma = Object.assign({}, supuestos);
+// Supuestos guardados por cliente: id → {supuestos, guardadoEn}
+let supCliente = {};
+const GH_SUP_PATH = 'data/supuestos';
+function supuestosDe(c){
+  const g = c && supCliente[c.id];
+  return g ? Object.assign({}, SUPUESTOS_EXCEL, g.supuestos, {asignacion: ALLOC_SCHWAB}) : Object.assign({}, firma);
+}
 
 function cargarSupuestos(){
   try{
@@ -1342,19 +1381,7 @@ function elegirSegmento(seg){
   csv.textContent = SEGMENTOS[seg].csv;
   mostrarSegmento();
 }
-function mostrarSegmento(){
-  const vacio = document.getElementById('empty-state');
-  document.getElementById('detail').hidden = true;
-  renderLista();
-  vacio.hidden = false;
-  if(clientesSeg().length){
-    abrirLista(true);
-    vacio.innerHTML = SEGMENTOS[segmento].panel;
-  }else{
-    abrirLista(false);
-    vacio.innerHTML = SEGMENTOS[segmento].vacio + '<br>Aparecerán aquí cuando completen el cuestionario.';
-  }
-}
+function mostrarSegmento(){ verTabla(); }
 
 // Normaliza respuestas viejas (montos ya convertidos a USD) y nuevas (monto + moneda)
 function normalizar(c){
@@ -1381,6 +1408,121 @@ function normalizar(c){
   return o;
 }
 
+async function cargarSupuestosRepo(){
+  const res = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_SUP_PATH}?ref=${GH_BRANCH}`,
+    {headers:{'Accept':'application/vnd.github+json'}});
+  if(!res.ok) return;                       // la carpeta aún no existe: se usan los valores de la firma
+  const files = await res.json();
+  const jsons = (Array.isArray(files) ? files : []).filter(f => f.name && f.name.endsWith('.json'));
+  const datos = await Promise.all(jsons.map(async f => {
+    // la versión del archivo va en la URL para no leer una copia vieja del caché
+    const r = await fetch(f.download_url + '?v=' + f.sha);
+    return r.ok ? [f.name.replace(/\.json$/, ''), await r.json()] : null;
+  }));
+  const nuevo = {};
+  datos.filter(Boolean).forEach(([id, d]) => {
+    if(!d || !d.supuestos) return;
+    if(id === 'firma'){ firma = Object.assign({}, SUPUESTOS_EXCEL, d.supuestos, {asignacion: ALLOC_SCHWAB}); guardarSupuestos(firma); }
+    else nuevo[id] = d;
+  });
+  supCliente = Object.assign(nuevo, supClienteLocal);
+}
+// guardados en esta sesión: priman sobre lo leído (GitHub tarda unos segundos en reflejarlos)
+const supClienteLocal = {};
+
+// Token de GitHub: el mismo que usan los cuestionarios en este navegador
+function getToken(){
+  let t = localStorage.getItem('gh_token');
+  if(!t){
+    t = prompt('Para guardar los supuestos se necesita el token de GitHub (fine-grained, con permiso Contents: Read and write sobre este repositorio). Se guarda solo en este navegador.');
+    if(t) localStorage.setItem('gh_token', t.trim());
+  }
+  return t ? t.trim() : null;
+}
+function b64Unicode(str){ return btoa(String.fromCharCode(...new TextEncoder().encode(str))); }
+async function guardarEnRepo(ruta, objeto, mensaje){
+  const token = getToken();
+  if(!token) throw new Error('falta el token de GitHub');
+  const url = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${ruta}`;
+  const h = {'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json'};
+  let sha;
+  const g = await fetch(url + '?ref=' + GH_BRANCH, {headers: h, cache: 'no-store'});
+  if(g.ok) sha = (await g.json()).sha;
+  else if(g.status === 401 || g.status === 403){ localStorage.removeItem('gh_token'); throw new Error('el token no es válido; vuelva a intentarlo para ingresar uno nuevo'); }
+  const res = await fetch(url, {method:'PUT', headers: Object.assign({'Content-Type':'application/json'}, h),
+    body: JSON.stringify(Object.assign({message: mensaje, content: b64Unicode(JSON.stringify(objeto, null, 2)), branch: GH_BRANCH}, sha ? {sha} : {}))});
+  if(!res.ok){
+    if(res.status === 401 || res.status === 403){ localStorage.removeItem('gh_token'); throw new Error('el token no es válido o no tiene permiso de escritura'); }
+    throw new Error('GitHub respondió ' + res.status);
+  }
+}
+
+// ---- Paso 2: supuestos (de un cliente o de la firma) ----
+let modoSup = {tipo: 'firma', id: null};
+const CAMPOS_INST = ['s-tc', 's-inf', 's-anio'];
+const fechaLarga = t => new Date(t).toLocaleDateString('es-CR', {day:'numeric', month:'long', year:'numeric'});
+function mostrarCamposSup(inst){
+  document.querySelectorAll('#screen-supuestos .field').forEach(f => {
+    const inp = f.querySelector('input, select');
+    f.hidden = inst && !(inp && CAMPOS_INST.includes(inp.id));
+  });
+  // títulos de bloque y rejillas que quedan vacíos se ocultan
+  document.querySelectorAll('#screen-supuestos .block-title').forEach(t => {
+    const g = t.nextElementSibling;
+    const vacio = g && g.querySelectorAll('.field').length && ![...g.querySelectorAll('.field')].some(f => !f.hidden);
+    t.classList.toggle('sup-oculto', !!vacio); if(g) g.classList.toggle('sup-oculto', !!vacio);
+  });
+}
+function marcarDistintos(){
+  document.querySelectorAll('#screen-supuestos .firma-nota').forEach(n => n.remove());
+  document.querySelectorAll('#screen-supuestos .field.distinto').forEach(f => f.classList.remove('distinto'));
+  if(modoSup.tipo !== 'cliente') return;
+  for(const k in CAMPOS){
+    const el = document.getElementById(CAMPOS[k]); if(!el) continue;
+    const v = parseFloat(el.value), ref = firma[k];
+    if(isNaN(v) || ref === undefined || Math.abs(v - ref) < 1e-9) continue;
+    const f = el.closest('.field'); f.classList.add('distinto');
+    const n = document.createElement('span'); n.className = 'firma-nota';
+    const op = el.tagName === 'SELECT' ? [...el.options].find(o => +o.value === +ref) : null;
+    n.textContent = 'Valor de la firma: ' + (op ? op.textContent : String(ref).replace('.', ','));
+    f.appendChild(n);
+  }
+}
+document.getElementById('screen-supuestos').addEventListener('input', marcarDistintos);
+document.getElementById('screen-supuestos').addEventListener('change', marcarDistintos);
+function estadoSup(txt, err){
+  const e = document.getElementById('sup-estado');
+  e.hidden = !txt; e.textContent = txt || ''; e.classList.toggle('err', !!err);
+}
+function abrirSupuestosCliente(id){
+  const c = clientes.find(x => x.id === id); if(!c) return;
+  modoSup = {tipo: 'cliente', id};
+  const g = supCliente[id];
+  document.getElementById('sup-kicker').textContent = 'Paso 2 de 3 · Supuestos del cliente';
+  document.getElementById('sup-titulo').textContent = 'Supuestos para ' + c.nombre;
+  document.getElementById('sup-lede').textContent = g
+    ? 'Estos son los supuestos con los que se proyectó a este cliente el ' + fechaLarga(g.guardadoEn) + '. Revíselos o ajústelos y calcule la proyección.'
+    : 'Es la primera proyección de este cliente: los supuestos vienen con los valores de la firma. Revíselos o ajústelos y calcule la proyección.';
+  document.getElementById('btn-reset').textContent = 'Restablecer valores de la firma';
+  document.getElementById('btn-aplicar').textContent = 'Calcular proyección';
+  pintarSupuestos(supuestosDe(c));
+  mostrarCamposSup(tipoDe(c) === 'institucion');
+  marcarDistintos(); estadoSup('');
+  mostrar('screen-supuestos');
+}
+function abrirSupuestosFirma(){
+  modoSup = {tipo: 'firma', id: null};
+  document.getElementById('sup-kicker').textContent = 'Configuración';
+  document.getElementById('sup-titulo').textContent = 'Valores de la firma';
+  document.getElementById('sup-lede').textContent = 'Son el punto de partida de los supuestos de cada cliente nuevo. Cambiarlos no modifica a los clientes que ya tienen supuestos guardados.';
+  document.getElementById('btn-reset').textContent = 'Restablecer valores del Excel';
+  document.getElementById('btn-aplicar').textContent = 'Guardar valores de la firma';
+  pintarSupuestos(firma);
+  mostrarCamposSup(false);
+  marcarDistintos(); estadoSup('');
+  mostrar('screen-supuestos');
+}
+
 async function cargarClientes(){
   const url = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_DATA_PATH}?ref=${GH_BRANCH}`;
   const res = await fetch(url, {headers:{'Accept':'application/vnd.github+json'}});
@@ -1402,10 +1544,36 @@ function renderLista(){
     const row = document.createElement('div');
     row.className = 'client-row' + (c.id===activoId ? ' active' : '');
     row.innerHTML = `<span class="name">${esc(c.nombre)}</span><span class="tag">${PERFILES[c.perfil].label}</span>`;
-    row.onclick = ()=>seleccionar(c.id);
+    row.onclick = ()=>abrirSupuestosCliente(c.id);
     list.appendChild(row);
   });
   // El antetítulo no revela cuántos clientes hay registrados
+}
+
+function renderTabla(){
+  const t = document.getElementById('tabla-clientes');
+  const lista = clientesSeg().slice().sort((a,b) => (b.modificadoEn||b.creadoEn||0) - (a.modificadoEn||a.creadoEn||0));
+  const fecha = ms => ms ? new Date(ms).toLocaleDateString('es-CR', {day:'numeric', month:'short', year:'numeric'}) : '—';
+  t.innerHTML = `<p class="tabla-intro">Seleccione ${segmento === 'institucion' ? 'una institución' : 'un cliente'} para revisar sus supuestos y calcular su proyección.</p>
+    <table class="tabla-cli"><thead><tr><th>${segmento === 'institucion' ? 'Institución' : 'Cliente'}</th><th>Cuestionario</th><th>Perfil</th><th>Proyección</th><th></th></tr></thead><tbody>`
+    + lista.map(c => { const g = supCliente[c.id];
+        return `<tr data-id="${esc(c.id)}"><td class="nom">${esc(c.nombre)}</td><td>${fecha(c.modificadoEn || c.creadoEn)}${c.modificadoEn ? ' · editado' : ''}</td>
+          <td>${PERFILES[c.perfil].label}</td>
+          <td>${g ? '<span class="estado">Proyectada el ' + fecha(g.guardadoEn) + '</span>' : '<span class="estado pend">Pendiente de supuestos</span>'}</td>
+          <td class="ir">Abrir →</td></tr>`; }).join('')
+    + `</tbody></table>`;
+  t.querySelectorAll('tbody tr').forEach(tr => tr.onclick = () => abrirSupuestosCliente(tr.dataset.id));
+}
+function verTabla(){
+  activoId = null;
+  supuestos = Object.assign({}, firma);
+  document.getElementById('layout').classList.add('modo-tabla');
+  document.getElementById('detail').hidden = true;
+  const vacio = document.getElementById('empty-state'), t = document.getElementById('tabla-clientes');
+  if(clientesSeg().length){ renderTabla(); t.hidden = false; vacio.hidden = true; }
+  else{ t.hidden = true; vacio.hidden = false; vacio.innerHTML = SEGMENTOS[segmento].vacio + '<br>Aparecerán aquí cuando completen el cuestionario.'; }
+  document.getElementById('selector-label').textContent = SEGMENTOS[segmento].lista;
+  renderLista(); abrirLista(false);
 }
 
 function abrirLista(abrir){
@@ -1423,7 +1591,23 @@ function seleccionar(id){
   abrirLista(false);
   document.getElementById('selector-label').textContent = c ? c.nombre : SEGMENTOS[segmento].lista;
   document.getElementById('selector-hint').textContent = segmento === 'institucion' ? 'Toque el nombre para cambiar de institución.' : 'Toque el nombre para cambiar de cliente.';
-  if(c) (tipoDe(c) === 'institucion' ? renderInstitucion(c) : renderDetalle(c));
+  document.getElementById('layout').classList.remove('modo-tabla');
+  document.getElementById('tabla-clientes').hidden = true;
+  if(c){
+    supuestos = supuestosDe(c);
+    c.diag = calcularPerfil(c, supuestos); c.perfil = c.diag.perfil;
+    tipoDe(c) === 'institucion' ? renderInstitucion(c) : renderDetalle(c);
+    const sub = document.querySelector('#detail .section-sub');
+    if(sub){
+      const g = supCliente[c.id];
+      const l = document.createElement('p'); l.className = 'sup-linea';
+      l.textContent = (g ? 'Calculado con los supuestos del ' + fechaLarga(g.guardadoEn) : 'Calculado con los valores de la firma')
+        + ' · tipo de cambio ₡' + supuestos.tipoCambio + ' · inflación ' + String(supuestos.inflacion).replace('.', ',') + '% · ';
+      const b = document.createElement('button'); b.type = 'button'; b.textContent = 'Modificar supuestos';
+      b.onclick = () => abrirSupuestosCliente(c.id);
+      l.appendChild(b); sub.after(l);
+    }
+  }
 }
 
 // ================= Respuestas del cliente y su ponderación =================
@@ -3450,6 +3634,7 @@ async function exportarExcel(c, p, asig){
 
 // ---------- Exportación consolidada para Power BI ----------
 function exportarConsolidado(){
+  const supPrevio = supuestos;
   if(segmento === 'institucion') return exportarConsolidadoInst();
   const btn = document.getElementById('btn-todos');
   const txt = btn.textContent;
@@ -3464,6 +3649,7 @@ function exportarConsolidado(){
       'Cartera equilibrio RV %','Cartera equilibrio RF %','Cartera equilibrio EF %'];
     const lineas = [cab.join(',')];
     clientes.filter(c => tipoDe(c) === 'persona').forEach(c=>{
+      supuestos = supuestosDe(c);
       const p = proyectar(c, supuestos);
       const a = (supuestos.asignacion || ALLOC_SCHWAB)[c.perfil];
       const cc = c.capacidad || {};
@@ -3493,11 +3679,13 @@ function exportarConsolidado(){
   }catch(e){
     alert('No se pudo generar el consolidado: ' + (e.message||'error desconocido'));
   }finally{
+    supuestos = supPrevio;
     btn.disabled = false; btn.textContent = txt;
   }
 }
 
 function exportarConsolidadoInst(){
+  const supPrevio = supuestos;
   const btn = document.getElementById('btn-todos');
   const txt = btn.textContent;
   btn.disabled = true; btn.textContent = 'Generando…';
@@ -3509,6 +3697,7 @@ function exportarConsolidadoInst(){
       'Cartera equilibrio RV %','Cartera equilibrio RF %','Cartera equilibrio EF %'];
     const lineas = [cab.join(',')];
     clientes.filter(c => tipoDe(c) === 'institucion' && c.institucional).forEach(c=>{
+      supuestos = supuestosDe(c);
       const p = proyectarInst(c, supuestos), ins = c.institucional;
       const a = (supuestos.asignacion || ALLOC_SCHWAB)[c.perfil];
       const eq = rendimientoEquilibrioInst(c, supuestos), req = perfilRequerido(eq);
@@ -3527,6 +3716,7 @@ function exportarConsolidadoInst(){
   }catch(e){
     alert('No se pudo generar el consolidado: ' + (e.message||'error desconocido'));
   }finally{
+    supuestos = supPrevio;
     btn.disabled = false; btn.textContent = txt;
   }
 }
@@ -3842,20 +4032,39 @@ function mostrar(pantalla){
   window.scrollTo({top:0, behavior:'smooth'});
 }
 
-document.getElementById('btn-reset').onclick = ()=>{ pintarSupuestos(SUPUESTOS_EXCEL); };
+document.getElementById('btn-reset').onclick = ()=>{
+  pintarSupuestos(modoSup.tipo === 'cliente' ? firma : SUPUESTOS_EXCEL); marcarDistintos();
+};
+document.getElementById('btn-sup-volver').onclick = ()=>{ mostrar('screen-panel'); verTabla(); };
 
 document.getElementById('btn-aplicar').onclick = async ()=>{
-  supuestos = leerSupuestos();
-  guardarSupuestos(supuestos);
-  pintarBarraSupuestos();
-  mostrar('screen-panel');
-  await cargar();
+  const btn = document.getElementById('btn-aplicar');
+  const s = leerSupuestos();
+  btn.disabled = true;
+  try{
+    if(modoSup.tipo === 'cliente'){
+      const c = clientes.find(x => x.id === modoSup.id);
+      const reg = {cliente: modoSup.id, nombre: c ? c.nombre : '', guardadoEn: Date.now(), supuestos: s};
+      supCliente[modoSup.id] = supClienteLocal[modoSup.id] = reg;
+      estadoSup('Guardando los supuestos del cliente…');
+      let aviso = '';
+      try{ await guardarEnRepo(`${GH_SUP_PATH}/${modoSup.id}.json`, reg, 'Supuestos de ' + (reg.nombre || modoSup.id)); }
+      catch(e){ aviso = 'Los supuestos se usaron pero no se guardaron en el repositorio: ' + e.message + '.'; }
+      mostrar('screen-panel');
+      seleccionar(modoSup.id);
+      if(aviso){ const l = document.querySelector('#detail .sup-linea'); if(l){ const a = document.createElement('span'); a.style.color = '#A2543A'; a.textContent = ' ' + aviso; l.appendChild(a); } }
+    }else{
+      firma = Object.assign({}, s); guardarSupuestos(firma);
+      estadoSup('Guardando los valores de la firma…');
+      try{ await guardarEnRepo(`${GH_SUP_PATH}/firma.json`, {guardadoEn: Date.now(), supuestos: s}, 'Valores de la firma'); estadoSup('Valores de la firma guardados.'); }
+      catch(e){ estadoSup('Se guardaron solo en este navegador: ' + e.message + '.', true); }
+      setTimeout(() => { mostrar('screen-panel'); verTabla(); }, 700);
+    }
+  }finally{ btn.disabled = false; }
 };
 
-document.getElementById('btn-editar-sup').onclick = ()=>{
-  pintarSupuestos(supuestos);
-  mostrar('screen-supuestos');
-};
+document.getElementById('btn-editar-sup').onclick = abrirSupuestosFirma;
+document.getElementById('btn-ver-todos').onclick = verTabla;
 
 document.getElementById('btn-selector').onclick = ()=>{
   const lista = document.getElementById('client-list');
@@ -3870,7 +4079,8 @@ async function cargar(){
   const btn = document.getElementById('btn-refresh');
   btn.disabled = true;
   try{
-    clientes = await cargarClientes();
+    const [cl] = await Promise.all([cargarClientes(), cargarSupuestosRepo().catch(() => {})]);
+    clientes = cl;
     clientes.sort((a,b)=>(b.creadoEn||0)-(a.creadoEn||0));
     document.getElementById('btn-todos').hidden = !SEGMENTOS[segmento].csv;
     renderLista();
@@ -3878,12 +4088,8 @@ async function cargar(){
       if(clientes.find(c=>c.id===activoId)){
         seleccionar(activoId);
       }else{
-        // Sin cliente elegido todavía: se muestra la lista y ningún dato
-        renderLista();
-        abrirLista(true);
-        document.getElementById('detail').hidden = true;
-        vacio.hidden = false;
-        vacio.innerHTML = 'Seleccione un cliente en el panel de la izquierda.';
+        // Sin cliente elegido todavía: lista de clientes
+        verTabla();
       }
     }else{
       mostrarSegmento();
@@ -3900,6 +4106,7 @@ async function cargar(){
 // arranque
 pintarSupuestos(supuestos);
 pintarBarraSupuestos();
+cargar();
 
 })();
 </script>
