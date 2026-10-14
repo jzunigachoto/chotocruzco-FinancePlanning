@@ -57,7 +57,7 @@
       "anio": null
     },
     "fcl": {
-      "saldo": 200000,
+      "saldo": 20000,
       "saldoMoneda": "USD",
       "aporteMensual": 38000,
       "aporteMoneda": "CRC",
@@ -619,8 +619,8 @@
         {
           "id": "f-fcl-saldo",
           "campo": "FCL: saldo actual (monto)",
-          "valor": "200,000",
-          "codigo": "200,000"
+          "valor": "20,000",
+          "codigo": "20,000"
         },
         {
           "id": "f-fcl-saldo-moneda",
@@ -1119,7 +1119,7 @@
     "f-rop-aporte-moneda": "CRC",
     "f-rop-modalidad": "programado",
     "f-fcl-tiene": "si",
-    "f-fcl-saldo": "200,000",
+    "f-fcl-saldo": "20,000",
     "f-fcl-saldo-moneda": "USD",
     "f-fcl-aporte": "38.000",
     "f-fcl-aporte-moneda": "CRC",
@@ -1200,5 +1200,9 @@
     "canton": "Central",
     "distrito": "Mata Redonda",
     "direccion": "Sabana "
-  }
+  },
+  "modificadoEn": 1792011433459,
+  "historialEdiciones": [
+    1792011433459
+  ]
 }
