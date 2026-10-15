@@ -60,7 +60,20 @@
   "otrosIngresosRetiro": null,
   "aportesExtraordinarios": [],
   "gastosExtraordinariosAnualesUsdHoy": 100000,
-  "ventasActivos": [],
+  "ventasActivos": [
+    {
+      "concepto": "Venta de LOTES SIN DESARROLLAR",
+      "anio": 2034,
+      "monto": 31000000,
+      "moneda": "USD"
+    },
+    {
+      "concepto": "Venta de EDIFICIO",
+      "anio": 2036,
+      "monto": 4000000,
+      "moneda": "USD"
+    }
+  ],
   "apoyosDependientes": [
     {
       "beneficiario": "hijo",
@@ -124,14 +137,33 @@
       "hipoteca": null
     },
     "inmuebles": {
-      "moneda": null,
-      "lista": []
+      "moneda": "USD",
+      "lista": [
+        {
+          "nombre": "LOTES SIN DESARROLLAR",
+          "valor": 31000000,
+          "rentaMensualNeta": 0,
+          "saldoDeuda": 0,
+          "estimaVender": true,
+          "anioVenta": 2034,
+          "inviertePortafolio": true
+        },
+        {
+          "nombre": "EDIFICIO",
+          "valor": 4000000,
+          "rentaMensualNeta": 0,
+          "saldoDeuda": 0,
+          "estimaVender": true,
+          "anioVenta": 2036,
+          "inviertePortafolio": true
+        }
+      ]
     },
     "empresa": {
-      "propietario": false,
-      "plan": null,
-      "valor": null,
-      "valorMoneda": null,
+      "propietario": true,
+      "plan": "mantener",
+      "valor": 43000000,
+      "valorMoneda": "USD",
       "inviertePortafolio": null,
       "aniosHastaEvento": null
     },
@@ -679,8 +711,98 @@
         {
           "id": "inmuebles-n",
           "campo": "Cantidad de inmuebles de inversión",
-          "valor": "No poseo inmuebles de inversión",
+          "valor": "2 inmuebles",
+          "codigo": "2"
+        },
+        {
+          "id": "inmuebles-moneda",
+          "campo": "Moneda de los inmuebles",
+          "valor": "USD",
+          "codigo": "USD"
+        },
+        {
+          "id": "",
+          "campo": "Inmueble 1: nombre",
+          "valor": "LOTES SIN DESARROLLAR",
+          "codigo": "LOTES SIN DESARROLLAR"
+        },
+        {
+          "id": "",
+          "campo": "Inmueble 1: valor estimado",
+          "valor": "31,000,000",
+          "codigo": "31,000,000"
+        },
+        {
+          "id": "",
+          "campo": "Inmueble 1: renta mensual neta",
+          "valor": "0",
           "codigo": "0"
+        },
+        {
+          "id": "",
+          "campo": "Inmueble 1: saldo de deuda",
+          "valor": "0",
+          "codigo": "0"
+        },
+        {
+          "id": "",
+          "campo": "Inmueble 1: estima venderlo",
+          "valor": "Sí",
+          "codigo": "si"
+        },
+        {
+          "id": "",
+          "campo": "Inmueble 1: año de venta",
+          "valor": "2034",
+          "codigo": "2034"
+        },
+        {
+          "id": "",
+          "campo": "Inmueble 1: invierte la venta en el portafolio",
+          "valor": "Sí, lo invertiría aquí",
+          "codigo": "si"
+        },
+        {
+          "id": "",
+          "campo": "Inmueble 2: nombre",
+          "valor": "EDIFICIO",
+          "codigo": "EDIFICIO"
+        },
+        {
+          "id": "",
+          "campo": "Inmueble 2: valor estimado",
+          "valor": "4,000,000",
+          "codigo": "4,000,000"
+        },
+        {
+          "id": "",
+          "campo": "Inmueble 2: renta mensual neta",
+          "valor": "0",
+          "codigo": "0"
+        },
+        {
+          "id": "",
+          "campo": "Inmueble 2: saldo de deuda",
+          "valor": "0",
+          "codigo": "0"
+        },
+        {
+          "id": "",
+          "campo": "Inmueble 2: estima venderlo",
+          "valor": "Sí",
+          "codigo": "si"
+        },
+        {
+          "id": "",
+          "campo": "Inmueble 2: año de venta",
+          "valor": "2036",
+          "codigo": "2036"
+        },
+        {
+          "id": "",
+          "campo": "Inmueble 2: invierte la venta en el portafolio",
+          "valor": "Sí, lo invertiría aquí",
+          "codigo": "si"
         }
       ]
     },
@@ -694,8 +816,26 @@
         {
           "id": "empresa",
           "campo": "Propietario de empresa",
-          "valor": "No",
-          "codigo": "no"
+          "valor": "Sí",
+          "codigo": "si"
+        },
+        {
+          "id": "empresa-valor",
+          "campo": "Empresa: valor estimado (monto)",
+          "valor": "43,000,000",
+          "codigo": "43,000,000"
+        },
+        {
+          "id": "empresa-valor-moneda",
+          "campo": "Empresa: valor estimado (moneda)",
+          "valor": "USD",
+          "codigo": "USD"
+        },
+        {
+          "id": "empresa-plan",
+          "campo": "Plan sobre la empresa",
+          "valor": "No lo estimo por ahora",
+          "codigo": "mantener"
         }
       ]
     },
@@ -944,10 +1084,26 @@
     "vivienda": "propia",
     "hipoteca-saldo-moneda": "USD",
     "hipoteca-cuota-moneda": "USD",
-    "inmuebles-n": "0",
+    "inmuebles-n": "2",
     "inmuebles-moneda": "USD",
-    "empresa": "no",
+    "n:Inmueble 1: nombre": "LOTES SIN DESARROLLAR",
+    "n:Inmueble 1: valor estimado": "31,000,000",
+    "n:Inmueble 1: renta mensual neta": "0",
+    "n:Inmueble 1: saldo de deuda": "0",
+    "n:Inmueble 1: estima venderlo": "si",
+    "n:Inmueble 1: año de venta": "2034",
+    "n:Inmueble 1: invierte la venta en el portafolio": "si",
+    "n:Inmueble 2: nombre": "EDIFICIO",
+    "n:Inmueble 2: valor estimado": "4,000,000",
+    "n:Inmueble 2: renta mensual neta": "0",
+    "n:Inmueble 2: saldo de deuda": "0",
+    "n:Inmueble 2: estima venderlo": "si",
+    "n:Inmueble 2: año de venta": "2036",
+    "n:Inmueble 2: invierte la venta en el portafolio": "si",
+    "empresa": "si",
+    "empresa-valor": "43,000,000",
     "empresa-valor-moneda": "USD",
+    "empresa-plan": "mantener",
     "c1": "1",
     "c1-monto": "2,000,000",
     "metas-n": "3",
@@ -990,8 +1146,9 @@
     "distrito": "San Rafael",
     "direccion": "Torre Country"
   },
-  "modificadoEn": 1792100359416,
+  "modificadoEn": 1792102121912,
   "historialEdiciones": [
-    1792100359416
+    1792100359416,
+    1792102121912
   ]
 }
