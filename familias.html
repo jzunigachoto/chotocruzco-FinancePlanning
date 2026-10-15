@@ -554,7 +554,6 @@
                 <option value="" disabled selected>Seleccione una opción</option>
                 <option value="0">Que mi portafolio pierda 20% en un año</option>
                 <option value="10">Que mi portafolio deje de ganar el 20% que sí ganó el mercado</option>
-                <option value="5">Ambas por igual</option>
               </select>
               <p class="q-falta">Falta responder esta pregunta.</p>
             </div>
@@ -563,14 +562,14 @@
           <div class="q q-req">
             <span class="q-num">05</span>
             <div>
-              <span class="qlabel">¿Cuál combinación de retorno esperado y caída máxima en un año le parece aceptable?</span>
+              <span class="qlabel">¿Qué combinación de rendimiento esperado y pérdida máxima en un año aceptaría?</span>
               <select required name="Q6 - Retorno esperado y caída máxima" id="q6">
                 <option value="" disabled selected>Seleccione una opción</option>
-                <option value="0">Retorno esperado de 5% a 5,5% anual · pérdida aproximada de hasta −5%</option>
-                <option value="2.5">Retorno esperado de 6% a 6,5% anual · pérdida aproximada de hasta −7%</option>
-                <option value="5">Retorno esperado de 7% a 7,5% anual · pérdida aproximada de hasta −9%</option>
-                <option value="7.5">Retorno esperado de 8% a 8,5% anual · pérdida aproximada de hasta −12%</option>
-                <option value="10">Retorno esperado de 9% a 9,5% anual · pérdida aproximada de hasta −16%</option>
+                <option value="0">Rendimiento esperado de 5% a 5,5% anual · pérdida máxima de hasta −5% en un año (con US$100.000, podría bajar a US$95.000)</option>
+                <option value="2.5">Rendimiento esperado de 6% a 6,5% anual · pérdida máxima de hasta −7% en un año (con US$100.000, podría bajar a US$93.000)</option>
+                <option value="5">Rendimiento esperado de 7% a 7,5% anual · pérdida máxima de hasta −9% en un año (con US$100.000, podría bajar a US$91.000)</option>
+                <option value="7.5">Rendimiento esperado de 8% a 8,5% anual · pérdida máxima de hasta −12% en un año (con US$100.000, podría bajar a US$88.000)</option>
+                <option value="10">Rendimiento esperado de 9% a 9,5% anual · pérdida máxima de hasta −16% en un año (con US$100.000, podría bajar a US$84.000)</option>
               </select>
               <p class="q-falta">Falta responder esta pregunta.</p>
             </div>
@@ -673,8 +672,7 @@
         <p class="nota-req">Las preguntas marcadas con <b>*</b> son obligatorias porque alimentan la proyección de su portafolio. Las demás son opcionales y complementan el análisis de su asesor.</p>
         <fieldset>
 
-          <!-- ===== A. Composición del hogar ===== -->
-          <div class="block-title">Composición del hogar</div>
+          <div class="block-title">Horizonte y hogar</div>
 
           <div class="q q-req">
             <span class="q-num">01</span>
@@ -713,14 +711,14 @@
             </div>
           </div>
 
-          <div class="q q-req">
+          <div class="q">
             <span class="q-num">03</span>
             <div>
               <span class="qlabel">¿Quiénes dependen económicamente de usted?</span>
               <p class="hint" style="margin:2px 0 12px;">Indique cuántas personas de cada grupo dependen de usted, con − y +.</p>
               <div class="dep-lista" id="dep-chips"><div class="dep-fila" data-sel="hijos-n" data-max="6"><span class="dep-nom">Hijos</span><span class="dep-step"><button type="button" class="dep-menos" aria-label="Uno menos">−</button><span class="dep-val">0</span><button type="button" class="dep-mas" aria-label="Uno más">+</button></span></div><div class="dep-fila" data-sel="dep-pareja" data-max="1"><span class="dep-nom">Cónyuge o pareja</span><span class="dep-step"><button type="button" class="dep-menos" aria-label="Uno menos">−</button><span class="dep-val">0</span><button type="button" class="dep-mas" aria-label="Uno más">+</button></span></div><div class="dep-fila" data-sel="dep-padres" data-max="2"><span class="dep-nom">Padre o madre</span><span class="dep-step"><button type="button" class="dep-menos" aria-label="Uno menos">−</button><span class="dep-val">0</span><button type="button" class="dep-mas" aria-label="Uno más">+</button></span></div><div class="dep-fila" data-sel="dep-hermanos" data-max="4"><span class="dep-nom">Hermanos</span><span class="dep-step"><button type="button" class="dep-menos" aria-label="Uno menos">−</button><span class="dep-val">0</span><button type="button" class="dep-mas" aria-label="Uno más">+</button></span></div><div class="dep-fila" data-sel="dep-tios" data-max="4"><span class="dep-nom">Tías</span><span class="dep-step"><button type="button" class="dep-menos" aria-label="Uno menos">−</button><span class="dep-val">0</span><button type="button" class="dep-mas" aria-label="Uno más">+</button></span></div><div class="dep-fila" data-sel="dep-abuelos" data-max="4"><span class="dep-nom">Abuelos</span><span class="dep-step"><button type="button" class="dep-menos" aria-label="Uno menos">−</button><span class="dep-val">0</span><button type="button" class="dep-mas" aria-label="Uno más">+</button></span></div><div class="dep-fila" data-sel="dep-otros" data-max="4"><span class="dep-nom">Otros familiares</span><span class="dep-step"><button type="button" class="dep-menos" aria-label="Uno menos">−</button><span class="dep-val">0</span><button type="button" class="dep-mas" aria-label="Uno más">+</button></span></div><div class="dep-nadie-fila"><button type="button" class="dep-nadie-btn dep-nadie">Nadie depende de mí</button></div></div>
               <div class="dep-ocultos" hidden>
-                <div><span class="mini">Hijos</span><select required id="hijos-n" name="Cantidad de hijos"><option value="" disabled selected>Seleccione</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6 o más</option></select></div>
+                <div><span class="mini">Hijos</span><select id="hijos-n" name="Cantidad de hijos"><option value="" disabled selected>Seleccione</option><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6 o más</option></select></div>
                 <div><span class="mini">Cónyuge o pareja</span><select id="dep-pareja" name="Dependientes: cónyuge o pareja" class="dep-n"><option value="0">0</option><option value="1">1</option></select></div>
                 <div><span class="mini">Padre o madre</span><select id="dep-padres" name="Dependientes: padre o madre" class="dep-n"><option value="0">0</option><option value="1">1</option><option value="2">2</option></select></div>
                 <div><span class="mini">Hermanos</span><select id="dep-hermanos" name="Dependientes: hermanos" class="dep-n"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4 o más</option></select></div>
@@ -742,30 +740,18 @@
             </div>
           </div>
 
-          <div class="q q-req">
-            <span class="q-num">04</span>
-            <div>
-              <span class="qlabel">¿Planea retirar dinero de este portafolio para cubrir gastos de las personas que dependen de usted?</span>
-              <select required id="apoyos-n" name="Retiros para dependientes: cantidad"><option value="" disabled selected>Seleccione una opción</option><option value="0">No lo planeo</option><option value="1">Sí, para 1 dependiente</option><option value="2">Sí, para 2 dependientes</option><option value="3">Sí, para 3 dependientes</option><option value="4">Sí, para 4 dependientes</option><option value="5">Sí, para 5 dependientes</option></select>
-              <p class="hint">Por ejemplo, la universidad de sus hijos o una operación de su padre o su madre.</p>
-              <div class="sub-q filas" id="apoyos-filas" hidden></div>
-              <p class="q-falta">Falta responder esta pregunta.</p>
-            </div>
-          </div>
-
-          <!-- ===== B. Ingresos, gastos y retiro ===== -->
-          <div class="block-title">Ingresos, gastos y retiro</div>
+          <div class="block-title">Ingresos ordinarios</div>
 
           <div class="q q-req">
             <span class="q-num">04</span>
             <div>
-              <span class="qlabel">¿Cuál es su ingreso mensual, de dónde proviene y qué tan predecible es?</span>
-              <span class="mini">Ingreso mensual</span>
+              <span class="qlabel">¿Cuál es su ingreso total mensual, de dónde proviene y qué tan predecible es?</span>
+              <span class="mini">Ingreso total mensual</span>
               <div class="amount">
                 <input required type="number" min="0" id="salario-monto" name="Ingreso mensual del titular (monto)" placeholder="2.700.000">
                 <select id="salario-moneda" name="Ingreso mensual del titular (moneda)"><option>CRC</option><option>USD</option></select>
               </div>
-              <span class="mini espacio">Fuente principal</span>
+              <span class="mini espacio">Fuente principal de ese ingreso</span>
               <select required id="fuente-ingreso" name="Fuente principal del ingreso">
                 <option value="" disabled selected>Seleccione una opción</option>
                 <option value="salario">Salario</option>
@@ -774,7 +760,7 @@
                 <option value="rentas">Rentas</option>
                 <option value="pension">Pensión (ya estoy pensionado o retirado)</option>
               </select>
-              <p class="hint">Si ya está retirado, indique como ingreso su pensión; si no recibe ingresos, escriba 0.</p>
+              <p class="hint">Sume todo lo que recibe por su trabajo o actividad: salario, utilidades de su empresa, honorarios u otros. No incluya pensiones, alquileres ni rentas, que se piden en la pregunta siguiente. Se proyecta hasta su independencia financiera. Si no recibe ingresos de este tipo, escriba 0.</p>
               <span class="mini espacio">Predictibilidad del ingreso de su hogar</span>
               <select required name="Predecibilidad del ingreso del hogar" id="c3">
                 <option value="" disabled selected>Seleccione una opción</option>
@@ -788,30 +774,9 @@
           </div>
 
           <div class="q q-req">
-            <span class="q-num">05</span>
-            <div>
-              <span class="qlabel">¿Cuál es su gasto familiar mensual y cómo espera que cambie en el retiro?</span>
-              <span class="mini">Gasto familiar mensual actual</span>
-              <div class="amount">
-                <input required type="number" min="1" id="gasto-monto" name="Gasto familiar mensual (monto)" placeholder="10.000">
-                <select id="gasto-moneda" name="Gasto familiar mensual (moneda)"><option>USD</option><option>CRC</option></select>
-              </div>
-              <p class="hint">Este gasto se proyecta con la inflación y, desde que sea financieramente independiente, determina el retiro anual del portafolio.</p>
-              <span class="mini espacio">En el retiro, ese gasto será</span>
-              <select required id="gasto-retiro" name="Gasto esperado en el retiro">
-                <option value="" disabled selected>Seleccione una opción</option>
-                <option value="menor">Menor que el actual</option>
-                <option value="igual">Similar al actual</option>
-                <option value="mayor">Mayor que el actual</option>
-              </select>
-              <p class="q-falta">Falta responder esta pregunta.</p>
-            </div>
-          </div>
-
-          <div class="q q-req">
             <span class="q-num">06</span>
             <div>
-              <span class="qlabel">¿Qué pensión espera recibir y qué otros ingresos tendrá cuando sea financieramente independiente?</span>
+              <span class="qlabel">¿Qué pensión espera recibir y qué otros ingresos recurrentes tiene o tendrá?</span>
               <span class="mini">Régimen de pensión</span>
               <select required id="pension-regimen" name="Régimen de pensión">
                 <option value="" disabled selected>Seleccione una opción</option>
@@ -835,18 +800,24 @@
                 </div>
                 <p class="hint">En el IVM, la edad ordinaria es 65 años. Si ya está pensionado, indique la edad a la que se pensionó.</p>
               </div>
-              <span class="mini espacio">¿Tendrá otros ingresos además de la pensión, como alquileres, rentas o un negocio?</span>
+              <span class="mini espacio">¿Recibe o recibirá otros ingresos recurrentes, como dividendos, intereses o rentas? No incluya los alquileres de los inmuebles que declara más adelante.</span>
               <select required id="otros-ing" name="Otros ingresos en el retiro">
                 <option value="" disabled selected>Seleccione una opción</option>
                 <option value="no">No</option>
                 <option value="si">Sí</option>
               </select>
               <div class="sub-q" id="otros-ing-detalle" hidden>
-                <span class="mini">Monto mensual estimado de esos ingresos, en valor de hoy</span>
+                <span class="mini">Monto mensual de esos ingresos, en valor de hoy</span>
                 <div class="amount">
                   <input type="number" min="1" id="otros-ing-monto" name="Otros ingresos mensuales en el retiro (monto)" placeholder="500.000">
                   <select id="otros-ing-moneda" name="Otros ingresos mensuales en el retiro (moneda)"><option>CRC</option><option>USD</option></select>
                 </div>
+                <span class="mini espacio">¿Desde cuándo los recibe?</span>
+                <select id="otros-ing-desde" name="Otros ingresos recurrentes: desde">
+                  <option value="" disabled selected>Seleccione una opción</option>
+                  <option value="hoy">Ya los recibo</option>
+                  <option value="independencia">A partir de mi independencia financiera</option>
+                </select>
               </div>
               <p class="q-falta">Falta responder esta pregunta.</p>
             </div>
@@ -945,8 +916,105 @@
             </div>
           </div>
 
-          <!-- ===== C. Patrimonio y obligaciones ===== -->
-          <div class="block-title">Patrimonio y obligaciones</div>
+          <div class="block-title">Ingresos extraordinarios</div>
+
+          <div class="q q-req">
+            <span class="q-num">00</span>
+            <div>
+              <span class="qlabel">¿Espera recibir ingresos extraordinarios, como bonos, herencias, premios u otros montos puntuales?</span>
+              <span class="mini espacio">Cantidad de ingresos extraordinarios</span>
+              <select required id="aportes-extra-n" name="Cantidad de aportes extraordinarios">
+                <option value="" disabled selected>Seleccione una opción</option>
+                <option value="0">No espero ingresos extraordinarios</option>
+                <option value="1">1 ingreso</option><option value="2">2 ingresos</option><option value="3">3 ingresos</option><option value="4">4 ingresos</option><option value="5">5 ingresos</option>
+              </select>
+              <div class="sub-q filas" id="aportes-extra-filas" hidden></div>
+              <p class="hint">Indique cada monto en dólares de hoy y el año en que lo recibiría. Las ventas de inmuebles o de su empresa se piden más adelante.</p>
+              <p class="q-falta">Falta responder esta pregunta.</p>
+            </div>
+          </div>
+
+          <div class="block-title">Gastos ordinarios</div>
+
+          <div class="q q-req">
+            <span class="q-num">05</span>
+            <div>
+              <span class="qlabel">¿Cuál es su gasto familiar mensual y cómo espera que cambie en el retiro?</span>
+              <span class="mini">Gasto familiar mensual actual</span>
+              <div class="amount">
+                <input required type="number" min="1" id="gasto-monto" name="Gasto familiar mensual (monto)" placeholder="10.000">
+                <select id="gasto-moneda" name="Gasto familiar mensual (moneda)"><option>USD</option><option>CRC</option></select>
+              </div>
+              <p class="hint">Gastos de vida recurrentes del hogar, sin incluir las cuotas de hipoteca y de deudas, que se piden aparte. Se proyecta con la inflación.</p>
+              <span class="mini espacio">En el retiro, ese gasto será</span>
+              <select required id="gasto-retiro" name="Gasto esperado en el retiro">
+                <option value="" disabled selected>Seleccione una opción</option>
+                <option value="menor">Menor que el actual</option>
+                <option value="igual">Similar al actual</option>
+                <option value="mayor">Mayor que el actual</option>
+              </select>
+              <p class="q-falta">Falta responder esta pregunta.</p>
+            </div>
+          </div>
+
+          <div class="q q-req">
+            <span class="q-num">04</span>
+            <div>
+              <span class="qlabel">¿Cubre o cubrirá gastos de las personas que dependen de usted, aparte del gasto familiar?</span>
+              <select required id="apoyos-n" name="Retiros para dependientes: cantidad"><option value="" disabled selected>Seleccione una opción</option><option value="0">No</option><option value="1">Sí, para 1 dependiente</option><option value="2">Sí, para 2 dependientes</option><option value="3">Sí, para 3 dependientes</option><option value="4">Sí, para 4 dependientes</option><option value="5">Sí, para 5 dependientes</option></select>
+              <p class="hint">Por ejemplo, la universidad de sus hijos o la manutención de su padre o su madre, con el monto anual en dólares de hoy y los años que durará.</p>
+              <div class="sub-q filas" id="apoyos-filas" hidden></div>
+              <p class="q-falta">Falta responder esta pregunta.</p>
+            </div>
+          </div>
+
+          <div class="q">
+            <span class="q-num">11</span>
+            <div>
+              <span class="qlabel">¿Cuáles son sus deudas y con qué reserva de liquidez cuenta?</span>
+              <div class="fila-grid">
+                <div><span class="mini">Saldo total de deudas</span>
+                  <div class="amount"><input type="number" min="0" id="deudas-saldo" name="Deudas: saldo total (monto)" placeholder="0">
+                  <select id="deudas-saldo-moneda" name="Deudas: saldo total (moneda)"><option>USD</option><option>CRC</option></select></div></div>
+                <div><span class="mini">Cuota mensual total</span>
+                  <div class="amount"><input type="number" min="0" id="deudas-cuota" name="Deudas: cuota mensual (monto)" placeholder="0">
+                  <select id="deudas-cuota-moneda" name="Deudas: cuota mensual (moneda)"><option>USD</option><option>CRC</option></select></div></div>
+              </div>
+              <div class="fila-grid"><div><span class="mini espacio">Plazo restante</span>
+                <div class="amount"><input type="number" min="0" max="40" id="deudas-plazo" name="Deudas: plazo restante (años)" placeholder="5"><div class="unit">años</div></div></div></div>
+              <p class="hint">Préstamos personales, prendarios, tarjetas de crédito u otros, sin incluir la hipoteca. La cuota se cuenta como gasto hasta que termine el plazo. Escriba 0 si no tiene deudas.</p>
+              <span class="mini espacio">Detalle de sus deudas (tipo de crédito y entidad)</span>
+              <input id="deudas-detalle" name="Deudas: detalle" placeholder="Préstamo prendario en Banco Nacional, tarjeta de crédito…">
+              <span class="mini espacio">Reserva de liquidez fuera de este portafolio</span>
+              <select id="reserva" name="Reserva de liquidez">
+                <option value="" disabled selected>Seleccione una opción</option>
+                <option value="ninguna">No mantengo una reserva</option>
+                <option value="menos3">Menos de 3 meses de gasto</option>
+                <option value="3a6">Entre 3 y 6 meses de gasto</option>
+                <option value="6a12">Entre 6 y 12 meses de gasto</option>
+                <option value="mas12">Más de 12 meses de gasto</option>
+              </select>
+              <p class="q-falta">Falta responder esta pregunta.</p>
+            </div>
+          </div>
+
+          <div class="block-title">Gastos extraordinarios</div>
+
+          <div class="q q-req">
+            <span class="q-num">00</span>
+            <div>
+              <span class="qlabel">¿Cuánto suman en un año sus gastos extraordinarios?</span>
+              <span class="mini">Monto anual, en dólares de hoy</span>
+              <div class="amount">
+                <input required type="number" min="0" id="gastos-extra-monto" name="Gastos extraordinarios anuales (US$ de hoy)" placeholder="8.000">
+                <div class="unit">US$ al año</div>
+              </div>
+              <p class="hint">Gastos que no ocurren todos los meses: viajes, reparaciones, cambio de vehículo, matrículas, impuestos o pólizas anuales. Si no los tiene, escriba 0. Las metas puntuales, como la compra de una propiedad, se piden más adelante.</p>
+              <p class="q-falta">Falta responder esta pregunta.</p>
+            </div>
+          </div>
+
+          <div class="block-title">Inversiones</div>
 
           <div class="q q-req">
             <span class="q-num">07</span>
@@ -957,20 +1025,7 @@
                 <input required type="number" min="0" id="capital-monto" name="Capital inicial invertido (monto)" placeholder="250.000">
                 <select id="capital-moneda" name="Capital inicial invertido (moneda)"><option>USD</option><option>CRC</option></select>
               </div>
-              <span class="mini espacio">Aporte anual, como porcentaje de su ingreso anual</span>
-              <div class="amount">
-                <input required type="number" min="0" max="100" step="0.1" id="aporte-pct" name="Aporte anual (% del ingreso)" placeholder="10">
-                <div class="unit">% del ingreso</div>
-              </div>
-              <p class="equivale" id="aporte-equivale"></p>
-              <p class="hint">Porcentaje de su ingreso que destina a este portafolio cada año, hasta ser financieramente independiente. <strong>No incluya aquí el ROP, el FCL ni la pensión voluntaria</strong>: se indican en la pregunta anterior.</p>
-              <span class="mini espacio">¿Planea hacer aportes extraordinarios a este portafolio, por ejemplo con un bono o una herencia?</span>
-              <select required id="aportes-extra-n" name="Cantidad de aportes extraordinarios">
-                <option value="" disabled selected>Seleccione una opción</option>
-                <option value="0">No lo planeo</option>
-                <option value="1">1 aporte</option><option value="2">2 aportes</option><option value="3">3 aportes</option><option value="4">4 aportes</option><option value="5">5 aportes</option>
-              </select>
-              <div class="sub-q filas" id="aportes-extra-filas" hidden></div>
+              <p class="hint">Cada año, lo que sobre de sus ingresos después de sus gastos se invierte en este portafolio, y lo que falte se retira de él.</p>
               <span class="mini espacio">Proporción de su patrimonio invertible total que representa este portafolio</span>
               <select required name="Peso del portafolio en el patrimonio" id="c5">
                 <option value="" disabled selected>Seleccione una opción</option>
@@ -979,21 +1034,6 @@
                 <option value="6.67">Entre un cuarto y la mitad</option>
                 <option value="10">Menos de un cuarto</option>
               </select>
-              <p class="q-falta">Falta responder esta pregunta.</p>
-            </div>
-          </div>
-
-          <div class="q">
-            <span class="q-num">08</span>
-            <div>
-              <span class="qlabel">¿En cuánto tiempo espera realizar el primer retiro de este portafolio, y de cuánto sería?</span>
-              <div class="fila-grid">
-                <div><span class="mini">Años hasta el primer retiro</span>
-                  <div class="amount"><input type="number" min="0" max="80" id="c1" name="Años hasta el primer retiro" placeholder="5"><div class="unit">años</div></div></div>
-                <div><span class="mini">Monto, en dólares de hoy</span>
-                  <div class="amount"><input type="number" min="0" id="c1-monto" name="Monto del primer retiro (US$ de hoy)" placeholder="50.000"><div class="unit">US$</div></div></div>
-              </div>
-              <p class="hint">Se refiere a la primera salida de dinero de esta cartera, sea o no por jubilación: la compra de una propiedad, un aporte a un negocio o cualquier otro uso.</p>
               <p class="q-falta">Falta responder esta pregunta.</p>
             </div>
           </div>
@@ -1080,64 +1120,22 @@
             </div>
           </div>
 
+          <div class="block-title">Desinversiones</div>
+
           <div class="q">
-            <span class="q-num">11</span>
+            <span class="q-num">08</span>
             <div>
-              <span class="qlabel">¿Cuáles son sus deudas y con qué reserva de liquidez cuenta?</span>
+              <span class="qlabel">¿En cuánto tiempo espera realizar el primer retiro de este portafolio, y de cuánto sería?</span>
               <div class="fila-grid">
-                <div><span class="mini">Saldo total de deudas</span>
-                  <div class="amount"><input type="number" min="0" id="deudas-saldo" name="Deudas: saldo total (monto)" placeholder="0">
-                  <select id="deudas-saldo-moneda" name="Deudas: saldo total (moneda)"><option>USD</option><option>CRC</option></select></div></div>
-                <div><span class="mini">Cuota mensual total</span>
-                  <div class="amount"><input type="number" min="0" id="deudas-cuota" name="Deudas: cuota mensual (monto)" placeholder="0">
-                  <select id="deudas-cuota-moneda" name="Deudas: cuota mensual (moneda)"><option>USD</option><option>CRC</option></select></div></div>
+                <div><span class="mini">Años hasta el primer retiro</span>
+                  <div class="amount"><input type="number" min="0" max="80" id="c1" name="Años hasta el primer retiro" placeholder="5"><div class="unit">años</div></div></div>
+                <div><span class="mini">Monto, en dólares de hoy</span>
+                  <div class="amount"><input type="number" min="0" id="c1-monto" name="Monto del primer retiro (US$ de hoy)" placeholder="50.000"><div class="unit">US$</div></div></div>
               </div>
-              <p class="hint">Préstamos personales, prendarios, tarjetas de crédito u otros, sin incluir la hipoteca. Escriba 0 si no tiene deudas.</p>
-              <span class="mini espacio">Detalle de sus deudas (tipo de crédito y entidad)</span>
-              <input id="deudas-detalle" name="Deudas: detalle" placeholder="Préstamo prendario en Banco Nacional, tarjeta de crédito…">
-              <span class="mini espacio">Reserva de liquidez fuera de este portafolio</span>
-              <select id="reserva" name="Reserva de liquidez">
-                <option value="" disabled selected>Seleccione una opción</option>
-                <option value="ninguna">No mantengo una reserva</option>
-                <option value="menos3">Menos de 3 meses de gasto</option>
-                <option value="3a6">Entre 3 y 6 meses de gasto</option>
-                <option value="6a12">Entre 6 y 12 meses de gasto</option>
-                <option value="mas12">Más de 12 meses de gasto</option>
-              </select>
+              <p class="hint">Primera salida de dinero de esta cartera, sea o no por jubilación: un aporte a un negocio u otro uso. Si ese retiro ya es una de sus metas, no lo repita aquí.</p>
               <p class="q-falta">Falta responder esta pregunta.</p>
             </div>
           </div>
-
-          <!-- ===== D. Protección ===== -->
-          <div class="block-title">Protección</div>
-
-          <div class="q">
-            <span class="q-num">12</span>
-            <div>
-              <span class="qlabel">¿Qué seguros tiene vigentes?</span>
-              <div class="multi" id="seguros-multi">
-                <button type="button" class="multi-btn" aria-expanded="false"><span class="multi-txt vacio">Seleccione una o varias opciones</span></button>
-                <div class="multi-panel" hidden>
-                  <label class="opcion"><input type="checkbox" id="seguro-vida" value="vida"> Vida</label>
-                  <label class="opcion"><input type="checkbox" id="seguro-medico" value="gastosMedicos"> Gastos médicos</label>
-                  <label class="opcion"><input type="checkbox" id="seguro-invalidez" value="invalidez"> Invalidez</label>
-                  <label class="opcion"><input type="checkbox" id="seguro-ninguno" value="ninguno"> Ninguno de los anteriores</label>
-                </div>
-              </div>
-              <input type="hidden" id="seguros-sel" name="Seguros vigentes">
-              <div class="sub-q" id="vida-detalle" hidden>
-                <span class="mini">Suma asegurada del seguro de vida</span>
-                <div class="amount">
-                  <input type="number" min="0" id="vida-suma" name="Suma asegurada de vida (monto)" placeholder="250.000">
-                  <select id="vida-moneda" name="Suma asegurada de vida (moneda)"><option>USD</option><option>CRC</option></select>
-                </div>
-              </div>
-              <p class="q-falta">Falta responder esta pregunta.</p>
-            </div>
-          </div>
-
-          <!-- ===== E. Metas y preferencias ===== -->
-          <div class="block-title">Metas y preferencias</div>
 
           <div class="q q-req">
             <span class="q-num">13</span>
@@ -1169,6 +1167,33 @@
                 </div>
                 <p class="hint">Exprese el monto en poder adquisitivo actual. La proyección lo compara contra el portafolio en términos reales.</p>
               </div>
+            </div>
+          </div>
+
+          <div class="block-title">Otros datos</div>
+
+          <div class="q">
+            <span class="q-num">12</span>
+            <div>
+              <span class="qlabel">¿Qué seguros tiene vigentes?</span>
+              <div class="multi" id="seguros-multi">
+                <button type="button" class="multi-btn" aria-expanded="false"><span class="multi-txt vacio">Seleccione una o varias opciones</span></button>
+                <div class="multi-panel" hidden>
+                  <label class="opcion"><input type="checkbox" id="seguro-vida" value="vida"> Vida</label>
+                  <label class="opcion"><input type="checkbox" id="seguro-medico" value="gastosMedicos"> Gastos médicos</label>
+                  <label class="opcion"><input type="checkbox" id="seguro-invalidez" value="invalidez"> Invalidez</label>
+                  <label class="opcion"><input type="checkbox" id="seguro-ninguno" value="ninguno"> Ninguno de los anteriores</label>
+                </div>
+              </div>
+              <input type="hidden" id="seguros-sel" name="Seguros vigentes">
+              <div class="sub-q" id="vida-detalle" hidden>
+                <span class="mini">Suma asegurada del seguro de vida</span>
+                <div class="amount">
+                  <input type="number" min="0" id="vida-suma" name="Suma asegurada de vida (monto)" placeholder="250.000">
+                  <select id="vida-moneda" name="Suma asegurada de vida (moneda)"><option>USD</option><option>CRC</option></select>
+                </div>
+              </div>
+              <p class="q-falta">Falta responder esta pregunta.</p>
             </div>
           </div>
 
@@ -1502,7 +1527,7 @@ document.addEventListener('input', function(e){
 
 // Los montos admiten decimales (centavos); edades, años y cantidades siguen siendo enteros.
 const ENTEROS = new Set(['edad_retiro','edad-pareja','c1','i3-horizonte','empresa-anios','f-rop-anio','f-fcl-anio','f-vol-anio',
-  'pension-edad','hipoteca-plazo','hipoteca-tasa','aporte-pct','moneda-usd','moneda-crc']);
+  'pension-edad','hipoteca-plazo','hipoteca-tasa','deudas-plazo','moneda-usd','moneda-crc']);
 // Montos con separadores mientras se escribe. La convención sigue la moneda del monto:
 // dólares 250,000.50 · colones 1.000.000,50. El valor numérico se lee con numDe().
 function monedaDe(x){
@@ -1711,7 +1736,7 @@ function revisarAviso(){
 const CONDICIONALES = [
   {control:'plan',            detalle:'pareja-detalle',        campos:['edad-pareja','ingreso-pareja-monto'], aplica: v => v === 'conjunta'},
   {control:'otros-dep-n',     detalle:'otros-dep-detalle',     campos:['otros-dep-monto'],             aplica: v => +v > 0},
-  {control:'otros-ing',       detalle:'otros-ing-detalle',     campos:['otros-ing-monto'],             aplica: v => v === 'si'},
+  {control:'otros-ing',       detalle:'otros-ing-detalle',     campos:['otros-ing-monto','otros-ing-desde'], aplica: v => v === 'si'},
   {control:'f-rop-tiene',     detalle:'f-rop-detalle',         campos:['f-rop-saldo','f-rop-modalidad'], aplica: v => v === 'si'},
   {control:'f-fcl-tiene',     detalle:'f-fcl-detalle',         campos:['f-fcl-saldo','f-fcl-traslado'], aplica: v => v === 'si'},
   {control:'f-vol-tiene',     detalle:'f-vol-detalle',         campos:['f-vol-saldo','f-vol-aporte','f-vol-traslado'], aplica: v => v === 'si'},
@@ -1793,9 +1818,11 @@ const REPETIBLES = [
       </div>
     </div></div>`},
   {control:'aportes-extra-n', contenedor:'aportes-extra-filas', max:5, fila: i => `
-    <div class="fila-rep"><span class="fila-tit">Aporte extraordinario ${i+1}</span><div class="fila-grid">
-      <div><span class="mini">Monto, en dólares de hoy</span><input required type="number" min="1" data-k="monto" name="Aporte extraordinario ${i+1}: monto (US$ de hoy)" placeholder="50.000"></div>
-      <div><span class="mini">Año del aporte</span><input required type="number" min="${ANIO_ACTUAL}" max="2100" data-k="anio" name="Aporte extraordinario ${i+1}: año" placeholder="${ANIO_ACTUAL+3}"></div>
+    <div class="fila-rep"><span class="fila-tit">Ingreso extraordinario ${i+1}</span>
+      <div><span class="mini">Concepto</span><input type="text" data-k="concepto" name="Ingreso extraordinario ${i+1}: concepto" placeholder="Bono, herencia, premio…"></div>
+      <div class="fila-grid" style="margin-top:12px;">
+      <div><span class="mini">Monto, en dólares de hoy</span><input required type="number" min="1" data-k="monto" name="Ingreso extraordinario ${i+1}: monto (US$ de hoy)" placeholder="50.000"></div>
+      <div><span class="mini">Año en que lo recibiría</span><input required type="number" min="${ANIO_ACTUAL}" max="2100" data-k="anio" name="Ingreso extraordinario ${i+1}: año" placeholder="${ANIO_ACTUAL+3}"></div>
     </div></div>`},
   {control:'i3-extra-n', contenedor:'i3-extra-filas', max:3, fila: i => `
     <div class="fila-rep"><span class="fila-tit">Retiro extraordinario ${i+1}</span><div class="fila-grid">
@@ -2236,8 +2263,10 @@ document.getElementById('form').addEventListener('submit', async function(e){
       traslado: k === 'rop' ? 'pension' : val('f-' + k + '-traslado'),
       modalidad: k === 'rop' ? val('f-rop-modalidad') : null,
       anio: (k === 'fcl' && val('f-fcl-traslado') === 'quinquenio') || (k === 'vol' && val('f-vol-traslado') === 'anio') ? +val('f-' + k + '-anio') : null }])),
-    otrosIngresosRetiro: val('otros-ing') === 'si' ? {montoMensual: +val('otros-ing-monto'), moneda: val('otros-ing-moneda')} : null,
-    aportesExtraordinarios: leerFilas('aportes-extra-filas').map(r => ({montoUsdHoy: r.monto, anio: r.anio})),
+    otrosIngresosRetiro: val('otros-ing') === 'si' ? {montoMensual: +val('otros-ing-monto'), moneda: val('otros-ing-moneda'), desde: val('otros-ing-desde') || 'independencia'} : null,
+    // Ingresos extraordinarios (bonos, herencias u otros montos puntuales), en dólares de hoy
+    aportesExtraordinarios: leerFilas('aportes-extra-filas').map(r => ({concepto: r.concepto || 'Ingreso extraordinario', montoUsdHoy: r.monto, anio: r.anio})),
+    gastosExtraordinariosAnualesUsdHoy: val('gastos-extra-monto') === '' ? 0 : +val('gastos-extra-monto'),
     // Ventas de inmuebles y de la empresa que el cliente invertiría en este portafolio
     ventasActivos: [].concat(
       leerFilas('inmuebles-filas').filter(f => f.vende === 'si' && f.invierte === 'si').map(f => ({concepto: 'Venta de ' + (f.nombre || 'inmueble'), anio: f.anio,
@@ -2260,8 +2289,9 @@ document.getElementById('form').addEventListener('submit', async function(e){
     capitalMonto: +val('capital-monto'),
     capitalMoneda: val('capital-moneda'),
     // El aporte se declara como porcentaje del ingreso; el monto anual se deriva de él
-    aportePctIngreso: +val('aporte-pct'),
-    aporteMonto: Math.round((+val('salario-monto') || 0) * 12 * (+val('aporte-pct') || 0) / 100 * 100) / 100,
+    // El aporte al portafolio es el superávit de cada año (ingresos menos gastos)
+    aportePctIngreso: null,
+    aporteMonto: 0,
     aporteMoneda: val('salario-moneda'),
     comentarios: val('comentarios').trim(),
     // Página 3 ampliada. Se registran para el análisis del asesor; por ahora no
@@ -2315,6 +2345,7 @@ document.getElementById('form').addEventListener('submit', async function(e){
       deudas: {
         saldo: val('deudas-saldo') === '' ? null : +val('deudas-saldo'), saldoMoneda: val('deudas-saldo-moneda'),
         cuotaMensual: val('deudas-cuota') === '' ? null : +val('deudas-cuota'), cuotaMoneda: val('deudas-cuota-moneda'),
+        plazoRestanteAnios: val('deudas-plazo') === '' ? null : +val('deudas-plazo'),
         detalle: val('deudas-detalle').trim()
       },
       reservaLiquidez: val('reserva')
