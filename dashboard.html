@@ -758,6 +758,11 @@ function proyectar(c, sup, opts){
   const capital        = aUsd(c.capitalMonto, c.capitalMoneda, tc);
   const aniosAcum   = Math.max(0, c.edadRetiro - c.edad);
   const totalAnios  = Math.max(1, sup.edadFinal - c.edad + 1);
+  // Ingreso total (actividad): hasta la edad que indicó el cliente; si no la indicó, hasta la
+  // independencia. Si ya es independiente y aun así declara ingresos (por ejemplo, de su
+  // empresa), se asume que los sigue recibiendo durante toda la proyección.
+  const edadFinIngreso = +c.ingresoHastaEdad > 0 ? +c.ingresoHastaEdad : (aniosAcum > 0 ? c.edadRetiro : sup.edadFinal);
+  const periodosIngreso = Math.max(0, Math.min(totalAnios, edadFinIngreso - c.edad + (aniosAcum > 0 && !(+c.ingresoHastaEdad > 0) ? 0 : 1)));
 
   const rf = (sup.rendimientoFondos ?? 6)/100;
   const fondos = fondosDe(c, sup, aniosAcum);
@@ -807,7 +812,7 @@ function proyectar(c, sup, opts){
       saldoF[k] = m.saldoFinal; traslado += m.traslado; pensionRop += m.pago;
     });
     // Ingresos ordinarios
-    const ingresoActividad = enRetiro ? 0 : ingresoMensual * 12 * idx;
+    const ingresoActividad = t <= periodosIngreso ? ingresoMensual * 12 * idx : 0;
     const otrosIngresos = otrosIngresosMensual && t >= tOtros ? otrosIngresosMensual * 12 * idx : 0;
     const alquiler = alquileres.filter(a => anio <= a.hasta).reduce((x, a) => x + a.mensual, 0) * 12 * idx;
     const pension = (pensionMensual && t >= tPension) ? pensionMensual * 12 * Math.pow(1 + inf, tPension - 1) * Math.pow(1 + infPen, t - tPension) : 0;
@@ -857,7 +862,7 @@ function proyectar(c, sup, opts){
     traeFondos: fondos.length > 0, fondos, filasFondos, rendimientoFondos: rf,
     traeTrasladoFondos: fondos.some(f => f.regla !== 'pension'), traePensionRop: fondos.some(f => f.regla === 'pension'),
     ropSaldoFinal: (() => { const k = fondos.findIndex(f => f.k === 'rop'); return k < 0 ? 0 : filasFondos[k][filasFondos[k].length - 1].saldoFinal; })(),
-    pensionMensual, infPen, factorGasto, gastoEnRetiro: gr || null, metas, ingresoMensual, otrosIngresosMensual, tOtros,
+    pensionMensual, infPen, factorGasto, gastoEnRetiro: gr || null, metas, ingresoMensual, otrosIngresosMensual, tOtros, periodosIngreso, edadFinIngreso,
     alquileres, cuotaHip, cuotaDeu, gastosExtraAnual, ingExtra, ventas, apoyos, primer,
     aportesExtra: ingExtra.concat(ventas),
     traePension: pensionMensual > 0, traeMetas: metas.length > 0, traeOtros: otrosIngresosMensual > 0,
@@ -2404,7 +2409,7 @@ function renderDetalle(c){
              c.capitalMoneda === 'CRC' ? 'Declarado en colones' : ''],
             ['Inversión del primer año', num(p.filas[0] ? p.filas[0].inversion : 0),
              'Superávit del año (ingresos menos gastos) que entra al portafolio'],
-            ['Ingreso total mensual', num(p.ingresoMensual), 'Hasta la independencia financiera'],
+            ['Ingreso total mensual', num(p.ingresoMensual), p.ingresoMensual ? (p.periodosIngreso >= p.totalAnios ? 'Durante toda la proyección' : p.periodosIngreso ? 'Hasta los ' + (c.edad + p.periodosIngreso - 1) + ' años' : 'No entra a la proyección') : ''],
             ['Primer retiro del portafolio',
              cap.aniosPrimerRetiro!=null ? 'En ' + cap.aniosPrimerRetiro + ' años' : '—',
              cap.montoPrimerRetiroUsdHoy!=null ? num(cap.montoPrimerRetiroUsdHoy) + ' en dólares de hoy' : ''],
@@ -3217,6 +3222,7 @@ function xmlProyeccion(c, p, sup){
   par(5, 'F', 'G', 'Edad de inicio de la pensión', p.edadPension, EST.ent);
   par(6, 'F', 'G', 'Período del primer pago de pensión', p.tPension, EST.ent, `MAX(${p.aniosAcum + 1},G5-C${F0}+1)`);
   par(7, 'F', 'G', 'Años hasta la independencia', p.aniosAcum, EST.ent);
+  par(8, 'F', 'G', 'Años con ingreso total', p.periodosIngreso, EST.ent);
   // ---- Gastos (I1:J7) ----
   const vGas = enUsd(c.gastoMonto, c.gastoMoneda, p.gastoMensual);
   par(1, 'I', 'J', 'Gasto familiar mensual', vGas.v, EST.num, vGas.f);
@@ -3259,7 +3265,7 @@ function xmlProyeccion(c, p, sup){
   const idx = r => `(1+$D$3)^(D${r}-1)`;
   const RT = (row) => `$M$${row}:$V$${row}`;
   const fx = {
-    ingresoActividad: r => `IF(D${r}<=$G$7,$G$1*12*${idx(r)},0)`,
+    ingresoActividad: r => `IF(D${r}<=$G$8,$G$1*12*${idx(r)},0)`,
     otrosIngresos:    r => `IF(AND($G$2>0,D${r}>=$G$3),$G$2*12*${idx(r)},0)`,
     alquiler:         r => `SUMPRODUCT((${RT(9)}>=B${r})*${RT(8)})*12*${idx(r)}`,
     pension:          r => `IF(AND($G$4>0,D${r}>=$G$6),$G$4*12*(1+$D$3)^($G$6-1)*(1+$D$4)^(D${r}-$G$6),0)`,

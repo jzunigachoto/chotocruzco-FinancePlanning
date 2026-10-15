@@ -751,6 +751,9 @@
                 <input required type="number" min="0" id="salario-monto" name="Ingreso mensual del titular (monto)" placeholder="2.700.000">
                 <select id="salario-moneda" name="Ingreso mensual del titular (moneda)"><option>CRC</option><option>USD</option></select>
               </div>
+              <span class="mini espacio">¿Hasta qué edad espera recibir este ingreso?</span>
+              <div class="amount"><input type="number" min="18" max="100" id="ingreso-hasta" name="Ingreso total: hasta la edad" placeholder="Su edad de independencia"><div class="unit">años</div></div>
+              <p class="hint">Déjelo en blanco si lo recibirá hasta su independencia financiera. Si, por ejemplo, su empresa le seguirá pagando después, indique hasta qué edad.</p>
               <span class="mini espacio">Fuente principal de ese ingreso</span>
               <select required id="fuente-ingreso" name="Fuente principal del ingreso">
                 <option value="" disabled selected>Seleccione una opción</option>
@@ -1527,7 +1530,7 @@ document.addEventListener('input', function(e){
 
 // Los montos admiten decimales (centavos); edades, años y cantidades siguen siendo enteros.
 const ENTEROS = new Set(['edad_retiro','edad-pareja','c1','i3-horizonte','empresa-anios','f-rop-anio','f-fcl-anio','f-vol-anio',
-  'pension-edad','hipoteca-plazo','hipoteca-tasa','deudas-plazo','moneda-usd','moneda-crc']);
+  'pension-edad','hipoteca-plazo','hipoteca-tasa','deudas-plazo','ingreso-hasta','moneda-usd','moneda-crc']);
 // Montos con separadores mientras se escribe. La convención sigue la moneda del monto:
 // dólares 250,000.50 · colones 1.000.000,50. El valor numérico se lee con numDe().
 function monedaDe(x){
@@ -2282,6 +2285,7 @@ document.getElementById('form').addEventListener('submit', async function(e){
     },
     preferenciaMoneda: val('moneda-usd') === '' ? '' : val('moneda-usd') + '% en dólares y ' + (100 - +val('moneda-usd')) + '% en colones',
     porcentajeUsd: val('moneda-usd') === '' ? null : +val('moneda-usd'),
+    ingresoHastaEdad: val('ingreso-hasta') === '' ? null : +val('ingreso-hasta'),
     salarioMonto: +val('salario-monto'),
     salarioMoneda: val('salario-moneda'),
     gastoMonto: +val('gasto-monto'),

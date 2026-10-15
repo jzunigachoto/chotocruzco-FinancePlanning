@@ -1011,7 +1011,7 @@ document.addEventListener('input', function(e){
 
 // Los montos admiten decimales (centavos); edades, años y cantidades siguen siendo enteros.
 const ENTEROS = new Set(['edad_retiro','edad-pareja','c1','i3-horizonte','empresa-anios','f-rop-anio','f-fcl-anio','f-vol-anio',
-  'pension-edad','hipoteca-plazo','hipoteca-tasa','deudas-plazo','moneda-usd','moneda-crc']);
+  'pension-edad','hipoteca-plazo','hipoteca-tasa','deudas-plazo','ingreso-hasta','moneda-usd','moneda-crc']);
 // Montos con separadores mientras se escribe. La convención sigue la moneda del monto:
 // dólares 250,000.50 · colones 1.000.000,50. El valor numérico se lee con numDe().
 function monedaDe(x){
@@ -1751,6 +1751,7 @@ document.getElementById('form').addEventListener('submit', async function(e){
     },
     preferenciaMoneda: val('moneda-usd') === '' ? '' : val('moneda-usd') + '% en dólares y ' + (100 - +val('moneda-usd')) + '% en colones',
     porcentajeUsd: val('moneda-usd') === '' ? null : +val('moneda-usd'),
+    ingresoHastaEdad: val('ingreso-hasta') === '' ? null : +val('ingreso-hasta'),
     salarioMonto: +val('salario-monto'),
     salarioMoneda: val('salario-moneda'),
     gastoMonto: +val('gasto-monto'),
