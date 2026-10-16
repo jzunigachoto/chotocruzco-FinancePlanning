@@ -213,6 +213,11 @@
   .filas[hidden]{display:none;}
   .fila-rep{margin-top:16px;}
   .fila-rep:first-child{margin-top:4px;}
+  .opciones-estr{display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;margin:6px 0 4px;}
+  @media (max-width:560px){ .opciones-estr{grid-template-columns:1fr;} }
+  .fila-tabla{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) minmax(0,1.4fr);gap:0 18px;align-items:end;}
+  .fila-tabla .fila-tit{margin:0 0 10px;}
+  @media (max-width:560px){ .fila-tabla{grid-template-columns:1fr;} }
   .fila-rep .fila-tit{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;
     color:#918042;font-weight:600;margin-bottom:6px;}
   #inmuebles-filas{margin-top:14px;}
@@ -565,11 +570,11 @@
               <span class="qlabel">¿Qué combinación de rendimiento esperado y pérdida máxima en un año aceptaría?</span>
               <select required name="Q6 - Retorno esperado y caída máxima" id="q6">
                 <option value="" disabled selected>Seleccione una opción</option>
-                <option value="0">Rendimiento esperado de 5% a 5,5% anual · pérdida máxima de hasta −5% en un año (con US$100.000, podría bajar a US$95.000)</option>
-                <option value="2.5">Rendimiento esperado de 6% a 6,5% anual · pérdida máxima de hasta −7% en un año (con US$100.000, podría bajar a US$93.000)</option>
-                <option value="5">Rendimiento esperado de 7% a 7,5% anual · pérdida máxima de hasta −9% en un año (con US$100.000, podría bajar a US$91.000)</option>
-                <option value="7.5">Rendimiento esperado de 8% a 8,5% anual · pérdida máxima de hasta −12% en un año (con US$100.000, podría bajar a US$88.000)</option>
-                <option value="10">Rendimiento esperado de 9% a 9,5% anual · pérdida máxima de hasta −16% en un año (con US$100.000, podría bajar a US$84.000)</option>
+                <option value="0">Rendimiento esperado anual de 5% a 5,5% · pérdida anual esperada de −5%</option>
+                <option value="2.5">Rendimiento esperado anual de 6% a 6,5% · pérdida anual esperada de −7%</option>
+                <option value="5">Rendimiento esperado anual de 7% a 7,5% · pérdida anual esperada de −9%</option>
+                <option value="7.5">Rendimiento esperado anual de 8% a 8,5% · pérdida anual esperada de −12%</option>
+                <option value="10">Rendimiento esperado anual de 9% a 9,5% · pérdida anual esperada de −16%</option>
               </select>
               <p class="q-falta">Falta responder esta pregunta.</p>
             </div>
@@ -1221,6 +1226,8 @@ const CONDICIONALES = [
   {control:'plan',            detalle:'pareja-detalle',        campos:['edad-pareja','ingreso-pareja-monto'], aplica: v => v === 'conjunta'},
   {control:'otros-dep-n',     detalle:'otros-dep-detalle',     campos:['otros-dep-monto'],             aplica: v => +v > 0},
   {control:'otros-ing',       detalle:'otros-ing-detalle',     campos:['otros-ing-monto','otros-ing-desde'], aplica: v => v === 'si'},
+  {control:'otros-ing-desde', detalle:'otros-ing-anio-detalle', campos:['otros-ing-anio'],           aplica: v => v === 'anio'},
+  {control:'apoyos-tiene',    detalle:'apoyos-detalle',        campos:['apoyos-n'],                    aplica: v => v === 'si'},
   {control:'f-rop-tiene',     detalle:'f-rop-detalle',         campos:['f-rop-saldo','f-rop-modalidad'], aplica: v => v === 'si'},
   {control:'f-fcl-tiene',     detalle:'f-fcl-detalle',         campos:['f-fcl-saldo','f-fcl-traslado'], aplica: v => v === 'si'},
   {control:'f-vol-tiene',     detalle:'f-vol-detalle',         campos:['f-vol-saldo','f-vol-aporte','f-vol-traslado'], aplica: v => v === 'si'},
@@ -1229,9 +1236,13 @@ const CONDICIONALES = [
   {control:'pension-regimen', detalle:'pension-detalle',       campos:['pension-monto','pension-edad'], aplica: v => !!v && v !== 'ninguno'},
   {control:'vivienda',        detalle:'hipoteca-detalle',      campos:['hipoteca-saldo','hipoteca-cuota','hipoteca-tasa','hipoteca-plazo'], aplica: v => v === 'hipoteca'},
   {control:'inmuebles-n',     detalle:'inmuebles-detalle',     campos:[],                              aplica: v => +v > 0},
-  {control:'empresa',         detalle:'empresa-detalle',       campos:['empresa-valor','empresa-plan'], aplica: v => v === 'si'},
+  {control:'empresa',         detalle:'empresa-detalle',       campos:['empresa-part','empresa-valor','empresa-plan'], aplica: v => v === 'si'},
   {control:'empresa-plan',    detalle:'empresa-anios-detalle', campos:['empresa-anios'],               aplica: v => v === 'vender' || v === 'traspasar'},
   {control:'empresa-plan',    detalle:'empresa-invierte-detalle', campos:['empresa-invierte'],         aplica: v => v === 'vender'},
+  {control:'empresa-invierte', detalle:'empresa-pct-detalle',  campos:['empresa-pct'],                 aplica: v => v === 'parte'},
+  {control:'deudas-tiene',    detalle:'deudas-detalle-q',      campos:['deudas-saldo','deudas-cuota','deudas-plazo'], aplica: v => v === 'si'},
+  {control:'pe-tiene',        detalle:'pe-detalle',            campos:['pe-valor'],                    aplica: v => v === 'si'},
+  {control:'c1-tiene',        detalle:'c1-detalle',            campos:['c1','c1-monto'],               aplica: v => v === 'si'},
   {control:'seguro-vida',     detalle:'vida-detalle',          campos:['vida-suma'],                   aplica: v => v === true},
   {control:'herencia',        detalle:'herencia-detalle',      campos:['herencia-monto'],              aplica: v => v === 'herencia'}
 ];
@@ -1282,8 +1293,11 @@ const REPETIBLES = [
           <option value="" disabled selected>Seleccione</option><option value="no">No</option><option value="si">Sí</option></select></div>
         <div class="fila-venta" hidden><span class="mini">Año estimado de la venta</span><input type="number" min="${ANIO_ACTUAL}" max="2100" data-k="anio" data-req-venta="1" name="Inmueble ${i+1}: año de venta" placeholder="${ANIO_ACTUAL+5}"></div>
       </div>
-      <div class="fila-venta" hidden style="margin-top:12px;"><span class="mini">¿Invertiría el dinero de la venta en este portafolio?</span><select data-k="invierte" data-req-venta="1" name="Inmueble ${i+1}: invierte la venta en el portafolio">
-        <option value="" disabled selected>Seleccione</option><option value="si">Sí, lo invertiría aquí</option><option value="no">No</option></select></div>
+      <div class="fila-grid fila-venta" hidden style="margin-top:12px;">
+        <div><span class="mini">¿Invertiría el dinero de la venta en este portafolio?</span><select data-k="invierte" data-req-venta="1" data-inv="1" name="Inmueble ${i+1}: invierte la venta en el portafolio"><option value="" disabled selected>Seleccione</option><option value="si">Sí, todo</option><option value="parte">Sí, una parte</option><option value="analisis">Sujeto a análisis</option><option value="no">No</option></select></div>
+        <div class="fila-pct" hidden><span class="mini">Porcentaje de la venta que invertiría</span><div class="amount"><input type="number" min="1" max="99" data-k="pct" name="Inmueble ${i+1}: porcentaje de la venta que invierte" placeholder="50"><div class="unit">%</div></div></div>
+      </div>
+      <p class="hint fila-venta" hidden style="margin-top:8px;">El alquiler se proyecta hasta el año anterior a la venta. La parte de la venta que invierta aquí entra al portafolio como desinversión; si está sujeta a análisis, no se incluye en la proyección.</p>
     </div>`},
   {control:'apoyos-n', contenedor:'apoyos-filas', max:5, fila: i => `
     <div class="fila-rep"><span class="fila-tit">Dependiente ${i+1}</span><div class="fila-grid">
@@ -1302,11 +1316,16 @@ const REPETIBLES = [
       </div>
     </div></div>`},
   {control:'aportes-extra-n', contenedor:'aportes-extra-filas', max:5, fila: i => `
-    <div class="fila-rep"><span class="fila-tit">Ingreso extraordinario ${i+1}</span>
-      <div><span class="mini">Concepto</span><input type="text" data-k="concepto" name="Ingreso extraordinario ${i+1}: concepto" placeholder="Bono, herencia, premio…"></div>
-      <div class="fila-grid" style="margin-top:12px;">
+    <div class="fila-rep fila-tabla"><span class="fila-tit">Ingreso extraordinario ${i+1}</span>
+      <div><span class="mini">Año</span><input required type="number" min="${ANIO_ACTUAL}" max="2100" data-k="anio" name="Ingreso extraordinario ${i+1}: año" placeholder="${ANIO_ACTUAL+3}"></div>
       <div><span class="mini">Monto, en dólares de hoy</span><input required type="number" min="1" data-k="monto" name="Ingreso extraordinario ${i+1}: monto (US$ de hoy)" placeholder="50.000"></div>
-      <div><span class="mini">Año en que lo recibiría</span><input required type="number" min="${ANIO_ACTUAL}" max="2100" data-k="anio" name="Ingreso extraordinario ${i+1}: año" placeholder="${ANIO_ACTUAL+3}"></div>
+    </div>`},
+  {control:'ventas-n', contenedor:'ventas-filas', max:5, fila: i => `
+    <div class="fila-rep"><span class="fila-tit">Desinversión ${i+1}</span>
+      <div><span class="mini">Activo que vendería</span><input required type="text" data-k="activo" name="Desinversión ${i+1}: activo" placeholder="Lote en Grecia, acciones de…"></div>
+      <div class="fila-grid" style="margin-top:12px;">
+      <div><span class="mini">Año de la venta</span><input required type="number" min="${ANIO_ACTUAL}" max="2100" data-k="anio" name="Desinversión ${i+1}: año" placeholder="${ANIO_ACTUAL+5}"></div>
+      <div><span class="mini">Monto que entraría al portafolio, en dólares de hoy</span><input required type="number" min="1" data-k="monto" name="Desinversión ${i+1}: monto (US$ de hoy)" placeholder="150.000"></div>
     </div></div>`},
   {control:'i3-extra-n', contenedor:'i3-extra-filas', max:3, fila: i => `
     <div class="fila-rep"><span class="fila-tit">Retiro extraordinario ${i+1}</span><div class="fila-grid">
@@ -1325,7 +1344,13 @@ const REPETIBLES = [
       <div><span class="mini">Prioridad</span><select required data-k="prioridad" name="Meta ${i+1}: prioridad">
         <option value="" disabled selected>Seleccione</option>
         <option value="esencial">Esencial</option><option value="deseable">Deseable</option></select></div>
-    </div></div>`}
+    </div>
+      <div style="margin-top:12px;"><span class="mini">¿Cómo la financiará?</span><select required data-k="financia" name="Meta ${i+1}: financiamiento">
+        <option value="" disabled selected>Seleccione</option>
+        <option value="portafolio">Con una salida del portafolio</option>
+        <option value="credito-portafolio">Con un crédito respaldado por el portafolio</option>
+        <option value="credito-bancario">Con un crédito bancario</option></select></div>
+    </div>`}
 ];
 // Inmuebles: la venta y su destino se piden solo si el cliente estima venderlo
 function sincronizarVentas(raiz){
@@ -1425,6 +1450,22 @@ document.addEventListener('click', function(e){
 document.addEventListener('DOMContentLoaded', sincronizarDependientes);
 if(document.readyState !== 'loading') sincronizarDependientes();
 
+// Inmuebles: el porcentaje de la venta se pide solo si invertiría una parte
+document.addEventListener('change', function(e){
+  const t = e.target; if(!t || !t.dataset || !t.dataset.inv) return;
+  const fila = t.closest('.fila-rep'); if(!fila) return;
+  const parte = t.value === 'parte';
+  fila.querySelectorAll('.fila-pct').forEach(d => d.hidden = !parte);
+  fila.querySelectorAll('[data-k="pct"]').forEach(c => { c.toggleAttribute('required', parte); if(!parte) c.value = ''; });
+});
+// Estructuras jurídicas: «Ninguna» excluye a las demás; el campo oculto lleva la selección
+document.addEventListener('change', function(e){
+  const t = e.target; if(!t || !t.classList || !t.classList.contains('estr')) return;
+  const todas = [...document.querySelectorAll('.estr')], ninguna = document.getElementById('estr-ninguna');
+  if(t === ninguna && t.checked) todas.forEach(x => { if(x !== ninguna) x.checked = false; });
+  else if(t.checked) ninguna.checked = false;
+  document.getElementById('estructuras-sel').value = todas.filter(x => x.checked).map(x => x.value).join(' · ');
+});
 function sincronizarSeguros(e){
   const ninguno = document.getElementById('seguro-ninguno');
   if(!ninguno) return;
@@ -1714,13 +1755,14 @@ document.getElementById('form').addEventListener('submit', async function(e){
       fuenteIngreso:     +val('c3'),        // escala 0-10
       // Personas que dependen del cliente: hijos más otros dependientes (preguntas 3 y 4).
       dependientes:      (+val('hijos-n') || 0) + (+val('otros-dep-n') || 0),   // hijos y todos los demás grupos
-      pesoDelPortafolio: +val('c5'),        // escala 0-10: qué tanto del patrimonio total es este portafolio
+      // Porcentaje del patrimonio total que representa este portafolio; el puntaje lo calcula el dashboard
+      pesoDelPortafolioPct: val('c5-pct') === '' ? null : +val('c5-pct'),
       // Primer retiro del PORTAFOLIO, distinto de la edad de retiro laboral:
       // marca el horizonte efectivo de la inversión.
       // Fondos de pensión y capitalización laboral que el cliente piensa traer al portafolio.
       // Entran como ingresos futuros; el momento lo define el analista en el dashboard.
-      aniosPrimerRetiro: val('c1') === '' ? null : +val('c1'),
-      montoPrimerRetiroUsdHoy: val('c1-monto') === '' ? null : +val('c1-monto')
+      aniosPrimerRetiro: val('c1-tiene') !== 'si' || val('c1') === '' ? null : +val('c1'),
+      montoPrimerRetiroUsdHoy: val('c1-tiene') !== 'si' || val('c1-monto') === '' ? null : +val('c1-monto')
       // El conocimiento se mide con la pregunta 10 del perfil de riesgo.
     },
     // Fondos de pensión complementaria: saldo, aporte y año de traslado al portafolio.
@@ -1732,17 +1774,22 @@ document.getElementById('form').addEventListener('submit', async function(e){
       traslado: k === 'rop' ? 'pension' : val('f-' + k + '-traslado'),
       modalidad: k === 'rop' ? val('f-rop-modalidad') : null,
       anio: (k === 'fcl' && val('f-fcl-traslado') === 'quinquenio') || (k === 'vol' && val('f-vol-traslado') === 'anio') ? +val('f-' + k + '-anio') : null }])),
-    otrosIngresosRetiro: val('otros-ing') === 'si' ? {montoMensual: +val('otros-ing-monto'), moneda: val('otros-ing-moneda'), desde: val('otros-ing-desde') || 'independencia'} : null,
+    otrosIngresosRetiro: val('otros-ing') === 'si' ? {montoMensual: +val('otros-ing-monto'), moneda: val('otros-ing-moneda'), desde: val('otros-ing-desde') || 'hoy', anio: val('otros-ing-desde') === 'anio' ? +val('otros-ing-anio') : null} : null,
     // Ingresos extraordinarios (bonos, herencias u otros montos puntuales), en dólares de hoy
-    aportesExtraordinarios: leerFilas('aportes-extra-filas').map(r => ({concepto: r.concepto || 'Ingreso extraordinario', montoUsdHoy: r.monto, anio: r.anio})),
+    aportesExtraordinarios: leerFilas('aportes-extra-filas').map((r, k) => ({concepto: 'Ingreso extraordinario ' + (k + 1), montoUsdHoy: r.monto, anio: r.anio})),
     gastosExtraordinariosAnualesUsdHoy: val('gastos-extra-monto') === '' ? 0 : +val('gastos-extra-monto'),
-    // Ventas de inmuebles y de la empresa que el cliente invertiría en este portafolio
+    // Desinversiones: ventas de activos cuyo dinero entra a este portafolio
+    // Inmuebles y empresa: la parte de la venta que entra al portafolio; «sujeto a análisis» no se proyecta
     ventasActivos: [].concat(
-      leerFilas('inmuebles-filas').filter(f => f.vende === 'si' && f.invierte === 'si').map(f => ({concepto: 'Venta de ' + (f.nombre || 'inmueble'), anio: f.anio,
-        monto: Math.max(0, (+f.valor || 0) - (+f.deuda || 0)), moneda: val('inmuebles-moneda')})),
-      val('empresa') === 'si' && val('empresa-plan') === 'vender' && val('empresa-invierte') === 'si'
-        ? [{concepto: 'Venta de la empresa', anio: ANIO_ACTUAL + (+val('empresa-anios') || 0), monto: +val('empresa-valor') || 0, moneda: val('empresa-valor-moneda')}] : []),
-    apoyosDependientes: leerFilas('apoyos-filas').map(r => ({beneficiario: r.beneficiario, motivo: r.motivo, montoAnualUsdHoy: r.monto, anioInicio: r.anio, anios: r.anios})),
+      leerFilas('inmuebles-filas').filter(f => f.vende === 'si' && (f.invierte === 'si' || f.invierte === 'parte')).map(f => ({concepto: 'Venta de ' + (f.nombre || 'inmueble'), origen: 'inmueble', anio: f.anio,
+        monto: Math.max(0, (+f.valor || 0) - (+f.deuda || 0)) * (f.invierte === 'parte' ? (+f.pct || 0)/100 : 1), moneda: val('inmuebles-moneda')})),
+      val('empresa') === 'si' && val('empresa-plan') === 'vender' && (val('empresa-invierte') === 'si' || val('empresa-invierte') === 'parte')
+        ? [{concepto: 'Venta de la empresa', origen: 'empresa', anio: ANIO_ACTUAL + (+val('empresa-anios') || 0),
+            monto: (+val('empresa-valor') || 0) * (+val('empresa-part') || 100)/100 * (val('empresa-invierte') === 'parte' ? (+val('empresa-pct') || 0)/100 : 1), moneda: val('empresa-valor-moneda')}] : [],
+      leerFilas('ventas-filas').map(f => ({concepto: f.activo || 'Venta de activos', origen: 'otro', anio: f.anio, monto: f.monto, moneda: 'USD'}))),
+    capitalPrivado: val('pe-tiene') === 'si' ? {valor: +val('pe-valor') || 0, moneda: val('pe-moneda'), detalle: val('pe-detalle-txt').trim()} : (val('pe-tiene') === 'no' ? {valor: 0, moneda: 'USD', detalle: ''} : null),
+    estructuraJuridica: {tipos: [...document.querySelectorAll('.estr')].filter(x => x.checked).map(x => x.value), detalle: val('estructuras-detalle').trim()},
+    apoyosDependientes: val('apoyos-tiene') === 'si' ? leerFilas('apoyos-filas').map(r => ({beneficiario: r.beneficiario, motivo: r.motivo, montoAnualUsdHoy: r.monto, anioInicio: r.anio, anios: r.anios})) : [],
     // Destino del patrimonio. El monto se expresa en dólares de hoy, es decir en
     // poder adquisitivo actual, para compararlo contra el portafolio en términos reales.
     legado: {
@@ -1781,7 +1828,7 @@ document.getElementById('form').addEventListener('submit', async function(e){
       fuentePrincipal: val('fuente-ingreso'),
       ingresoPareja: val('plan') === 'conjunta'
         ? {monto: +val('ingreso-pareja-monto'), moneda: val('ingreso-pareja-moneda')} : null,
-      gastoEnRetiro: val('gasto-retiro')
+      gastoRetiroPct: val('gasto-retiro-pct') === '' ? null : +val('gasto-retiro-pct')
     },
     pension: {
       regimen: val('pension-regimen'),
@@ -1802,19 +1849,23 @@ document.getElementById('form').addEventListener('submit', async function(e){
       inmuebles: {
         moneda: +val('inmuebles-n') > 0 ? val('inmuebles-moneda') : null,
         lista: leerFilas('inmuebles-filas').map(f => ({nombre: (f.nombre || '').toUpperCase(), valor: f.valor, rentaMensualNeta: f.renta, saldoDeuda: f.deuda,
-          estimaVender: f.vende === 'si', anioVenta: f.vende === 'si' ? f.anio : null, inviertePortafolio: f.vende === 'si' ? f.invierte === 'si' : null}))
+          estimaVender: f.vende === 'si', anioVenta: f.vende === 'si' ? f.anio : null,
+          inviertePortafolio: f.vende === 'si' ? f.invierte : null, pctInvierte: f.vende === 'si' ? (f.invierte === 'si' ? 100 : f.invierte === 'parte' ? +f.pct : 0) : null}))
       },
       empresa: {
         propietario: val('empresa') === 'si',
         plan: val('empresa') === 'si' ? val('empresa-plan') : null,
         valor: val('empresa') === 'si' && val('empresa-valor') !== '' ? +val('empresa-valor') : null,
         valorMoneda: val('empresa') === 'si' ? val('empresa-valor-moneda') : null,
-        inviertePortafolio: val('empresa-plan') === 'vender' ? val('empresa-invierte') === 'si' : null,
+        participacionPct: val('empresa') === 'si' && val('empresa-part') !== '' ? +val('empresa-part') : null,
+        inviertePortafolio: val('empresa-plan') === 'vender' ? val('empresa-invierte') : null,
+        pctInvierte: val('empresa-plan') === 'vender' ? (val('empresa-invierte') === 'si' ? 100 : val('empresa-invierte') === 'parte' ? +val('empresa-pct') : 0) : null,
         aniosHastaEvento: (val('empresa-plan') === 'vender' || val('empresa-plan') === 'traspasar') ? +val('empresa-anios') : null
       },
       deudas: {
-        saldo: val('deudas-saldo') === '' ? null : +val('deudas-saldo'), saldoMoneda: val('deudas-saldo-moneda'),
-        cuotaMensual: val('deudas-cuota') === '' ? null : +val('deudas-cuota'), cuotaMoneda: val('deudas-cuota-moneda'),
+        tiene: val('deudas-tiene') === 'si',
+        saldo: val('deudas-tiene') !== 'si' ? 0 : val('deudas-saldo') === '' ? null : +val('deudas-saldo'), saldoMoneda: val('deudas-saldo-moneda'),
+        cuotaMensual: val('deudas-tiene') !== 'si' ? 0 : val('deudas-cuota') === '' ? null : +val('deudas-cuota'), cuotaMoneda: val('deudas-cuota-moneda'),
         plazoRestanteAnios: val('deudas-plazo') === '' ? null : +val('deudas-plazo'),
         detalle: val('deudas-detalle').trim()
       },
@@ -1825,7 +1876,7 @@ document.getElementById('form').addEventListener('submit', async function(e){
       vidaSumaAsegurada: document.getElementById('seguro-vida').checked
         ? {monto: +val('vida-suma'), moneda: val('vida-moneda')} : null
     },
-    metas: leerFilas('metas-filas').map(m => ({tipo: m.tipo, montoUsdHoy: m.monto, anio: m.anio, prioridad: m.prioridad})),
+    metas: leerFilas('metas-filas').map(m => ({tipo: m.tipo, montoUsdHoy: m.monto, anio: m.anio, prioridad: m.prioridad, financiamiento: m.financia || 'portafolio'})),
     creadoEn: Date.now()
   }; }
   function base(){
@@ -1976,8 +2027,21 @@ function restaurarBorrador(b){
 })();
 
 // ---- Edición de un cuestionario enviado (desde el dashboard: ?editar=<id>) ----
+// Respuestas guardadas con versiones anteriores del formulario: se llevan a los campos vigentes
+function migrarFormulario(d, r){
+  if(d['apoyos-tiene'] === undefined && d['apoyos-n'] !== undefined){ d['apoyos-tiene'] = +d['apoyos-n'] > 0 ? 'si' : 'no'; if(!(+d['apoyos-n'] > 0)) delete d['apoyos-n']; }
+  if(d['gasto-retiro-pct'] === undefined && d['gasto-retiro']){ const m = {menor: 80, igual: 100, mayor: 110}[d['gasto-retiro']]; if(m) d['gasto-retiro-pct'] = String(m); }
+  if(d['otros-ing-desde'] === 'independencia') delete d['otros-ing-desde'];
+  // en versiones anteriores las ventas de activos salían solo de los inmuebles y la empresa
+  if(d['ventas-n'] === undefined) d['ventas-n'] = '0';
+  if(d['deudas-tiene'] === undefined && d['deudas-saldo'] !== undefined) d['deudas-tiene'] = +d['deudas-saldo'] > 0 || +d['deudas-cuota'] > 0 ? 'si' : 'no';
+  if(d['c1-tiene'] === undefined && d['c1'] !== undefined) d['c1-tiene'] = 'si';
+  (r.metas || []).forEach((m, k) => { const n = 'n:Meta ' + (k + 1) + ': financiamiento'; if(d[n] === undefined) d[n] = m.financiamiento || 'portafolio'; });
+  (r.aportesExtraordinarios || []).forEach((a, k) => { delete d['n:Ingreso extraordinario ' + (k + 1) + ': concepto']; });
+  return d;
+}
 function datosDesdeRegistro(r){
-  if(r.formulario) return Object.assign({}, r.formulario);
+  if(r.formulario) return migrarFormulario(Object.assign({}, r.formulario), r);
   // Registros anteriores: se reconstruye con las respuestas guardadas y los datos de contacto
   const d = {};
   (r.respuestasTexto || []).forEach(q => (q.detalle || []).forEach(x => {
@@ -2003,7 +2067,7 @@ function datosDesdeRegistro(r){
     pon('inst-nombre', r.nombre); pon('inst-correo', r.correo); pon('inst-direccion', r.direccion);
     pon('inst-tel-codigo', r.telefonoPais); pon('inst-telefono', (r.telefono || '').replace(/^\+\d+\s*/, ''));
   }
-  return d;
+  return migrarFormulario(d, r);
 }
 (async function(){
   const id = new URLSearchParams(location.search).get('editar');
