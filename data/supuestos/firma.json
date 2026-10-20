@@ -1,0 +1,50 @@
+{
+  "guardadoEn": 1792534447245,
+  "supuestos": {
+    "tipoCambio": 450,
+    "inflacion": 3.9,
+    "inflacionIngresos": 1,
+    "inflacionPension": 1,
+    "inflacionSalud": 8,
+    "ajusteAlquileres": 0,
+    "anioInicio": 2026,
+    "edadFinal": 95,
+    "anioIngresoFcl": 5,
+    "factorGastoMenor": 80,
+    "factorGastoMayor": 110,
+    "rendimientoFondos": 6,
+    "aporteRopPct": 4.25,
+    "aporteFclPct": 1.5,
+    "edadPension": 65,
+    "modalidadRop": 1,
+    "expectativaRop": 87,
+    "edadFinProgramado": 100,
+    "asignacion": {
+      "conservador": {
+        "rv": 20,
+        "rf": 50,
+        "ef": 30
+      },
+      "moderadoConservador": {
+        "rv": 40,
+        "rf": 42.5,
+        "ef": 17.5
+      },
+      "moderado": {
+        "rv": 60,
+        "rf": 35,
+        "ef": 5
+      },
+      "moderadoAgresivo": {
+        "rv": 77.5,
+        "rf": 17.5,
+        "ef": 5
+      },
+      "agresivo": {
+        "rv": 95,
+        "rf": 0,
+        "ef": 5
+      }
+    }
+  }
+}
