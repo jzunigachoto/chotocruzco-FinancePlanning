@@ -41,7 +41,7 @@
   },
   "capacidad": {
     "fuenteIngreso": 3.33,
-    "dependientes": 0,
+    "dependientes": 1,
     "pesoDelPortafolioPct": 81.3,
     "aniosPrimerRetiro": 1,
     "montoPrimerRetiroUsdHoy": 25000,
@@ -92,7 +92,7 @@
       "concepto": "Venta de CASA PARA ALQUILER",
       "origen": "inmueble",
       "anio": 2049,
-      "monto": 400000,
+      "monto": 180000000,
       "moneda": "CRC"
     }
   ],
@@ -132,15 +132,17 @@
     "edadPareja": 62,
     "hijos": [],
     "otrosDependientes": {
-      "cantidad": 0,
+      "cantidad": 1,
       "detalle": {
-        "otros": 0
+        "otros": 1
       }
     }
   },
   "ingresos": {
-    "fuentes": [],
-    "fuentePrincipal": "",
+    "fuentes": [
+      "salario"
+    ],
+    "fuentePrincipal": "salario",
     "ingresoPareja": {
       "monto": 750000,
       "moneda": "CRC",
@@ -168,7 +170,7 @@
       "lista": [
         {
           "nombre": "CASA PARA ALQUILER",
-          "valor": 400000,
+          "valor": 180000000,
           "rentaMensualNeta": 1100000,
           "saldoDeuda": 0,
           "moneda": "CRC",
@@ -179,7 +181,7 @@
         },
         {
           "nombre": "CASA PLAYA",
-          "valor": 300000,
+          "valor": 135000000,
           "rentaMensualNeta": 250000,
           "saldoDeuda": 0,
           "moneda": "CRC",
@@ -190,7 +192,7 @@
         },
         {
           "nombre": "OFICINA DE ALQUILER",
-          "valor": 120000,
+          "valor": 54000000,
           "rentaMensualNeta": 380000,
           "saldoDeuda": 0,
           "moneda": "CRC",
@@ -423,6 +425,12 @@
           "campo": "Predecibilidad del ingreso del hogar",
           "valor": "Varía de manera moderada según los resultados del año",
           "codigo": "3.33"
+        },
+        {
+          "id": "seleccion",
+          "campo": "Selección",
+          "valor": "Salario",
+          "codigo": ""
         }
       ]
     },
@@ -591,6 +599,12 @@
           "campo": "Cantidad de hijos",
           "valor": "0",
           "codigo": "0"
+        },
+        {
+          "id": "dep-otros",
+          "campo": "Dependientes: otros familiares",
+          "valor": "1",
+          "codigo": "1"
         }
       ]
     },
@@ -847,8 +861,8 @@
         {
           "id": "",
           "campo": "Inmueble 1: valor estimado",
-          "valor": "400.000",
-          "codigo": "400.000"
+          "valor": "180.000.000",
+          "codigo": "180.000.000"
         },
         {
           "id": "",
@@ -895,8 +909,8 @@
         {
           "id": "",
           "campo": "Inmueble 2: valor estimado",
-          "valor": "300.000",
-          "codigo": "300.000"
+          "valor": "135.000.000",
+          "codigo": "135.000.000"
         },
         {
           "id": "",
@@ -931,8 +945,8 @@
         {
           "id": "",
           "campo": "Inmueble 3: valor estimado",
-          "valor": "120.000",
-          "codigo": "120.000"
+          "valor": "54.000.000",
+          "codigo": "54.000.000"
         },
         {
           "id": "",
@@ -1193,9 +1207,10 @@
     "salario-monto": "0",
     "salario-moneda": "CRC",
     "ingreso-hasta": "66",
-    "fuente-salario": false,
+    "fuente-salario": true,
     "fuente-empresa": false,
     "fuente-honorarios": false,
+    "fuente-ingreso": "salario",
     "c3": "3.33",
     "plan": "conjunta",
     "edad-pareja": "62",
@@ -1230,8 +1245,8 @@
     "dep-hermanos": "0",
     "dep-tios": "0",
     "dep-abuelos": "0",
-    "dep-otros": "0",
-    "otros-dep-n": "0",
+    "dep-otros": "1",
+    "otros-dep-n": "1",
     "apoyos-tiene": "no",
     "donaciones-tiene": "si",
     "donaciones-monto": "3.000.000",
@@ -1267,7 +1282,7 @@
     "hipoteca-cuota-moneda": "USD",
     "inmuebles-n": "3",
     "n:Inmueble 1: nombre": "CASA PARA ALQUILER",
-    "n:Inmueble 1: valor estimado": "400.000",
+    "n:Inmueble 1: valor estimado": "180.000.000",
     "n:Inmueble 1: renta mensual neta": "1.100.000",
     "n:Inmueble 1: saldo de deuda": "0",
     "n:Inmueble 1: moneda": "CRC",
@@ -1275,13 +1290,13 @@
     "n:Inmueble 1: año de venta": "2049",
     "n:Inmueble 1: invierte la venta en el portafolio": "si",
     "n:Inmueble 2: nombre": "CASA PLAYA",
-    "n:Inmueble 2: valor estimado": "300.000",
+    "n:Inmueble 2: valor estimado": "135.000.000",
     "n:Inmueble 2: renta mensual neta": "250.000",
     "n:Inmueble 2: saldo de deuda": "0",
     "n:Inmueble 2: moneda": "CRC",
     "n:Inmueble 2: estima venderlo": "no",
     "n:Inmueble 3: nombre": "OFICINA DE ALQUILER",
-    "n:Inmueble 3: valor estimado": "120.000",
+    "n:Inmueble 3: valor estimado": "54.000.000",
     "n:Inmueble 3: renta mensual neta": "380.000",
     "n:Inmueble 3: saldo de deuda": "0",
     "n:Inmueble 3: moneda": "CRC",
@@ -1335,8 +1350,9 @@
     "distrito": "Granadilla",
     "direccion": "Condominio Bosques de Altamonte casa 106"
   },
-  "modificadoEn": 1792601212944,
+  "modificadoEn": 1792616313880,
   "historialEdiciones": [
-    1792601212944
+    1792601212944,
+    1792616313880
   ]
 }
