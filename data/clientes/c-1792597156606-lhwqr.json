@@ -117,7 +117,7 @@
   "preferenciaMoneda": "85% en dólares y 15% en colones",
   "porcentajeUsd": 85,
   "ingresoHastaEdad": 66,
-  "salarioMonto": 3930000,
+  "salarioMonto": 0,
   "salarioMoneda": "CRC",
   "gastoMonto": 5000000,
   "gastoMoneda": "CRC",
@@ -139,10 +139,8 @@
     }
   },
   "ingresos": {
-    "fuentes": [
-      "salario"
-    ],
-    "fuentePrincipal": "salario",
+    "fuentes": [],
+    "fuentePrincipal": "",
     "ingresoPareja": {
       "monto": 750000,
       "moneda": "CRC",
@@ -405,8 +403,8 @@
         {
           "id": "salario-monto",
           "campo": "Ingreso mensual del titular (monto)",
-          "valor": "3.930.000",
-          "codigo": "3.930.000"
+          "valor": "0",
+          "codigo": "0"
         },
         {
           "id": "salario-moneda",
@@ -425,12 +423,6 @@
           "campo": "Predecibilidad del ingreso del hogar",
           "valor": "Varía de manera moderada según los resultados del año",
           "codigo": "3.33"
-        },
-        {
-          "id": "seleccion",
-          "campo": "Selección",
-          "valor": "Salario",
-          "codigo": ""
         }
       ]
     },
@@ -1198,13 +1190,12 @@
     "q10": "3.33",
     "edad": "66",
     "edad_retiro": "66",
-    "salario-monto": "3.930.000",
+    "salario-monto": "0",
     "salario-moneda": "CRC",
     "ingreso-hasta": "66",
-    "fuente-salario": true,
+    "fuente-salario": false,
     "fuente-empresa": false,
     "fuente-honorarios": false,
-    "fuente-ingreso": "salario",
     "c3": "3.33",
     "plan": "conjunta",
     "edad-pareja": "62",
@@ -1343,5 +1334,9 @@
     "canton": "Curridabat",
     "distrito": "Granadilla",
     "direccion": "Condominio Bosques de Altamonte casa 106"
-  }
+  },
+  "modificadoEn": 1792601212944,
+  "historialEdiciones": [
+    1792601212944
+  ]
 }
