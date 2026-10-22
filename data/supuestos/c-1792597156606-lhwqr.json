@@ -1,11 +1,14 @@
 {
   "cliente": "c-1792597156606-lhwqr",
   "nombre": "Juan Carlos Arguedas Tinajero",
-  "guardadoEn": 1792602292587,
+  "guardadoEn": 1792687123394,
   "supuestos": {
     "tipoCambio": 450,
+    "inflacionLocal": 3.9,
     "inflacion": 3.9,
     "inflacionPension": 1,
+    "inflacionRop": 3.9,
+    "inflacionVoluntaria": 3.9,
     "anioInicio": 2026,
     "edadFinal": 95,
     "anioIngresoFcl": 5,
@@ -19,6 +22,8 @@
     "expectativaRop": 87,
     "edadFinProgramado": 100,
     "na": [
+      "inflacionRop",
+      "inflacionVoluntaria",
       "anioIngresoFcl",
       "factorGastoMenor",
       "factorGastoMayor",
