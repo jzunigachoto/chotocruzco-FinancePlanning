@@ -27,6 +27,7 @@
   "edad": 68,
   "edadRetiro": 67,
   "versionPerfil": 2,
+  "situacionPortafolio": "aporta",
   "respuestas": {
     "q1": 0,
     "q2": 6.67,
@@ -44,7 +45,8 @@
     "dependientes": 1,
     "pesoDelPortafolioPct": 100,
     "aniosPrimerRetiro": 1,
-    "montoPrimerRetiroUsdHoy": 2000000
+    "montoPrimerRetiroUsdHoy": 2000000,
+    "montoPrimerRetiroMoneda": "USD"
   },
   "fondos": {
     "rop": {
@@ -52,6 +54,7 @@
       "saldoMoneda": "CRC",
       "aporteMensual": null,
       "aporteMoneda": "CRC",
+      "operadora": "",
       "traslado": "pension",
       "modalidad": "asesor",
       "anio": null
@@ -59,21 +62,43 @@
   },
   "otrosIngresosRetiro": null,
   "aportesExtraordinarios": [],
-  "gastosExtraordinariosAnualesUsdHoy": 136000,
+  "gastosExtraordinariosAnualesUsdHoy": 0,
+  "gastosExtraordinarios": [
+    {
+      "numero": 1,
+      "concepto": "Gastos extraordinarios anuales",
+      "montoUsdHoy": 100000,
+      "moneda": "USD",
+      "anio": 2026,
+      "frecuencia": "anual"
+    }
+  ],
+  "donacionesAnualesUsdHoy": 0,
+  "donacionesMoneda": null,
   "ventasActivos": [
     {
       "concepto": "Venta de LOTES SIN DESARROLLAR",
       "origen": "inmueble",
       "anio": 2034,
       "monto": 31000000,
-      "moneda": "USD"
+      "moneda": "USD",
+      "valor": 31000000,
+      "valorMoneda": "USD",
+      "deuda": 0,
+      "deudaMoneda": "USD",
+      "pctInvierte": 100
     },
     {
       "concepto": "Venta de EDIFICIO",
       "origen": "inmueble",
       "anio": 2036,
       "monto": 4000000,
-      "moneda": "USD"
+      "moneda": "USD",
+      "valor": 4000000,
+      "valorMoneda": "USD",
+      "deuda": 0,
+      "deudaMoneda": "USD",
+      "pctInvierte": 100
     }
   ],
   "capitalPrivado": {
@@ -92,13 +117,15 @@
       "beneficiario": "hijo",
       "motivo": "educacion",
       "montoAnualUsdHoy": 100000,
+      "moneda": "USD",
       "anioInicio": 2026,
       "anios": 5
     }
   ],
   "legado": {
     "destino": "herencia",
-    "montoUsdHoy": 10000000
+    "montoUsdHoy": 10000000,
+    "moneda": "USD"
   },
   "preferenciaMoneda": "0% en dólares y 100% en colones",
   "porcentajeUsd": 0,
@@ -122,25 +149,25 @@
     "otrosDependientes": {
       "cantidad": 0,
       "detalle": {
-        "pareja": 0,
-        "padres": 0,
-        "hermanos": 0,
-        "tios": 0,
-        "abuelos": 0,
         "otros": 0
-      },
-      "aporteMensual": null,
-      "moneda": null
+      }
     }
   },
   "ingresos": {
+    "fuentes": [
+      "empresa"
+    ],
     "fuentePrincipal": "empresa",
     "ingresoPareja": null,
-    "gastoRetiroPct": 110
+    "gastoRetiroPct": 100,
+    "gastoUsdPct": 55
   },
   "pension": {
     "regimen": "ivm",
     "montoMensual": 800000,
+    "montoDesconocido": false,
+    "yaRecibe": true,
+    "ropIncluido": false,
     "moneda": "CRC",
     "edadInicio": 67
   },
@@ -150,13 +177,17 @@
       "hipoteca": null
     },
     "inmuebles": {
-      "moneda": "USD",
+      "moneda": null,
       "lista": [
         {
           "nombre": "LOTES SIN DESARROLLAR",
           "valor": 31000000,
+          "valorMoneda": "USD",
           "rentaMensualNeta": 0,
+          "rentaMoneda": "USD",
           "saldoDeuda": 0,
+          "deudaMoneda": "USD",
+          "moneda": "USD",
           "estimaVender": true,
           "anioVenta": 2034,
           "inviertePortafolio": "si",
@@ -165,8 +196,12 @@
         {
           "nombre": "EDIFICIO",
           "valor": 4000000,
+          "valorMoneda": "USD",
           "rentaMensualNeta": 0,
+          "rentaMoneda": "USD",
           "saldoDeuda": 0,
+          "deudaMoneda": "USD",
+          "moneda": "USD",
           "estimaVender": true,
           "anioVenta": 2036,
           "inviertePortafolio": "si",
@@ -186,12 +221,12 @@
     },
     "deudas": {
       "tiene": false,
+      "moneda": null,
+      "lista": [],
       "saldo": 0,
-      "saldoMoneda": "USD",
       "cuotaMensual": 0,
-      "cuotaMoneda": "USD",
       "plazoRestanteAnios": null,
-      "detalle": ""
+      "cuotasEnGasto": null
     },
     "reservaLiquidez": "3a6"
   },
@@ -209,6 +244,7 @@
     {
       "tipo": "negocio",
       "montoUsdHoy": 1000000,
+      "moneda": "USD",
       "anio": 2027,
       "prioridad": "deseable",
       "financiamiento": "portafolio"
@@ -216,6 +252,7 @@
     {
       "tipo": "negocio",
       "montoUsdHoy": 500000,
+      "moneda": "USD",
       "anio": 2027,
       "prioridad": "deseable",
       "financiamiento": "portafolio"
@@ -223,6 +260,7 @@
     {
       "tipo": "negocio",
       "montoUsdHoy": 1000000,
+      "moneda": "USD",
       "anio": 2027,
       "prioridad": "deseable",
       "financiamiento": "portafolio"
@@ -310,12 +348,18 @@
       "seccion": "Perfil de riesgo",
       "n": "06",
       "clave": "q7",
-      "pregunta": "Para alcanzar sus metas financieras, puede depender más de sus aportes o asumir más riesgo buscando un mayor rendimiento del portafolio. ¿Qué prefiere?",
+      "pregunta": "Para alcanzar sus metas financieras, ¿qué prefiere?",
       "detalle": [
+        {
+          "id": "q7-situacion",
+          "campo": "Q7 - Situación frente al portafolio",
+          "valor": "Aporto a mis inversiones",
+          "codigo": "aporta"
+        },
         {
           "id": "q7",
           "campo": "Q7 - Aporte frente a rendimiento",
-          "valor": "Prefiero aportar un poco más y mantener un nivel moderado de riesgo",
+          "valor": "Aportar un poco más con un riesgo moderado",
           "codigo": "3.33"
         }
       ]
@@ -385,7 +429,7 @@
       "seccion": "Planificación financiera",
       "n": "01",
       "clave": "edad_retiro",
-      "pregunta": "¿A qué edad espera, o desearía, ser financieramente independiente? Es decir (ya no necesito trabajar o trabajo porque quiero).",
+      "pregunta": "¿A qué edad planea ser financieramente independiente? Es decir (ya no necesito trabajar o trabajo porque quiero).",
       "detalle": [
         {
           "id": "edad_retiro",
@@ -399,42 +443,6 @@
       "pagina": 2,
       "seccion": "Planificación financiera",
       "n": "02",
-      "clave": "plan",
-      "pregunta": "¿La planificación es individual o conjunta con su pareja?",
-      "detalle": [
-        {
-          "id": "plan",
-          "campo": "Tipo de planificación",
-          "valor": "Individual",
-          "codigo": "individual"
-        }
-      ]
-    },
-    {
-      "pagina": 2,
-      "seccion": "Planificación financiera",
-      "n": "03",
-      "clave": "hijos-n",
-      "pregunta": "¿Quiénes dependen económicamente de usted?",
-      "detalle": [
-        {
-          "id": "hijos-n",
-          "campo": "Cantidad de hijos",
-          "valor": "1",
-          "codigo": "1"
-        },
-        {
-          "id": "",
-          "campo": "Edad del hijo 1",
-          "valor": "19",
-          "codigo": "19"
-        }
-      ]
-    },
-    {
-      "pagina": 2,
-      "seccion": "Planificación financiera",
-      "n": "04",
       "clave": "salario-monto",
       "pregunta": "¿Cuál es su ingreso total mensual, de dónde proviene y qué tan predecible es?",
       "detalle": [
@@ -457,23 +465,38 @@
           "codigo": "100"
         },
         {
-          "id": "fuente-ingreso",
-          "campo": "Fuente principal del ingreso",
-          "valor": "Empresa propia",
-          "codigo": "empresa"
-        },
-        {
           "id": "c3",
           "campo": "Predecibilidad del ingreso del hogar",
-          "valor": "Es estable, con variaciones menores",
+          "valor": "Es estable",
           "codigo": "6.67"
+        },
+        {
+          "id": "seleccion",
+          "campo": "Selección",
+          "valor": "Empresa propia",
+          "codigo": ""
         }
       ]
     },
     {
       "pagina": 2,
       "seccion": "Planificación financiera",
-      "n": "05",
+      "n": "03",
+      "clave": "plan",
+      "pregunta": "¿La planificación es individual o conjunta con su pareja?",
+      "detalle": [
+        {
+          "id": "plan",
+          "campo": "Tipo de planificación",
+          "valor": "Individual",
+          "codigo": "individual"
+        }
+      ]
+    },
+    {
+      "pagina": 2,
+      "seccion": "Planificación financiera",
+      "n": "04",
       "clave": "pension-regimen",
       "pregunta": "¿Qué pensión espera recibir y qué otros ingresos recurrentes tiene o tendrá?",
       "detalle": [
@@ -482,6 +505,12 @@
           "campo": "Régimen de pensión",
           "valor": "Invalidez, Vejez y Muerte (IVM) de la CCSS",
           "codigo": "ivm"
+        },
+        {
+          "id": "pension-recibe",
+          "campo": "Pensión: ¿ya la recibe?",
+          "valor": "Sí, ya la recibo",
+          "codigo": "si"
         },
         {
           "id": "pension-monto",
@@ -512,7 +541,7 @@
     {
       "pagina": 2,
       "seccion": "Planificación financiera",
-      "n": "06",
+      "n": "05",
       "clave": "f-rop-tiene",
       "pregunta": "¿Tiene saldos en el ROP, el FCL o una pensión voluntaria, y qué hará con ellos?",
       "detalle": [
@@ -563,14 +592,14 @@
     {
       "pagina": 2,
       "seccion": "Planificación financiera",
-      "n": "07",
+      "n": "06",
       "clave": "aportes-extra-n",
       "pregunta": "¿Espera recibir ingresos extraordinarios?",
       "detalle": [
         {
           "id": "aportes-extra-n",
           "campo": "Cantidad de aportes extraordinarios",
-          "valor": "No espero ingresos extraordinarios",
+          "valor": "0",
           "codigo": "0"
         }
       ]
@@ -578,7 +607,7 @@
     {
       "pagina": 2,
       "seccion": "Planificación financiera",
-      "n": "08",
+      "n": "07",
       "clave": "gasto-monto",
       "pregunta": "¿Cuál es su gasto familiar mensual y cómo espera que cambie en el retiro?",
       "detalle": [
@@ -595,10 +624,31 @@
           "codigo": "USD"
         },
         {
-          "id": "gasto-retiro-pct",
-          "campo": "Gasto en el retiro (% del actual)",
-          "valor": "110",
-          "codigo": "110"
+          "id": "gasto-usd-pct",
+          "campo": "Gasto familiar en dólares (%)",
+          "valor": "55",
+          "codigo": "55"
+        }
+      ]
+    },
+    {
+      "pagina": 2,
+      "seccion": "Planificación financiera",
+      "n": "08",
+      "clave": "hijos-n",
+      "pregunta": "¿Quiénes dependen económicamente de usted?",
+      "detalle": [
+        {
+          "id": "hijos-n",
+          "campo": "Cantidad de hijos",
+          "valor": "1",
+          "codigo": "1"
+        },
+        {
+          "id": "",
+          "campo": "Edad del hijo 1",
+          "valor": "19",
+          "codigo": "19"
         }
       ]
     },
@@ -607,7 +657,7 @@
       "seccion": "Planificación financiera",
       "n": "09",
       "clave": "apoyos-tiene",
-      "pregunta": "¿Cubre o cubrirá gastos de personas que dependen de usted que no estén incluidos en el gasto familiar?",
+      "pregunta": "De esas personas, ¿cubre o cubrirá gastos que no estén incluidos en el gasto familiar?",
       "detalle": [
         {
           "id": "apoyos-tiene",
@@ -618,7 +668,7 @@
         {
           "id": "apoyos-n",
           "campo": "Retiros para dependientes: cantidad",
-          "valor": "1 persona",
+          "valor": "1",
           "codigo": "1"
         },
         {
@@ -635,9 +685,15 @@
         },
         {
           "id": "",
-          "campo": "Dependiente 1: monto anual (US$ de hoy)",
+          "campo": "Dependiente 1: monto anual (valor de hoy)",
           "valor": "100,000",
           "codigo": "100,000"
+        },
+        {
+          "id": "",
+          "campo": "Dependiente 1: moneda",
+          "valor": "USD",
+          "codigo": "USD"
         },
         {
           "id": "",
@@ -657,8 +713,23 @@
       "pagina": 2,
       "seccion": "Planificación financiera",
       "n": "10",
+      "clave": "donaciones-tiene",
+      "pregunta": "¿Destina algún monto al año a donaciones?",
+      "detalle": [
+        {
+          "id": "donaciones-tiene",
+          "campo": "Donaciones anuales",
+          "valor": "No",
+          "codigo": "no"
+        }
+      ]
+    },
+    {
+      "pagina": 2,
+      "seccion": "Planificación financiera",
+      "n": "11",
       "clave": "deudas-tiene",
-      "pregunta": "¿Tiene deudas, además de la hipoteca de su vivienda, y con qué reserva de liquidez cuenta?",
+      "pregunta": "¿Tiene deudas o pasivos y con qué reserva de liquidez cuenta?",
       "detalle": [
         {
           "id": "deudas-tiene",
@@ -677,22 +748,52 @@
     {
       "pagina": 2,
       "seccion": "Planificación financiera",
-      "n": "11",
-      "clave": "gastos-extra-monto",
-      "pregunta": "¿Cuánto suman en un año sus gastos extraordinarios?",
+      "n": "12",
+      "clave": "gastos-extra-n",
+      "pregunta": "¿Tiene o espera tener gastos extraordinarios?",
       "detalle": [
         {
-          "id": "gastos-extra-monto",
-          "campo": "Gastos extraordinarios anuales (US$ de hoy)",
-          "valor": "136,000",
-          "codigo": "136,000"
+          "id": "gastos-extra-n",
+          "campo": "Cantidad de gastos extraordinarios",
+          "valor": "1",
+          "codigo": "1"
+        },
+        {
+          "id": "",
+          "campo": "Gasto extraordinario 1: nombre",
+          "valor": "Gastos extraordinarios anuales",
+          "codigo": "Gastos extraordinarios anuales"
+        },
+        {
+          "id": "",
+          "campo": "Gasto extraordinario 1: frecuencia",
+          "valor": "Cada año",
+          "codigo": "anual"
+        },
+        {
+          "id": "",
+          "campo": "Gasto extraordinario 1: monto (valor de hoy)",
+          "valor": "100,000",
+          "codigo": "100,000"
+        },
+        {
+          "id": "",
+          "campo": "Gasto extraordinario 1: moneda",
+          "valor": "USD",
+          "codigo": "USD"
+        },
+        {
+          "id": "",
+          "campo": "Gasto extraordinario 1: año",
+          "valor": "2026",
+          "codigo": "2026"
         }
       ]
     },
     {
       "pagina": 2,
       "seccion": "Planificación financiera",
-      "n": "12",
+      "n": "13",
       "clave": "capital-monto",
       "pregunta": "¿Cuánto destinaría a este portafolio y qué peso tiene en su patrimonio?",
       "detalle": [
@@ -719,7 +820,7 @@
     {
       "pagina": 2,
       "seccion": "Planificación financiera",
-      "n": "13",
+      "n": "14",
       "clave": "vivienda",
       "pregunta": "¿Cuál es la situación de su vivienda y qué otros inmuebles posee?",
       "detalle": [
@@ -732,14 +833,8 @@
         {
           "id": "inmuebles-n",
           "campo": "Cantidad de inmuebles de inversión",
-          "valor": "2 inmuebles",
+          "valor": "2",
           "codigo": "2"
-        },
-        {
-          "id": "inmuebles-moneda",
-          "campo": "Moneda de los inmuebles",
-          "valor": "USD",
-          "codigo": "USD"
         },
         {
           "id": "",
@@ -755,15 +850,33 @@
         },
         {
           "id": "",
+          "campo": "Inmueble 1: valor estimado (moneda)",
+          "valor": "USD",
+          "codigo": "USD"
+        },
+        {
+          "id": "",
           "campo": "Inmueble 1: renta mensual neta",
           "valor": "0",
           "codigo": "0"
         },
         {
           "id": "",
+          "campo": "Inmueble 1: renta mensual neta (moneda)",
+          "valor": "USD",
+          "codigo": "USD"
+        },
+        {
+          "id": "",
           "campo": "Inmueble 1: saldo de deuda",
           "valor": "0",
           "codigo": "0"
+        },
+        {
+          "id": "",
+          "campo": "Inmueble 1: saldo de deuda (moneda)",
+          "valor": "USD",
+          "codigo": "USD"
         },
         {
           "id": "",
@@ -797,15 +910,33 @@
         },
         {
           "id": "",
+          "campo": "Inmueble 2: valor estimado (moneda)",
+          "valor": "USD",
+          "codigo": "USD"
+        },
+        {
+          "id": "",
           "campo": "Inmueble 2: renta mensual neta",
           "valor": "0",
           "codigo": "0"
         },
         {
           "id": "",
+          "campo": "Inmueble 2: renta mensual neta (moneda)",
+          "valor": "USD",
+          "codigo": "USD"
+        },
+        {
+          "id": "",
           "campo": "Inmueble 2: saldo de deuda",
           "valor": "0",
           "codigo": "0"
+        },
+        {
+          "id": "",
+          "campo": "Inmueble 2: saldo de deuda (moneda)",
+          "valor": "USD",
+          "codigo": "USD"
         },
         {
           "id": "",
@@ -830,7 +961,7 @@
     {
       "pagina": 2,
       "seccion": "Planificación financiera",
-      "n": "14",
+      "n": "15",
       "clave": "empresa",
       "pregunta": "¿Es propietario de una empresa?",
       "detalle": [
@@ -869,7 +1000,7 @@
     {
       "pagina": 2,
       "seccion": "Planificación financiera",
-      "n": "15",
+      "n": "16",
       "clave": "pe-tiene",
       "pregunta": "¿Tiene inversiones de capital privado?",
       "detalle": [
@@ -884,14 +1015,14 @@
     {
       "pagina": 2,
       "seccion": "Planificación financiera",
-      "n": "16",
+      "n": "17",
       "clave": "ventas-n",
       "pregunta": "¿Planea vender otros activos, como lotes, acciones o participaciones, e invertir el dinero en este portafolio?",
       "detalle": [
         {
           "id": "ventas-n",
           "campo": "Cantidad de desinversiones",
-          "valor": "No",
+          "valor": "0",
           "codigo": "0"
         }
       ]
@@ -899,7 +1030,7 @@
     {
       "pagina": 2,
       "seccion": "Planificación financiera",
-      "n": "17",
+      "n": "18",
       "clave": "c1-tiene",
       "pregunta": "¿Planea un retiro de este portafolio distinto de sus metas, y cuándo y de cuánto sería?",
       "detalle": [
@@ -917,23 +1048,29 @@
         },
         {
           "id": "c1-monto",
-          "campo": "Monto del primer retiro (US$ de hoy)",
+          "campo": "Monto del primer retiro (valor de hoy)",
           "valor": "2,000,000",
           "codigo": "2,000,000"
+        },
+        {
+          "id": "c1-moneda",
+          "campo": "Primer retiro: moneda",
+          "valor": "USD",
+          "codigo": "USD"
         }
       ]
     },
     {
       "pagina": 2,
       "seccion": "Planificación financiera",
-      "n": "18",
+      "n": "19",
       "clave": "metas-n",
       "pregunta": "¿Cuántas metas específicas desea financiar con su patrimonio?",
       "detalle": [
         {
           "id": "metas-n",
           "campo": "Cantidad de metas específicas",
-          "valor": "3 metas",
+          "valor": "3",
           "codigo": "3"
         },
         {
@@ -944,9 +1081,15 @@
         },
         {
           "id": "",
-          "campo": "Meta 1: monto (US$ de hoy)",
+          "campo": "Meta 1: monto (valor de hoy)",
           "valor": "1,000,000",
           "codigo": "1,000,000"
+        },
+        {
+          "id": "",
+          "campo": "Meta 1: moneda",
+          "valor": "USD",
+          "codigo": "USD"
         },
         {
           "id": "",
@@ -974,9 +1117,15 @@
         },
         {
           "id": "",
-          "campo": "Meta 2: monto (US$ de hoy)",
+          "campo": "Meta 2: monto (valor de hoy)",
           "valor": "500,000",
           "codigo": "500,000"
+        },
+        {
+          "id": "",
+          "campo": "Meta 2: moneda",
+          "valor": "USD",
+          "codigo": "USD"
         },
         {
           "id": "",
@@ -1004,9 +1153,15 @@
         },
         {
           "id": "",
-          "campo": "Meta 3: monto (US$ de hoy)",
+          "campo": "Meta 3: monto (valor de hoy)",
           "valor": "1,000,000",
           "codigo": "1,000,000"
+        },
+        {
+          "id": "",
+          "campo": "Meta 3: moneda",
+          "valor": "USD",
+          "codigo": "USD"
         },
         {
           "id": "",
@@ -1031,7 +1186,7 @@
     {
       "pagina": 2,
       "seccion": "Planificación financiera",
-      "n": "19",
+      "n": "20",
       "clave": "herencia",
       "pregunta": "¿Qué desea que ocurra con este patrimonio al final de su horizonte de vida?",
       "detalle": [
@@ -1043,16 +1198,22 @@
         },
         {
           "id": "herencia-monto",
-          "campo": "Monto de la herencia (US$ de hoy)",
+          "campo": "Monto de la herencia (valor de hoy)",
           "valor": "10,000,000",
           "codigo": "10,000,000"
+        },
+        {
+          "id": "herencia-moneda",
+          "campo": "Herencia: moneda",
+          "valor": "USD",
+          "codigo": "USD"
         }
       ]
     },
     {
       "pagina": 2,
       "seccion": "Planificación financiera",
-      "n": "20",
+      "n": "21",
       "clave": "seguro-vida",
       "pregunta": "¿Qué seguros tiene vigentes?",
       "detalle": [
@@ -1079,7 +1240,7 @@
     {
       "pagina": 2,
       "seccion": "Planificación financiera",
-      "n": "21",
+      "n": "22",
       "clave": "moneda-usd",
       "pregunta": "¿En qué proporción de dólares y colones prefiere mantener este portafolio?",
       "detalle": [
@@ -1100,7 +1261,7 @@
     {
       "pagina": 2,
       "seccion": "Planificación financiera",
-      "n": "22",
+      "n": "23",
       "clave": "estr-sa-cr",
       "pregunta": "Indique cuáles de las siguientes estructuras jurídicas posee",
       "detalle": [
@@ -1115,7 +1276,7 @@
     {
       "pagina": 2,
       "seccion": "Planificación financiera",
-      "n": "23",
+      "n": "24",
       "clave": "comentarios",
       "pregunta": "¿Tiene comentarios adicionales que su asesor deba considerar?",
       "detalle": [
@@ -1134,6 +1295,7 @@
     "q2": "6.67",
     "q3": "10",
     "q6": "0",
+    "q7-situacion": "aporta",
     "q7": "3.33",
     "q4": "na",
     "q8": "5",
@@ -1141,27 +1303,22 @@
     "q10": "3.33",
     "edad": "68",
     "edad_retiro": "67",
-    "plan": "individual",
-    "ingreso-pareja-moneda": "CRC",
-    "hijos-n": "1",
-    "dep-pareja": "0",
-    "dep-padres": "0",
-    "dep-hermanos": "0",
-    "dep-tios": "0",
-    "dep-abuelos": "0",
-    "dep-otros": "0",
-    "otros-dep-n": "0",
-    "n:Edad del hijo 1": "19",
-    "otros-dep-moneda": "CRC",
     "salario-monto": "25,000",
     "salario-moneda": "USD",
     "ingreso-hasta": "100",
+    "fuente-salario": false,
+    "fuente-empresa": true,
+    "fuente-honorarios": false,
     "fuente-ingreso": "empresa",
     "c3": "6.67",
+    "plan": "individual",
+    "ingreso-pareja-moneda": "CRC",
     "pension-regimen": "ivm",
+    "pension-recibe": "si",
     "pension-monto": "800.000",
     "pension-moneda": "CRC",
     "pension-edad": "67",
+    "pension-nose": false,
     "otros-ing": "no",
     "otros-ing-moneda": "CRC",
     "f-rop-tiene": "si",
@@ -1178,19 +1335,35 @@
     "aportes-extra-n": "0",
     "gasto-monto": "25,000",
     "gasto-moneda": "USD",
-    "gasto-retiro-pct": "110",
+    "gasto-usd-pct": "55",
+    "gasto-retiro-pct": "100",
+    "hijos-n": "1",
+    "dep-pareja": "0",
+    "dep-padres": "0",
+    "dep-hermanos": "0",
+    "dep-tios": "0",
+    "dep-abuelos": "0",
+    "dep-otros": "0",
+    "otros-dep-n": "0",
+    "n:Edad del hijo 1": "19",
     "apoyos-tiene": "si",
     "apoyos-n": "1",
     "n:Dependiente 1: parentesco": "hijo",
     "n:Dependiente 1: motivo del retiro": "educacion",
-    "n:Dependiente 1: monto anual (US$ de hoy)": "100,000",
+    "n:Dependiente 1: monto anual (valor de hoy)": "100,000",
+    "n:Dependiente 1: moneda": "USD",
     "n:Dependiente 1: año de inicio": "2026",
     "n:Dependiente 1: años de duración": "5",
+    "donaciones-tiene": "no",
+    "donaciones-moneda": "USD",
     "deudas-tiene": "no",
-    "deudas-saldo-moneda": "USD",
-    "deudas-cuota-moneda": "USD",
     "reserva": "3a6",
-    "gastos-extra-monto": "136,000",
+    "gastos-extra-n": "1",
+    "n:Gasto extraordinario 1: nombre": "Gastos extraordinarios anuales",
+    "n:Gasto extraordinario 1: frecuencia": "anual",
+    "n:Gasto extraordinario 1: monto (valor de hoy)": "100,000",
+    "n:Gasto extraordinario 1: moneda": "USD",
+    "n:Gasto extraordinario 1: año": "2026",
     "capital-monto": "10,000,000",
     "capital-moneda": "USD",
     "c5-pct": "100",
@@ -1198,18 +1371,23 @@
     "hipoteca-saldo-moneda": "USD",
     "hipoteca-cuota-moneda": "USD",
     "inmuebles-n": "2",
-    "inmuebles-moneda": "USD",
     "n:Inmueble 1: nombre": "LOTES SIN DESARROLLAR",
     "n:Inmueble 1: valor estimado": "31,000,000",
+    "n:Inmueble 1: valor estimado (moneda)": "USD",
     "n:Inmueble 1: renta mensual neta": "0",
+    "n:Inmueble 1: renta mensual neta (moneda)": "USD",
     "n:Inmueble 1: saldo de deuda": "0",
+    "n:Inmueble 1: saldo de deuda (moneda)": "USD",
     "n:Inmueble 1: estima venderlo": "si",
     "n:Inmueble 1: año de venta": "2034",
     "n:Inmueble 1: invierte la venta en el portafolio": "si",
     "n:Inmueble 2: nombre": "EDIFICIO",
     "n:Inmueble 2: valor estimado": "4,000,000",
+    "n:Inmueble 2: valor estimado (moneda)": "USD",
     "n:Inmueble 2: renta mensual neta": "0",
+    "n:Inmueble 2: renta mensual neta (moneda)": "USD",
     "n:Inmueble 2: saldo de deuda": "0",
+    "n:Inmueble 2: saldo de deuda (moneda)": "USD",
     "n:Inmueble 2: estima venderlo": "si",
     "n:Inmueble 2: año de venta": "2036",
     "n:Inmueble 2: invierte la venta en el portafolio": "si",
@@ -1224,24 +1402,29 @@
     "c1-tiene": "si",
     "c1": "1",
     "c1-monto": "2,000,000",
+    "c1-moneda": "USD",
     "metas-n": "3",
     "n:Meta 1: tipo": "negocio",
-    "n:Meta 1: monto (US$ de hoy)": "1,000,000",
+    "n:Meta 1: monto (valor de hoy)": "1,000,000",
+    "n:Meta 1: moneda": "USD",
     "n:Meta 1: año estimado": "2027",
     "n:Meta 1: prioridad": "deseable",
     "n:Meta 1: financiamiento": "portafolio",
     "n:Meta 2: tipo": "negocio",
-    "n:Meta 2: monto (US$ de hoy)": "500,000",
+    "n:Meta 2: monto (valor de hoy)": "500,000",
+    "n:Meta 2: moneda": "USD",
     "n:Meta 2: año estimado": "2027",
     "n:Meta 2: prioridad": "deseable",
     "n:Meta 2: financiamiento": "portafolio",
     "n:Meta 3: tipo": "negocio",
-    "n:Meta 3: monto (US$ de hoy)": "1,000,000",
+    "n:Meta 3: monto (valor de hoy)": "1,000,000",
+    "n:Meta 3: moneda": "USD",
     "n:Meta 3: año estimado": "2027",
     "n:Meta 3: prioridad": "deseable",
     "n:Meta 3: financiamiento": "portafolio",
     "herencia": "herencia",
     "herencia-monto": "10,000,000",
+    "herencia-moneda": "USD",
     "seguro-vida": true,
     "seguro-medico": true,
     "seguro-invalidez": false,
@@ -1275,10 +1458,11 @@
     "distrito": "San Rafael",
     "direccion": "Torre Country"
   },
-  "modificadoEn": 1792445083293,
+  "modificadoEn": 1792699208492,
   "historialEdiciones": [
     1792100359416,
     1792102121912,
-    1792445083293
+    1792445083293,
+    1792699208492
   ]
 }
