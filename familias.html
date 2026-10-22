@@ -801,7 +801,7 @@
                   <option value="no">No, la recibiré en el futuro</option>
                   <option value="si">Sí, ya la recibo</option>
                 </select>
-                <div class="fila-grid espacio">
+                <div class="fila-grid" style="margin-top:18px">
                   <div><span class="mini" id="pension-monto-lab">Monto mensual estimado de la pensión, en valor de hoy</span>
                     <div class="amount">
                       <input type="number" min="1" id="pension-monto" name="Pensión mensual estimada (monto)" placeholder="800.000">
@@ -982,9 +982,13 @@
                 <select id="gasto-moneda" name="Gasto familiar mensual (moneda)"><option>USD</option><option>CRC</option></select>
               </div>
               <p class="hint">Gastos de vida recurrentes del hogar, incluidos los de las personas que viven con usted. No incluya la cuota de la hipoteca, las donaciones ni los gastos de dependientes que no viven con usted: se piden aparte, en las preguntas siguientes. Si las cuotas de sus deudas ya están en este monto, lo indicará en la pregunta de deudas, para no contarlas dos veces. Se proyecta con la inflación.</p>
-              <span class="mini espacio">¿Qué porcentaje de ese gasto paga en dólares?</span>
-              <div class="amount"><input required type="number" min="0" max="100" step="1" id="gasto-usd-pct" name="Gasto familiar en dólares (%)" placeholder="30"><div class="unit">%</div></div>
-              <p class="hint">El resto se entiende en colones. Sirve para evaluar la exposición al tipo de cambio; no cambia la proyección.</p>
+              <div class="fila-grid" style="margin-top:18px">
+                <div><span class="mini">¿Qué porcentaje de ese gasto paga en dólares?</span>
+                  <div class="amount"><input required type="number" min="0" max="100" step="1" id="gasto-usd-pct" name="Gasto familiar en dólares (%)" placeholder="30"><div class="unit">%</div></div></div>
+                <div><span class="mini">Porcentaje que paga en colones</span>
+                  <div class="amount"><input type="number" id="gasto-crc-pct" readonly tabindex="-1" placeholder="70" aria-label="Gasto familiar en colones (%)"><div class="unit">%</div></div></div>
+              </div>
+              <p class="hint"><strong>Importante para la proyección:</strong> el porcentaje en colones se calcula solo (100% menos el porcentaje en dólares). La parte en dólares crece con la inflación de Estados Unidos y la parte en colones con la de Costa Rica.</p>
               <div id="gasto-retiro-q">
               <span class="mini espacio">En el retiro, ese gasto será este porcentaje del gasto actual</span>
               <div class="amount"><input required type="number" min="10" max="300" step="1" id="gasto-retiro-pct" name="Gasto en el retiro (% del actual)" placeholder="100"><div class="unit">%</div></div>
@@ -1755,6 +1759,14 @@ function validarIdentificacion(){
     if(nota) nota.textContent = e === null ? '' : 'Su edad actual es de ' + e + ' años.';
   }
 }
+// Gasto familiar en colones = 100% − el porcentaje que paga en dólares (pregunta del gasto familiar)
+function actualizarGastoCrc(){
+  const u = document.getElementById('gasto-usd-pct'), c = document.getElementById('gasto-crc-pct');
+  if(!u || !c) return;
+  const v = u.value === '' ? null : Math.min(100, Math.max(0, +u.value));
+  c.value = v === null || isNaN(v) ? '' : Math.round((100 - v) * 100) / 100;
+}
+['input','change'].forEach(ev => document.addEventListener(ev, e => { if(e.target && e.target.id === 'gasto-usd-pct') actualizarGastoCrc(); }));
 function edadDesde(fecha){
   if(!fecha) return null;
   const f = new Date(fecha + 'T00:00:00'), h = new Date();
@@ -2257,7 +2269,7 @@ document.addEventListener('input', function(e){
 
 // Si el navegador restaura el formulario (volver atrás, recargar), los campos
 // condicionales deben reflejar lo que ya estaba marcado.
-function restaurarEstado(){ elegirTipo(tipoCliente); sincronizarIdentificacion(); validarIdentificacion(); validarEdades(); sincronizarSeguros(); sincronizarCondicionales(); sincronizarFilas(); marcarRespondidas(); }
+function restaurarEstado(){ actualizarGastoCrc(); elegirTipo(tipoCliente); sincronizarIdentificacion(); validarIdentificacion(); validarEdades(); sincronizarSeguros(); sincronizarCondicionales(); sincronizarFilas(); marcarRespondidas(); }
 window.addEventListener('pageshow', restaurarEstado);
 
 // El botón de envío pasa por la misma validación que los botones de continuar,
@@ -2585,7 +2597,8 @@ document.getElementById('form').addEventListener('submit', async function(e){
       ingresoPareja: val('plan') === 'conjunta'
         ? {monto: +val('ingreso-pareja-monto'), moneda: val('ingreso-pareja-moneda'), hastaEdad: val('ingreso-pareja-hasta') === '' ? null : +val('ingreso-pareja-hasta')} : null,
       gastoRetiroPct: val('gasto-retiro-pct') === '' ? null : +val('gasto-retiro-pct'),
-      gastoUsdPct: val('gasto-usd-pct') === '' ? null : +val('gasto-usd-pct')
+      gastoUsdPct: val('gasto-usd-pct') === '' ? null : +val('gasto-usd-pct'),
+      gastoCrcPct: val('gasto-usd-pct') === '' ? null : 100 - (+val('gasto-usd-pct'))
     },
     pension: {
       regimen: val('pension-regimen'),
@@ -2919,4 +2932,4 @@ function datosDesdeRegistro(r){
 
 
 
-<!-- Chotocruz & Co. · Entrega 33 · 22 de octubre de 2026 -->
+<!-- Chotocruz & Co. · Entrega 36 · 22 de octubre de 2026 -->
