@@ -50,7 +50,7 @@
     padding:26px 0;
   }
   .masthead-inner{
-    max-width:760px;margin:0 auto;padding:0 28px;
+    max-width:1000px;margin:0 auto;padding:0 28px;
     display:flex;align-items:center;justify-content:space-between;gap:20px;
   }
   .masthead img{height:36px;width:auto;display:block;}
@@ -64,7 +64,7 @@
   }
 
   /* ---------- Encabezado editorial ---------- */
-  .intro{max-width:760px;margin:0 auto;padding:44px 28px 30px;}
+  .intro{max-width:1000px;margin:0 auto;padding:44px 28px 30px;}
   .kicker{
     font-size:11px;letter-spacing:.14em;text-transform:uppercase;
     color:#918042;font-weight:500;margin:0 0 16px;
@@ -88,7 +88,7 @@
   }
 
   /* ---------- Indicador de avance ---------- */
-  .progress{max-width:760px;margin:0 auto;padding:0 28px 18px;}
+  .progress{max-width:1000px;margin:0 auto;padding:0 28px 18px;}
   .progress-bar{display:flex;gap:4px;margin-bottom:10px;}
   .seg{flex:1;height:2px;background:var(--rule);transition:background .25s ease;}
   .seg.on{background:var(--accent);}
@@ -99,7 +99,7 @@
 
   /* ---------- Hoja de formulario ---------- */
   .sheet{
-    max-width:760px;margin:0 auto 10px;
+    max-width:1000px;margin:0 auto 10px;
     background:var(--sheet);
     border-top:2px solid var(--ink);
     border-bottom:1px solid var(--rule);
@@ -247,7 +247,7 @@
   .q.q-req .qlabel::before{content:"* ";color:#A2543A;font-weight:600;}
   .field:has(> [required]) > label::before, .field:has(.tel [required]) > label::before{content:"* ";color:#A2543A;font-weight:600;}
   /* Pasos: se puede ir a cualquier página y volver */
-  .pasos-nav{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:14px auto 26px;max-width:760px;padding:0 16px;}
+  .pasos-nav{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:14px auto 26px;max-width:1000px;padding:0 16px;}
   .pasos-nav[hidden]{display:none;}
   .paso-btn{font:inherit;font-size:12.5px;background:transparent;border:1px solid var(--rule);border-radius:999px;
     padding:6px 14px;color:#3A3F24;cursor:pointer;display:inline-flex;align-items:center;gap:8px;}
@@ -255,7 +255,7 @@
   .paso-btn.actual{border-color:var(--accent);background:#F2F3EA;font-weight:600;}
   .paso-btn .paso-estado{font-size:11px;color:#7F8757;font-weight:400;}
   .paso-btn .paso-estado.falta{color:#A2543A;}
-  .edicion-banda{max-width:760px;margin:0 auto 26px;padding:12px 16px;border:1px solid #D9C27A;background:#FBF6E6;
+  .edicion-banda{max-width:1000px;margin:0 auto 26px;padding:12px 16px;border:1px solid #D9C27A;background:#FBF6E6;
     border-radius:8px;font-size:13.5px;color:#3A3F24;}
   .edicion-banda[hidden]{display:none;}
   .nota-req{font-size:13px;color:#5B5F45;margin:-8px 0 18px;}
@@ -410,7 +410,7 @@
 
   /* ---------- Pie ---------- */
   footer{
-    max-width:760px;margin:0 auto;padding:20px 28px 44px;
+    max-width:1000px;margin:0 auto;padding:20px 28px 44px;
     display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;
     font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-45);
   }
@@ -427,7 +427,7 @@
   input,select{-webkit-text-stroke:.2px currentColor;paint-order:stroke fill;}
   /* Pie institucional */
   .pie{background:var(--ink);margin-top:44px;padding:25px 0;}
-  .pie-inner{max-width:760px;margin:0 auto;padding:0 28px;
+  .pie-inner{max-width:1000px;margin:0 auto;padding:0 28px;
     display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;}
   .pie-marca{display:flex;align-items:center;gap:18px;}
   .pie img{height:38px;width:auto;display:block;flex:none;}
@@ -442,6 +442,19 @@
     .pie img{height:38px;}
     .pie span{font-size:11px;}
   }
+
+  /* Hoja más ancha y letra más grande (octubre de 2026) */
+  body{font-size:16px;}
+  .q .qlabel{font-size:17px;}
+  input,select,textarea{font-size:16px;}
+  .mini{font-size:13.5px;}
+  .hint{font-size:13.5px;}
+  label{font-size:12px;}
+  .section-head h2{font-size:24px;}
+  .section-head p{font-size:15px;max-width:72ch;}
+  .q{grid-template-columns:38px 1fr;padding:24px 20px 24px 16px;}
+  .q-num{font-size:13.5px;}
+  .amount{grid-template-columns:1fr 84px;}
 </style>
 </head>
 <body>
@@ -580,17 +593,26 @@
             </div>
           </div>
 
-          <div class="q q-req">
+          <div class="q q-req" data-clave="q7">
             <span class="q-num">06</span>
             <div>
-              <span class="qlabel">Para alcanzar sus metas financieras, puede depender más de sus aportes o asumir más riesgo buscando un mayor rendimiento del portafolio. ¿Qué prefiere?</span>
-              <select required name="Q7 - Aporte frente a rendimiento" id="q7">
+              <span class="qlabel" id="q7-label">Para alcanzar sus metas financieras, ¿qué prefiere?</span>
+              <span class="mini">Primero indique: ¿hoy aporta a sus inversiones o vive de ellas?</span>
+              <select required name="Q7 - Situación frente al portafolio" id="q7-situacion">
                 <option value="" disabled selected>Seleccione una opción</option>
-                <option value="0">Prefiero aumentar mis aportes y asumir un nivel bajo de riesgo en el portafolio</option>
-                <option value="3.33">Prefiero aportar un poco más y mantener un nivel moderado de riesgo</option>
-                <option value="6.67">Prefiero mantener mis aportes previstos y aceptar un mayor nivel de riesgo para buscar más rendimiento</option>
-                <option value="10">Prefiero depender más del rendimiento del portafolio, aun si eso implica asumir fluctuaciones mayores</option>
+                <option value="aporta">Aporto a mis inversiones</option>
+                <option value="vive">Vivo de mis inversiones: retiro de ellas para mis gastos</option>
               </select>
+              <div class="sub-q" id="q7-detalle" hidden>
+                <span class="mini">Su preferencia</span>
+                <select name="Q7 - Aporte frente a rendimiento" id="q7">
+                  <option value="" disabled selected>Seleccione una opción</option>
+                  <option value="0">Aumentar mis aportes y mantener un riesgo bajo</option>
+                  <option value="3.33">Aportar un poco más con un riesgo moderado</option>
+                  <option value="6.67">Mantener mis aportes y aceptar más riesgo</option>
+                  <option value="10">Depender sobre todo del rendimiento, aun con fluctuaciones mayores</option>
+                </select>
+              </div>
               <p class="q-falta">Falta responder esta pregunta.</p>
             </div>
           </div>
@@ -903,7 +925,7 @@
   <div class="pie-inner">
     <div class="pie-marca">
       <img src="data:image/png;base64,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" alt="Chotocruz &amp; Co.">
-      <span>© 2026 Chotocruz&amp;Co. Todos los derechos reservados. &nbsp;|&nbsp; Asesoría patrimonial independiente.</span>
+      <span>© <span class="anio-actual">2026</span> Chotocruz&amp;Co. Todos los derechos reservados. &nbsp;|&nbsp; Asesoría patrimonial independiente.</span>
     </div>
     <div class="pie-redes">
       <a href="https://www.linkedin.com/company/chotocruz" target="_blank" rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3V9zm7 0h3.8v1.7h.05c.53-.95 1.83-1.95 3.75-1.95 4 0 4.75 2.5 4.75 5.8V21h-4v-5.5c0-1.3-.03-3-1.85-3-1.85 0-2.13 1.4-2.13 2.9V21h-4V9z"/></svg></a>
@@ -1222,7 +1244,24 @@ function revisarAviso(){
 
 // Campos que solo se muestran —y solo se exigen— según lo que el cliente escoja.
 // Cuando dejan de aplicar se vacían, para no enviar datos que el cliente descartó.
+// Pregunta 6 del perfil de riesgo: dos versiones de las opciones, según el cliente aporte a sus
+// inversiones o viva de ellas. Los puntajes (0, 3,33, 6,67 y 10) son los mismos en ambas.
+const Q7_VERSIONES = {
+  aporta: {pregunta: 'Para alcanzar sus metas financieras, ¿qué prefiere?', opciones: ['Aumentar mis aportes y mantener un riesgo bajo', 'Aportar un poco más con un riesgo moderado',
+    'Mantener mis aportes y aceptar más riesgo', 'Depender sobre todo del rendimiento, aun con fluctuaciones mayores']},
+  vive: {pregunta: 'Para que su portafolio sostenga sus retiros, ¿qué prefiere?', opciones: ['Reducir mis retiros y mantener un riesgo bajo', 'Reducir un poco mis retiros con un riesgo moderado',
+    'Mantener mis retiros y aceptar más riesgo', 'Mantener o aumentar mis retiros apoyándome en el rendimiento, aun con fluctuaciones mayores']}
+};
+function actualizarQ7(){
+  const sit = document.getElementById('q7-situacion'), sel = document.getElementById('q7'), lab = document.getElementById('q7-label');
+  if(!sit || !sel) return;
+  const v = Q7_VERSIONES[sit.value] || Q7_VERSIONES.aporta;
+  if(lab) lab.textContent = v.pregunta;
+  [...sel.options].filter(o => o.value !== '').forEach((o, k) => { o.textContent = v.opciones[k]; });
+}
+document.addEventListener('change', function(e){ if(e.target && e.target.id === 'q7-situacion') actualizarQ7(); });
 const CONDICIONALES = [
+  {control:'q7-situacion', detalle:'q7-detalle', campos:['q7'], aplica: v => v === 'aporta' || v === 'vive'},
   {control:'plan',            detalle:'pareja-detalle',        campos:['edad-pareja','ingreso-pareja-monto'], aplica: v => v === 'conjunta'},
   {control:'otros-dep-n',     detalle:'otros-dep-detalle',     campos:['otros-dep-monto'],             aplica: v => +v > 0},
   {control:'otros-ing',       detalle:'otros-ing-detalle',     campos:['otros-ing-monto','otros-ing-desde'], aplica: v => v === 'si'},
@@ -1248,6 +1287,7 @@ const CONDICIONALES = [
 ];
 const valorDe = el => el.type === 'checkbox' ? el.checked : el.value;
 function sincronizarCondicionales(){
+  actualizarQ7();
   CONDICIONALES.forEach(function(c){
     const ctl = document.getElementById(c.control);
     const det = document.getElementById(c.detalle);
@@ -1688,7 +1728,7 @@ function respuestasEnTexto(){
       const etiqueta = q.querySelector('.qlabel');
       const primero = q.querySelector('input:not([type=hidden]), select, textarea');
       out.push({pagina: n, seccion: nombre, n: (q.querySelector('.q-num') || {}).textContent || '',
-                clave: primero ? primero.id : '', pregunta: etiqueta ? etiqueta.textContent.trim() : '', detalle});
+                clave: q.dataset.clave || (primero ? primero.id : ''), pregunta: etiqueta ? etiqueta.textContent.trim() : '', detalle});
     });
   });
   return out;
@@ -1743,7 +1783,9 @@ document.getElementById('form').addEventListener('submit', async function(e){
     //   Tolerancia: q1, q2, q4, q5, q9   ·   Apetito: q3, q6, q7, q8
     // q4 admite 'na' (el cliente no ha pasado por una pérdida): se guarda como null
     // y el dashboard la excluye del denominador en lugar de imputarle un valor.
-    versionPerfil: 2,   // escala lineal 0-10 y pesos por tipo de pregunta (metodología v2)
+    versionPerfil: 2,
+    // pregunta 6: el cliente aporta a sus inversiones o vive de ellas (versión de las opciones)
+    situacionPortafolio: val('q7-situacion') || null,   // escala lineal 0-10 y pesos por tipo de pregunta (metodología v2)
     respuestas: {
       q1:+val('q1'), q2:+val('q2'), q3:+val('q3'),
       q4: val('q4')==='na' ? null : +val('q4'),
@@ -1894,6 +1936,8 @@ document.getElementById('form').addEventListener('submit', async function(e){
   function clienteInstitucion(){
     return Object.assign(base(), {
       versionPerfil: 2,
+    // pregunta 6: el cliente aporta a sus inversiones o vive de ellas (versión de las opciones)
+    situacionPortafolio: val('q7-situacion') || null,
       respuestas: {
         q1:+val('q1'), q2:+val('q2'), q3:+val('q3'),
         q4: val('q4')==='na' ? null : +val('q4'),
@@ -2029,6 +2073,8 @@ function restaurarBorrador(b){
 // ---- Edición de un cuestionario enviado (desde el dashboard: ?editar=<id>) ----
 // Respuestas guardadas con versiones anteriores del formulario: se llevan a los campos vigentes
 function migrarFormulario(d, r){
+  // pregunta 6: las versiones anteriores solo tenían la redacción de quien aporta
+  if(d['q7-situacion'] === undefined && d['q7'] !== undefined && d['q7'] !== '') d['q7-situacion'] = 'aporta';
   if(d['apoyos-tiene'] === undefined && d['apoyos-n'] !== undefined){ d['apoyos-tiene'] = +d['apoyos-n'] > 0 ? 'si' : 'no'; if(!(+d['apoyos-n'] > 0)) delete d['apoyos-n']; }
   if(d['gasto-retiro-pct'] === undefined && d['gasto-retiro']){ const m = {menor: 80, igual: 100, mayor: 110}[d['gasto-retiro']]; if(m) d['gasto-retiro-pct'] = String(m); }
   if(d['otros-ing-desde'] === 'independencia') delete d['otros-ing-desde'];
@@ -2103,7 +2149,11 @@ function datosDesdeRegistro(r){
   }
 })();
 </script>
+<script>document.querySelectorAll(".anio-actual").forEach(function(e){ e.textContent = new Date().getFullYear(); });</script>
 </body>
 </html>
 
-<!-- Chotocruz & Co. · Entrega 29 · 21 de octubre de 2026 -->
+
+
+
+<!-- Chotocruz & Co. · Entrega 33 · 22 de octubre de 2026 -->

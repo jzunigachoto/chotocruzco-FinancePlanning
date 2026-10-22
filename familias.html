@@ -50,7 +50,7 @@
     padding:26px 0;
   }
   .masthead-inner{
-    max-width:760px;margin:0 auto;padding:0 28px;
+    max-width:1000px;margin:0 auto;padding:0 28px;
     display:flex;align-items:center;justify-content:space-between;gap:20px;
   }
   .masthead img{height:36px;width:auto;display:block;}
@@ -64,7 +64,7 @@
   }
 
   /* ---------- Encabezado editorial ---------- */
-  .intro{max-width:760px;margin:0 auto;padding:44px 28px 30px;}
+  .intro{max-width:1000px;margin:0 auto;padding:44px 28px 30px;}
   .kicker{
     font-size:11px;letter-spacing:.14em;text-transform:uppercase;
     color:#918042;font-weight:500;margin:0 0 16px;
@@ -88,7 +88,7 @@
   }
 
   /* ---------- Indicador de avance ---------- */
-  .progress{max-width:760px;margin:0 auto;padding:0 28px 18px;}
+  .progress{max-width:1000px;margin:0 auto;padding:0 28px 18px;}
   .progress-bar{display:flex;gap:4px;margin-bottom:10px;}
   .seg{flex:1;height:2px;background:var(--rule);transition:background .25s ease;}
   .seg.on{background:var(--accent);}
@@ -99,7 +99,7 @@
 
   /* ---------- Hoja de formulario ---------- */
   .sheet{
-    max-width:760px;margin:0 auto 10px;
+    max-width:1000px;margin:0 auto 10px;
     background:var(--sheet);
     border-top:2px solid var(--ink);
     border-bottom:1px solid var(--rule);
@@ -251,7 +251,7 @@
   .q.q-req .qlabel::before{content:"* ";color:#A2543A;font-weight:600;}
   .field:has(> [required]) > label::before, .field:has(.tel [required]) > label::before{content:"* ";color:#A2543A;font-weight:600;}
   /* Pasos: se puede ir a cualquier página y volver */
-  .pasos-nav{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:14px auto 26px;max-width:760px;padding:0 16px;}
+  .pasos-nav{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:14px auto 26px;max-width:1000px;padding:0 16px;}
   .pasos-nav[hidden]{display:none;}
   .paso-btn{font:inherit;font-size:12.5px;background:transparent;border:1px solid var(--rule);border-radius:999px;
     padding:6px 14px;color:#3A3F24;cursor:pointer;display:inline-flex;align-items:center;gap:8px;}
@@ -259,7 +259,7 @@
   .paso-btn.actual{border-color:var(--accent);background:#F2F3EA;font-weight:600;}
   .paso-btn .paso-estado{font-size:11px;color:#7F8757;font-weight:400;}
   .paso-btn .paso-estado.falta{color:#A2543A;}
-  .edicion-banda{max-width:760px;margin:0 auto 26px;padding:12px 16px;border:1px solid #D9C27A;background:#FBF6E6;
+  .edicion-banda{max-width:1000px;margin:0 auto 26px;padding:12px 16px;border:1px solid #D9C27A;background:#FBF6E6;
     border-radius:8px;font-size:13.5px;color:#3A3F24;}
   .edicion-banda[hidden]{display:none;}
   .nota-req{font-size:13px;color:#5B5F45;margin:-8px 0 18px;}
@@ -415,7 +415,7 @@
 
   /* ---------- Pie ---------- */
   footer{
-    max-width:760px;margin:0 auto;padding:20px 28px 44px;
+    max-width:1000px;margin:0 auto;padding:20px 28px 44px;
     display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;
     font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-45);
   }
@@ -432,7 +432,7 @@
   input,select{-webkit-text-stroke:.2px currentColor;paint-order:stroke fill;}
   /* Pie institucional */
   .pie{background:var(--ink);margin-top:44px;padding:25px 0;}
-  .pie-inner{max-width:760px;margin:0 auto;padding:0 28px;
+  .pie-inner{max-width:1000px;margin:0 auto;padding:0 28px;
     display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;}
   .pie-marca{display:flex;align-items:center;gap:18px;}
   .pie img{height:38px;width:auto;display:block;flex:none;}
@@ -447,6 +447,19 @@
     .pie img{height:38px;}
     .pie span{font-size:11px;}
   }
+
+  /* Hoja más ancha y letra más grande (octubre de 2026) */
+  body{font-size:16px;}
+  .q .qlabel{font-size:17px;}
+  input,select,textarea{font-size:16px;}
+  .mini{font-size:13.5px;}
+  .hint{font-size:13.5px;}
+  label{font-size:12px;}
+  .section-head h2{font-size:24px;}
+  .section-head p{font-size:15px;max-width:72ch;}
+  .q{grid-template-columns:38px 1fr;padding:24px 20px 24px 16px;}
+  .q-num{font-size:13.5px;}
+  .amount{grid-template-columns:1fr 84px;}
 </style>
 </head>
 <body>
@@ -585,17 +598,26 @@
             </div>
           </div>
 
-          <div class="q q-req">
+          <div class="q q-req" data-clave="q7">
             <span class="q-num">06</span>
             <div>
-              <span class="qlabel">Para alcanzar sus metas financieras, puede depender más de sus aportes o asumir más riesgo buscando un mayor rendimiento del portafolio. ¿Qué prefiere?</span>
-              <select required name="Q7 - Aporte frente a rendimiento" id="q7">
+              <span class="qlabel" id="q7-label">Para alcanzar sus metas financieras, ¿qué prefiere?</span>
+              <span class="mini">Primero indique: ¿hoy aporta a sus inversiones o vive de ellas?</span>
+              <select required name="Q7 - Situación frente al portafolio" id="q7-situacion">
                 <option value="" disabled selected>Seleccione una opción</option>
-                <option value="0">Prefiero aumentar mis aportes y asumir un nivel bajo de riesgo en el portafolio</option>
-                <option value="3.33">Prefiero aportar un poco más y mantener un nivel moderado de riesgo</option>
-                <option value="6.67">Prefiero mantener mis aportes previstos y aceptar un mayor nivel de riesgo para buscar más rendimiento</option>
-                <option value="10">Prefiero depender más del rendimiento del portafolio, aun si eso implica asumir fluctuaciones mayores</option>
+                <option value="aporta">Aporto a mis inversiones</option>
+                <option value="vive">Vivo de mis inversiones: retiro de ellas para mis gastos</option>
               </select>
+              <div class="sub-q" id="q7-detalle" hidden>
+                <span class="mini">Su preferencia</span>
+                <select name="Q7 - Aporte frente a rendimiento" id="q7">
+                  <option value="" disabled selected>Seleccione una opción</option>
+                  <option value="0">Aumentar mis aportes y mantener un riesgo bajo</option>
+                  <option value="3.33">Aportar un poco más con un riesgo moderado</option>
+                  <option value="6.67">Mantener mis aportes y aceptar más riesgo</option>
+                  <option value="10">Depender sobre todo del rendimiento, aun con fluctuaciones mayores</option>
+                </select>
+              </div>
               <p class="q-falta">Falta responder esta pregunta.</p>
             </div>
           </div>
@@ -916,14 +938,13 @@
                       <div class="amount"><input type="number" min="0" id="f-vol-aporte" name="Pensión voluntaria: aporte mensual (monto)" placeholder="150.000"><select id="f-vol-aporte-moneda" name="Pensión voluntaria: aporte mensual (moneda)"><option>CRC</option><option>USD</option></select></div></div>
                   </div>
                   <p class="hint">Escriba 0 si ya no aporta.</p>
-                  <span class="mini espacio">¿Cuándo trasladaría este saldo a su portafolio?</span>
-                  <select id="f-vol-traslado" name="Pensión voluntaria: traslado al portafolio">
+                  <span class="mini espacio">¿Cómo usará este saldo?</span>
+                  <select id="f-vol-traslado" name="Pensión voluntaria: uso">
                     <option value="" disabled selected>Seleccione una opción</option>
-                    <option value="independencia">Al momento del retiro (no antes de los 57 años)</option>
-                    <option value="anio">En un año específico (no antes de los 57 años)</option>
-                    <option value="no">No lo trasladaré a este portafolio</option>
+                    <option value="pension">Como pensión mensual al pensionarse (desde la edad de pensión)</option>
+                    <option value="no">No lo usaré en este plan</option>
                   </select>
-                  <p class="hint">Por ley, la pensión voluntaria se retira a partir de los 57 años, con al menos 66 cuotas. Antes de esa edad solo se permiten retiros parciales, devolviendo los beneficios fiscales; la proyección no los considera.</p>
+                  <p class="hint">La proyección la toma como un ingreso ordinario desde la edad de pensión, con la modalidad que elija para el ROP. Por ley, la pensión voluntaria se puede recibir desde los 57 años; un retiro anticipado exige al menos 66 cuotas y devolver los beneficios fiscales.</p>
                   <div class="sub-q" id="f-vol-anio-detalle" hidden>
                     <span class="mini">Año del traslado</span>
                     <div class="amount"><input type="number" min="2026" max="2100" id="f-vol-anio" name="Pensión voluntaria: año del traslado" placeholder="2031"><div class="unit">año</div></div>
@@ -960,7 +981,7 @@
                 <input required type="number" min="1" id="gasto-monto" name="Gasto familiar mensual (monto)" placeholder="10.000">
                 <select id="gasto-moneda" name="Gasto familiar mensual (moneda)"><option>USD</option><option>CRC</option></select>
               </div>
-              <p class="hint">Gastos de vida recurrentes del hogar, incluidos los de las personas que viven con usted. No incluya las cuotas de hipoteca y de deudas, las donaciones ni los gastos de dependientes que no viven con usted: se piden aparte, en las preguntas siguientes. Se proyecta con la inflación.</p>
+              <p class="hint">Gastos de vida recurrentes del hogar, incluidos los de las personas que viven con usted. No incluya la cuota de la hipoteca, las donaciones ni los gastos de dependientes que no viven con usted: se piden aparte, en las preguntas siguientes. Si las cuotas de sus deudas ya están en este monto, lo indicará en la pregunta de deudas, para no contarlas dos veces. Se proyecta con la inflación.</p>
               <span class="mini espacio">¿Qué porcentaje de ese gasto paga en dólares?</span>
               <div class="amount"><input required type="number" min="0" max="100" step="1" id="gasto-usd-pct" name="Gasto familiar en dólares (%)" placeholder="30"><div class="unit">%</div></div>
               <p class="hint">El resto se entiende en colones. Sirve para evaluar la exposición al tipo de cambio; no cambia la proyección.</p>
@@ -1036,6 +1057,9 @@
                 </div>
                 <div class="filas" id="deudas-filas"></div>
                 <p class="hint">Préstamos personales, prendarios, tarjetas de crédito u otros, sin incluir la hipoteca. La cuota de cada deuda se cuenta como gasto ordinario hasta el año en que termina.</p>
+                <span class="mini espacio">¿Las cuotas de estas deudas ya están incluidas en el gasto familiar mensual que indicó antes?</span>
+                <select id="deudas-en-gasto" name="Cuotas de deudas incluidas en el gasto familiar"><option value="" disabled selected>Seleccione una opción</option><option value="no">No: se suman aparte del gasto familiar</option><option value="si">Sí: ya están dentro del gasto familiar</option></select>
+                <p class="hint">Así no se cuentan dos veces. Si ya están en el gasto familiar, la proyección las muestra solo como información.</p>
               </div>
               <span class="mini espacio">Reserva de liquidez fuera de este portafolio</span>
               <select id="reserva" name="Reserva de liquidez">
@@ -1462,7 +1486,7 @@
   <div class="pie-inner">
     <div class="pie-marca">
       <img src="data:image/png;base64,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" alt="Chotocruz &amp; Co.">
-      <span>© 2026 Chotocruz&amp;Co. Todos los derechos reservados. &nbsp;|&nbsp; Asesoría patrimonial independiente.</span>
+      <span>© <span class="anio-actual">2026</span> Chotocruz&amp;Co. Todos los derechos reservados. &nbsp;|&nbsp; Asesoría patrimonial independiente.</span>
     </div>
     <div class="pie-redes">
       <a href="https://www.linkedin.com/company/chotocruz" target="_blank" rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3V9zm7 0h3.8v1.7h.05c.53-.95 1.83-1.95 3.75-1.95 4 0 4.75 2.5 4.75 5.8V21h-4v-5.5c0-1.3-.03-3-1.85-3-1.85 0-2.13 1.4-2.13 2.9V21h-4V9z"/></svg></a>
@@ -1836,7 +1860,24 @@ function revisarAviso(){
 
 // Campos que solo se muestran —y solo se exigen— según lo que el cliente escoja.
 // Cuando dejan de aplicar se vacían, para no enviar datos que el cliente descartó.
+// Pregunta 6 del perfil de riesgo: dos versiones de las opciones, según el cliente aporte a sus
+// inversiones o viva de ellas. Los puntajes (0, 3,33, 6,67 y 10) son los mismos en ambas.
+const Q7_VERSIONES = {
+  aporta: {pregunta: 'Para alcanzar sus metas financieras, ¿qué prefiere?', opciones: ['Aumentar mis aportes y mantener un riesgo bajo', 'Aportar un poco más con un riesgo moderado',
+    'Mantener mis aportes y aceptar más riesgo', 'Depender sobre todo del rendimiento, aun con fluctuaciones mayores']},
+  vive: {pregunta: 'Para que su portafolio sostenga sus retiros, ¿qué prefiere?', opciones: ['Reducir mis retiros y mantener un riesgo bajo', 'Reducir un poco mis retiros con un riesgo moderado',
+    'Mantener mis retiros y aceptar más riesgo', 'Mantener o aumentar mis retiros apoyándome en el rendimiento, aun con fluctuaciones mayores']}
+};
+function actualizarQ7(){
+  const sit = document.getElementById('q7-situacion'), sel = document.getElementById('q7'), lab = document.getElementById('q7-label');
+  if(!sit || !sel) return;
+  const v = Q7_VERSIONES[sit.value] || Q7_VERSIONES.aporta;
+  if(lab) lab.textContent = v.pregunta;
+  [...sel.options].filter(o => o.value !== '').forEach((o, k) => { o.textContent = v.opciones[k]; });
+}
+document.addEventListener('change', function(e){ if(e.target && e.target.id === 'q7-situacion') actualizarQ7(); });
 const CONDICIONALES = [
+  {control:'q7-situacion', detalle:'q7-detalle', campos:['q7'], aplica: v => v === 'aporta' || v === 'vive'},
   {control:'plan',            detalle:'pareja-detalle',        campos:['edad-pareja','ingreso-pareja-monto'], aplica: v => v === 'conjunta'},
   {control:'otros-ing',       detalle:'otros-ing-detalle',     campos:['otros-ing-monto','otros-ing-desde','otros-ing-hasta'], aplica: v => v === 'si'},
   {control:'otros-ing-hasta', detalle:'otros-ing-fin-detalle', campos:['otros-ing-fin'],             aplica: v => v === 'anio'},
@@ -1854,7 +1895,7 @@ const CONDICIONALES = [
   {control:'empresa-plan',    detalle:'empresa-anios-detalle', campos:['empresa-anios'],               aplica: v => v === 'vender' || v === 'traspasar'},
   {control:'empresa-plan',    detalle:'empresa-invierte-detalle', campos:['empresa-invierte'],         aplica: v => v === 'vender'},
   {control:'empresa-invierte', detalle:'empresa-pct-detalle',  campos:['empresa-pct'],                 aplica: v => v === 'parte'},
-  {control:'deudas-tiene',    detalle:'deudas-detalle-q',      campos:['deudas-n'],                    aplica: v => v === 'si'},
+  {control:'deudas-tiene',    detalle:'deudas-detalle-q',      campos:['deudas-n','deudas-en-gasto'],  aplica: v => v === 'si'},
   {control:'donaciones-tiene', detalle:'donaciones-detalle',   campos:['donaciones-monto'],            aplica: v => v === 'si'},
   {control:'pe-tiene',        detalle:'pe-detalle',            campos:['pe-valor','pe-part'],          aplica: v => v === 'si'},
   {control:'c1-tiene',        detalle:'c1-detalle',            campos:['c1','c1-monto'],               aplica: v => v === 'si'},
@@ -1890,6 +1931,7 @@ function ajustarPensionado(){
 document.addEventListener('change', function(e){ if(e.target && e.target.id === 'pension-recibe') sincronizarCondicionales(); });
 const valorDe = el => el.type === 'checkbox' ? el.checked : el.value;
 function sincronizarCondicionales(){
+  actualizarQ7();
   CONDICIONALES.forEach(function(c){
     const ctl = document.getElementById(c.control);
     const det = document.getElementById(c.detalle);
@@ -1933,11 +1975,10 @@ const REPETIBLES = [
   {control:'inmuebles-n', contenedor:'inmuebles-filas', max:999, fila: i => `
     <div class="fila-rep"><span class="fila-tit">Inmueble ${i+1}</span>
       <div><span class="mini">Nombre del inmueble</span><input required type="text" data-k="nombre" data-mayus="1" name="Inmueble ${i+1}: nombre" placeholder="APARTAMENTO ESCAZÚ" style="text-transform:uppercase"></div>
-      <div class="fila-grid c4" style="margin-top:12px;">
-      <div><span class="mini">Valor estimado</span><input required type="number" min="0" data-k="valor" data-moneda-fila="1" name="Inmueble ${i+1}: valor estimado" placeholder="180.000"></div>
-      <div><span class="mini">Renta mensual neta</span><input required type="number" min="0" data-k="renta" data-moneda-fila="1" name="Inmueble ${i+1}: renta mensual neta" placeholder="1.100"></div>
-      <div><span class="mini">Saldo de deuda</span><input required type="number" min="0" data-k="deuda" data-moneda-fila="1" name="Inmueble ${i+1}: saldo de deuda" placeholder="0"></div>
-      <div><span class="mini">Moneda</span><select data-k="moneda" name="Inmueble ${i+1}: moneda"><option>USD</option><option>CRC</option></select></div>
+      <div class="fila-grid c3" style="margin-top:12px;">
+      <div><span class="mini">Valor estimado</span><div class="amount"><input required type="number" min="0" data-k="valor" name="Inmueble ${i+1}: valor estimado" placeholder="180.000"><select data-k="monedaValor" name="Inmueble ${i+1}: valor estimado (moneda)"><option>USD</option><option>CRC</option></select></div></div>
+      <div><span class="mini">Renta mensual neta</span><div class="amount"><input required type="number" min="0" data-k="renta" name="Inmueble ${i+1}: renta mensual neta" placeholder="1.100"><select data-k="monedaRenta" name="Inmueble ${i+1}: renta mensual neta (moneda)"><option>USD</option><option>CRC</option></select></div></div>
+      <div><span class="mini">Saldo de deuda</span><div class="amount"><input required type="number" min="0" data-k="deuda" name="Inmueble ${i+1}: saldo de deuda" placeholder="0"><select data-k="monedaDeuda" name="Inmueble ${i+1}: saldo de deuda (moneda)"><option>USD</option><option>CRC</option></select></div></div>
     </div>
       <div class="fila-grid" style="margin-top:12px;">
         <div><span class="mini">¿Estima venderlo?</span><select required data-k="vende" data-venta="1" name="Inmueble ${i+1}: estima venderlo">
@@ -1981,10 +2022,9 @@ const REPETIBLES = [
   {control:'deudas-n', contenedor:'deudas-filas', max:999, fila: i => `
     <div class="fila-rep"><span class="fila-tit">Deuda ${i+1}</span>
       <div><span class="mini">Nombre de la deuda o pasivo</span><input required type="text" data-k="nombre" name="Deuda ${i+1}: nombre" placeholder="Préstamo prendario Banco Nacional"></div>
-      <div class="fila-grid c3" style="margin-top:12px;">
-        <div><span class="mini">Saldo actual</span><input required type="number" min="0" data-k="saldo" data-moneda-fila="1" name="Deuda ${i+1}: saldo" placeholder="12.000"></div>
-        <div><span class="mini">Cuota mensual</span><input required type="number" min="0" data-k="cuota" data-moneda-fila="1" name="Deuda ${i+1}: cuota mensual" placeholder="300"></div>
-        <div><span class="mini">Moneda</span><select data-k="moneda" name="Deuda ${i+1}: moneda"><option>USD</option><option>CRC</option></select></div>
+      <div class="fila-grid" style="margin-top:12px;">
+        <div><span class="mini">Saldo actual</span><div class="amount"><input required type="number" min="0" data-k="saldo" name="Deuda ${i+1}: saldo" placeholder="12.000"><select data-k="monedaSaldo" name="Deuda ${i+1}: saldo (moneda)"><option>USD</option><option>CRC</option></select></div></div>
+        <div><span class="mini">Cuota mensual</span><div class="amount"><input required type="number" min="0" data-k="cuota" name="Deuda ${i+1}: cuota mensual" placeholder="300"><select data-k="monedaCuota" name="Deuda ${i+1}: cuota mensual (moneda)"><option>USD</option><option>CRC</option></select></div></div>
       </div>
       <div class="fila-grid" style="margin-top:12px;">
         <div><span class="mini">Tasa de interés anual</span><div class="amount"><input required type="number" min="0" max="80" step="0.01" data-k="tasa" name="Deuda ${i+1}: tasa anual (%)" placeholder="12"><div class="unit">%</div></div></div>
@@ -2376,7 +2416,7 @@ function respuestasEnTexto(){
       const etiqueta = q.querySelector('.qlabel');
       const primero = q.querySelector('input:not([type=hidden]), select, textarea');
       out.push({pagina: n, seccion: nombre, n: (q.querySelector('.q-num') || {}).textContent || '',
-                clave: primero ? primero.id : '', pregunta: etiqueta ? etiqueta.textContent.trim() : '', detalle});
+                clave: q.dataset.clave || (primero ? primero.id : ''), pregunta: etiqueta ? etiqueta.textContent.trim() : '', detalle});
     });
   });
   return out;
@@ -2446,7 +2486,9 @@ document.getElementById('form').addEventListener('submit', async function(e){
     //   Tolerancia: q1, q2, q4, q5, q9   ·   Apetito: q3, q6, q7, q8
     // q4 admite 'na' (el cliente no ha pasado por una pérdida): se guarda como null
     // y el dashboard la excluye del denominador en lugar de imputarle un valor.
-    versionPerfil: 2,   // escala lineal 0-10 y pesos por tipo de pregunta (metodología v2)
+    versionPerfil: 2,
+    // pregunta 6: el cliente aporta a sus inversiones o vive de ellas (versión de las opciones)
+    situacionPortafolio: val('q7-situacion') || null,   // escala lineal 0-10 y pesos por tipo de pregunta (metodología v2)
     respuestas: {
       q1:+val('q1'), q2:+val('q2'), q3:+val('q3'),
       q4: val('q4')==='na' ? null : +val('q4'),
@@ -2492,8 +2534,11 @@ document.getElementById('form').addEventListener('submit', async function(e){
     // Desinversiones: ventas de activos cuyo dinero entra a este portafolio
     // Inmuebles y empresa: la parte de la venta que entra al portafolio; «sujeto a análisis» no se proyecta
     ventasActivos: [].concat(
-      leerFilas('inmuebles-filas').filter(f => f.vende === 'si' && (f.invierte === 'si' || f.invierte === 'parte')).map(f => ({concepto: 'Venta de ' + (f.nombre || 'inmueble'), origen: 'inmueble', anio: f.anio,
-        monto: Math.max(0, (+f.valor || 0) - (+f.deuda || 0)) * (f.invierte === 'parte' ? (+f.pct || 0)/100 : 1), moneda: f.moneda || 'USD'})),
+      leerFilas('inmuebles-filas').filter(f => f.vende === 'si' && (f.invierte === 'si' || f.invierte === 'parte')).map(f => {
+        const mv = f.monedaValor || 'USD', md = f.monedaDeuda || 'USD', pct = f.invierte === 'parte' ? (+f.pct || 0)/100 : 1, misma = mv === md || !(+f.deuda > 0);
+        // el monto neto solo se calcula aquí si valor y deuda están en la misma moneda; si no, lo calcula el dashboard con el tipo de cambio
+        return {concepto: 'Venta de ' + (f.nombre || 'inmueble'), origen: 'inmueble', anio: f.anio, monto: misma ? Math.max(0, (+f.valor || 0) - (+f.deuda || 0)) * pct : null, moneda: mv,
+          valor: +f.valor || 0, valorMoneda: mv, deuda: +f.deuda || 0, deudaMoneda: md, pctInvierte: pct * 100}; }),
       val('empresa') === 'si' && val('empresa-plan') === 'vender' && (val('empresa-invierte') === 'si' || val('empresa-invierte') === 'parte')
         ? [{concepto: 'Venta de la empresa', origen: 'empresa', anio: ANIO_ACTUAL + (+val('empresa-anios') || 0),
             monto: (+val('empresa-valor') || 0) * (+val('empresa-part') || 100)/100 * (val('empresa-invierte') === 'parte' ? (+val('empresa-pct') || 0)/100 : 1), moneda: val('empresa-valor-moneda')}] : [],
@@ -2563,7 +2608,9 @@ document.getElementById('form').addEventListener('submit', async function(e){
       },
       inmuebles: {
         moneda: null,
-        lista: leerFilas('inmuebles-filas').map(f => ({nombre: (f.nombre || '').toUpperCase(), valor: f.valor, rentaMensualNeta: f.renta, saldoDeuda: f.deuda, moneda: f.moneda || 'USD',
+        // cada monto con su moneda; «moneda» queda como la del valor, por compatibilidad
+        lista: leerFilas('inmuebles-filas').map(f => ({nombre: (f.nombre || '').toUpperCase(), valor: f.valor, valorMoneda: f.monedaValor || 'USD', rentaMensualNeta: f.renta, rentaMoneda: f.monedaRenta || 'USD',
+          saldoDeuda: f.deuda, deudaMoneda: f.monedaDeuda || 'USD', moneda: f.monedaValor || 'USD',
           estimaVender: f.vende === 'si', anioVenta: f.vende === 'si' ? f.anio : null,
           inviertePortafolio: f.vende === 'si' ? f.invierte : null, pctInvierte: f.vende === 'si' ? (f.invierte === 'si' ? 100 : f.invierte === 'parte' ? +f.pct : 0) : null}))
       },
@@ -2582,8 +2629,10 @@ document.getElementById('form').addEventListener('submit', async function(e){
         moneda: null,
         // una fila por deuda: la cuota se paga hasta el año en que termina
         lista: val('deudas-tiene') === 'si' ? leerFilas('deudas-filas').map((r, k) => ({numero: k + 1, nombre: (r.nombre || '').trim() || 'Deuda ' + (k + 1),
-          saldo: r.saldo, cuotaMensual: r.cuota, moneda: r.moneda || 'USD', tasaAnual: r.tasa, anioFin: r.anio})) : [],
-        saldo: 0, cuotaMensual: 0, plazoRestanteAnios: null
+          saldo: r.saldo, saldoMoneda: r.monedaSaldo || 'USD', cuotaMensual: r.cuota, cuotaMoneda: r.monedaCuota || 'USD', moneda: r.monedaCuota || 'USD', tasaAnual: r.tasa, anioFin: r.anio})) : [],
+        saldo: 0, cuotaMensual: 0, plazoRestanteAnios: null,
+        // las cuotas ya están dentro del gasto familiar: no se suman de nuevo en la proyección
+        cuotasEnGasto: val('deudas-tiene') === 'si' ? val('deudas-en-gasto') === 'si' : null
       },
       reservaLiquidez: val('reserva')
     },
@@ -2610,6 +2659,8 @@ document.getElementById('form').addEventListener('submit', async function(e){
   function clienteInstitucion(){
     return Object.assign(base(), {
       versionPerfil: 2,
+    // pregunta 6: el cliente aporta a sus inversiones o vive de ellas (versión de las opciones)
+    situacionPortafolio: val('q7-situacion') || null,
       respuestas: {
         q1:+val('q1'), q2:+val('q2'), q3:+val('q3'),
         q4: val('q4')==='na' ? null : +val('q4'),
@@ -2746,11 +2797,18 @@ function restaurarBorrador(b){
 // ---- Edición de un cuestionario enviado (desde el dashboard: ?editar=<id>) ----
 // Respuestas guardadas con versiones anteriores del formulario: se llevan a los campos vigentes
 function migrarFormulario(d, r){
+  // pregunta 6: las versiones anteriores solo tenían la redacción de quien aporta
+  if(d['q7-situacion'] === undefined && d['q7'] !== undefined && d['q7'] !== '') d['q7-situacion'] = 'aporta';
   // Montos «en dólares de hoy» de versiones anteriores: ahora «en valor de hoy», con su moneda
   Object.keys(d).forEach(k => { if(/\(US\$ de hoy\)$/.test(k)){ const n = k.replace('(US$ de hoy)', '(valor de hoy)'); if(d[n] === undefined) d[n] = d[k]; } });
   // Moneda única de inmuebles y deudas (versiones anteriores): pasa a cada fila
   [['inmuebles-moneda','inmuebles-n','Inmueble'], ['deudas-moneda','deudas-n','Deuda']].forEach(([m, n, et]) => {
     if(d[m]) for(let i = 1; i <= (+d[n] || 0); i++){ const k = 'n:' + et + ' ' + i + ': moneda'; if(d[k] === undefined) d[k] = d[m]; } });
+  // Moneda por fila (versión anterior): pasa a cada monto de la fila
+  for(let i = 1; i <= (+d['inmuebles-n'] || 0); i++){ const m = d['n:Inmueble ' + i + ': moneda'];
+    if(m) ['valor estimado','renta mensual neta','saldo de deuda'].forEach(c => { const k = 'n:Inmueble ' + i + ': ' + c + ' (moneda)'; if(d[k] === undefined) d[k] = m; }); }
+  for(let i = 1; i <= (+d['deudas-n'] || 0); i++){ const m = d['n:Deuda ' + i + ': moneda'];
+    if(m) ['saldo','cuota mensual'].forEach(c => { const k = 'n:Deuda ' + i + ': ' + c + ' (moneda)'; if(d[k] === undefined) d[k] = m; }); }
   if(d['fuente-ingreso']){
     const fu = d['fuente-ingreso'].split(',');
     if(fu.includes('pension') && d['pension-recibe'] === undefined && d['pension-regimen'] && d['pension-regimen'] !== 'ninguno') d['pension-recibe'] = 'si';
@@ -2761,6 +2819,8 @@ function migrarFormulario(d, r){
   if(d['apoyos-tiene'] === undefined && d['apoyos-n'] !== undefined){ d['apoyos-tiene'] = +d['apoyos-n'] > 0 ? 'si' : 'no'; if(!(+d['apoyos-n'] > 0)) delete d['apoyos-n']; }
   if(d['gasto-retiro-pct'] === undefined && d['gasto-retiro']){ const m = {menor: 80, igual: 100, mayor: 110}[d['gasto-retiro']]; if(m) d['gasto-retiro-pct'] = String(m); }
   if(d['otros-ing-desde'] === 'independencia') delete d['otros-ing-desde'];
+  // pensión voluntaria: antes se preguntaba cuándo se trasladaba; ahora es una pensión mensual
+  if(['independencia','anio','ahora'].includes(d['f-vol-traslado'])) d['f-vol-traslado'] = 'pension';
   // en versiones anteriores las ventas de activos salían solo de los inmuebles y la empresa
   if(d['ventas-n'] === undefined) d['ventas-n'] = '0';
   if(d['deudas-tiene'] === undefined && d['deudas-saldo'] !== undefined) d['deudas-tiene'] = +d['deudas-saldo'] > 0 || +d['deudas-cuota'] > 0 ? 'si' : 'no';
@@ -2852,7 +2912,11 @@ function datosDesdeRegistro(r){
   }
 })();
 </script>
+<script>document.querySelectorAll(".anio-actual").forEach(function(e){ e.textContent = new Date().getFullYear(); });</script>
 </body>
 </html>
 
-<!-- Chotocruz & Co. · Entrega 29 · 21 de octubre de 2026 -->
+
+
+
+<!-- Chotocruz & Co. · Entrega 33 · 22 de octubre de 2026 -->
