@@ -1,14 +1,14 @@
 {
   "cliente": "c-1791848432355-ozumj",
   "nombre": "Victor Emilio Herrera",
-  "guardadoEn": 1792442764794,
+  "guardadoEn": 1792698825474,
   "supuestos": {
     "tipoCambio": 450,
+    "inflacionLocal": 3.5,
     "inflacion": 3.5,
-    "inflacionIngresos": 3.5,
     "inflacionPension": 2.5,
-    "inflacionSalud": 7,
-    "ajusteAlquileres": 0,
+    "inflacionRop": 3.5,
+    "inflacionVoluntaria": 3.5,
     "anioInicio": 2026,
     "edadFinal": 100,
     "anioIngresoFcl": 0,
@@ -21,6 +21,19 @@
     "modalidadRop": 1,
     "expectativaRop": 87,
     "edadFinProgramado": 100,
+    "na": [
+      "inflacionLocal",
+      "inflacionRop",
+      "inflacionVoluntaria",
+      "anioIngresoFcl",
+      "factorGastoMenor",
+      "factorGastoMayor",
+      "aporteRopPct",
+      "aporteFclPct",
+      "edadPension",
+      "expectativaRop",
+      "edadFinProgramado"
+    ],
     "asignacion": {
       "conservador": {
         "rv": 20,
