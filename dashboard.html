@@ -406,7 +406,17 @@
   @media (max-width:760px){.eq-datos{grid-template-columns:1fr 1fr;}}
   .tabla-caminos{width:100%;border-collapse:collapse;margin-top:6px;table-layout:fixed;}
   .tabla-caminos th, .tabla-caminos td{text-align:left;white-space:normal;overflow-wrap:anywhere;}
-  .tabla-esc{table-layout:auto;} .tabla-esc th:nth-child(2),.tabla-esc th:nth-child(5),.tabla-esc th:nth-child(7){white-space:nowrap;} .tabla-esc td.cam{min-width:190px;} .eq-datos.tres{grid-template-columns:repeat(3,minmax(0,1fr));} .obj-tit{margin:22px 0 4px;font-size:13px;font-weight:600;color:#141709;} .tabla-obj td.num{white-space:nowrap;} .tabla-mon td.num{white-space:nowrap;} .tabla-esc th, .tabla-esc td{font-size:12.5px;} .tabla-esc td.num{text-align:right;white-space:nowrap;}
+  .tabla-esc{table-layout:auto;} .tabla-esc th:nth-child(2),.tabla-esc th:nth-child(5),.tabla-esc th:nth-child(7){white-space:nowrap;} .tabla-esc td.cam{min-width:190px;} .eq-datos.tres{grid-template-columns:repeat(3,minmax(0,1fr));} .obj-tit{margin:26px 0 8px;font-size:13.5px;font-weight:600;color:#141709;} .obj-tit span{font-weight:400;color:#7F8757;font-size:12px;margin-left:8px;}
+  .tabla-obj{width:100%;border-collapse:collapse;table-layout:fixed;font-variant-numeric:tabular-nums;}
+  .tabla-obj th{text-align:left;font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-45);font-weight:600;padding:0 14px 9px 0;border-bottom:1px solid var(--rule);}
+  .tabla-obj td{padding:9px 14px 9px 0;border-bottom:1px solid var(--rule-2);font-size:13px;color:#23270F;vertical-align:top;}
+  .tabla-obj th, .tabla-obj td{text-align:left;white-space:normal;overflow:visible;text-overflow:clip;}
+  .tabla-obj th.der, .tabla-obj td.der{text-align:right;white-space:nowrap;} .tabla-escen th.der{white-space:normal;} .tabla-obj td.cond{color:#5A5E44;font-size:12.5px;}
+  .tabla-escen td.esc-n{font-weight:600;color:#141709;} .tabla-escen .marca{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:9px;vertical-align:1px;}
+  .tabla-escen th{white-space:normal;line-height:1.35;vertical-align:bottom;}
+  .sello{display:inline-block;min-width:34px;text-align:center;padding:2px 8px;border-radius:10px;font-size:11.5px;font-weight:600;}
+  .sello.si{background:#EEF0E2;color:#2B3014;} .sello.no{background:#F7EAE4;color:#A2543A;}
+  .tabla-obj tr.grupo td{padding:16px 0 6px;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#918042;font-weight:600;border-bottom:1px solid var(--rule);} .tabla-mon td.num{white-space:nowrap;} .tabla-esc th, .tabla-esc td{font-size:12.5px;} .tabla-esc td.num{text-align:right;white-space:nowrap;}
   .tabla-caminos col.c1{width:29%;} .tabla-caminos col.c2{width:17%;} .tabla-caminos col.c3{width:17%;} .tabla-caminos col.c4{width:37%;}
   .tabla-caminos th{text-align:left;font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-45);font-weight:600;padding:0 12px 10px 0;border-bottom:1px solid var(--rule);}
   .tabla-caminos td{padding:12px 12px 12px 0;border-bottom:1px solid var(--rule-2);font-size:13px;vertical-align:top;line-height:1.45;}
@@ -2981,12 +2991,14 @@ function renderDetalle(c){
     </div>
 
     <div class="paginas-nav" role="tablist">
-      <button type="button" class="pag-btn activa" data-pag="1" role="tab">Página 1 · Perfil y rendimiento de equilibrio</button>
-      <button type="button" class="pag-btn" data-pag="2" role="tab">Página 2 · Carteras y proyección</button>
+      <button type="button" class="pag-btn activa" data-pag="1" role="tab">Página 1 · Objetivos, perfil y rendimiento de equilibrio</button>
+      <button type="button" class="pag-btn" data-pag="2" role="tab">Página 2 · Carteras, flujos, proyección y escenarios</button>
       <button type="button" class="pag-btn" data-pag="3" role="tab">Respuestas del cliente</button>
     </div>
 
     <div class="pagina" data-pag="1">
+    ${objetivosHTML(c, p)}
+
     ${posicionHTML(c, 'Posición del cliente')}
 
     <div class="donut-card">
@@ -3012,6 +3024,10 @@ function renderDetalle(c){
 
     <div class="pagina" data-pag="2" hidden>
     ${pastelesHTML(c, p, eq)}
+
+    ${retiroHTML(c, p)}
+
+    ${monedaHTML(c, p)}
 
     <div class="chart-wrap">
       <h2 class="section-title" style="font-size:16px;">Proyección del portafolio</h2>
@@ -3117,12 +3133,6 @@ function renderDetalle(c){
         </tbody>
       </table>
     </div>
-
-    ${objetivosHTML(c, p)}
-
-    ${retiroHTML(c, p)}
-
-    ${monedaHTML(c, p)}
     </div>
 
     <div class="pagina" data-pag="3" hidden>
@@ -3350,22 +3360,27 @@ function dibujarLineas(series, etiquetas, destino, escala, anchoPx, alto){
 function escenariosHTML(c){
   const E = escenariosPlan(c, supuestos);
   const p1 = v => v == null ? 'Más de 30%' : (v*100).toFixed(1).replace('.', ',') + '%';
-  const rEq = x => x.estado === 'inalcanzable' ? 'Más de 30%' : x.estado === 'sin-rendimiento' ? '0,0% (no necesita rendimiento)' : p1(x.r);
+  const rEq = x => x.estado === 'inalcanzable' ? 'Más de 30%' : x.estado === 'sin-rendimiento' ? '0,0%' : p1(x.r);
+  const nota = x => x.estado === 'sin-rendimiento' ? 'El plan se cumple aun sin rendimiento' : x.estado === 'inalcanzable' ? 'Ningún rendimiento hasta 30% lo cumple' : '';
+  const caja = (n, v, sub) => `<div class="eq-dato"><span class="eq-nombre">${n}</span><b class="eq-valor">${v}</b><span class="eq-sub">${sub}</span></div>`;
   return `<div class="donut-card">
       <h2 class="section-title" style="font-size:16px;">Escenarios</h2>
-      <p class="section-sub" style="margin-bottom:16px;">${E.yaIndependiente ? 'El cliente ya es financieramente independiente: la edad de independencia no cambia su proyección, así que solo se muestra el plan actual.' : 'Qué pasa con el portafolio si la independencia financiera llega hoy o dentro de 10, 15 o 20 años, con todo lo demás igual: el ingreso por actividad dura hasta la nueva edad y el gasto del retiro empieza en ella.'} Saldo final en dólares de hoy; portafolio al retiro en dólares nominales.</p>
-      <table class="tabla-caminos tabla-esc"><thead><tr><th>Escenario</th><th>Edad</th><th>Portafolio al retiro</th><th>Saldo final (dólares de hoy)</th><th>¿Se agota?</th><th>Rendimiento de equilibrio</th><th>¿Alcanza?</th></tr></thead><tbody>
-      ${E.retiro.map((x, k) => `<tr class="${x.alcanza ? 'si' : 'no'}"><td class="cam"><span class="marca" style="background:${COLORES_ESC[k]}"></span>${esc(x.nombre)}</td><td class="num">${x.edad}</td><td class="num">${usd(x.alRetiro)}</td>
-        <td class="num">${usd(x.finalReal)}</td><td class="num">${x.edadAgota ? 'A los ' + x.edadAgota : 'No'}</td><td class="num">${rEq(x.equilibrio)}</td><td class="num">${x.alcanza ? 'Sí' : 'No'}</td></tr>`).join('')}
-      </tbody></table>
-      <canvas id="chart-esc" style="width:100%;height:260px;margin-top:14px;"></canvas>
-      <div class="legend">${E.retiro.map((x, k) => `<span><span class="swatch" style="background:${COLORES_ESC[k]}"></span>${esc(x.nombre)}</span>`).join('')}</div>
-      <div class="eq-datos tres" style="margin-top:16px;">
-        ${[['Rendimiento que cubre los gastos', rEq(E.sinHerencia), 'Mínimo para no quedarse sin portafolio hasta el final del horizonte, sin herencia'],
-           ['Rendimiento de equilibrio', rEq(E.equilibrio), E.meta ? 'Cubre los gastos y deja la herencia de ' + usd(E.meta) : 'Cubre los gastos hasta el final del horizonte'],
-           ['Rendimiento de la cartera asignada', p1(E.retorno), PERFILES[c.perfil].label]]
-          .map(([n, v, sub]) => `<div class="eq-dato"><span class="eq-nombre">${n}</span><b class="eq-valor">${v}</b><span class="eq-sub">${sub}</span></div>`).join('')}
+      <p class="section-sub" style="margin-bottom:18px;">${E.yaIndependiente ? 'El cliente ya es financieramente independiente: la edad de independencia no cambia su proyección, por lo que se presenta el plan actual.'
+        : 'Qué pasa con el portafolio si la independencia financiera llega hoy o dentro de 10, 15 o 20 años, con todo lo demás igual: el ingreso por actividad dura hasta la nueva edad y el gasto del retiro empieza en ella.'}</p>
+      <div class="eq-datos tres">
+        ${caja('Rendimiento que cubre los gastos', rEq(E.sinHerencia), nota(E.sinHerencia) || 'Mínimo para no agotar el portafolio, sin herencia')}
+        ${caja('Rendimiento de equilibrio', rEq(E.equilibrio), nota(E.equilibrio) || (E.meta ? 'Cubre los gastos y deja la herencia de ' + usd(E.meta) : 'Cubre los gastos hasta el final del horizonte'))}
+        ${caja('Rendimiento de la cartera asignada', p1(E.retorno), PERFILES[c.perfil].label)}
       </div>
+      <table class="tabla-obj tabla-escen" style="margin-top:22px;"><colgroup><col style="width:34%"><col style="width:7%"><col style="width:14%"><col style="width:14%"><col style="width:10%"><col style="width:12%"><col style="width:9%"></colgroup>
+      <thead><tr><th>Escenario</th><th class="der">Edad</th><th class="der">Portafolio al retiro</th><th class="der">Saldo final</th><th class="der">Se agota</th><th class="der">Rend. de equilibrio</th><th class="der">Alcanza</th></tr></thead><tbody>
+      ${E.retiro.map((x, k) => `<tr><td class="esc-n"><span class="marca" style="background:${COLORES_ESC[k]}"></span>${esc(x.nombre)}</td><td class="der">${x.edad}</td><td class="der">${usd(x.alRetiro)}</td>
+        <td class="der">${usd(x.finalReal)}</td><td class="der">${x.edadAgota ? 'A los ' + x.edadAgota : 'No'}</td><td class="der">${rEq(x.equilibrio)}</td><td class="der"><span class="sello ${x.alcanza ? 'si' : 'no'}">${x.alcanza ? 'Sí' : 'No'}</span></td></tr>`).join('')}
+      </tbody></table>
+      <p class="nota-riesgo" style="margin-top:8px;">Portafolio al retiro en dólares nominales; saldo final en dólares de hoy, al final del horizonte.</p>
+      <p class="obj-tit">Portafolio en dólares de hoy, por edad</p>
+      <canvas id="chart-esc" style="width:100%;height:260px;"></canvas>
+      <div class="legend">${E.retiro.map((x, k) => `<span><span class="swatch" style="background:${COLORES_ESC[k]}"></span>${esc(x.nombre)}</span>`).join('')}</div>
     </div>`;
 }
 function dibujarEscenarios(c, destino, escala, anchoPx, alto){
@@ -3424,7 +3439,7 @@ function objetivosPlan(c, p, sup, f){
         ['Capital mínimo al final', p.minimo > 0 ? f(p.minimo) : 'No definido', 'en dólares de hoy'], ['Capital inicial', f(p.capital), '']],
       kpis2: [['Aporte anual', f(p.aporte), 'dólares de hoy'], ['Retiro anual', f(p.retiro), 'dólares de hoy'],
         ['Retiros extraordinarios', p.extras.length ? String(p.extras.length) : 'Ninguno', p.extras.map(e => e.anio).join(', ')]],
-      filas: [], vacio: ''};
+      filas: [], grupos: [], vacio: ''};
   }
   const leg = c.legado || {}, meta = herenciaUsd(c, sup);
   const DEST = {herencia: 'Dejar una herencia', consumir: 'Consumirlo en vida', indistinto: 'Indistinto'};
@@ -3437,13 +3452,18 @@ function objetivosPlan(c, p, sup, f){
     ['Destino del patrimonio', DEST[leg.destino] || '-', meta ? 'herencia de ' + f(meta) + ' en dólares de hoy' : ''],
     ['Horizonte', 'Hasta los ' + p.edadFinalTitular, p.horizontePareja ? 'la pareja llega a los ' + sup.edadFinal : 'años de edad']];
   const TIPO_META = {educacion:'Educación', vivienda:'Vivienda o propiedad', vehiculo:'Vehículo', viaje:'Viaje', negocio:'Negocio o emprendimiento', jubilacion:'Jubilación', otra:'Otra'};
-  const filas = [];
-  (c.metas || []).forEach(m => filas.push(['Meta: ' + (TIPO_META[m.tipo] || m.tipo), String(m.anio), f(aUsd(+m.montoUsdHoy, m.moneda || 'USD', sup.tipoCambio)),
-    (m.prioridad === 'esencial' ? 'Esencial' : 'Deseable') + ' · ' + ({portafolio: 'pagada con el portafolio', 'credito-portafolio': 'crédito respaldado por el portafolio', 'credito-bancario': 'crédito bancario'})[m.financiamiento || 'portafolio']]));
-  p.gastosExtra.forEach(g => filas.push(['Gasto extraordinario: ' + g.concepto, (g.anual ? 'Desde ' : '') + g.anio, f(g.montoUsdHoy), g.anual ? 'Cada año' : 'Una vez']));
-  p.apoyos.forEach(a => filas.push(['Apoyo a un dependiente', a.anioInicio + ' a ' + (+a.anioInicio + (+a.anios) - 1), f(+a.montoAnualUsdHoy) + ' al año', a.anios + (+a.anios === 1 ? ' año' : ' años')]));
-  p.ventas.forEach(v => filas.push(['Venta: ' + v.concepto, String(v.anio), f(v.montoUsdHoy), 'Entra al portafolio']));
-  return {sub, kpis, kpis2: null, filas, vacio: 'El cliente no declaró metas, gastos extraordinarios ni ventas de activos.'};
+  const FIN = {portafolio: 'Con el portafolio', 'credito-portafolio': 'Crédito respaldado por el portafolio', 'credito-bancario': 'Crédito bancario'};
+  // Grupos: lo que sale del portafolio (metas, gastos extraordinarios, apoyos) y lo que entra (ventas)
+  const grupos = [];
+  const metas = c.metas || [];
+  if(metas.length) grupos.push({titulo: 'Metas', filas: metas.map((m, i) => [(metas.length > 1 ? 'Meta ' + (i + 1) + ' · ' : '') + (TIPO_META[m.tipo] || m.tipo), String(m.anio),
+    f(aUsd(+m.montoUsdHoy, m.moneda || 'USD', sup.tipoCambio)), (m.prioridad === 'esencial' ? 'Esencial' : 'Deseable') + ' · ' + FIN[m.financiamiento || 'portafolio'].toLowerCase()])});
+  if(p.gastosExtra.length) grupos.push({titulo: 'Gastos extraordinarios', filas: p.gastosExtra.map(g => [g.concepto, g.anual ? 'Desde ' + g.anio : String(g.anio), f(g.montoUsdHoy), g.anual ? 'Cada año' : 'Una vez'])});
+  if(p.apoyos.length) grupos.push({titulo: 'Apoyo a dependientes', filas: p.apoyos.map((a, i) => ['Dependiente' + (p.apoyos.length > 1 ? ' ' + (i + 1) : ''), a.anioInicio + ' a ' + (+a.anioInicio + (+a.anios) - 1),
+    f(+a.montoAnualUsdHoy) + ' al año', a.anios + (+a.anios === 1 ? ' año' : ' años')])});
+  if(p.ventas.length) grupos.push({titulo: 'Entradas al portafolio', filas: p.ventas.map(v => [v.concepto, String(v.anio), f(v.montoUsdHoy), 'Venta de activos'])});
+  const filas = grupos.flatMap(g => g.filas);
+  return {sub, kpis, kpis2: null, filas, grupos, vacio: 'El cliente no declaró metas, gastos extraordinarios ni ventas de activos.'};
 }
 // Ingresos y gastos después del retiro: subtítulo, cifras y nota (dashboard, ficha y presentación)
 function datosRetiro(p, f){
@@ -3530,9 +3550,11 @@ function objetivosHTML(c, p){
       <h2 class="section-title" style="font-size:16px;">Objetivos del cliente</h2>
       <p class="section-sub" style="margin-bottom:16px;">${esc(O.sub)}</p>
       <div class="eq-datos">${O.kpis.map(caja).join('')}</div>
-      ${O.filas.length ? `<p class="obj-tit">Metas y compromisos que el plan debe cubrir · montos en dólares de hoy</p>
-      <table class="tabla-caminos tabla-esc tabla-obj"><thead><tr><th>Objetivo o compromiso</th><th>Año</th><th>Monto</th><th>Detalle</th></tr></thead><tbody>
-      ${O.filas.map(f => `<tr><td>${esc(f[0])}</td><td class="num">${esc(f[1])}</td><td class="num">${esc(f[2])}</td><td class="lect">${esc(f[3])}</td></tr>`).join('')}
+      ${O.filas.length ? `<p class="obj-tit">Metas y compromisos del plan <span>montos en dólares de hoy</span></p>
+      <table class="tabla-obj"><colgroup><col style="width:42%"><col style="width:17%"><col style="width:17%"><col style="width:24%"></colgroup>
+      <thead><tr><th>Concepto</th><th>Año</th><th class="der">Monto</th><th>Condición</th></tr></thead><tbody>
+      ${O.grupos.map(g => `<tr class="grupo"><td colspan="4">${esc(g.titulo)}</td></tr>` +
+        g.filas.map(f => `<tr><td>${esc(f[0])}</td><td>${esc(f[1])}</td><td class="der">${esc(f[2])}</td><td class="cond">${esc(f[3])}</td></tr>`).join('')).join('')}
       </tbody></table>` : `<p class="nota-riesgo">${esc(O.vacio)}</p>`}
     </div>`;
 }
@@ -5590,6 +5612,10 @@ async function exportarFicha(c, p, asig){
       };
       asegurar(14); cabecera();
       filas.forEach(f => {
+        if(f && f.grupo){   // fila de grupo: título en dorado, sin columnas
+          if(y + 9 > limiteY){ nuevaPagina(); cabecera(); }
+          doc.setFont('helvetica','bold'); doc.setFontSize(6.6); doc.setTextColor(...ORO); doc.text(f.grupo.toUpperCase(), M + 1.5, y + 0.6);
+          doc.setFont('helvetica','normal'); y += 2; doc.setDrawColor(...LINEA); doc.setLineWidth(0.25); doc.line(M, y, W - M, y); y += 3.6; return; }
         doc.setFontSize(7);
         const cel = f.map((v, i) => doc.splitTextToSize(String(txt(v) == null ? '' : txt(v)), anchos[i] - 3));
         const n = Math.max(...cel.map(l => l.length));
@@ -5624,8 +5650,8 @@ async function exportarFicha(c, p, asig){
       if(O.kpis2) datosPdf(O.kpis2, 3);
       if(O.filas.length){
         doc.setFontSize(7.6); doc.setTextColor(...NEGRO); doc.setFont('helvetica','bold');
-        doc.text('Metas y compromisos que el plan debe cubrir · montos en dólares de hoy', M, y); doc.setFont('helvetica','normal'); y += 5;
-        tablaPdf(['Objetivo o compromiso', 'Año', 'Monto', 'Detalle'], O.filas, [72, 26, 30, 46], [2]);
+        doc.text('Metas y compromisos del plan · montos en dólares de hoy', M, y); doc.setFont('helvetica','normal'); y += 5;
+        tablaPdf(['Concepto', 'Año', 'Monto', 'Condición'], O.grupos.flatMap(g => [{grupo: g.titulo}].concat(g.filas)), [74, 28, 30, 42], [2]);
       } else if(O.vacio) subtitulo(O.vacio);
     }
     nuevaPagina();
@@ -6061,9 +6087,19 @@ async function exportarPresentacion(c, p, asig){
       }else{
         kpis(s, 1.9, O.kpis, 1.5);
         if(O.filas.length){
-          s.addText('Metas y compromisos que el plan debe cubrir · montos en dólares de hoy', {x: M, y: 3.6, w: W - 2*M, h: 0.3, fontFace: FONT, fontSize: 11, bold: true, color: NEGRO, margin: 0});
-          s.addTable([tablaCab(['Objetivo o compromiso', 'Año', 'Monto', 'Detalle'])].concat(O.filas.slice(0, 9)), {x: M, y: 3.95, w: W - 2*M, colW: [4.6, 1.6, 2.2, 3.73],
-            fontFace: FONT, fontSize: 10, color: NEGRO, border: {type: 'solid', color: LINEA, pt: 0.5}, rowH: 0.27, margin: 0.05, autoPage: false});
+          s.addText('Metas y compromisos del plan · montos en dólares de hoy', {x: M, y: 3.6, w: W - 2*M, h: 0.3, fontFace: FONT, fontSize: 11, bold: true, color: NEGRO, margin: 0});
+          const filasT = O.grupos.flatMap(g => [[{text: g.titulo.toUpperCase(), options: {colspan: 4, bold: true, color: ORO, fontSize: 9, fill: {color: 'F5F3EA'}}}]]
+            .concat(g.filas.map(r => [r[0], r[1], {text: r[2], options: {align: 'right'}}, {text: r[3], options: {color: GRIS}}])));
+          // todas las filas, como en la ficha PDF: si no caben, la tabla sigue en una diapositiva de continuación
+          const cabT = tablaCab(['Concepto', 'Año', 'Monto', 'Condición']); cabT[2].options.align = 'right';
+          const optT = (yT, n) => ({x: M, y: yT, w: W - 2*M, colW: [4.6, 1.7, 2.2, 3.63], fontFace: FONT, fontSize: n > 10 ? 9 : 10, color: NEGRO,
+            border: {type: 'solid', color: LINEA, pt: 0.5}, rowH: n > 10 ? 0.22 : 0.26, margin: 0.04, autoPage: false});
+          const cabe1 = 12, cabeN = 19;
+          s.addTable([cabT].concat(filasT.slice(0, cabe1)), optT(3.95, Math.min(filasT.length, cabe1)));
+          for(let i = cabe1; i < filasT.length; i += cabeN){
+            const s2 = nueva('Objetivos de ' + (c.nombre || 'el cliente') + ' (continuación)', 'Metas y compromisos del plan · montos en dólares de hoy');
+            s2.addTable([cabT].concat(filasT.slice(i, i + cabeN)), optT(1.8, 11));
+          }
         } else s.addText(O.vacio, {x: M, y: 3.7, w: W - 2*M, h: 0.4, fontFace: FONT, fontSize: 12, color: GRIS, margin: 0});
       }
     }
@@ -6378,4 +6414,4 @@ cargar();
 
 
 
-<!-- Chotocruz & Co. · Entrega 40 · 22 de octubre de 2026 -->
+<!-- Chotocruz & Co. · Entrega 41 · 22 de octubre de 2026 -->
