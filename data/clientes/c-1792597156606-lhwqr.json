@@ -27,6 +27,7 @@
   "edad": 66,
   "edadRetiro": 66,
   "versionPerfil": 2,
+  "situacionPortafolio": "aporta",
   "respuestas": {
     "q1": 6.67,
     "q2": 6.67,
@@ -87,15 +88,7 @@
   ],
   "donacionesAnualesUsdHoy": 3000000,
   "donacionesMoneda": "CRC",
-  "ventasActivos": [
-    {
-      "concepto": "Venta de CASA PARA ALQUILER",
-      "origen": "inmueble",
-      "anio": 2049,
-      "monto": 180000000,
-      "moneda": "CRC"
-    }
-  ],
+  "ventasActivos": [],
   "capitalPrivado": {
     "valor": 500000,
     "moneda": "USD",
@@ -149,7 +142,8 @@
       "hastaEdad": 100
     },
     "gastoRetiroPct": 100,
-    "gastoUsdPct": 15
+    "gastoUsdPct": 15,
+    "gastoCrcPct": 85
   },
   "pension": {
     "regimen": "ivm",
@@ -171,19 +165,25 @@
         {
           "nombre": "CASA PARA ALQUILER",
           "valor": 180000000,
+          "valorMoneda": "CRC",
           "rentaMensualNeta": 1100000,
+          "rentaMoneda": "CRC",
           "saldoDeuda": 0,
+          "deudaMoneda": "CRC",
           "moneda": "CRC",
-          "estimaVender": true,
-          "anioVenta": 2049,
-          "inviertePortafolio": "si",
-          "pctInvierte": 100
+          "estimaVender": false,
+          "anioVenta": null,
+          "inviertePortafolio": null,
+          "pctInvierte": null
         },
         {
           "nombre": "CASA PLAYA",
           "valor": 135000000,
+          "valorMoneda": "CRC",
           "rentaMensualNeta": 250000,
+          "rentaMoneda": "CRC",
           "saldoDeuda": 0,
+          "deudaMoneda": "CRC",
           "moneda": "CRC",
           "estimaVender": false,
           "anioVenta": null,
@@ -193,8 +193,11 @@
         {
           "nombre": "OFICINA DE ALQUILER",
           "valor": 54000000,
+          "valorMoneda": "CRC",
           "rentaMensualNeta": 380000,
+          "rentaMoneda": "CRC",
           "saldoDeuda": 0,
+          "deudaMoneda": "CRC",
           "moneda": "CRC",
           "estimaVender": false,
           "anioVenta": null,
@@ -219,7 +222,8 @@
       "lista": [],
       "saldo": 0,
       "cuotaMensual": 0,
-      "plazoRestanteAnios": null
+      "plazoRestanteAnios": null,
+      "cuotasEnGasto": null
     },
     "reservaLiquidez": "3a6"
   },
@@ -310,12 +314,18 @@
       "seccion": "Perfil de riesgo",
       "n": "06",
       "clave": "q7",
-      "pregunta": "Para alcanzar sus metas financieras, puede depender más de sus aportes o asumir más riesgo buscando un mayor rendimiento del portafolio. ¿Qué prefiere?",
+      "pregunta": "Para alcanzar sus metas financieras, ¿qué prefiere?",
       "detalle": [
+        {
+          "id": "q7-situacion",
+          "campo": "Q7 - Situación frente al portafolio",
+          "valor": "Aporto a mis inversiones",
+          "codigo": "aporta"
+        },
         {
           "id": "q7",
           "campo": "Q7 - Aporte frente a rendimiento",
-          "valor": "Prefiero aumentar mis aportes y asumir un nivel bajo de riesgo en el portafolio",
+          "valor": "Aumentar mis aportes y mantener un riesgo bajo",
           "codigo": "0"
         }
       ]
@@ -866,9 +876,21 @@
         },
         {
           "id": "",
+          "campo": "Inmueble 1: valor estimado (moneda)",
+          "valor": "CRC",
+          "codigo": "CRC"
+        },
+        {
+          "id": "",
           "campo": "Inmueble 1: renta mensual neta",
           "valor": "1.100.000",
           "codigo": "1.100.000"
+        },
+        {
+          "id": "",
+          "campo": "Inmueble 1: renta mensual neta (moneda)",
+          "valor": "CRC",
+          "codigo": "CRC"
         },
         {
           "id": "",
@@ -878,27 +900,15 @@
         },
         {
           "id": "",
-          "campo": "Inmueble 1: moneda",
+          "campo": "Inmueble 1: saldo de deuda (moneda)",
           "valor": "CRC",
           "codigo": "CRC"
         },
         {
           "id": "",
           "campo": "Inmueble 1: estima venderlo",
-          "valor": "Sí",
-          "codigo": "si"
-        },
-        {
-          "id": "",
-          "campo": "Inmueble 1: año de venta",
-          "valor": "2049",
-          "codigo": "2049"
-        },
-        {
-          "id": "",
-          "campo": "Inmueble 1: invierte la venta en el portafolio",
-          "valor": "Sí, todo",
-          "codigo": "si"
+          "valor": "No",
+          "codigo": "no"
         },
         {
           "id": "",
@@ -914,9 +924,21 @@
         },
         {
           "id": "",
+          "campo": "Inmueble 2: valor estimado (moneda)",
+          "valor": "CRC",
+          "codigo": "CRC"
+        },
+        {
+          "id": "",
           "campo": "Inmueble 2: renta mensual neta",
           "valor": "250.000",
           "codigo": "250.000"
+        },
+        {
+          "id": "",
+          "campo": "Inmueble 2: renta mensual neta (moneda)",
+          "valor": "CRC",
+          "codigo": "CRC"
         },
         {
           "id": "",
@@ -926,7 +948,7 @@
         },
         {
           "id": "",
-          "campo": "Inmueble 2: moneda",
+          "campo": "Inmueble 2: saldo de deuda (moneda)",
           "valor": "CRC",
           "codigo": "CRC"
         },
@@ -950,9 +972,21 @@
         },
         {
           "id": "",
+          "campo": "Inmueble 3: valor estimado (moneda)",
+          "valor": "CRC",
+          "codigo": "CRC"
+        },
+        {
+          "id": "",
           "campo": "Inmueble 3: renta mensual neta",
           "valor": "380.000",
           "codigo": "380.000"
+        },
+        {
+          "id": "",
+          "campo": "Inmueble 3: renta mensual neta (moneda)",
+          "valor": "CRC",
+          "codigo": "CRC"
         },
         {
           "id": "",
@@ -962,7 +996,7 @@
         },
         {
           "id": "",
-          "campo": "Inmueble 3: moneda",
+          "campo": "Inmueble 3: saldo de deuda (moneda)",
           "valor": "CRC",
           "codigo": "CRC"
         },
@@ -1197,6 +1231,7 @@
     "q2": "6.67",
     "q3": "0",
     "q6": "5",
+    "q7-situacion": "aporta",
     "q7": "0",
     "q4": "6.67",
     "q8": "7.5",
@@ -1283,23 +1318,27 @@
     "inmuebles-n": "3",
     "n:Inmueble 1: nombre": "CASA PARA ALQUILER",
     "n:Inmueble 1: valor estimado": "180.000.000",
+    "n:Inmueble 1: valor estimado (moneda)": "CRC",
     "n:Inmueble 1: renta mensual neta": "1.100.000",
+    "n:Inmueble 1: renta mensual neta (moneda)": "CRC",
     "n:Inmueble 1: saldo de deuda": "0",
-    "n:Inmueble 1: moneda": "CRC",
-    "n:Inmueble 1: estima venderlo": "si",
-    "n:Inmueble 1: año de venta": "2049",
-    "n:Inmueble 1: invierte la venta en el portafolio": "si",
+    "n:Inmueble 1: saldo de deuda (moneda)": "CRC",
+    "n:Inmueble 1: estima venderlo": "no",
     "n:Inmueble 2: nombre": "CASA PLAYA",
     "n:Inmueble 2: valor estimado": "135.000.000",
+    "n:Inmueble 2: valor estimado (moneda)": "CRC",
     "n:Inmueble 2: renta mensual neta": "250.000",
+    "n:Inmueble 2: renta mensual neta (moneda)": "CRC",
     "n:Inmueble 2: saldo de deuda": "0",
-    "n:Inmueble 2: moneda": "CRC",
+    "n:Inmueble 2: saldo de deuda (moneda)": "CRC",
     "n:Inmueble 2: estima venderlo": "no",
     "n:Inmueble 3: nombre": "OFICINA DE ALQUILER",
     "n:Inmueble 3: valor estimado": "54.000.000",
+    "n:Inmueble 3: valor estimado (moneda)": "CRC",
     "n:Inmueble 3: renta mensual neta": "380.000",
+    "n:Inmueble 3: renta mensual neta (moneda)": "CRC",
     "n:Inmueble 3: saldo de deuda": "0",
-    "n:Inmueble 3: moneda": "CRC",
+    "n:Inmueble 3: saldo de deuda (moneda)": "CRC",
     "n:Inmueble 3: estima venderlo": "no",
     "empresa": "no",
     "empresa-valor-moneda": "USD",
@@ -1350,9 +1389,10 @@
     "distrito": "Granadilla",
     "direccion": "Condominio Bosques de Altamonte casa 106"
   },
-  "modificadoEn": 1792616313880,
+  "modificadoEn": 1793047605055,
   "historialEdiciones": [
     1792601212944,
-    1792616313880
+    1792616313880,
+    1793047605055
   ]
 }
