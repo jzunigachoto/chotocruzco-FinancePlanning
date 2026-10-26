@@ -137,7 +137,7 @@
     ],
     "fuentePrincipal": "salario",
     "ingresoPareja": {
-      "monto": 750000,
+      "monto": 0,
       "moneda": "CRC",
       "hastaEdad": 100
     },
@@ -466,8 +466,8 @@
         {
           "id": "ingreso-pareja-monto",
           "campo": "Ingreso mensual de la pareja (monto)",
-          "valor": "750.000",
-          "codigo": "750.000"
+          "valor": "0",
+          "codigo": "0"
         },
         {
           "id": "ingreso-pareja-moneda",
@@ -1249,7 +1249,7 @@
     "c3": "3.33",
     "plan": "conjunta",
     "edad-pareja": "62",
-    "ingreso-pareja-monto": "750.000",
+    "ingreso-pareja-monto": "0",
     "ingreso-pareja-moneda": "CRC",
     "ingreso-pareja-hasta": "100",
     "pension-regimen": "ivm",
@@ -1389,10 +1389,11 @@
     "distrito": "Granadilla",
     "direccion": "Condominio Bosques de Altamonte casa 106"
   },
-  "modificadoEn": 1793047605055,
+  "modificadoEn": 1793049254420,
   "historialEdiciones": [
     1792601212944,
     1792616313880,
-    1793047605055
+    1793047605055,
+    1793049254420
   ]
 }
