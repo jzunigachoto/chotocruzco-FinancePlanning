@@ -1,7 +1,7 @@
 {
   "cliente": "c-1791848432355-ozumj",
   "nombre": "Victor Emilio Herrera",
-  "guardadoEn": 1793128653042,
+  "guardadoEn": 1793130726972,
   "supuestos": {
     "tipoCambio": 450,
     "inflacionLocal": 3,
@@ -27,9 +27,11 @@
       "anioIngresoFcl",
       "factorGastoMenor",
       "factorGastoMayor",
+      "rendimientoFondos",
       "aporteRopPct",
       "aporteFclPct",
       "edadPension",
+      "modalidadRop",
       "expectativaRop",
       "edadFinProgramado"
     ],
