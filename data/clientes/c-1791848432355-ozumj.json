@@ -137,8 +137,8 @@
   },
   "preferenciaMoneda": "0% en dólares y 100% en colones",
   "porcentajeUsd": 0,
-  "ingresoHastaEdad": 100,
-  "salarioMonto": 25000,
+  "ingresoHastaEdad": 78,
+  "salarioMonto": 15000,
   "salarioMoneda": "USD",
   "gastoMonto": 25000,
   "gastoMoneda": "USD",
@@ -458,8 +458,8 @@
         {
           "id": "salario-monto",
           "campo": "Ingreso mensual del titular (monto)",
-          "valor": "25,000",
-          "codigo": "25,000"
+          "valor": "15,000",
+          "codigo": "15,000"
         },
         {
           "id": "salario-moneda",
@@ -470,8 +470,8 @@
         {
           "id": "ingreso-hasta",
           "campo": "Ingreso total: hasta la edad",
-          "valor": "100",
-          "codigo": "100"
+          "valor": "78",
+          "codigo": "78"
         },
         {
           "id": "c3",
@@ -1348,9 +1348,9 @@
     "q10": "3.33",
     "edad": "68",
     "edad_retiro": "68",
-    "salario-monto": "25,000",
+    "salario-monto": "15,000",
     "salario-moneda": "USD",
-    "ingreso-hasta": "100",
+    "ingreso-hasta": "78",
     "fuente-salario": false,
     "fuente-empresa": true,
     "fuente-honorarios": false,
@@ -1509,13 +1509,14 @@
     "distrito": "San Rafael",
     "direccion": "Torre Country"
   },
-  "modificadoEn": 1793128681161,
+  "modificadoEn": 1793128748845,
   "historialEdiciones": [
     1792100359416,
     1792102121912,
     1792445083293,
     1792699208492,
     1793059714353,
-    1793128681161
+    1793128681161,
+    1793128748845
   ]
 }
