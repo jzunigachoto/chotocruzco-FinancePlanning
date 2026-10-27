@@ -41,25 +41,14 @@
     "q10": 3.33
   },
   "capacidad": {
-    "fuenteIngreso": 6.67,
-    "dependientes": 1,
+    "fuenteIngreso": 0,
+    "dependientes": 3,
     "pesoDelPortafolioPct": 100,
-    "aniosPrimerRetiro": 1,
-    "montoPrimerRetiroUsdHoy": 2000000,
-    "montoPrimerRetiroMoneda": "USD"
+    "aniosPrimerRetiro": null,
+    "montoPrimerRetiroUsdHoy": null,
+    "montoPrimerRetiroMoneda": null
   },
-  "fondos": {
-    "rop": {
-      "saldo": 1000000,
-      "saldoMoneda": "CRC",
-      "aporteMensual": null,
-      "aporteMoneda": "CRC",
-      "operadora": "",
-      "traslado": "pension",
-      "modalidad": "asesor",
-      "anio": null
-    }
-  },
+  "fondos": {},
   "otrosIngresosRetiro": null,
   "aportesExtraordinarios": [],
   "gastosExtraordinariosAnualesUsdHoy": 0,
@@ -79,22 +68,22 @@
     {
       "concepto": "Venta de LOTES SIN DESARROLLAR",
       "origen": "inmueble",
-      "anio": 2034,
-      "monto": 31000000,
+      "anio": 2031,
+      "monto": 1000000,
       "moneda": "USD",
-      "valor": 31000000,
+      "valor": 1000000,
       "valorMoneda": "USD",
       "deuda": 0,
       "deudaMoneda": "USD",
       "pctInvierte": 100
     },
     {
-      "concepto": "Venta de EDIFICIO",
+      "concepto": "Venta de PROPIEDAD URUCA",
       "origen": "inmueble",
       "anio": 2036,
-      "monto": 4000000,
+      "monto": 26000000,
       "moneda": "USD",
-      "valor": 4000000,
+      "valor": 26000000,
       "valorMoneda": "USD",
       "deuda": 0,
       "deudaMoneda": "USD",
@@ -108,7 +97,7 @@
   },
   "estructuraJuridica": {
     "tipos": [
-      "Sociedad en Panamá"
+      "Ninguna de las anteriores"
     ],
     "detalle": ""
   },
@@ -118,8 +107,16 @@
       "motivo": "educacion",
       "montoAnualUsdHoy": 120000,
       "moneda": "USD",
-      "anioInicio": 2026,
-      "anios": 5
+      "anioInicio": 2027,
+      "anios": 4
+    },
+    {
+      "beneficiario": "hijo",
+      "motivo": "educacion",
+      "montoAnualUsdHoy": 20000,
+      "moneda": "USD",
+      "anioInicio": 2031,
+      "anios": 2
     },
     {
       "beneficiario": "otro",
@@ -127,20 +124,20 @@
       "montoAnualUsdHoy": 60000,
       "moneda": "USD",
       "anioInicio": 2026,
-      "anios": 10
+      "anios": 20
     }
   ],
   "legado": {
-    "destino": "herencia",
-    "montoUsdHoy": 10000000,
-    "moneda": "USD"
+    "destino": "indistinto",
+    "montoUsdHoy": null,
+    "moneda": null
   },
-  "preferenciaMoneda": "0% en dólares y 100% en colones",
-  "porcentajeUsd": 0,
+  "preferenciaMoneda": "100% en dólares y 0% en colones",
+  "porcentajeUsd": 100,
   "ingresoHastaEdad": 78,
   "salarioMonto": 15000,
   "salarioMoneda": "USD",
-  "gastoMonto": 25000,
+  "gastoMonto": 15000,
   "gastoMoneda": "USD",
   "capitalMonto": 10000000,
   "capitalMoneda": "USD",
@@ -152,12 +149,13 @@
     "planificacion": "individual",
     "edadPareja": null,
     "hijos": [
+      19,
       19
     ],
     "otrosDependientes": {
-      "cantidad": 0,
+      "cantidad": 1,
       "detalle": {
-        "otros": 0
+        "otros": 1
       }
     }
   },
@@ -168,8 +166,8 @@
     "fuentePrincipal": "empresa",
     "ingresoPareja": null,
     "gastoRetiroPct": 100,
-    "gastoUsdPct": 55,
-    "gastoCrcPct": 45
+    "gastoUsdPct": 80,
+    "gastoCrcPct": 20
   },
   "pension": {
     "regimen": "ivm",
@@ -190,7 +188,7 @@
       "lista": [
         {
           "nombre": "LOTES SIN DESARROLLAR",
-          "valor": 31000000,
+          "valor": 1000000,
           "valorMoneda": "USD",
           "rentaMensualNeta": 0,
           "rentaMoneda": "USD",
@@ -198,13 +196,13 @@
           "deudaMoneda": "USD",
           "moneda": "USD",
           "estimaVender": true,
-          "anioVenta": 2034,
+          "anioVenta": 2031,
           "inviertePortafolio": "si",
           "pctInvierte": 100
         },
         {
-          "nombre": "EDIFICIO",
-          "valor": 4000000,
+          "nombre": "PROPIEDAD URUCA",
+          "valor": 26000000,
           "valorMoneda": "USD",
           "rentaMensualNeta": 0,
           "rentaMoneda": "USD",
@@ -215,13 +213,27 @@
           "anioVenta": 2036,
           "inviertePortafolio": "si",
           "pctInvierte": 100
+        },
+        {
+          "nombre": "CASA RESIDENCIA",
+          "valor": 3700000,
+          "valorMoneda": "USD",
+          "rentaMensualNeta": 0,
+          "rentaMoneda": "USD",
+          "saldoDeuda": 0,
+          "deudaMoneda": "USD",
+          "moneda": "USD",
+          "estimaVender": false,
+          "anioVenta": null,
+          "inviertePortafolio": null,
+          "pctInvierte": null
         }
       ]
     },
     "empresa": {
       "propietario": true,
       "plan": "mantener",
-      "valor": 43000000,
+      "valor": 38500000,
       "valorMoneda": "USD",
       "participacionPct": 80,
       "inviertePortafolio": null,
@@ -252,27 +264,11 @@
   "metas": [
     {
       "tipo": "negocio",
-      "montoUsdHoy": 1000000,
+      "montoUsdHoy": 2500000,
       "moneda": "USD",
       "anio": 2027,
-      "prioridad": "deseable",
-      "financiamiento": "portafolio"
-    },
-    {
-      "tipo": "negocio",
-      "montoUsdHoy": 500000,
-      "moneda": "USD",
-      "anio": 2027,
-      "prioridad": "deseable",
-      "financiamiento": "portafolio"
-    },
-    {
-      "tipo": "negocio",
-      "montoUsdHoy": 1000000,
-      "moneda": "USD",
-      "anio": 2027,
-      "prioridad": "deseable",
-      "financiamiento": "portafolio"
+      "prioridad": "esencial",
+      "financiamiento": "credito-portafolio"
     }
   ],
   "creadoEn": 1791848432357,
@@ -476,8 +472,8 @@
         {
           "id": "c3",
           "campo": "Predecibilidad del ingreso del hogar",
-          "valor": "Es estable",
-          "codigo": "6.67"
+          "valor": "Varía de forma importante de un año a otro",
+          "codigo": "0"
         },
         {
           "id": "seleccion",
@@ -557,32 +553,8 @@
         {
           "id": "f-rop-tiene",
           "campo": "ROP: ¿tiene saldo?",
-          "valor": "Sí, tengo saldo en el ROP",
-          "codigo": "si"
-        },
-        {
-          "id": "f-rop-saldo",
-          "campo": "ROP: saldo actual (monto)",
-          "valor": "1.000.000",
-          "codigo": "1.000.000"
-        },
-        {
-          "id": "f-rop-saldo-moneda",
-          "campo": "ROP: saldo actual (moneda)",
-          "valor": "CRC",
-          "codigo": "CRC"
-        },
-        {
-          "id": "f-rop-aporte-moneda",
-          "campo": "ROP: aporte mensual (moneda)",
-          "valor": "CRC",
-          "codigo": "CRC"
-        },
-        {
-          "id": "f-rop-modalidad",
-          "campo": "ROP: modalidad de retiro",
-          "valor": "No lo sé: que lo defina mi asesor",
-          "codigo": "asesor"
+          "valor": "No tengo ROP",
+          "codigo": "no"
         },
         {
           "id": "f-fcl-tiene",
@@ -623,8 +595,8 @@
         {
           "id": "gasto-monto",
           "campo": "Gasto familiar mensual (monto)",
-          "valor": "25,000",
-          "codigo": "25,000"
+          "valor": "15,000",
+          "codigo": "15,000"
         },
         {
           "id": "gasto-moneda",
@@ -635,8 +607,8 @@
         {
           "id": "gasto-usd-pct",
           "campo": "Gasto familiar en dólares (%)",
-          "valor": "55",
-          "codigo": "55"
+          "valor": "80",
+          "codigo": "80"
         }
       ]
     },
@@ -650,12 +622,24 @@
         {
           "id": "hijos-n",
           "campo": "Cantidad de hijos",
+          "valor": "2",
+          "codigo": "2"
+        },
+        {
+          "id": "dep-otros",
+          "campo": "Dependientes: otros familiares",
           "valor": "1",
           "codigo": "1"
         },
         {
           "id": "",
           "campo": "Edad del hijo 1",
+          "valor": "19",
+          "codigo": "19"
+        },
+        {
+          "id": "",
+          "campo": "Edad del hijo 2",
           "valor": "19",
           "codigo": "19"
         }
@@ -677,8 +661,8 @@
         {
           "id": "apoyos-n",
           "campo": "Retiros para dependientes: cantidad",
-          "valor": "2",
-          "codigo": "2"
+          "valor": "3",
+          "codigo": "3"
         },
         {
           "id": "",
@@ -707,32 +691,32 @@
         {
           "id": "",
           "campo": "Dependiente 1: año de inicio",
-          "valor": "2026",
-          "codigo": "2026"
+          "valor": "2027",
+          "codigo": "2027"
         },
         {
           "id": "",
           "campo": "Dependiente 1: años de duración",
-          "valor": "5",
-          "codigo": "5"
+          "valor": "4",
+          "codigo": "4"
         },
         {
           "id": "",
           "campo": "Dependiente 2: parentesco",
-          "valor": "Otro familiar",
-          "codigo": "otro"
+          "valor": "Hijo o hija",
+          "codigo": "hijo"
         },
         {
           "id": "",
           "campo": "Dependiente 2: motivo del retiro",
-          "valor": "Salud",
-          "codigo": "salud"
+          "valor": "Educación",
+          "codigo": "educacion"
         },
         {
           "id": "",
           "campo": "Dependiente 2: monto anual (valor de hoy)",
-          "valor": "60,000",
-          "codigo": "60,000"
+          "valor": "20,000",
+          "codigo": "20,000"
         },
         {
           "id": "",
@@ -743,14 +727,50 @@
         {
           "id": "",
           "campo": "Dependiente 2: año de inicio",
+          "valor": "2031",
+          "codigo": "2031"
+        },
+        {
+          "id": "",
+          "campo": "Dependiente 2: años de duración",
+          "valor": "2",
+          "codigo": "2"
+        },
+        {
+          "id": "",
+          "campo": "Dependiente 3: parentesco",
+          "valor": "Otro familiar",
+          "codigo": "otro"
+        },
+        {
+          "id": "",
+          "campo": "Dependiente 3: motivo del retiro",
+          "valor": "Salud",
+          "codigo": "salud"
+        },
+        {
+          "id": "",
+          "campo": "Dependiente 3: monto anual (valor de hoy)",
+          "valor": "60,000",
+          "codigo": "60,000"
+        },
+        {
+          "id": "",
+          "campo": "Dependiente 3: moneda",
+          "valor": "USD",
+          "codigo": "USD"
+        },
+        {
+          "id": "",
+          "campo": "Dependiente 3: año de inicio",
           "valor": "2026",
           "codigo": "2026"
         },
         {
           "id": "",
-          "campo": "Dependiente 2: años de duración",
-          "valor": "10",
-          "codigo": "10"
+          "campo": "Dependiente 3: años de duración",
+          "valor": "20",
+          "codigo": "20"
         }
       ]
     },
@@ -878,8 +898,8 @@
         {
           "id": "inmuebles-n",
           "campo": "Cantidad de inmuebles de inversión",
-          "valor": "2",
-          "codigo": "2"
+          "valor": "3",
+          "codigo": "3"
         },
         {
           "id": "",
@@ -890,8 +910,8 @@
         {
           "id": "",
           "campo": "Inmueble 1: valor estimado",
-          "valor": "31,000,000",
-          "codigo": "31,000,000"
+          "valor": "1,000,000",
+          "codigo": "1,000,000"
         },
         {
           "id": "",
@@ -932,8 +952,8 @@
         {
           "id": "",
           "campo": "Inmueble 1: año de venta",
-          "valor": "2034",
-          "codigo": "2034"
+          "valor": "2031",
+          "codigo": "2031"
         },
         {
           "id": "",
@@ -944,14 +964,14 @@
         {
           "id": "",
           "campo": "Inmueble 2: nombre",
-          "valor": "EDIFICIO",
-          "codigo": "EDIFICIO"
+          "valor": "PROPIEDAD URUCA",
+          "codigo": "PROPIEDAD URUCA"
         },
         {
           "id": "",
           "campo": "Inmueble 2: valor estimado",
-          "valor": "4,000,000",
-          "codigo": "4,000,000"
+          "valor": "26,000,000",
+          "codigo": "26,000,000"
         },
         {
           "id": "",
@@ -1000,6 +1020,54 @@
           "campo": "Inmueble 2: invierte la venta en el portafolio",
           "valor": "Sí, todo",
           "codigo": "si"
+        },
+        {
+          "id": "",
+          "campo": "Inmueble 3: nombre",
+          "valor": "CASA RESIDENCIA",
+          "codigo": "CASA RESIDENCIA"
+        },
+        {
+          "id": "",
+          "campo": "Inmueble 3: valor estimado",
+          "valor": "3,700,000",
+          "codigo": "3,700,000"
+        },
+        {
+          "id": "",
+          "campo": "Inmueble 3: valor estimado (moneda)",
+          "valor": "USD",
+          "codigo": "USD"
+        },
+        {
+          "id": "",
+          "campo": "Inmueble 3: renta mensual neta",
+          "valor": "0",
+          "codigo": "0"
+        },
+        {
+          "id": "",
+          "campo": "Inmueble 3: renta mensual neta (moneda)",
+          "valor": "USD",
+          "codigo": "USD"
+        },
+        {
+          "id": "",
+          "campo": "Inmueble 3: saldo de deuda",
+          "valor": "0",
+          "codigo": "0"
+        },
+        {
+          "id": "",
+          "campo": "Inmueble 3: saldo de deuda (moneda)",
+          "valor": "USD",
+          "codigo": "USD"
+        },
+        {
+          "id": "",
+          "campo": "Inmueble 3: estima venderlo",
+          "valor": "No",
+          "codigo": "no"
         }
       ]
     },
@@ -1025,8 +1093,8 @@
         {
           "id": "empresa-valor",
           "campo": "Empresa: valor estimado (monto)",
-          "valor": "43,000,000",
-          "codigo": "43,000,000"
+          "valor": "38,500,000",
+          "codigo": "38,500,000"
         },
         {
           "id": "empresa-valor-moneda",
@@ -1082,26 +1150,8 @@
         {
           "id": "c1-tiene",
           "campo": "Primer retiro del portafolio",
-          "valor": "Sí",
-          "codigo": "si"
-        },
-        {
-          "id": "c1",
-          "campo": "Años hasta el primer retiro",
-          "valor": "1",
-          "codigo": "1"
-        },
-        {
-          "id": "c1-monto",
-          "campo": "Monto del primer retiro (valor de hoy)",
-          "valor": "2,000,000",
-          "codigo": "2,000,000"
-        },
-        {
-          "id": "c1-moneda",
-          "campo": "Primer retiro: moneda",
-          "valor": "USD",
-          "codigo": "USD"
+          "valor": "No",
+          "codigo": "no"
         }
       ]
     },
@@ -1115,8 +1165,8 @@
         {
           "id": "metas-n",
           "campo": "Cantidad de metas específicas",
-          "valor": "3",
-          "codigo": "3"
+          "valor": "1",
+          "codigo": "1"
         },
         {
           "id": "",
@@ -1127,8 +1177,8 @@
         {
           "id": "",
           "campo": "Meta 1: monto (valor de hoy)",
-          "valor": "1,000,000",
-          "codigo": "1,000,000"
+          "valor": "2,500,000",
+          "codigo": "2,500,000"
         },
         {
           "id": "",
@@ -1145,86 +1195,14 @@
         {
           "id": "",
           "campo": "Meta 1: prioridad",
-          "valor": "Deseable",
-          "codigo": "deseable"
+          "valor": "Esencial",
+          "codigo": "esencial"
         },
         {
           "id": "",
           "campo": "Meta 1: financiamiento",
-          "valor": "Con una salida del portafolio",
-          "codigo": "portafolio"
-        },
-        {
-          "id": "",
-          "campo": "Meta 2: tipo",
-          "valor": "Negocio o emprendimiento",
-          "codigo": "negocio"
-        },
-        {
-          "id": "",
-          "campo": "Meta 2: monto (valor de hoy)",
-          "valor": "500,000",
-          "codigo": "500,000"
-        },
-        {
-          "id": "",
-          "campo": "Meta 2: moneda",
-          "valor": "USD",
-          "codigo": "USD"
-        },
-        {
-          "id": "",
-          "campo": "Meta 2: año estimado",
-          "valor": "2027",
-          "codigo": "2027"
-        },
-        {
-          "id": "",
-          "campo": "Meta 2: prioridad",
-          "valor": "Deseable",
-          "codigo": "deseable"
-        },
-        {
-          "id": "",
-          "campo": "Meta 2: financiamiento",
-          "valor": "Con una salida del portafolio",
-          "codigo": "portafolio"
-        },
-        {
-          "id": "",
-          "campo": "Meta 3: tipo",
-          "valor": "Negocio o emprendimiento",
-          "codigo": "negocio"
-        },
-        {
-          "id": "",
-          "campo": "Meta 3: monto (valor de hoy)",
-          "valor": "1,000,000",
-          "codigo": "1,000,000"
-        },
-        {
-          "id": "",
-          "campo": "Meta 3: moneda",
-          "valor": "USD",
-          "codigo": "USD"
-        },
-        {
-          "id": "",
-          "campo": "Meta 3: año estimado",
-          "valor": "2027",
-          "codigo": "2027"
-        },
-        {
-          "id": "",
-          "campo": "Meta 3: prioridad",
-          "valor": "Deseable",
-          "codigo": "deseable"
-        },
-        {
-          "id": "",
-          "campo": "Meta 3: financiamiento",
-          "valor": "Con una salida del portafolio",
-          "codigo": "portafolio"
+          "valor": "Con un crédito respaldado por el portafolio",
+          "codigo": "credito-portafolio"
         }
       ]
     },
@@ -1238,20 +1216,8 @@
         {
           "id": "herencia",
           "campo": "Destino del patrimonio",
-          "valor": "Dejar una herencia a mis hijos o herederos",
-          "codigo": "herencia"
-        },
-        {
-          "id": "herencia-monto",
-          "campo": "Monto de la herencia (valor de hoy)",
-          "valor": "10,000,000",
-          "codigo": "10,000,000"
-        },
-        {
-          "id": "herencia-moneda",
-          "campo": "Herencia: moneda",
-          "valor": "USD",
-          "codigo": "USD"
+          "valor": "No tengo una preferencia definida al respecto",
+          "codigo": "indistinto"
         }
       ]
     },
@@ -1292,14 +1258,14 @@
         {
           "id": "moneda-usd",
           "campo": "Preferencia de moneda: % en dólares",
-          "valor": "0",
-          "codigo": "0"
+          "valor": "100",
+          "codigo": "100"
         },
         {
           "id": "moneda-crc",
           "campo": "Preferencia de moneda: % en colones",
-          "valor": "100",
-          "codigo": "100"
+          "valor": "0",
+          "codigo": "0"
         }
       ]
     },
@@ -1313,7 +1279,7 @@
         {
           "id": "seleccion",
           "campo": "Selección",
-          "valor": "Sociedad en Panamá",
+          "valor": "Ninguna de las anteriores",
           "codigo": ""
         }
       ]
@@ -1355,7 +1321,7 @@
     "fuente-empresa": true,
     "fuente-honorarios": false,
     "fuente-ingreso": "empresa",
-    "c3": "6.67",
+    "c3": "0",
     "plan": "individual",
     "ingreso-pareja-moneda": "CRC",
     "pension-regimen": "ivm",
@@ -1366,11 +1332,9 @@
     "pension-nose": false,
     "otros-ing": "no",
     "otros-ing-moneda": "CRC",
-    "f-rop-tiene": "si",
-    "f-rop-saldo": "1.000.000",
+    "f-rop-tiene": "no",
     "f-rop-saldo-moneda": "CRC",
     "f-rop-aporte-moneda": "CRC",
-    "f-rop-modalidad": "asesor",
     "f-fcl-tiene": "no",
     "f-fcl-saldo-moneda": "CRC",
     "f-fcl-aporte-moneda": "CRC",
@@ -1378,33 +1342,41 @@
     "f-vol-saldo-moneda": "CRC",
     "f-vol-aporte-moneda": "CRC",
     "aportes-extra-n": "0",
-    "gasto-monto": "25,000",
+    "gasto-monto": "15,000",
     "gasto-moneda": "USD",
-    "gasto-usd-pct": "55",
+    "gasto-usd-pct": "80",
+    "gasto-crc-pct": "20",
     "gasto-retiro-pct": "100",
-    "hijos-n": "1",
+    "hijos-n": "2",
     "dep-pareja": "0",
     "dep-padres": "0",
     "dep-hermanos": "0",
     "dep-tios": "0",
     "dep-abuelos": "0",
-    "dep-otros": "0",
-    "otros-dep-n": "0",
+    "dep-otros": "1",
+    "otros-dep-n": "1",
     "n:Edad del hijo 1": "19",
+    "n:Edad del hijo 2": "19",
     "apoyos-tiene": "si",
-    "apoyos-n": "2",
+    "apoyos-n": "3",
     "n:Dependiente 1: parentesco": "hijo",
     "n:Dependiente 1: motivo del retiro": "educacion",
     "n:Dependiente 1: monto anual (valor de hoy)": "120,000",
     "n:Dependiente 1: moneda": "USD",
-    "n:Dependiente 1: año de inicio": "2026",
-    "n:Dependiente 1: años de duración": "5",
-    "n:Dependiente 2: parentesco": "otro",
-    "n:Dependiente 2: motivo del retiro": "salud",
-    "n:Dependiente 2: monto anual (valor de hoy)": "60,000",
+    "n:Dependiente 1: año de inicio": "2027",
+    "n:Dependiente 1: años de duración": "4",
+    "n:Dependiente 2: parentesco": "hijo",
+    "n:Dependiente 2: motivo del retiro": "educacion",
+    "n:Dependiente 2: monto anual (valor de hoy)": "20,000",
     "n:Dependiente 2: moneda": "USD",
-    "n:Dependiente 2: año de inicio": "2026",
-    "n:Dependiente 2: años de duración": "10",
+    "n:Dependiente 2: año de inicio": "2031",
+    "n:Dependiente 2: años de duración": "2",
+    "n:Dependiente 3: parentesco": "otro",
+    "n:Dependiente 3: motivo del retiro": "salud",
+    "n:Dependiente 3: monto anual (valor de hoy)": "60,000",
+    "n:Dependiente 3: moneda": "USD",
+    "n:Dependiente 3: año de inicio": "2026",
+    "n:Dependiente 3: años de duración": "20",
     "donaciones-tiene": "no",
     "donaciones-moneda": "USD",
     "deudas-tiene": "no",
@@ -1421,19 +1393,19 @@
     "vivienda": "propia",
     "hipoteca-saldo-moneda": "USD",
     "hipoteca-cuota-moneda": "USD",
-    "inmuebles-n": "2",
+    "inmuebles-n": "3",
     "n:Inmueble 1: nombre": "LOTES SIN DESARROLLAR",
-    "n:Inmueble 1: valor estimado": "31,000,000",
+    "n:Inmueble 1: valor estimado": "1,000,000",
     "n:Inmueble 1: valor estimado (moneda)": "USD",
     "n:Inmueble 1: renta mensual neta": "0",
     "n:Inmueble 1: renta mensual neta (moneda)": "USD",
     "n:Inmueble 1: saldo de deuda": "0",
     "n:Inmueble 1: saldo de deuda (moneda)": "USD",
     "n:Inmueble 1: estima venderlo": "si",
-    "n:Inmueble 1: año de venta": "2034",
+    "n:Inmueble 1: año de venta": "2031",
     "n:Inmueble 1: invierte la venta en el portafolio": "si",
-    "n:Inmueble 2: nombre": "EDIFICIO",
-    "n:Inmueble 2: valor estimado": "4,000,000",
+    "n:Inmueble 2: nombre": "PROPIEDAD URUCA",
+    "n:Inmueble 2: valor estimado": "26,000,000",
     "n:Inmueble 2: valor estimado (moneda)": "USD",
     "n:Inmueble 2: renta mensual neta": "0",
     "n:Inmueble 2: renta mensual neta (moneda)": "USD",
@@ -1442,39 +1414,32 @@
     "n:Inmueble 2: estima venderlo": "si",
     "n:Inmueble 2: año de venta": "2036",
     "n:Inmueble 2: invierte la venta en el portafolio": "si",
+    "n:Inmueble 3: nombre": "CASA RESIDENCIA",
+    "n:Inmueble 3: valor estimado": "3,700,000",
+    "n:Inmueble 3: valor estimado (moneda)": "USD",
+    "n:Inmueble 3: renta mensual neta": "0",
+    "n:Inmueble 3: renta mensual neta (moneda)": "USD",
+    "n:Inmueble 3: saldo de deuda": "0",
+    "n:Inmueble 3: saldo de deuda (moneda)": "USD",
+    "n:Inmueble 3: estima venderlo": "no",
     "empresa": "si",
     "empresa-part": "80",
-    "empresa-valor": "43,000,000",
+    "empresa-valor": "38,500,000",
     "empresa-valor-moneda": "USD",
     "empresa-plan": "mantener",
     "pe-tiene": "no",
     "pe-moneda": "USD",
     "ventas-n": "0",
-    "c1-tiene": "si",
-    "c1": "1",
-    "c1-monto": "2,000,000",
+    "c1-tiene": "no",
     "c1-moneda": "USD",
-    "metas-n": "3",
+    "metas-n": "1",
     "n:Meta 1: tipo": "negocio",
-    "n:Meta 1: monto (valor de hoy)": "1,000,000",
+    "n:Meta 1: monto (valor de hoy)": "2,500,000",
     "n:Meta 1: moneda": "USD",
     "n:Meta 1: año estimado": "2027",
-    "n:Meta 1: prioridad": "deseable",
-    "n:Meta 1: financiamiento": "portafolio",
-    "n:Meta 2: tipo": "negocio",
-    "n:Meta 2: monto (valor de hoy)": "500,000",
-    "n:Meta 2: moneda": "USD",
-    "n:Meta 2: año estimado": "2027",
-    "n:Meta 2: prioridad": "deseable",
-    "n:Meta 2: financiamiento": "portafolio",
-    "n:Meta 3: tipo": "negocio",
-    "n:Meta 3: monto (valor de hoy)": "1,000,000",
-    "n:Meta 3: moneda": "USD",
-    "n:Meta 3: año estimado": "2027",
-    "n:Meta 3: prioridad": "deseable",
-    "n:Meta 3: financiamiento": "portafolio",
-    "herencia": "herencia",
-    "herencia-monto": "10,000,000",
+    "n:Meta 1: prioridad": "esencial",
+    "n:Meta 1: financiamiento": "credito-portafolio",
+    "herencia": "indistinto",
     "herencia-moneda": "USD",
     "seguro-vida": true,
     "seguro-medico": true,
@@ -1483,15 +1448,15 @@
     "seguros-sel": "vida,gastosMedicos",
     "vida-suma": "1,500,000",
     "vida-moneda": "USD",
-    "moneda-usd": "0",
-    "moneda-crc": "100",
+    "moneda-usd": "100",
+    "moneda-crc": "0",
     "estr-sa-cr": false,
-    "estr-pa": true,
+    "estr-pa": false,
     "estr-offshore": false,
     "estr-fundacion": false,
     "estr-fideicomiso": false,
-    "estr-ninguna": false,
-    "estructuras-sel": "Sociedad en Panamá",
+    "estr-ninguna": true,
+    "estructuras-sel": "Ninguna de las anteriores",
     "comentarios": "no",
     "nombres": "Victor Emilio",
     "apellidos": "Herrera",
@@ -1509,7 +1474,7 @@
     "distrito": "San Rafael",
     "direccion": "Torre Country"
   },
-  "modificadoEn": 1793128748845,
+  "modificadoEn": 1793130686972,
   "historialEdiciones": [
     1792100359416,
     1792102121912,
@@ -1517,6 +1482,7 @@
     1792699208492,
     1793059714353,
     1793128681161,
-    1793128748845
+    1793128748845,
+    1793130686972
   ]
 }
