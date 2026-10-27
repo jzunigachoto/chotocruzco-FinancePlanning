@@ -116,10 +116,18 @@
     {
       "beneficiario": "hijo",
       "motivo": "educacion",
-      "montoAnualUsdHoy": 100000,
+      "montoAnualUsdHoy": 120000,
       "moneda": "USD",
       "anioInicio": 2026,
       "anios": 5
+    },
+    {
+      "beneficiario": "otro",
+      "motivo": "salud",
+      "montoAnualUsdHoy": 60000,
+      "moneda": "USD",
+      "anioInicio": 2026,
+      "anios": 10
     }
   ],
   "legado": {
@@ -160,7 +168,8 @@
     "fuentePrincipal": "empresa",
     "ingresoPareja": null,
     "gastoRetiroPct": 100,
-    "gastoUsdPct": 55
+    "gastoUsdPct": 55,
+    "gastoCrcPct": 45
   },
   "pension": {
     "regimen": "ivm",
@@ -668,8 +677,8 @@
         {
           "id": "apoyos-n",
           "campo": "Retiros para dependientes: cantidad",
-          "valor": "1",
-          "codigo": "1"
+          "valor": "2",
+          "codigo": "2"
         },
         {
           "id": "",
@@ -686,8 +695,8 @@
         {
           "id": "",
           "campo": "Dependiente 1: monto anual (valor de hoy)",
-          "valor": "100,000",
-          "codigo": "100,000"
+          "valor": "120,000",
+          "codigo": "120,000"
         },
         {
           "id": "",
@@ -706,6 +715,42 @@
           "campo": "Dependiente 1: años de duración",
           "valor": "5",
           "codigo": "5"
+        },
+        {
+          "id": "",
+          "campo": "Dependiente 2: parentesco",
+          "valor": "Otro familiar",
+          "codigo": "otro"
+        },
+        {
+          "id": "",
+          "campo": "Dependiente 2: motivo del retiro",
+          "valor": "Salud",
+          "codigo": "salud"
+        },
+        {
+          "id": "",
+          "campo": "Dependiente 2: monto anual (valor de hoy)",
+          "valor": "60,000",
+          "codigo": "60,000"
+        },
+        {
+          "id": "",
+          "campo": "Dependiente 2: moneda",
+          "valor": "USD",
+          "codigo": "USD"
+        },
+        {
+          "id": "",
+          "campo": "Dependiente 2: año de inicio",
+          "valor": "2026",
+          "codigo": "2026"
+        },
+        {
+          "id": "",
+          "campo": "Dependiente 2: años de duración",
+          "valor": "10",
+          "codigo": "10"
         }
       ]
     },
@@ -1347,13 +1392,19 @@
     "otros-dep-n": "0",
     "n:Edad del hijo 1": "19",
     "apoyos-tiene": "si",
-    "apoyos-n": "1",
+    "apoyos-n": "2",
     "n:Dependiente 1: parentesco": "hijo",
     "n:Dependiente 1: motivo del retiro": "educacion",
-    "n:Dependiente 1: monto anual (valor de hoy)": "100,000",
+    "n:Dependiente 1: monto anual (valor de hoy)": "120,000",
     "n:Dependiente 1: moneda": "USD",
     "n:Dependiente 1: año de inicio": "2026",
     "n:Dependiente 1: años de duración": "5",
+    "n:Dependiente 2: parentesco": "otro",
+    "n:Dependiente 2: motivo del retiro": "salud",
+    "n:Dependiente 2: monto anual (valor de hoy)": "60,000",
+    "n:Dependiente 2: moneda": "USD",
+    "n:Dependiente 2: año de inicio": "2026",
+    "n:Dependiente 2: años de duración": "10",
     "donaciones-tiene": "no",
     "donaciones-moneda": "USD",
     "deudas-tiene": "no",
@@ -1458,11 +1509,12 @@
     "distrito": "San Rafael",
     "direccion": "Torre Country"
   },
-  "modificadoEn": 1792699208492,
+  "modificadoEn": 1793059714353,
   "historialEdiciones": [
     1792100359416,
     1792102121912,
     1792445083293,
-    1792699208492
+    1792699208492,
+    1793059714353
   ]
 }
