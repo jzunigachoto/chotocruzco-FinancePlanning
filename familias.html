@@ -215,6 +215,8 @@
   .fila-rep:first-child{margin-top:4px;}
   .opciones-estr{display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;margin:6px 0 4px;}
   @media (max-width:560px){ .opciones-estr{grid-template-columns:1fr;} }
+  .emp-venta[hidden], .emp-anios[hidden], .meta-credito[hidden], .meta-otra[hidden], .estr-ubic[hidden]{display:none !important;}
+  .estr-lista{grid-template-columns:1fr;} .estr-ubic{margin:0 0 8px 28px;max-width:440px;}
   .fila-tabla{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) minmax(0,1.4fr);gap:0 18px;align-items:end;}
   .fila-tabla .fila-tit{margin:0 0 10px;}
   .fila-tabla4{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,.8fr) minmax(0,1.2fr);gap:0 16px;align-items:end;}
@@ -588,11 +590,11 @@
               <span class="qlabel">¿Qué combinación de rendimiento esperado y pérdida máxima en un año aceptaría?</span>
               <select required name="Q6 - Retorno esperado y caída máxima" id="q6">
                 <option value="" disabled selected>Seleccione una opción</option>
-                <option value="0">Rendimiento esperado anual de 5% a 5,5% · pérdida anual esperada de −5%</option>
-                <option value="2.5">Rendimiento esperado anual de 6% a 6,5% · pérdida anual esperada de −7%</option>
-                <option value="5">Rendimiento esperado anual de 7% a 7,5% · pérdida anual esperada de −9%</option>
-                <option value="7.5">Rendimiento esperado anual de 8% a 8,5% · pérdida anual esperada de −12%</option>
-                <option value="10">Rendimiento esperado anual de 9% a 9,5% · pérdida anual esperada de −16%</option>
+                <option value="0">Rendimiento esperado anual de 5% a 5,5% · posible pérdida en un año desfavorable de hasta −5%</option>
+                <option value="2.5">Rendimiento esperado anual de 6% a 6,5% · posible pérdida en un año desfavorable de hasta −7%</option>
+                <option value="5">Rendimiento esperado anual de 7% a 7,5% · posible pérdida en un año desfavorable de hasta −9%</option>
+                <option value="7.5">Rendimiento esperado anual de 8% a 8,5% · posible pérdida en un año desfavorable de hasta −12%</option>
+                <option value="10">Rendimiento esperado anual de 9% a 9,5% · posible pérdida en un año desfavorable de hasta −16%</option>
               </select>
               <p class="q-falta">Falta responder esta pregunta.</p>
             </div>
@@ -1152,44 +1154,10 @@
           <div class="q q-req">
             <span class="q-num">10</span>
             <div>
-              <span class="qlabel">¿Es propietario de una empresa?</span>
-              <select required id="empresa" name="Propietario de empresa">
-                <option value="" disabled selected>Seleccione una opción</option>
-                <option value="no">No</option>
-                <option value="si">Sí</option>
-              </select>
-              <div class="sub-q" id="empresa-detalle" hidden>
-                <span class="mini">Porcentaje de participación en la empresa</span>
-                <div class="amount"><input type="number" min="1" max="100" step="0.1" id="empresa-part" name="Empresa: porcentaje de participación" placeholder="100"><div class="unit">%</div></div>
-                <span class="mini espacio">Valor estimado de la empresa completa (100%)</span>
-                <div class="amount">
-                  <input type="number" min="0" id="empresa-valor" name="Empresa: valor estimado (monto)" placeholder="1.500.000">
-                  <select id="empresa-valor-moneda" name="Empresa: valor estimado (moneda)"><option>USD</option><option>CRC</option></select>
-                </div>
-                <span class="mini espacio">¿Estima venderla o traspasarla?</span>
-                <select id="empresa-plan" name="Plan sobre la empresa">
-                  <option value="" disabled selected>Seleccione una opción</option>
-                  <option value="vender">Sí, estimo venderla</option>
-                  <option value="traspasar">Sí, estimo traspasarla a mi familia o socios</option>
-                  <option value="mantener">No lo estimo por ahora</option>
-                </select>
-                <div id="empresa-anios-detalle" hidden>
-                  <span class="mini espacio">¿En cuántos años, aproximadamente?</span>
-                  <div class="amount">
-                    <input type="number" min="0" max="60" id="empresa-anios" name="Años hasta la venta o traspaso" placeholder="10">
-                    <div class="unit">años</div>
-                  </div>
-                </div>
-                <div id="empresa-invierte-detalle" hidden>
-                  <span class="mini espacio">¿Invertiría el dinero de la venta en este portafolio?</span>
-                  <select id="empresa-invierte" name="Empresa: invierte la venta en el portafolio"><option value="" disabled selected>Seleccione una opción</option><option value="si">Sí, todo</option><option value="parte">Sí, una parte</option><option value="analisis">Sujeto a análisis</option><option value="no">No</option></select>
-                  <div id="empresa-pct-detalle" hidden>
-                    <span class="mini espacio">Porcentaje de la venta que invertiría</span>
-                    <div class="amount"><input type="number" min="1" max="99" id="empresa-pct" name="Empresa: porcentaje de la venta que invierte" placeholder="50"><div class="unit">%</div></div>
-                  </div>
-                  <p class="hint">Se toma su participación en el valor estimado. La parte que invierta aquí entra al portafolio como desinversión; si está sujeta a análisis, no se incluye en la proyección.</p>
-                </div>
-              </div>
+              <span class="qlabel">¿Es propietario de empresas? Indique cuántas</span>
+              <div class="amount"><input required type="number" min="0" step="1" id="empresas-n" name="Cantidad de empresas" placeholder="0"><div class="unit">empresas</div></div>
+              <p class="hint">Escriba 0 si no es propietario de empresas. Por cada empresa se pide su nombre, su participación, su valor estimado y si estima venderla o traspasarla.</p>
+              <div class="sub-q filas" id="empresas-filas" hidden></div>
               <p class="q-falta">Falta responder esta pregunta.</p>
             </div>
           </div>
@@ -1229,9 +1197,20 @@
           <div class="block-title">Retiros del portafolio</div>
 
           <div class="q q-req">
+            <span class="q-num">13</span>
+            <div>
+              <span class="qlabel">¿Cuántas metas específicas desea financiar con su patrimonio?</span>
+              <div class="amount"><input required type="number" min="0" step="1" id="metas-n" name="Cantidad de metas específicas" placeholder="0"><div class="unit">metas</div></div>
+              <p class="hint">Escriba 0 si no tiene metas específicas. Por ejemplo, la compra de una propiedad, un vehículo o un viaje. Los gastos de sus dependientes se indican en la pregunta sobre ese tema. Las metas que se pagan con una salida del portafolio se restan del portafolio en su año; las financiadas con crédito entran a la proyección con la cuota anual del crédito.</p>
+              <div class="sub-q filas" id="metas-filas" hidden></div>
+              <p class="q-falta">Falta responder esta pregunta.</p>
+            </div>
+          </div>
+
+          <div class="q q-req">
             <span class="q-num">08</span>
             <div>
-              <span class="qlabel">¿Planea un retiro de este portafolio distinto de sus metas, y cuándo y de cuánto sería?</span>
+              <span class="qlabel">¿Planea un retiro adicional de este portafolio, distinto de las metas indicadas en la pregunta anterior? ¿Cuándo y de cuánto sería?</span>
               <select required id="c1-tiene" name="Primer retiro del portafolio"><option value="" disabled selected>Seleccione una opción</option><option value="no">No</option><option value="si">Sí</option></select>
               <div class="sub-q" id="c1-detalle" hidden>
               <div class="fila-grid">
@@ -1241,18 +1220,7 @@
                   <div class="amount"><input type="number" min="0" id="c1-monto" name="Monto del primer retiro (valor de hoy)" placeholder="50.000"><select id="c1-moneda" name="Primer retiro: moneda"><option>USD</option><option>CRC</option></select></div></div>
               </div>
               </div>
-              <p class="hint">Primera salida de dinero de esta cartera, sea o no por jubilación: un aporte a un negocio u otro uso. Si ese retiro ya es una de sus metas, no lo repita aquí.</p>
-              <p class="q-falta">Falta responder esta pregunta.</p>
-            </div>
-          </div>
-
-          <div class="q q-req">
-            <span class="q-num">13</span>
-            <div>
-              <span class="qlabel">¿Cuántas metas específicas desea financiar con su patrimonio?</span>
-              <div class="amount"><input required type="number" min="0" step="1" id="metas-n" name="Cantidad de metas específicas" placeholder="0"><div class="unit">metas</div></div>
-              <p class="hint">Escriba 0 si no tiene metas específicas. Por ejemplo, la compra de una propiedad, un vehículo o un viaje. Los gastos de sus dependientes se indican en la pregunta sobre ese tema. Solo las metas que se pagan con una salida del portafolio se restan del portafolio en la proyección.</p>
-              <div class="sub-q filas" id="metas-filas" hidden></div>
+              <p class="hint">Una salida de dinero de esta cartera que no sea una de sus metas: un aporte a un negocio, un apoyo familiar u otro uso. Si ese retiro ya está en sus metas, no lo repita aquí.</p>
               <p class="q-falta">Falta responder esta pregunta.</p>
             </div>
           </div>
@@ -1324,14 +1292,19 @@
           <div class="q">
             <span class="q-num">00</span>
             <div>
-              <span class="qlabel">Indique cuáles de las siguientes estructuras jurídicas posee</span>
-              <p class="hint" style="margin:2px 0 6px;">Para conocer su estructura operativa y fiscal actual y evaluar si es la adecuada. No interviene en la proyección.</p>
-              <div class="opciones-estr">
+              <span class="qlabel">¿Qué estructuras jurídicas posee y en cuál de ellas se encuentra este portafolio?</span>
+              <p class="hint" style="margin:2px 0 6px;">Marque cada estructura que posee e indique si este portafolio está a nombre de ella o si la tiene fuera de este portafolio. Así se identifica dónde se encuentra el portafolio y qué estructuras mantiene aparte. No interviene en la proyección.</p>
+              <div class="opciones-estr estr-lista">
                 <label class="opcion"><input type="checkbox" class="estr" id="estr-sa-cr" value="Sociedad anónima u otra sociedad costarricense"> Sociedad anónima u otra sociedad costarricense</label>
+                <div class="estr-ubic" data-para="estr-sa-cr" hidden><select id="estr-sa-cr-ubic" name="Sociedad anónima u otra sociedad costarricense: ubicación del portafolio"><option value="" disabled selected>¿Este portafolio está en esta estructura?</option><option value="dentro">Sí, este portafolio está a su nombre</option><option value="fuera">No, la tengo fuera de este portafolio</option></select></div>
                 <label class="opcion"><input type="checkbox" class="estr" id="estr-pa" value="Sociedad en Panamá"> Sociedad en Panamá</label>
+                <div class="estr-ubic" data-para="estr-pa" hidden><select id="estr-pa-ubic" name="Sociedad en Panamá: ubicación del portafolio"><option value="" disabled selected>¿Este portafolio está en esta estructura?</option><option value="dentro">Sí, este portafolio está a su nombre</option><option value="fuera">No, la tengo fuera de este portafolio</option></select></div>
                 <label class="opcion"><input type="checkbox" class="estr" id="estr-offshore" value="Sociedad offshore en otra jurisdicción"> Sociedad offshore en otra jurisdicción</label>
+                <div class="estr-ubic" data-para="estr-offshore" hidden><select id="estr-offshore-ubic" name="Sociedad offshore en otra jurisdicción: ubicación del portafolio"><option value="" disabled selected>¿Este portafolio está en esta estructura?</option><option value="dentro">Sí, este portafolio está a su nombre</option><option value="fuera">No, la tengo fuera de este portafolio</option></select></div>
                 <label class="opcion"><input type="checkbox" class="estr" id="estr-fundacion" value="Fundación de interés privado"> Fundación de interés privado</label>
+                <div class="estr-ubic" data-para="estr-fundacion" hidden><select id="estr-fundacion-ubic" name="Fundación de interés privado: ubicación del portafolio"><option value="" disabled selected>¿Este portafolio está en esta estructura?</option><option value="dentro">Sí, este portafolio está a su nombre</option><option value="fuera">No, la tengo fuera de este portafolio</option></select></div>
                 <label class="opcion"><input type="checkbox" class="estr" id="estr-fideicomiso" value="Fideicomiso testamentario"> Fideicomiso testamentario</label>
+                <div class="estr-ubic" data-para="estr-fideicomiso" hidden><select id="estr-fideicomiso-ubic" name="Fideicomiso testamentario: ubicación del portafolio"><option value="" disabled selected>¿Este portafolio está en esta estructura?</option><option value="dentro">Sí, este portafolio está a su nombre</option><option value="fuera">No, la tengo fuera de este portafolio</option></select></div>
                 <label class="opcion"><input type="checkbox" class="estr" id="estr-ninguna" value="Ninguna de las anteriores"> Ninguna de las anteriores</label>
               </div>
               <input type="hidden" id="estructuras-sel" name="Estructuras jurídicas">
@@ -1655,7 +1628,7 @@ document.addEventListener('input', function(e){
 });
 
 // Los montos admiten decimales (centavos); edades, años y cantidades siguen siendo enteros.
-const ENTEROS = new Set(['otros-ing-fin','gastos-extra-n','aportes-extra-n','apoyos-n','ventas-n','deudas-n','inmuebles-n','metas-n','ingreso-pareja-hasta','edad_retiro','edad-pareja','c1','i3-horizonte','empresa-anios','f-rop-anio','f-fcl-anio','f-vol-anio',
+const ENTEROS = new Set(['otros-ing-fin','gastos-extra-n','aportes-extra-n','apoyos-n','ventas-n','deudas-n','inmuebles-n','metas-n','empresas-n','ingreso-pareja-hasta','edad_retiro','edad-pareja','c1','i3-horizonte','empresa-anios','f-rop-anio','f-fcl-anio','f-vol-anio',
   'pension-edad','hipoteca-plazo','hipoteca-tasa','deudas-plazo','ingreso-hasta','moneda-usd','moneda-crc']);
 // Montos con separadores mientras se escribe. La convención sigue la moneda del monto:
 // dólares 250,000.50 · colones 1.000.000,50. El valor numérico se lee con numDe().
@@ -1903,10 +1876,6 @@ const CONDICIONALES = [
   {control:'pension-regimen', detalle:'pension-detalle',       campos:['pension-recibe','pension-monto','pension-edad'], aplica: v => !!v && v !== 'ninguno'},
   {control:'vivienda',        detalle:'hipoteca-detalle',      campos:['hipoteca-saldo','hipoteca-cuota','hipoteca-tasa','hipoteca-plazo'], aplica: v => v === 'hipoteca'},
   {control:'inmuebles-n',     detalle:'inmuebles-detalle',     campos:[],                              aplica: v => +v > 0},
-  {control:'empresa',         detalle:'empresa-detalle',       campos:['empresa-part','empresa-valor','empresa-plan'], aplica: v => v === 'si'},
-  {control:'empresa-plan',    detalle:'empresa-anios-detalle', campos:['empresa-anios'],               aplica: v => v === 'vender' || v === 'traspasar'},
-  {control:'empresa-plan',    detalle:'empresa-invierte-detalle', campos:['empresa-invierte'],         aplica: v => v === 'vender'},
-  {control:'empresa-invierte', detalle:'empresa-pct-detalle',  campos:['empresa-pct'],                 aplica: v => v === 'parte'},
   {control:'deudas-tiene',    detalle:'deudas-detalle-q',      campos:['deudas-n','deudas-en-gasto'],  aplica: v => v === 'si'},
   {control:'donaciones-tiene', detalle:'donaciones-detalle',   campos:['donaciones-monto'],            aplica: v => v === 'si'},
   {control:'pe-tiene',        detalle:'pe-detalle',            campos:['pe-valor','pe-part'],          aplica: v => v === 'si'},
@@ -2003,6 +1972,24 @@ const REPETIBLES = [
       </div>
       <p class="hint fila-venta" hidden style="margin-top:8px;">El alquiler se proyecta hasta el año anterior a la venta. La parte de la venta que invierta aquí entra al portafolio como desinversión; si está sujeta a análisis, no se incluye en la proyección.</p>
     </div>`},
+  {control:'empresas-n', contenedor:'empresas-filas', max:999, fila: i => `
+    <div class="fila-rep"><span class="fila-tit">Empresa ${i+1}</span>
+      <div><span class="mini">Nombre de la empresa</span><input required type="text" data-k="nombre" data-mayus="1" name="Empresa ${i+1}: nombre" placeholder="COMERCIALIZADORA DEL VALLE S. A." style="text-transform:uppercase"></div>
+      <div class="fila-grid" style="margin-top:12px;">
+        <div><span class="mini">Porcentaje de participación</span><div class="amount"><input required type="number" min="0.01" max="100" step="0.01" data-k="part" name="Empresa ${i+1}: porcentaje de participación" placeholder="100"><div class="unit">%</div></div></div>
+        <div><span class="mini">Valor estimado de la empresa completa (100%)</span><div class="amount"><input required type="number" min="0" data-k="valor" name="Empresa ${i+1}: valor estimado (monto)" placeholder="1.500.000"><select data-k="moneda" name="Empresa ${i+1}: valor estimado (moneda)"><option>USD</option><option>CRC</option></select></div></div>
+      </div>
+      <div class="fila-grid" style="margin-top:12px;">
+        <div><span class="mini">¿Estima venderla o traspasarla?</span><select required data-k="plan" data-plan-emp="1" name="Empresa ${i+1}: plan">
+          <option value="" disabled selected>Seleccione</option><option value="vender">Sí, estimo venderla</option><option value="traspasar">Sí, estimo traspasarla a mi familia o socios</option><option value="mantener">No lo estimo por ahora</option></select></div>
+        <div class="emp-anios" hidden><span class="mini">¿En cuántos años, aproximadamente?</span><div class="amount"><input type="number" min="0" max="60" data-k="anios" name="Empresa ${i+1}: años hasta la venta o traspaso" placeholder="10"><div class="unit">años</div></div></div>
+      </div>
+      <div class="fila-grid emp-venta" hidden style="margin-top:12px;">
+        <div><span class="mini">¿Invertiría el dinero de la venta en este portafolio?</span><select data-k="invierte" data-inv="1" name="Empresa ${i+1}: invierte la venta en el portafolio"><option value="" disabled selected>Seleccione</option><option value="si">Sí, todo</option><option value="parte">Sí, una parte</option><option value="analisis">Sujeto a análisis</option><option value="no">No</option></select></div>
+        <div class="fila-pct" hidden><span class="mini">Porcentaje de la venta que invertiría</span><div class="amount"><input type="number" min="1" max="99" data-k="pct" name="Empresa ${i+1}: porcentaje de la venta que invierte" placeholder="50"><div class="unit">%</div></div></div>
+      </div>
+      <p class="hint emp-venta" hidden style="margin-top:8px;">Se toma su participación en el valor estimado. La parte que invierta aquí entra al portafolio como desinversión; si está sujeta a análisis, no se incluye en la proyección.</p>
+    </div>`},
   {control:'apoyos-n', contenedor:'apoyos-filas', max:999, fila: i => `
     <div class="fila-rep"><span class="fila-tit">Dependiente ${i+1}</span><div class="fila-grid">
       <div><span class="mini">¿Quién es?</span><select required data-k="beneficiario" name="Dependiente ${i+1}: parentesco">
@@ -2057,7 +2044,7 @@ const REPETIBLES = [
     </div></div>`},
   {control:'metas-n', contenedor:'metas-filas', max:999, fila: i => `
     <div class="fila-rep"><span class="fila-tit">Meta ${i+1}</span><div class="fila-grid">
-      <div><span class="mini">Tipo de meta</span><select required data-k="tipo" name="Meta ${i+1}: tipo">
+      <div><span class="mini">Tipo de meta</span><select required data-k="tipo" data-tipo-meta="1" name="Meta ${i+1}: tipo">
         <option value="" disabled selected>Seleccione</option>
         <option value="educacion">Educación</option><option value="vivienda">Vivienda o propiedad</option>
         <option value="vehiculo">Vehículo</option><option value="viaje">Viaje</option>
@@ -2068,11 +2055,19 @@ const REPETIBLES = [
         <option value="" disabled selected>Seleccione</option>
         <option value="esencial">Esencial</option><option value="deseable">Deseable</option></select></div>
     </div>
-      <div style="margin-top:12px;"><span class="mini">¿Cómo la financiará?</span><select required data-k="financia" name="Meta ${i+1}: financiamiento">
-        <option value="" disabled selected>Seleccione</option>
-        <option value="portafolio">Con una salida del portafolio</option>
-        <option value="credito-portafolio">Con un crédito respaldado por el portafolio</option>
-        <option value="credito-bancario">Con un crédito bancario</option></select></div>
+      <div class="meta-otra" hidden style="margin-top:12px;"><span class="mini">¿Cuál es la meta?</span><input type="text" data-k="tipoOtro" name="Meta ${i+1}: otra meta (detalle)" placeholder="Remodelación de la casa, boda de un hijo…"></div>
+      <div class="fila-grid" style="margin-top:12px;">
+        <div><span class="mini">¿Cómo la financiará?</span><select required data-k="financia" data-fin-meta="1" name="Meta ${i+1}: financiamiento">
+          <option value="" disabled selected>Seleccione</option>
+          <option value="portafolio">Con una salida del portafolio</option>
+          <option value="credito-portafolio">Con un crédito respaldado por el portafolio</option>
+          <option value="credito-bancario">Con un crédito bancario</option></select></div>
+      </div>
+      <div class="fila-grid meta-credito" hidden style="margin-top:12px;">
+        <div><span class="mini">Tasa de interés anual del crédito</span><div class="amount"><input type="number" min="0" max="80" step="0.01" data-k="tasa" name="Meta ${i+1}: tasa del crédito (%)" placeholder="9"><div class="unit">%</div></div></div>
+        <div><span class="mini">Plazo del crédito</span><div class="amount"><input type="number" min="1" max="40" step="1" data-k="plazo" name="Meta ${i+1}: plazo del crédito (años)" placeholder="10"><div class="unit">años</div></div></div>
+      </div>
+      <p class="hint meta-credito" hidden style="margin-top:8px;">La cuota anual del crédito (con esta tasa y este plazo, desde el año de la meta) entra a la proyección como un gasto ordinario.</p>
     </div>`}
 ];
 // Inmuebles: la venta y su destino se piden solo si el cliente estima venderlo
@@ -2085,6 +2080,37 @@ function sincronizarVentas(raiz){
   });
 }
 document.addEventListener('change', function(e){ if(e.target && e.target.dataset && e.target.dataset.venta) sincronizarVentas(e.target.closest('.fila-rep')); });
+// Empresas: los años se piden si la vende o la traspasa; el destino de la venta, solo si la vende
+function sincronizarEmpresas(raiz){
+  (raiz || document).querySelectorAll('[data-plan-emp]').forEach(function(sel){
+    const fila = sel.closest('.fila-rep'); if(!fila) return;
+    const conAnios = sel.value === 'vender' || sel.value === 'traspasar', vende = sel.value === 'vender';
+    fila.querySelectorAll('.emp-anios').forEach(d => d.hidden = !conAnios);
+    fila.querySelectorAll('[data-k="anios"]').forEach(c => { c.toggleAttribute('required', conAnios); if(!conAnios) c.value = ''; });
+    fila.querySelectorAll('.emp-venta').forEach(d => d.hidden = !vende);
+    fila.querySelectorAll('[data-k="invierte"]').forEach(c => { c.toggleAttribute('required', vende); if(!vende) c.value = ''; });
+    const parte = vende && (fila.querySelector('[data-k="invierte"]') || {}).value === 'parte';
+    fila.querySelectorAll('.fila-pct').forEach(d => d.hidden = !parte);
+    fila.querySelectorAll('[data-k="pct"]').forEach(c => { c.toggleAttribute('required', parte); if(!parte) c.value = ''; });
+  });
+}
+document.addEventListener('change', function(e){ if(e.target && e.target.dataset && e.target.dataset.planEmp) sincronizarEmpresas(e.target.closest('.fila-rep')); });
+// Metas: «Otra» pide el nombre de la meta; el crédito pide la tasa y el plazo
+function sincronizarMetas(raiz){
+  (raiz || document).querySelectorAll('[data-tipo-meta]').forEach(function(sel){
+    const fila = sel.closest('.fila-rep'); if(!fila) return;
+    const otra = sel.value === 'otra';
+    fila.querySelectorAll('.meta-otra').forEach(d => d.hidden = !otra);
+    fila.querySelectorAll('[data-k="tipoOtro"]').forEach(c => { c.toggleAttribute('required', otra); if(!otra) c.value = ''; });
+  });
+  (raiz || document).querySelectorAll('[data-fin-meta]').forEach(function(sel){
+    const fila = sel.closest('.fila-rep'); if(!fila) return;
+    const credito = sel.value === 'credito-portafolio' || sel.value === 'credito-bancario';
+    fila.querySelectorAll('.meta-credito').forEach(d => d.hidden = !credito);
+    fila.querySelectorAll('[data-k="tasa"], [data-k="plazo"]').forEach(c => { c.toggleAttribute('required', credito); if(!credito) c.value = ''; });
+  });
+}
+document.addEventListener('change', function(e){ if(e.target && e.target.dataset && (e.target.dataset.tipoMeta || e.target.dataset.finMeta)) sincronizarMetas(e.target.closest('.fila-rep')); });
 // Nombres de inmuebles en mayúsculas, para que el Excel quede uniforme
 document.addEventListener('input', function(e){
   const x = e.target; if(!x || !x.dataset || !x.dataset.mayus) return;
@@ -2117,7 +2143,7 @@ function sincronizarFilas(){
     while(cont.children.length < n) cont.insertAdjacentHTML('beforeend', r.fila(cont.children.length));
     if(cont.classList.contains('sub-q')) cont.hidden = n === 0;
     montosConDecimales(cont);
-    sincronizarVentas(cont);
+    sincronizarVentas(cont); sincronizarEmpresas(cont); sincronizarMetas(cont);
   });
 }
 const leerFilas = id => [...document.getElementById(id).children].map(function(f){
@@ -2205,7 +2231,15 @@ document.addEventListener('change', function(e){
   if(t === ninguna && t.checked) todas.forEach(x => { if(x !== ninguna) x.checked = false; });
   else if(t.checked) ninguna.checked = false;
   document.getElementById('estructuras-sel').value = todas.filter(x => x.checked).map(x => x.value).join(' · ');
+  sincronizarEstructuras();
 });
+// Por cada estructura marcada: ¿el portafolio está a su nombre o la tiene fuera de él?
+function sincronizarEstructuras(){
+  document.querySelectorAll('.estr-ubic').forEach(function(d){
+    const ck = document.getElementById(d.dataset.para), sel = d.querySelector('select');
+    const on = !!(ck && ck.checked); d.hidden = !on; sel.toggleAttribute('required', on); if(!on) sel.value = '';
+  });
+}
 function sincronizarSeguros(e){
   const ninguno = document.getElementById('seguro-ninguno');
   if(!ninguno) return;
@@ -2551,12 +2585,15 @@ document.getElementById('form').addEventListener('submit', async function(e){
         // el monto neto solo se calcula aquí si valor y deuda están en la misma moneda; si no, lo calcula el dashboard con el tipo de cambio
         return {concepto: 'Venta de ' + (f.nombre || 'inmueble'), origen: 'inmueble', anio: f.anio, monto: misma ? Math.max(0, (+f.valor || 0) - (+f.deuda || 0)) * pct : null, moneda: mv,
           valor: +f.valor || 0, valorMoneda: mv, deuda: +f.deuda || 0, deudaMoneda: md, pctInvierte: pct * 100}; }),
-      val('empresa') === 'si' && val('empresa-plan') === 'vender' && (val('empresa-invierte') === 'si' || val('empresa-invierte') === 'parte')
-        ? [{concepto: 'Venta de la empresa', origen: 'empresa', anio: ANIO_ACTUAL + (+val('empresa-anios') || 0),
-            monto: (+val('empresa-valor') || 0) * (+val('empresa-part') || 100)/100 * (val('empresa-invierte') === 'parte' ? (+val('empresa-pct') || 0)/100 : 1), moneda: val('empresa-valor-moneda')}] : [],
+      leerFilas('empresas-filas').filter(f => f.plan === 'vender' && (f.invierte === 'si' || f.invierte === 'parte')).map(f => ({
+        concepto: 'Venta de ' + ((f.nombre || '').toUpperCase() || 'la empresa'), origen: 'empresa', anio: ANIO_ACTUAL + (+f.anios || 0),
+        monto: (+f.valor || 0) * (f.part != null ? +f.part : 100)/100 * (f.invierte === 'parte' ? (+f.pct || 0)/100 : 1), moneda: f.moneda || 'USD'})),
       leerFilas('ventas-filas').map(f => ({concepto: f.activo || 'Venta de activos', origen: 'otro', anio: f.anio, monto: f.monto, moneda: f.moneda || 'USD'}))),
     capitalPrivado: val('pe-tiene') === 'si' ? {valor: +val('pe-valor') || 0, moneda: val('pe-moneda'), participacionPct: val('pe-part') === '' ? null : +val('pe-part'), detalle: val('pe-detalle-txt').trim()} : (val('pe-tiene') === 'no' ? {valor: 0, moneda: 'USD', detalle: ''} : null),
-    estructuraJuridica: {tipos: [...document.querySelectorAll('.estr')].filter(x => x.checked).map(x => x.value), detalle: val('estructuras-detalle').trim()},
+    estructuraJuridica: {tipos: [...document.querySelectorAll('.estr')].filter(x => x.checked).map(x => x.value), detalle: val('estructuras-detalle').trim(),
+      // dónde está este portafolio: estructuras que lo contienen y las que el cliente tiene fuera de él
+      conPortafolio: [...document.querySelectorAll('.estr')].filter(x => x.checked && (document.getElementById(x.id + '-ubic') || {}).value === 'dentro').map(x => x.value),
+      fueraPortafolio: [...document.querySelectorAll('.estr')].filter(x => x.checked && (document.getElementById(x.id + '-ubic') || {}).value === 'fuera').map(x => x.value)},
     apoyosDependientes: val('apoyos-tiene') === 'si' ? leerFilas('apoyos-filas').map(r => ({beneficiario: r.beneficiario, motivo: r.motivo, montoAnualUsdHoy: r.monto, moneda: r.moneda || 'USD', anioInicio: r.anio, anios: r.anios})) : [],
     // Destino del patrimonio. El monto se expresa en dólares de hoy, es decir en
     // poder adquisitivo actual, para compararlo contra el portafolio en términos reales.
@@ -2627,16 +2664,12 @@ document.getElementById('form').addEventListener('submit', async function(e){
           estimaVender: f.vende === 'si', anioVenta: f.vende === 'si' ? f.anio : null,
           inviertePortafolio: f.vende === 'si' ? f.invierte : null, pctInvierte: f.vende === 'si' ? (f.invierte === 'si' ? 100 : f.invierte === 'parte' ? +f.pct : 0) : null}))
       },
-      empresa: {
-        propietario: val('empresa') === 'si',
-        plan: val('empresa') === 'si' ? val('empresa-plan') : null,
-        valor: val('empresa') === 'si' && val('empresa-valor') !== '' ? +val('empresa-valor') : null,
-        valorMoneda: val('empresa') === 'si' ? val('empresa-valor-moneda') : null,
-        participacionPct: val('empresa') === 'si' && val('empresa-part') !== '' ? +val('empresa-part') : null,
-        inviertePortafolio: val('empresa-plan') === 'vender' ? val('empresa-invierte') : null,
-        pctInvierte: val('empresa-plan') === 'vender' ? (val('empresa-invierte') === 'si' ? 100 : val('empresa-invierte') === 'parte' ? +val('empresa-pct') : 0) : null,
-        aniosHastaEvento: (val('empresa-plan') === 'vender' || val('empresa-plan') === 'traspasar') ? +val('empresa-anios') : null
-      },
+      // una fila por empresa (pregunta 15)
+      empresas: leerFilas('empresas-filas').map((f, k) => ({numero: k + 1, nombre: (f.nombre || '').toUpperCase() || 'EMPRESA ' + (k + 1), propietario: true, plan: f.plan,
+        valor: f.valor, valorMoneda: f.moneda || 'USD', participacionPct: f.part,
+        inviertePortafolio: f.plan === 'vender' ? f.invierte : null,
+        pctInvierte: f.plan === 'vender' ? (f.invierte === 'si' ? 100 : f.invierte === 'parte' ? +f.pct : 0) : null,
+        aniosHastaEvento: f.plan === 'vender' || f.plan === 'traspasar' ? f.anios : null})),
       deudas: {
         tiene: val('deudas-tiene') === 'si',
         moneda: null,
@@ -2654,7 +2687,8 @@ document.getElementById('form').addEventListener('submit', async function(e){
       vidaSumaAsegurada: document.getElementById('seguro-vida').checked
         ? {monto: +val('vida-suma'), moneda: val('vida-moneda')} : null
     },
-    metas: leerFilas('metas-filas').map(m => ({tipo: m.tipo, montoUsdHoy: m.monto, moneda: m.moneda || 'USD', anio: m.anio, prioridad: m.prioridad, financiamiento: m.financia || 'portafolio'})),
+    metas: leerFilas('metas-filas').map(m => ({tipo: m.tipo, detalle: m.tipo === 'otra' ? (m.tipoOtro || '').trim() : '', montoUsdHoy: m.monto, moneda: m.moneda || 'USD', anio: m.anio, prioridad: m.prioridad,
+      financiamiento: m.financia || 'portafolio', tasaCredito: m.financia && m.financia !== 'portafolio' ? m.tasa : null, plazoCreditoAnios: m.financia && m.financia !== 'portafolio' ? m.plazo : null})),
     creadoEn: Date.now()
   }; }
   function base(){
@@ -2778,6 +2812,7 @@ function restaurarBorrador(b){
   // cantón y distrito aparecen solo después de fijar el dato del que dependen.
   for(let i = 0; i < 3; i++){
     aplicarDatos(b.datos);
+    if(typeof sincronizarEstructuras === 'function') sincronizarEstructuras();
     sincronizarFilas(); sincronizarCondicionales();
     if(typeof sincronizarIdentificacion === 'function') sincronizarIdentificacion();
   }
@@ -2838,6 +2873,16 @@ function migrarFormulario(d, r){
   if(d['ventas-n'] === undefined) d['ventas-n'] = '0';
   if(d['deudas-tiene'] === undefined && d['deudas-saldo'] !== undefined) d['deudas-tiene'] = +d['deudas-saldo'] > 0 || +d['deudas-cuota'] > 0 ? 'si' : 'no';
   if(d['c1-tiene'] === undefined && d['c1'] !== undefined) d['c1-tiene'] = 'si';
+  // pregunta 15: antes había una sola empresa
+  if(d['empresas-n'] === undefined && d['empresa'] !== undefined){
+    if(d['empresa'] === 'si'){
+      const e = 'n:Empresa 1: ';
+      d['empresas-n'] = '1'; d[e + 'nombre'] = 'EMPRESA'; d[e + 'porcentaje de participación'] = d['empresa-part']; d[e + 'valor estimado (monto)'] = d['empresa-valor'];
+      d[e + 'valor estimado (moneda)'] = d['empresa-valor-moneda'] || 'USD'; d[e + 'plan'] = d['empresa-plan']; d[e + 'años hasta la venta o traspaso'] = d['empresa-anios'];
+      d[e + 'invierte la venta en el portafolio'] = d['empresa-invierte']; d[e + 'porcentaje de la venta que invierte'] = d['empresa-pct'];
+      Object.keys(d).forEach(k => { if(d[k] === undefined) delete d[k]; });
+    } else d['empresas-n'] = '0';
+  }
   (r.metas || []).forEach((m, k) => { const n = 'n:Meta ' + (k + 1) + ': financiamiento'; if(d[n] === undefined) d[n] = m.financiamiento || 'portafolio'; });
   (r.aportesExtraordinarios || []).forEach((a, k) => { const n = 'n:Ingreso extraordinario ' + (k + 1) + ': ';
     delete d[n + 'concepto']; if(d[n + 'nombre'] === undefined && a.concepto && !/^Ingreso extraordinario \d+$/.test(a.concepto)) d[n + 'nombre'] = a.concepto; });
@@ -2932,4 +2977,4 @@ function datosDesdeRegistro(r){
 
 
 
-<!-- Chotocruz & Co. · Entrega 41 · 22 de octubre de 2026 -->
+<!-- Chotocruz & Co. · Entrega 43 · 27 de octubre de 2026 -->
