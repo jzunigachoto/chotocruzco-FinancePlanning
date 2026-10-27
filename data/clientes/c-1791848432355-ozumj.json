@@ -107,7 +107,7 @@
       "motivo": "educacion",
       "montoAnualUsdHoy": 120000,
       "moneda": "USD",
-      "anioInicio": 2027,
+      "anioInicio": 2026,
       "anios": 4
     },
     {
@@ -691,8 +691,8 @@
         {
           "id": "",
           "campo": "Dependiente 1: año de inicio",
-          "valor": "2027",
-          "codigo": "2027"
+          "valor": "2026",
+          "codigo": "2026"
         },
         {
           "id": "",
@@ -1363,7 +1363,7 @@
     "n:Dependiente 1: motivo del retiro": "educacion",
     "n:Dependiente 1: monto anual (valor de hoy)": "120,000",
     "n:Dependiente 1: moneda": "USD",
-    "n:Dependiente 1: año de inicio": "2027",
+    "n:Dependiente 1: año de inicio": "2026",
     "n:Dependiente 1: años de duración": "4",
     "n:Dependiente 2: parentesco": "hijo",
     "n:Dependiente 2: motivo del retiro": "educacion",
@@ -1474,7 +1474,7 @@
     "distrito": "San Rafael",
     "direccion": "Torre Country"
   },
-  "modificadoEn": 1793130686972,
+  "modificadoEn": 1793131030564,
   "historialEdiciones": [
     1792100359416,
     1792102121912,
@@ -1483,6 +1483,7 @@
     1793059714353,
     1793128681161,
     1793128748845,
-    1793130686972
+    1793130686972,
+    1793131030564
   ]
 }
