@@ -25,7 +25,7 @@
     "estadoCivil": "soltero"
   },
   "edad": 68,
-  "edadRetiro": 67,
+  "edadRetiro": 68,
   "versionPerfil": 2,
   "situacionPortafolio": "aporta",
   "respuestas": {
@@ -443,8 +443,8 @@
         {
           "id": "edad_retiro",
           "campo": "Edad de independencia financiera",
-          "valor": "67",
-          "codigo": "67"
+          "valor": "68",
+          "codigo": "68"
         }
       ]
     },
@@ -1347,7 +1347,7 @@
     "q9": "5",
     "q10": "3.33",
     "edad": "68",
-    "edad_retiro": "67",
+    "edad_retiro": "68",
     "salario-monto": "25,000",
     "salario-moneda": "USD",
     "ingreso-hasta": "100",
@@ -1509,12 +1509,13 @@
     "distrito": "San Rafael",
     "direccion": "Torre Country"
   },
-  "modificadoEn": 1793059714353,
+  "modificadoEn": 1793128681161,
   "historialEdiciones": [
     1792100359416,
     1792102121912,
     1792445083293,
     1792699208492,
-    1793059714353
+    1793059714353,
+    1793128681161
   ]
 }
