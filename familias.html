@@ -215,8 +215,8 @@
   .fila-rep:first-child{margin-top:4px;}
   .opciones-estr{display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;margin:6px 0 4px;}
   @media (max-width:560px){ .opciones-estr{grid-template-columns:1fr;} }
-  .emp-venta[hidden], .emp-anios[hidden], .meta-credito[hidden], .meta-otra[hidden], .estr-ubic[hidden]{display:none !important;}
-  .estr-lista{grid-template-columns:1fr;} .estr-ubic{margin:0 0 8px 28px;max-width:440px;}
+  .emp-venta[hidden], .emp-anios[hidden], .meta-credito[hidden], .meta-otra[hidden], .estr-lista .opcion[hidden]{display:none !important;}
+  .estr-lista{grid-template-columns:1fr;}
   .fila-tabla{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) minmax(0,1.4fr);gap:0 18px;align-items:end;}
   .fila-tabla .fila-tit{margin:0 0 10px;}
   .fila-tabla4{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,.8fr) minmax(0,1.2fr);gap:0 16px;align-items:end;}
@@ -1210,15 +1210,12 @@
           <div class="q q-req">
             <span class="q-num">08</span>
             <div>
-              <span class="qlabel">¿Planea un retiro adicional de este portafolio, distinto de las metas indicadas en la pregunta anterior? ¿Cuándo y de cuánto sería?</span>
-              <select required id="c1-tiene" name="Primer retiro del portafolio"><option value="" disabled selected>Seleccione una opción</option><option value="no">No</option><option value="si">Sí</option></select>
+              <span class="qlabel">¿Planea retiros adicionales de este portafolio, distintos de las metas indicadas en la pregunta anterior?</span>
+              <select required id="c1-tiene" name="Retiros adicionales del portafolio"><option value="" disabled selected>Seleccione una opción</option><option value="no">No</option><option value="si">Sí</option></select>
               <div class="sub-q" id="c1-detalle" hidden>
-              <div class="fila-grid">
-                <div><span class="mini">Años hasta el primer retiro</span>
-                  <div class="amount"><input type="number" min="0" max="80" id="c1" name="Años hasta el primer retiro" placeholder="5"><div class="unit">años</div></div></div>
-                <div><span class="mini">Monto, en valor de hoy</span>
-                  <div class="amount"><input type="number" min="0" id="c1-monto" name="Monto del primer retiro (valor de hoy)" placeholder="50.000"><select id="c1-moneda" name="Primer retiro: moneda"><option>USD</option><option>CRC</option></select></div></div>
-              </div>
+                <span class="mini">¿Cuántos retiros?</span>
+                <div class="amount"><input type="number" min="1" step="1" id="retiros-n" name="Cantidad de retiros adicionales" placeholder="1"><div class="unit">retiros</div></div>
+                <div class="sub-q filas" id="retiros-filas" hidden></div>
               </div>
               <p class="hint">Una salida de dinero de esta cartera que no sea una de sus metas: un aporte a un negocio, un apoyo familiar u otro uso. Si ese retiro ya está en sus metas, no lo repita aquí.</p>
               <p class="q-falta">Falta responder esta pregunta.</p>
@@ -1292,24 +1289,35 @@
           <div class="q">
             <span class="q-num">00</span>
             <div>
-              <span class="qlabel">¿Qué estructuras jurídicas posee y en cuál de ellas se encuentra este portafolio?</span>
-              <p class="hint" style="margin:2px 0 6px;">Marque cada estructura que posee e indique si este portafolio está a nombre de ella o si la tiene fuera de este portafolio. Así se identifica dónde se encuentra el portafolio y qué estructuras mantiene aparte. No interviene en la proyección.</p>
+              <span class="qlabel">¿Posee estructuras jurídicas?</span>
+              <p class="hint" style="margin:2px 0 6px;">No interviene en la proyección.</p>
+              <select id="estr-tiene" name="Posee estructuras jurídicas" required><option value="" disabled selected>Seleccione una opción</option><option value="no">No</option><option value="si">Sí</option></select>
+              <div id="estr-detalle-q" hidden>
+              <span class="mini espacio">Marque todas las estructuras jurídicas que posee</span>
               <div class="opciones-estr estr-lista">
                 <label class="opcion"><input type="checkbox" class="estr" id="estr-sa-cr" value="Sociedad anónima u otra sociedad costarricense"> Sociedad anónima u otra sociedad costarricense</label>
-                <div class="estr-ubic" data-para="estr-sa-cr" hidden><select id="estr-sa-cr-ubic" name="Sociedad anónima u otra sociedad costarricense: ubicación del portafolio"><option value="" disabled selected>¿Este portafolio está en esta estructura?</option><option value="dentro">Sí, este portafolio está a su nombre</option><option value="fuera">No, la tengo fuera de este portafolio</option></select></div>
                 <label class="opcion"><input type="checkbox" class="estr" id="estr-pa" value="Sociedad en Panamá"> Sociedad en Panamá</label>
-                <div class="estr-ubic" data-para="estr-pa" hidden><select id="estr-pa-ubic" name="Sociedad en Panamá: ubicación del portafolio"><option value="" disabled selected>¿Este portafolio está en esta estructura?</option><option value="dentro">Sí, este portafolio está a su nombre</option><option value="fuera">No, la tengo fuera de este portafolio</option></select></div>
                 <label class="opcion"><input type="checkbox" class="estr" id="estr-offshore" value="Sociedad offshore en otra jurisdicción"> Sociedad offshore en otra jurisdicción</label>
-                <div class="estr-ubic" data-para="estr-offshore" hidden><select id="estr-offshore-ubic" name="Sociedad offshore en otra jurisdicción: ubicación del portafolio"><option value="" disabled selected>¿Este portafolio está en esta estructura?</option><option value="dentro">Sí, este portafolio está a su nombre</option><option value="fuera">No, la tengo fuera de este portafolio</option></select></div>
                 <label class="opcion"><input type="checkbox" class="estr" id="estr-fundacion" value="Fundación de interés privado"> Fundación de interés privado</label>
-                <div class="estr-ubic" data-para="estr-fundacion" hidden><select id="estr-fundacion-ubic" name="Fundación de interés privado: ubicación del portafolio"><option value="" disabled selected>¿Este portafolio está en esta estructura?</option><option value="dentro">Sí, este portafolio está a su nombre</option><option value="fuera">No, la tengo fuera de este portafolio</option></select></div>
                 <label class="opcion"><input type="checkbox" class="estr" id="estr-fideicomiso" value="Fideicomiso testamentario"> Fideicomiso testamentario</label>
-                <div class="estr-ubic" data-para="estr-fideicomiso" hidden><select id="estr-fideicomiso-ubic" name="Fideicomiso testamentario: ubicación del portafolio"><option value="" disabled selected>¿Este portafolio está en esta estructura?</option><option value="dentro">Sí, este portafolio está a su nombre</option><option value="fuera">No, la tengo fuera de este portafolio</option></select></div>
-                <label class="opcion"><input type="checkbox" class="estr" id="estr-ninguna" value="Ninguna de las anteriores"> Ninguna de las anteriores</label>
               </div>
               <input type="hidden" id="estructuras-sel" name="Estructuras jurídicas">
               <span class="mini espacio">Detalle (jurisdicción, nombre o propósito), opcional</span>
               <input id="estructuras-detalle" name="Estructuras jurídicas: detalle" placeholder="S. A. para inmuebles en Costa Rica, fundación en Panamá…">
+              <span class="mini espacio">¿Su portafolio está dentro de una estructura jurídica?</span>
+              <select id="estr-port" name="Portafolio dentro de una estructura jurídica"><option value="" disabled selected>Seleccione una opción</option><option value="no">No</option><option value="si">Sí</option></select>
+              <div id="estr-port-q" hidden>
+              <span class="mini espacio">Marque las estructuras que contienen su portafolio</span>
+              <div class="opciones-estr estr-lista">
+                <label class="opcion" data-para="estr-sa-cr" hidden><input type="checkbox" class="estr-p" id="estr-sa-cr-port" value="Sociedad anónima u otra sociedad costarricense"> Sociedad anónima u otra sociedad costarricense</label>
+                <label class="opcion" data-para="estr-pa" hidden><input type="checkbox" class="estr-p" id="estr-pa-port" value="Sociedad en Panamá"> Sociedad en Panamá</label>
+                <label class="opcion" data-para="estr-offshore" hidden><input type="checkbox" class="estr-p" id="estr-offshore-port" value="Sociedad offshore en otra jurisdicción"> Sociedad offshore en otra jurisdicción</label>
+                <label class="opcion" data-para="estr-fundacion" hidden><input type="checkbox" class="estr-p" id="estr-fundacion-port" value="Fundación de interés privado"> Fundación de interés privado</label>
+                <label class="opcion" data-para="estr-fideicomiso" hidden><input type="checkbox" class="estr-p" id="estr-fideicomiso-port" value="Fideicomiso testamentario"> Fideicomiso testamentario</label>
+              </div>
+              <input type="hidden" id="estr-port-sel" name="Estructuras que contienen el portafolio">
+              </div>
+              </div>
               <p class="q-falta">Falta responder esta pregunta.</p>
             </div>
           </div>
@@ -1628,7 +1636,7 @@ document.addEventListener('input', function(e){
 });
 
 // Los montos admiten decimales (centavos); edades, años y cantidades siguen siendo enteros.
-const ENTEROS = new Set(['otros-ing-fin','gastos-extra-n','aportes-extra-n','apoyos-n','ventas-n','deudas-n','inmuebles-n','metas-n','empresas-n','ingreso-pareja-hasta','edad_retiro','edad-pareja','c1','i3-horizonte','empresa-anios','f-rop-anio','f-fcl-anio','f-vol-anio',
+const ENTEROS = new Set(['otros-ing-fin','gastos-extra-n','aportes-extra-n','apoyos-n','ventas-n','deudas-n','inmuebles-n','metas-n','retiros-n','empresas-n','ingreso-pareja-hasta','edad_retiro','edad-pareja','c1','i3-horizonte','empresa-anios','f-rop-anio','f-fcl-anio','f-vol-anio',
   'pension-edad','hipoteca-plazo','hipoteca-tasa','deudas-plazo','ingreso-hasta','moneda-usd','moneda-crc']);
 // Montos con separadores mientras se escribe. La convención sigue la moneda del monto:
 // dólares 250,000.50 · colones 1.000.000,50. El valor numérico se lee con numDe().
@@ -1879,7 +1887,7 @@ const CONDICIONALES = [
   {control:'deudas-tiene',    detalle:'deudas-detalle-q',      campos:['deudas-n','deudas-en-gasto'],  aplica: v => v === 'si'},
   {control:'donaciones-tiene', detalle:'donaciones-detalle',   campos:['donaciones-monto'],            aplica: v => v === 'si'},
   {control:'pe-tiene',        detalle:'pe-detalle',            campos:['pe-valor','pe-part'],          aplica: v => v === 'si'},
-  {control:'c1-tiene',        detalle:'c1-detalle',            campos:['c1','c1-monto'],               aplica: v => v === 'si'},
+  {control:'c1-tiene',        detalle:'c1-detalle',            campos:['retiros-n'],                   aplica: v => v === 'si'},
   {control:'seguro-vida',     detalle:'vida-detalle',          campos:['vida-suma'],                   aplica: v => v === true},
   {control:'herencia',        detalle:'herencia-detalle',      campos:['herencia-monto'],              aplica: v => v === 'herencia'}
 ];
@@ -2041,6 +2049,13 @@ const REPETIBLES = [
     <div class="fila-rep"><span class="fila-tit">Retiro extraordinario ${i+1}</span><div class="fila-grid">
       <div><span class="mini">Monto, en dólares de hoy</span><input required type="number" min="1" data-k="monto" name="Retiro extraordinario ${i+1}: monto (US$ de hoy)" placeholder="100.000"></div>
       <div><span class="mini">Año en que ocurriría</span><input required type="number" min="${ANIO_ACTUAL}" max="${ANIO_ACTUAL+60}" data-k="anio" name="Retiro extraordinario ${i+1}: año" placeholder="${ANIO_ACTUAL+3}"></div>
+    </div></div>`},
+  {control:'retiros-n', contenedor:'retiros-filas', max:999, fila: i => `
+    <div class="fila-rep"><span class="fila-tit">Retiro ${i+1}</span>
+      <div><span class="mini">Nombre o motivo del retiro</span><input required type="text" data-k="nombre" name="Retiro ${i+1}: motivo" placeholder="Matrimonio de un hijo, aporte a un negocio…"></div>
+      <div class="fila-grid" style="margin-top:12px;">
+      <div><span class="mini">Año del retiro</span><input required type="number" min="${ANIO_ACTUAL}" max="2100" data-k="anio" name="Retiro ${i+1}: año" placeholder="${ANIO_ACTUAL+2}"></div>
+      <div><span class="mini">Monto, en valor de hoy</span><div class="amount"><input required type="number" min="1" data-k="monto" name="Retiro ${i+1}: monto (valor de hoy)" placeholder="25.000"><select data-k="moneda" name="Retiro ${i+1}: moneda"><option>USD</option><option>CRC</option></select></div></div>
     </div></div>`},
   {control:'metas-n', contenedor:'metas-filas', max:999, fila: i => `
     <div class="fila-rep"><span class="fila-tit">Meta ${i+1}</span><div class="fila-grid">
@@ -2224,21 +2239,30 @@ document.addEventListener('change', function(e){
   fila.querySelectorAll('.fila-pct').forEach(d => d.hidden = !parte);
   fila.querySelectorAll('[data-k="pct"]').forEach(c => { c.toggleAttribute('required', parte); if(!parte) c.value = ''; });
 });
-// Estructuras jurídicas: «Ninguna» excluye a las demás; el campo oculto lleva la selección
+// Pregunta 23. ¿Posee estructuras jurídicas? Si responde sí, marca cuáles y responde si su
+// portafolio está dentro de alguna; si lo está, marca cuáles, con las mismas cinco opciones.
 document.addEventListener('change', function(e){
-  const t = e.target; if(!t || !t.classList || !t.classList.contains('estr')) return;
-  const todas = [...document.querySelectorAll('.estr')], ninguna = document.getElementById('estr-ninguna');
-  if(t === ninguna && t.checked) todas.forEach(x => { if(x !== ninguna) x.checked = false; });
-  else if(t.checked) ninguna.checked = false;
-  document.getElementById('estructuras-sel').value = todas.filter(x => x.checked).map(x => x.value).join(' · ');
-  sincronizarEstructuras();
+  const t = e.target; if(!t) return;
+  if(t.id === 'estr-tiene' || t.id === 'estr-port' || (t.classList && (t.classList.contains('estr') || t.classList.contains('estr-p')))) sincronizarEstructuras();
 });
-// Por cada estructura marcada: ¿el portafolio está a su nombre o la tiene fuera de él?
 function sincronizarEstructuras(){
-  document.querySelectorAll('.estr-ubic').forEach(function(d){
-    const ck = document.getElementById(d.dataset.para), sel = d.querySelector('select');
-    const on = !!(ck && ck.checked); d.hidden = !on; sel.toggleAttribute('required', on); if(!on) sel.value = '';
+  const g = id => document.getElementById(id);
+  if(!g('estr-tiene')) return;
+  const tiene = g('estr-tiene').value === 'si';
+  g('estr-detalle-q').hidden = !tiene;
+  const marcadas = [...document.querySelectorAll('.estr')];
+  if(!tiene){ marcadas.forEach(x => x.checked = false); g('estructuras-detalle').value = ''; g('estr-port').value = ''; }
+  g('estructuras-sel').value = marcadas.filter(x => x.checked).map(x => x.value).join(' · ');
+  g('estructuras-sel').toggleAttribute('required', tiene);
+  g('estr-port').toggleAttribute('required', tiene);
+  const dentro = tiene && g('estr-port').value === 'si';
+  g('estr-port-q').hidden = !dentro;
+  // las mismas cinco estructuras de la primera lista: así se ve cuál contiene el portafolio y cuáles quedan fuera
+  document.querySelectorAll('#estr-port-q [data-para]').forEach(function(l){
+    l.hidden = !dentro; if(!dentro) l.querySelector('input').checked = false;
   });
+  g('estr-port-sel').value = [...document.querySelectorAll('.estr-p')].filter(x => x.checked).map(x => x.value).join(' · ');
+  g('estr-port-sel').toggleAttribute('required', dentro);
 }
 function sincronizarSeguros(e){
   const ninguno = document.getElementById('seguro-ninguno');
@@ -2303,7 +2327,7 @@ document.addEventListener('input', function(e){
 
 // Si el navegador restaura el formulario (volver atrás, recargar), los campos
 // condicionales deben reflejar lo que ya estaba marcado.
-function restaurarEstado(){ actualizarGastoCrc(); elegirTipo(tipoCliente); sincronizarIdentificacion(); validarIdentificacion(); validarEdades(); sincronizarSeguros(); sincronizarCondicionales(); sincronizarFilas(); marcarRespondidas(); }
+function restaurarEstado(){ actualizarGastoCrc(); elegirTipo(tipoCliente); sincronizarIdentificacion(); validarIdentificacion(); validarEdades(); sincronizarSeguros(); sincronizarCondicionales(); sincronizarFilas(); sincronizarEstructuras(); marcarRespondidas(); }
 window.addEventListener('pageshow', restaurarEstado);
 
 // El botón de envío pasa por la misma validación que los botones de continuar,
@@ -2552,9 +2576,9 @@ document.getElementById('form').addEventListener('submit', async function(e){
       // marca el horizonte efectivo de la inversión.
       // Fondos de pensión y capitalización laboral que el cliente piensa traer al portafolio.
       // Entran como ingresos futuros; el momento lo define el analista en el dashboard.
-      aniosPrimerRetiro: val('c1-tiene') !== 'si' || val('c1') === '' ? null : +val('c1'),
-      montoPrimerRetiroUsdHoy: val('c1-tiene') !== 'si' || val('c1-monto') === '' ? null : +val('c1-monto'),
-      montoPrimerRetiroMoneda: val('c1-tiene') === 'si' ? val('c1-moneda') : null
+      // primer retiro (el más cercano de la pregunta de retiros adicionales), para los registros que lo usan
+      ...(function(){ const rs = val('c1-tiene') === 'si' ? leerFilas('retiros-filas').filter(x => +x.anio > 0 && +x.monto > 0).sort((a, b) => a.anio - b.anio) : [];
+        return {aniosPrimerRetiro: rs.length ? Math.max(0, rs[0].anio - ANIO_ACTUAL) : null, montoPrimerRetiroUsdHoy: rs.length ? +rs[0].monto : null, montoPrimerRetiroMoneda: rs.length ? rs[0].moneda || 'USD' : null}; })()
       // El conocimiento se mide con la pregunta 10 del perfil de riesgo.
     },
     // Fondos de pensión complementaria: saldo, aporte y año de traslado al portafolio.
@@ -2590,10 +2614,13 @@ document.getElementById('form').addEventListener('submit', async function(e){
         monto: (+f.valor || 0) * (f.part != null ? +f.part : 100)/100 * (f.invierte === 'parte' ? (+f.pct || 0)/100 : 1), moneda: f.moneda || 'USD'})),
       leerFilas('ventas-filas').map(f => ({concepto: f.activo || 'Venta de activos', origen: 'otro', anio: f.anio, monto: f.monto, moneda: f.moneda || 'USD'}))),
     capitalPrivado: val('pe-tiene') === 'si' ? {valor: +val('pe-valor') || 0, moneda: val('pe-moneda'), participacionPct: val('pe-part') === '' ? null : +val('pe-part'), detalle: val('pe-detalle-txt').trim()} : (val('pe-tiene') === 'no' ? {valor: 0, moneda: 'USD', detalle: ''} : null),
-    estructuraJuridica: {tipos: [...document.querySelectorAll('.estr')].filter(x => x.checked).map(x => x.value), detalle: val('estructuras-detalle').trim(),
+    // Retiros adicionales del portafolio (pregunta de retiros): motivo, año y monto de cada uno
+    retirosPortafolio: val('c1-tiene') === 'si' ? leerFilas('retiros-filas').map(x => ({nombre: (x.nombre || '').trim(), anio: x.anio, montoUsdHoy: x.monto, moneda: x.moneda || 'USD'})) : [],
+    estructuraJuridica: {posee: val('estr-tiene'), tipos: [...document.querySelectorAll('.estr')].filter(x => x.checked).map(x => x.value), detalle: val('estructuras-detalle').trim(),
       // dónde está este portafolio: estructuras que lo contienen y las que el cliente tiene fuera de él
-      conPortafolio: [...document.querySelectorAll('.estr')].filter(x => x.checked && (document.getElementById(x.id + '-ubic') || {}).value === 'dentro').map(x => x.value),
-      fueraPortafolio: [...document.querySelectorAll('.estr')].filter(x => x.checked && (document.getElementById(x.id + '-ubic') || {}).value === 'fuera').map(x => x.value)},
+      portafolioDentro: val('estr-port'),
+      conPortafolio: [...document.querySelectorAll('.estr-p')].filter(x => x.checked).map(x => x.value),
+      fueraPortafolio: [...document.querySelectorAll('.estr')].filter(x => x.checked && !document.getElementById(x.id + '-port').checked).map(x => x.value)},
     apoyosDependientes: val('apoyos-tiene') === 'si' ? leerFilas('apoyos-filas').map(r => ({beneficiario: r.beneficiario, motivo: r.motivo, montoAnualUsdHoy: r.monto, moneda: r.moneda || 'USD', anioInicio: r.anio, anios: r.anios})) : [],
     // Destino del patrimonio. El monto se expresa en dólares de hoy, es decir en
     // poder adquisitivo actual, para compararlo contra el portafolio en términos reales.
@@ -2873,6 +2900,18 @@ function migrarFormulario(d, r){
   if(d['ventas-n'] === undefined) d['ventas-n'] = '0';
   if(d['deudas-tiene'] === undefined && d['deudas-saldo'] !== undefined) d['deudas-tiene'] = +d['deudas-saldo'] > 0 || +d['deudas-cuota'] > 0 ? 'si' : 'no';
   if(d['c1-tiene'] === undefined && d['c1'] !== undefined) d['c1-tiene'] = 'si';
+  // pregunta de retiros: antes era un solo retiro, con los años hasta el retiro; ahora cada retiro lleva motivo, año y monto
+  if(d['retiros-n'] === undefined){
+    const lista = (r.retirosPortafolio || []);
+    if(lista.length){ d['c1-tiene'] = 'si'; d['retiros-n'] = String(lista.length);
+      lista.forEach((x, k) => { const n = 'n:Retiro ' + (k + 1) + ': '; d[n + 'motivo'] = x.nombre || ''; d[n + 'año'] = String(x.anio || ''); d[n + 'monto (valor de hoy)'] = String(x.montoUsdHoy || ''); d[n + 'moneda'] = x.moneda || 'USD'; }); }
+    else if(d['c1-tiene'] === 'si' && d['c1'] !== undefined && d['c1'] !== ''){
+      const base = r.creadoEn ? new Date(r.creadoEn).getFullYear() : new Date().getFullYear();
+      d['retiros-n'] = '1'; d['n:Retiro 1: motivo'] = 'Retiro del portafolio'; d['n:Retiro 1: año'] = String(base + (+d['c1'] || 0));
+      d['n:Retiro 1: monto (valor de hoy)'] = String(d['c1-monto'] || '').replace(/,/g, ''); d['n:Retiro 1: moneda'] = d['c1-moneda'] || 'USD';
+    }
+    delete d['c1']; delete d['c1-monto']; delete d['c1-moneda'];
+  }
   // pregunta 15: antes había una sola empresa
   if(d['empresas-n'] === undefined && d['empresa'] !== undefined){
     if(d['empresa'] === 'si'){
@@ -2882,6 +2921,20 @@ function migrarFormulario(d, r){
       d[e + 'invierte la venta en el portafolio'] = d['empresa-invierte']; d[e + 'porcentaje de la venta que invierte'] = d['empresa-pct'];
       Object.keys(d).forEach(k => { if(d[k] === undefined) delete d[k]; });
     } else d['empresas-n'] = '0';
+  }
+  // pregunta 23: antes se marcaba cada estructura (o «Ninguna») y, por cada una, si contenía el portafolio
+  if(d['estr-tiene'] === undefined){
+    const ids = ['estr-sa-cr','estr-pa','estr-offshore','estr-fundacion','estr-fideicomiso'];
+    const ej = r.estructuraJuridica || {}, tipos = ej.tipos || [], con = ej.conPortafolio || [];
+    const marcada = ids.filter(k => d[k] === true);
+    if(marcada.length){
+      d['estr-tiene'] = 'si';
+      const dentro = marcada.filter(k => d[k + '-ubic'] === 'dentro' || (con.length && con.includes((document.getElementById(k) || {}).value)));
+      d['estr-port'] = dentro.length ? 'si' : (marcada.every(k => d[k + '-ubic'] === 'fuera') ? 'no' : undefined);
+      dentro.forEach(k => d[k + '-port'] = true);
+    } else if(d['estr-ninguna'] === true || (tipos.length === 1 && /^Ninguna/.test(tipos[0]))) d['estr-tiene'] = 'no';
+    ids.forEach(k => delete d[k + '-ubic']); delete d['estr-ninguna'];
+    Object.keys(d).forEach(k => { if(d[k] === undefined) delete d[k]; });
   }
   (r.metas || []).forEach((m, k) => { const n = 'n:Meta ' + (k + 1) + ': financiamiento'; if(d[n] === undefined) d[n] = m.financiamiento || 'portafolio'; });
   (r.aportesExtraordinarios || []).forEach((a, k) => { const n = 'n:Ingreso extraordinario ' + (k + 1) + ': ';
@@ -2977,4 +3030,4 @@ function datosDesdeRegistro(r){
 
 
 
-<!-- Chotocruz & Co. · Entrega 43 · 27 de octubre de 2026 -->
+<!-- Chotocruz & Co. · Entrega 47 · 28 de octubre de 2026 -->
