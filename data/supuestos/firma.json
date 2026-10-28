@@ -1,12 +1,12 @@
 {
-  "guardadoEn": 1792559512680,
+  "guardadoEn": 1793222494929,
   "supuestos": {
     "tipoCambio": 450,
+    "inflacionLocal": 3.9,
     "inflacion": 3.9,
-    "inflacionIngresos": 1,
     "inflacionPension": 1,
-    "inflacionSalud": 8,
-    "ajusteAlquileres": 0,
+    "inflacionRop": 3.9,
+    "inflacionVoluntaria": 3.9,
     "anioInicio": 2026,
     "edadFinal": 95,
     "anioIngresoFcl": 5,
@@ -23,28 +23,134 @@
       "conservador": {
         "rv": 20,
         "rf": 50,
-        "ef": 30
+        "ef": 30,
+        "alt": 0
       },
       "moderadoConservador": {
-        "rv": 40,
-        "rf": 42.5,
-        "ef": 17.5
+        "rv": 35,
+        "rf": 47.5,
+        "ef": 17.5,
+        "alt": 0
       },
       "moderado": {
-        "rv": 60,
-        "rf": 35,
-        "ef": 5
+        "rv": 40,
+        "rf": 55,
+        "ef": 5,
+        "alt": 0
       },
       "moderadoAgresivo": {
-        "rv": 77.5,
-        "rf": 17.5,
-        "ef": 5
+        "rv": 70,
+        "rf": 25,
+        "ef": 5,
+        "alt": 0
       },
       "agresivo": {
-        "rv": 95,
-        "rf": 0,
-        "ef": 5
+        "rv": 90,
+        "rf": 5,
+        "ef": 5,
+        "alt": 0
       }
+    },
+    "carteras": {
+      "rendClase": {
+        "rv": 8.31,
+        "rf": 5.46,
+        "ef": 2.03,
+        "alt": 6.5
+      },
+      "topes": {
+        "conservador": {
+          "rv": [
+            0,
+            20
+          ],
+          "rf": [
+            50,
+            90
+          ],
+          "ef": [
+            5,
+            40
+          ],
+          "alt": [
+            0,
+            5
+          ]
+        },
+        "moderadoConservador": {
+          "rv": [
+            20,
+            35
+          ],
+          "rf": [
+            40,
+            75
+          ],
+          "ef": [
+            5,
+            30
+          ],
+          "alt": [
+            0,
+            10
+          ]
+        },
+        "moderado": {
+          "rv": [
+            35,
+            40
+          ],
+          "rf": [
+            30,
+            60
+          ],
+          "ef": [
+            5,
+            20
+          ],
+          "alt": [
+            0,
+            10
+          ]
+        },
+        "moderadoAgresivo": {
+          "rv": [
+            50,
+            70
+          ],
+          "rf": [
+            15,
+            45
+          ],
+          "ef": [
+            0,
+            15
+          ],
+          "alt": [
+            0,
+            15
+          ]
+        },
+        "agresivo": {
+          "rv": [
+            70,
+            90
+          ],
+          "rf": [
+            0,
+            30
+          ],
+          "ef": [
+            0,
+            10
+          ],
+          "alt": [
+            0,
+            20
+          ]
+        }
+      },
+      "especifico": {}
     }
   }
 }
