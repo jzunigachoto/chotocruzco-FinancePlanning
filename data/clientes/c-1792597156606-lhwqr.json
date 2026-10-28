@@ -95,11 +95,25 @@
     "participacionPct": 2,
     "detalle": "Daki"
   },
+  "retirosPortafolio": [
+    {
+      "nombre": "Matrimonio del Hijo",
+      "anio": 2027,
+      "montoUsdHoy": 25000,
+      "moneda": "USD"
+    }
+  ],
   "estructuraJuridica": {
+    "posee": "si",
     "tipos": [
       "Sociedad anónima u otra sociedad costarricense"
     ],
-    "detalle": "Tiene dos SA que las utiliza para mantiener los inmuebles"
+    "detalle": "Tiene dos SA que las utiliza para mantiener los inmuebles",
+    "portafolioDentro": "no",
+    "conPortafolio": [],
+    "fueraPortafolio": [
+      "Sociedad anónima u otra sociedad costarricense"
+    ]
   },
   "apoyosDependientes": [],
   "legado": {
@@ -206,16 +220,7 @@
         }
       ]
     },
-    "empresa": {
-      "propietario": false,
-      "plan": null,
-      "valor": null,
-      "valorMoneda": null,
-      "participacionPct": null,
-      "inviertePortafolio": null,
-      "pctInvierte": null,
-      "aniosHastaEvento": null
-    },
+    "empresas": [],
     "deudas": {
       "tiene": false,
       "moneda": null,
@@ -304,7 +309,7 @@
         {
           "id": "q6",
           "campo": "Q6 - Retorno esperado y caída máxima",
-          "valor": "Rendimiento esperado anual de 7% a 7,5% · pérdida anual esperada de −9%",
+          "valor": "Rendimiento esperado anual de 7% a 7,5% · posible pérdida en un año desfavorable de hasta −9%",
           "codigo": "5"
         }
       ]
@@ -1012,14 +1017,14 @@
       "pagina": 2,
       "seccion": "Planificación financiera",
       "n": "15",
-      "clave": "empresa",
-      "pregunta": "¿Es propietario de una empresa?",
+      "clave": "empresas-n",
+      "pregunta": "¿Es propietario de empresas? Indique cuántas",
       "detalle": [
         {
-          "id": "empresa",
-          "campo": "Propietario de empresa",
-          "valor": "No",
-          "codigo": "no"
+          "id": "empresas-n",
+          "campo": "Cantidad de empresas",
+          "valor": "0",
+          "codigo": "0"
         }
       ]
     },
@@ -1081,39 +1086,6 @@
       "pagina": 2,
       "seccion": "Planificación financiera",
       "n": "18",
-      "clave": "c1-tiene",
-      "pregunta": "¿Planea un retiro de este portafolio distinto de sus metas, y cuándo y de cuánto sería?",
-      "detalle": [
-        {
-          "id": "c1-tiene",
-          "campo": "Primer retiro del portafolio",
-          "valor": "Sí",
-          "codigo": "si"
-        },
-        {
-          "id": "c1",
-          "campo": "Años hasta el primer retiro",
-          "valor": "1",
-          "codigo": "1"
-        },
-        {
-          "id": "c1-monto",
-          "campo": "Monto del primer retiro (valor de hoy)",
-          "valor": "25,000",
-          "codigo": "25,000"
-        },
-        {
-          "id": "c1-moneda",
-          "campo": "Primer retiro: moneda",
-          "valor": "USD",
-          "codigo": "USD"
-        }
-      ]
-    },
-    {
-      "pagina": 2,
-      "seccion": "Planificación financiera",
-      "n": "19",
       "clave": "metas-n",
       "pregunta": "¿Cuántas metas específicas desea financiar con su patrimonio?",
       "detalle": [
@@ -1122,6 +1094,51 @@
           "campo": "Cantidad de metas específicas",
           "valor": "0",
           "codigo": "0"
+        }
+      ]
+    },
+    {
+      "pagina": 2,
+      "seccion": "Planificación financiera",
+      "n": "19",
+      "clave": "c1-tiene",
+      "pregunta": "¿Planea retiros adicionales de este portafolio, distintos de las metas indicadas en la pregunta anterior?",
+      "detalle": [
+        {
+          "id": "c1-tiene",
+          "campo": "Retiros adicionales del portafolio",
+          "valor": "Sí",
+          "codigo": "si"
+        },
+        {
+          "id": "retiros-n",
+          "campo": "Cantidad de retiros adicionales",
+          "valor": "1",
+          "codigo": "1"
+        },
+        {
+          "id": "",
+          "campo": "Retiro 1: motivo",
+          "valor": "Matrimonio del Hijo",
+          "codigo": "Matrimonio del Hijo "
+        },
+        {
+          "id": "",
+          "campo": "Retiro 1: año",
+          "valor": "2027",
+          "codigo": "2027"
+        },
+        {
+          "id": "",
+          "campo": "Retiro 1: monto (valor de hoy)",
+          "valor": "25000",
+          "codigo": "25000"
+        },
+        {
+          "id": "",
+          "campo": "Retiro 1: moneda",
+          "valor": "USD",
+          "codigo": "USD"
         }
       ]
     },
@@ -1192,14 +1209,26 @@
       "pagina": 2,
       "seccion": "Planificación financiera",
       "n": "23",
-      "clave": "estr-sa-cr",
-      "pregunta": "Indique cuáles de las siguientes estructuras jurídicas posee",
+      "clave": "estr-tiene",
+      "pregunta": "¿Posee estructuras jurídicas?",
       "detalle": [
+        {
+          "id": "estr-tiene",
+          "campo": "Posee estructuras jurídicas",
+          "valor": "Sí",
+          "codigo": "si"
+        },
         {
           "id": "estructuras-detalle",
           "campo": "Estructuras jurídicas: detalle",
           "valor": "Tiene dos SA que las utiliza para mantiener los inmuebles",
           "codigo": "Tiene dos SA que las utiliza para mantiener los inmuebles "
+        },
+        {
+          "id": "estr-port",
+          "campo": "Portafolio dentro de una estructura jurídica",
+          "valor": "No",
+          "codigo": "no"
         },
         {
           "id": "seleccion",
@@ -1340,19 +1369,20 @@
     "n:Inmueble 3: saldo de deuda": "0",
     "n:Inmueble 3: saldo de deuda (moneda)": "CRC",
     "n:Inmueble 3: estima venderlo": "no",
-    "empresa": "no",
-    "empresa-valor-moneda": "USD",
+    "empresas-n": "0",
     "pe-tiene": "si",
     "pe-valor": "500,000",
     "pe-moneda": "USD",
     "pe-part": "2",
     "pe-detalle-txt": "Daki",
     "ventas-n": "0",
-    "c1-tiene": "si",
-    "c1": "1",
-    "c1-monto": "25,000",
-    "c1-moneda": "USD",
     "metas-n": "0",
+    "c1-tiene": "si",
+    "retiros-n": "1",
+    "n:Retiro 1: motivo": "Matrimonio del Hijo ",
+    "n:Retiro 1: año": "2027",
+    "n:Retiro 1: monto (valor de hoy)": "25000",
+    "n:Retiro 1: moneda": "USD",
     "herencia": "herencia",
     "herencia-monto": "12,300,000",
     "herencia-moneda": "USD",
@@ -1364,14 +1394,20 @@
     "vida-moneda": "USD",
     "moneda-usd": "85",
     "moneda-crc": "15",
+    "estr-tiene": "si",
     "estr-sa-cr": true,
     "estr-pa": false,
     "estr-offshore": false,
     "estr-fundacion": false,
     "estr-fideicomiso": false,
-    "estr-ninguna": false,
     "estructuras-sel": "Sociedad anónima u otra sociedad costarricense",
     "estructuras-detalle": "Tiene dos SA que las utiliza para mantiener los inmuebles ",
+    "estr-port": "no",
+    "estr-sa-cr-port": false,
+    "estr-pa-port": false,
+    "estr-offshore-port": false,
+    "estr-fundacion-port": false,
+    "estr-fideicomiso-port": false,
     "comentarios": "La pregunta #6 de Perfil no tiene respuesta con la que el cliente se identificó.   Los montos de valor de mercado de los inmbuebles se presentan en $ y el monto de su alquiler mensual en colones",
     "nombres": "Juan Carlos",
     "apellidos": "Arguedas Tinajero",
@@ -1389,11 +1425,12 @@
     "distrito": "Granadilla",
     "direccion": "Condominio Bosques de Altamonte casa 106"
   },
-  "modificadoEn": 1793049254420,
+  "modificadoEn": 1793222677847,
   "historialEdiciones": [
     1792601212944,
     1792616313880,
     1793047605055,
-    1793049254420
+    1793049254420,
+    1793222677847
   ]
 }
