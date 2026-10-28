@@ -92,6 +92,15 @@
   .cart-tabla tr.actual td{background:#F5F3EA;}
   #sup-carteras.lectura input{border-bottom-color:transparent;color:var(--ink);-webkit-text-fill-color:var(--ink);opacity:1;}
   .cart-nota{font-size:12.5px;color:#5A5E44;margin:10px 0 0;}
+  .pc-datos{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--rule);margin:0 0 22px;}
+  .pc-datos > div{padding:14px 16px;border-left:1px solid var(--rule);}
+  .pc-datos > div:first-child{border-left:none;}
+  .pc-datos span{display:block;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#5A5E44;margin-bottom:6px;}
+  .pc-datos b{display:block;font-size:19px;font-weight:600;color:var(--black);}
+  .pc-datos small{display:block;font-size:11.5px;color:#5A5E44;margin-top:4px;}
+  @media (max-width:760px){ .pc-datos{grid-template-columns:1fr 1fr;} }
+  #sup-perfil .cart-tabla table{min-width:620px;}
+  #sup-perfil{margin-bottom:8px;}
   .cart-err{color:#A2543A;font-size:13px;line-height:1.6;margin:12px 0 0;}
   @media (max-width:760px){ .cart-rend{grid-template-columns:1fr 1fr;} }
   .sc-cab h3{font-size:15px;font-weight:700;color:var(--black);margin:0 0 6px;letter-spacing:-.005em;}
@@ -515,6 +524,7 @@
 
   <div class="sheet">
     <div class="sheet-pad">
+      <div id="sup-perfil" hidden></div>
       <div class="block-title">Mercado</div>
       <div class="grid-3">
         <div class="field">
@@ -623,7 +633,7 @@
 
       <div id="sup-carteras" hidden>
         <div class="block-title">Carteras sugeridas por perfil</div>
-        <p class="cart-intro">Política de inversión de cada perfil: mínimo y máximo por clase de activo. La cartera sugerida parte de la cartera modelo del perfil, o del porcentaje específico que fije el asesor, y se ajusta a esos topes; lo que excede el máximo pasa a renta fija. Su rendimiento esperado es el promedio ponderado del rendimiento de cada clase.</p>
+        <p class="cart-intro">Política de inversión de cada perfil: mínimo y máximo por clase de activo. Son los topes con los que parte cada cliente de ese perfil; en los supuestos de un cliente, el asesor puede cambiarlos para él. La cartera sugerida parte de la cartera modelo del perfil, o del porcentaje específico, y se ajusta a esos topes; lo que excede el máximo pasa a renta fija. Su rendimiento esperado es el promedio ponderado del rendimiento de cada clase.</p>
         <p class="cart-sub">Rendimiento esperado por clase de activo (% anual, en dólares)</p>
         <div class="cart-rend" id="cart-rend"></div>
         <div class="cart-tabla" id="cart-tabla"></div>
@@ -960,7 +970,7 @@ function proyectar(c, sup, opts){
   // portafolio, que está en dólares. Inflación local (Costa Rica): indexa los montos en colones.
   const tc = sup.tipoCambio, inf = sup.inflacion/100, infL = (sup.inflacionLocal ?? sup.inflacion)/100;
   const ix = (mon, t) => Math.pow(1 + (mon === 'CRC' ? infL : inf), t - 1);
-  const retorno = (opts && opts.retorno != null) ? opts.retorno : PERFILES[c.perfil].retorno;
+  const retorno = (opts && opts.retorno != null) ? opts.retorno : retPerfil(c.perfil, sup);
   // Cuestionario con flujo de caja (desde octubre de 2026): incluye alquileres, cuotas de
   // deudas, gastos extraordinarios y primer retiro. Los anteriores no los pedían.
   const flujoCompleto = c.gastosExtraordinariosAnualesUsdHoy !== undefined && c.gastosExtraordinariosAnualesUsdHoy !== null;
@@ -1322,7 +1332,7 @@ function flujoHTML(c, p){
 const HORIZONTE_MAX = 60;
 function proyectarInst(c, sup, opts){
   const ins = c.institucional || {}, tc = sup.tipoCambio, inf = sup.inflacion/100;
-  const r = (opts && opts.retorno != null) ? opts.retorno : PERFILES[c.perfil].retorno;
+  const r = (opts && opts.retorno != null) ? opts.retorno : retPerfil(c.perfil, sup);
   const capital = aUsd(ins.capitalMonto, ins.capitalMoneda, tc);
   const aporte  = aUsd(ins.aporteMonto,  ins.aporteMoneda,  tc);
   const retiro  = aUsd(ins.retiroMonto,  ins.retiroMoneda,  tc);
@@ -1527,13 +1537,13 @@ function mezclaCarteras(A, B, w){
 }
 function curvaModelo(){
   const asig = supuestos.asignacion || CARTERAS;
-  const orden = ESCALA.slice().sort((a,b) => PERFILES[a].retorno - PERFILES[b].retorno);
+  const orden = ESCALA.slice().sort((a,b) => retPerfil(a) - retPerfil(b));
   const pts = orden.map(k => { const e = estadisticaCartera(asig[k]);
-      return {perfil: k, x: e.vol, y: PERFILES[k].retorno, peor: e.peor, anioPeor: e.anioPeor}; });
+      return {perfil: k, x: e.vol, y: retPerfil(k), peor: e.peor, anioPeor: e.anioPeor}; });
   const traza = [];
   for(let s2 = 0; s2 < orden.length - 1; s2++){
     const A = asig[orden[s2]], B = asig[orden[s2+1]];
-    const rA = PERFILES[orden[s2]].retorno, rB = PERFILES[orden[s2+1]].retorno;
+    const rA = retPerfil(orden[s2]), rB = retPerfil(orden[s2+1]);
     for(let k = (s2 ? 1 : 0); k <= 40; k++){
       const w = k/40, m = mezclaCarteras(A, B, w);
       traza.push({x: estadisticaCartera(m).vol, y: rA + (rB - rA)*w});
@@ -1543,13 +1553,13 @@ function curvaModelo(){
   // conservadora (la de menor riesgo del sistema); por encima de la agresiva no hay
   // combinación de carteras modelo que alcance ese rendimiento.
   const carteraPara = r => {
-    const rMin = PERFILES[orden[0]].retorno, rMax = PERFILES[orden[orden.length-1]].retorno;
+    const rMin = retPerfil(orden[0]), rMax = retPerfil(orden[orden.length-1]);
     let m, alcanzable = true, tramo = null;
     if(r == null || r > rMax + 1e-12){ m = Object.assign({}, asig[orden[orden.length-1]]); alcanzable = false; }
     else if(r <= rMin){ m = Object.assign({}, asig[orden[0]]); tramo = {desde: orden[0], hasta: orden[0], w: 0}; }
     else {
       for(let s2 = 0; s2 < orden.length - 1; s2++){
-        const rA = PERFILES[orden[s2]].retorno, rB = PERFILES[orden[s2+1]].retorno;
+        const rA = retPerfil(orden[s2]), rB = retPerfil(orden[s2+1]);
         if(r <= rB + 1e-12){ const w = (r - rA)/(rB - rA);
           m = mezclaCarteras(asig[orden[s2]], asig[orden[s2+1]], w); tramo = {desde: orden[s2], hasta: orden[s2+1], w}; break; }
       }
@@ -1569,7 +1579,7 @@ function carteraEquilibrio(eq){
   if(eq.estado === 'inalcanzable' || eq.r == null) return Object.assign(cm.carteraPara(null), {nota: 'Ninguna combinación de carteras modelo alcanza el equilibrio; se muestra la de mayor rendimiento.'});
   const c2 = cm.carteraPara(eq.r);
   return Object.assign(c2, {nota: !c2.alcanzable ? 'Ninguna combinación de carteras modelo alcanza el equilibrio; se muestra la de mayor rendimiento.'
-    : eq.r <= PERFILES.conservador.retorno ? 'El equilibrio queda por debajo de la cartera conservadora; se usa esa cartera, la de menor riesgo del sistema.' : ''});
+    : eq.r <= retPerfil('conservador') ? 'El equilibrio queda por debajo de la cartera conservadora; se usa esa cartera, la de menor riesgo del sistema.' : ''});
 }
 const fmtPeso = v => { const r = Math.round((v||0)*10)/10; return r % 1 ? r.toFixed(1) : String(r); };
 const redondeoAsig = a => { const rv = Math.round(a.rv*10)/10, rf = Math.round(a.rf*10)/10, alt = Math.round((a.alt || 0)*10)/10;
@@ -1579,7 +1589,7 @@ const redondeoAsig = a => { const rv = Math.round(a.rv*10)/10, rf = Math.round(a
 function perfilRequerido(eq){
   if(eq.estado === 'sin-rendimiento') return 'conservador';
   if(eq.r == null) return null;
-  return ESCALA.find(k => PERFILES[k].retorno + 1e-9 >= eq.r) || null;
+  return ESCALA.find(k => retPerfil(k) + 1e-9 >= eq.r) || null;
 }
 
 let _usaColones = false;   // marca si algún monto en colones pasó por la conversión
@@ -2032,19 +2042,39 @@ function aplicarCarteras(conf){
 }
 aplicarCarteras(null);
 SUPUESTOS_EXCEL.asignacion = CARTERAS;
-const conAlt = () => ESCALA.some(k => (CARTERAS[k].alt || 0) > 0);
+// Carteras de los supuestos vigentes: las del cliente (con sus topes) o, si no hay, las de la firma
+const carterasSup = sup => ((sup || (typeof supuestos !== 'undefined' ? supuestos : null)) || {}).carterasInfo || CARTERAS_INFO;
+function retPerfil(k, sup){ const i = carterasSup(sup)[k]; return i ? i.retorno : PERFILES[k].retorno; }
+// Configuración de carteras de un cliente: la de la firma, con los topes y el % específico propios
+// del cliente para su perfil (si el asesor los cambió). El rendimiento por clase es siempre el de la firma.
+function confCarterasCliente(cc){
+  const base = normalizarConfCarteras(firma.carteras);
+  if(!cc || !cc.perfil || !base.topes[cc.perfil]) return base;
+  CLASES_ACT.forEach(([, k]) => { const v = (cc.topes || {})[k]; if(Array.isArray(v) && v.length === 2) base.topes[cc.perfil][k] = [+v[0], +v[1]]; });
+  if(cc.especifico) base.especifico[cc.perfil] = {rv: +cc.especifico.rv || 0, rf: +cc.especifico.rf || 0, ef: +cc.especifico.ef || 0, alt: +cc.especifico.alt || 0};
+  else delete base.especifico[cc.perfil];
+  return base;
+}
+function aplicarCarterasSup(s){
+  let conf = confCarterasCliente(s.carterasCliente);
+  if(erroresCarteras(conf).length) conf = normalizarConfCarteras(firma.carteras);
+  const r = calcularCarteras(conf);
+  s.carterasInfo = r; s.asignacion = Object.fromEntries(ESCALA.map(k => [k, r[k].asig]));
+  return s;
+}
+const conAlt = () => ESCALA.some(k => ((carterasSup()[k] || {}).asig || CARTERAS[k]).alt > 0);
 const clasesVis = () => CLASES_ACT.filter(([, k]) => k !== 'alt' || conAlt());
 // Texto de la composición: «renta variable 50% · renta fija 45% · efectivo 5%»
 const composicionTxt = a => clasesVis().map(([n, k]) => n.toLowerCase() + ' ' + fmtPeso(a[k] || 0).replace('.', ',') + '%').join(' · ');
 // Nota del ajuste de la cartera a los topes del perfil
 function notaTopes(k){
-  const i = CARTERAS_INFO[k]; if(!i) return '';
-  const base = i.especifico ? 'Composición específica de la firma' : 'Cartera modelo';
-  if(!i.ajustada) return base + ' dentro de los topes del perfil ' + PERFILES[k].label.toLowerCase() + '.';
+  const i = carterasSup()[k]; if(!i) return '';
+  const base = i.especifico ? 'Composición específica' : 'Cartera modelo';
+  if(!i.ajustada) return base + ' dentro de los topes del perfil ' + PERFILES[k].label.toLowerCase() + (i.propios ? ' fijados para este cliente' : '') + '.';
   const cam = CLASES_ACT.filter(([, c]) => Math.abs(i.asig[c] - (+i.partida[c] || 0)) > 1e-6).map(([n, c]) => n.toLowerCase() + ' de ' + fmtPeso(+i.partida[c] || 0).replace('.', ',') + '% a ' + fmtPeso(i.asig[c]).replace('.', ',') + '%');
-  return base + ' ajustada a los topes del perfil ' + PERFILES[k].label.toLowerCase() + ': ' + cam.join(', ') + '.';
+  return base + ' ajustada a los topes del perfil ' + PERFILES[k].label.toLowerCase() + (i.propios ? ' fijados para este cliente' : '') + ': ' + cam.join(', ') + '.';
 }
-const topesTxt = k => CLASES_ACT.map(([n, c]) => n + ' ' + CARTERAS_INFO[k].topes[c][0] + '–' + CARTERAS_INFO[k].topes[c][1] + '%').join(' · ');
+const topesTxt = k => CLASES_ACT.map(([n, c]) => n + ' ' + carterasSup()[k].topes[c][0] + '–' + carterasSup()[k].topes[c][1] + '%').join(' · ');
 
 let supuestos = cargarSupuestos();
 // Valores de la firma: punto de partida de los supuestos de cada cliente nuevo
@@ -2068,6 +2098,11 @@ function normalizarSup(x){
 function supuestosDe(c){
   const g = c && supCliente[c.id];
   const s = g ? Object.assign({}, SUPUESTOS_EXCEL, normalizarSup(g.supuestos), {asignacion: CARTERAS}) : Object.assign({}, firma);
+  delete s.carteras;   // las carteras de la firma no viajan en los supuestos del cliente
+  aplicarCarterasSup(s);
+  if(c && c.perfil && s.carterasCliente && s.carterasInfo[c.perfil]){
+    const b = calcularCarteras(normalizarConfCarteras(firma.carteras))[c.perfil], i = s.carterasInfo[c.perfil];
+    i.propios = JSON.stringify(b.topes) !== JSON.stringify(i.topes) || i.especifico !== b.especifico || JSON.stringify(b.partida) !== JSON.stringify(i.partida); }
   // N/A automático: los supuestos que la proyección de este cliente no usa (se recalcula siempre,
   // así un supuesto que el cliente sí usa nunca queda en N/A)
   if(c && tipoDe(c) !== 'institucion'){
@@ -2218,7 +2253,7 @@ function leerSupuestos(){
   // Las carteras por perfil (topes y porcentajes específicos) son de la firma: se leen solo en ese modo.
   s.asignacion = CARTERAS;
   if(modoSup.tipo === 'firma') s.carteras = leerCarteras();
-  else if(firma.carteras) s.carteras = firma.carteras;
+  else s.carterasCliente = leerCarterasCliente();
   return s;
 }
 function guardarSupuestos(s){
@@ -2371,7 +2406,8 @@ function pintarCarteras(conf){
     `<label class="cart-r"><span>${nom}</span><input type="number" step="0.01" data-rc="${k}" value="${n(conf.rendClase[k])}"></label>`).join('');
   const filas = ESCALA.map(p => CLASES_ACT.map(([nom, k], i) => {
     const e = conf.especifico[p];
-    return `<tr class="${i ? '' : 'ini'}" data-perfil="${p}">${i ? '' : `<td class="perfil" rowspan="4">${PERFILES[p].label}<small data-ret="${p}"></small></td>`}
+    const nCli = (typeof clientes !== 'undefined' ? clientes : []).filter(c => c.perfil === p).length;
+    return `<tr class="${i ? '' : 'ini'}" data-perfil="${p}">${i ? '' : `<td class="perfil" rowspan="4">${PERFILES[p].label}<small data-ret="${p}"></small><small>${nCli} ${nCli === 1 ? 'cliente' : 'clientes'}</small></td>`}
       <td class="cl">${nom}</td><td>${fmtPeso(ALLOC_SCHWAB[p][k] || 0).replace('.', ',')}%</td>
       <td><input type="number" step="0.5" min="0" max="100" data-p="${p}" data-k="${k}" data-t="0" value="${conf.topes[p][k][0]}"></td>
       <td><input type="number" step="0.5" min="0" max="100" data-p="${p}" data-k="${k}" data-t="1" value="${conf.topes[p][k][1]}"></td>
@@ -2394,6 +2430,62 @@ function mostrarCarteras(editable, perfil){
     + (perfil ? ' Resaltado, el perfil de este cliente (' + PERFILES[perfil].label.toLowerCase() + ').' : '');
   if(!editable) document.getElementById('btn-aplicar').disabled = false;
 }
+// Supuestos de un cliente: conclusión de su perfil de riesgo y topes de su cartera. Los topes parten
+// de los de la firma para su perfil; el asesor puede cambiarlos para este cliente.
+function pintarPerfilCliente(c, s){
+  const caja = document.getElementById('sup-perfil'), d = c.diag || {}, k = c.perfil;
+  if(!k || !PERFILES[k]){ caja.hidden = true; caja.innerHTML = ''; return; }
+  const conf = confCarterasCliente(s.carterasCliente), t = conf.topes[k], e = conf.especifico[k], firmaT = normalizarConfCarteras(firma.carteras).topes[k];
+  const n1 = v => v == null || isNaN(v) ? 'Sin dato' : (Math.round(v*10)/10).toFixed(1).replace('.', ',') + ' de 10';
+  const v = x => x == null ? '' : String(x);
+  caja.innerHTML = `<div class="block-title">Perfil de riesgo del cliente</div>
+    <div class="pc-datos">
+      <div><span>Perfil de riesgo</span><b>${PERFILES[d.perfilRiesgo || k].label}</b><small>Cuestionario 1 · puntaje ${n1(d.disposicion)}</small></div>
+      <div><span>Tolerancia al riesgo</span><b>${n1(d.tolerancia)}</b><small>Reacción ante la pérdida</small></div>
+      <div><span>Apetito de riesgo</span><b>${n1(d.apetito)}</b><small>Riesgo que quiere asumir</small></div>
+      <div><span>Rendimiento esperado</span><b id="pc-ret">—</b><small>De su cartera sugerida</small></div>
+    </div>
+    <p class="cart-sub">Topes de su cartera · perfil ${PERFILES[k].label.toLowerCase()}</p>
+    <div class="cart-tabla"><table><thead><tr><th>Clase de activo</th><th>Cartera modelo</th><th>Mínimo %</th><th>Máximo %</th><th>% específico</th><th>Cartera sugerida</th></tr></thead><tbody>
+    ${CLASES_ACT.map(([nom, cl]) => `<tr><td class="cl">${nom}</td><td>${fmtPeso(ALLOC_SCHWAB[k][cl] || 0).replace('.', ',')}%</td>
+      <td><input type="number" step="0.5" min="0" max="100" data-cp="${cl}" data-t="0" value="${t[cl][0]}" title="Firma: ${firmaT[cl][0]}"></td>
+      <td><input type="number" step="0.5" min="0" max="100" data-cp="${cl}" data-t="1" value="${t[cl][1]}" title="Firma: ${firmaT[cl][1]}"></td>
+      <td><input type="number" step="0.5" min="0" max="100" data-cp="${cl}" data-e="1" placeholder="—" value="${e ? v(e[cl]) : ''}"></td>
+      <td class="res" data-pcres="${cl}"></td></tr>`).join('')}</tbody></table></div>
+    <p class="cart-nota" id="pc-nota"></p>
+    <p class="cart-err" id="pc-err" hidden></p>`;
+  caja.hidden = false;
+  refrescarPerfilCliente();
+}
+// Topes leídos de la pantalla del cliente; null si son iguales a los de la firma
+function leerCarterasCliente(){
+  const caja = document.getElementById('sup-perfil'), c = clientes.find(x => x.id === modoSup.id);
+  if(!c || caja.hidden || !c.perfil) return null;
+  const k = c.perfil, firmaC = normalizarConfCarteras(firma.carteras), t = JSON.parse(JSON.stringify(firmaC.topes[k]));
+  const num = el => { const x = parseFloat(el.value); return isNaN(x) ? null : x; };
+  caja.querySelectorAll('[data-t]').forEach(el => { const x = num(el); if(x != null) t[el.dataset.cp][+el.dataset.t] = x; });
+  const els = [...caja.querySelectorAll('[data-e]')];
+  const esp = els.some(el => num(el) != null) ? Object.fromEntries(els.map(el => [el.dataset.cp, num(el) || 0])) : null;
+  const igual = JSON.stringify(t) === JSON.stringify(firmaC.topes[k]) && JSON.stringify(esp) === JSON.stringify(firmaC.especifico[k] || null);
+  return igual ? null : {perfil: k, topes: t, especifico: esp};
+}
+function refrescarPerfilCliente(){
+  const caja = document.getElementById('sup-perfil'); if(caja.hidden) return;
+  const c = clientes.find(x => x.id === modoSup.id); if(!c) return;
+  const k = c.perfil, cc = leerCarterasCliente(), conf = confCarterasCliente(cc), err = erroresCarteras(conf).filter(t => t.startsWith(PERFILES[k].label + ':') || /^Rendimiento/.test(t));
+  const r = calcularCarteras(conf)[k];
+  CLASES_ACT.forEach(([, cl]) => { const td = caja.querySelector(`[data-pcres="${cl}"]`);
+    const cambia = Math.abs(r.asig[cl] - (+r.partida[cl] || 0)) > 1e-6;
+    td.textContent = fmtPeso(r.asig[cl]).replace('.', ',') + '%'; td.classList.toggle('aj', cambia); });
+  document.getElementById('pc-ret').textContent = err.length ? '—' : (r.retorno*100).toFixed(2).replace('.', ',') + '%';
+  const rc = conf.rendClase;
+  document.getElementById('pc-nota').textContent = (cc ? 'Topes propios de este cliente: se guardan con sus supuestos y solo lo afectan a él. ' : 'Topes de la firma para el perfil ' + PERFILES[k].label.toLowerCase() + '; puede cambiarlos para este cliente. ')
+    + 'En rojo, lo que se ajustó al tope. Rendimiento esperado por clase (valores de la firma): ' + CLASES_ACT.map(([n, cl]) => n.toLowerCase() + ' ' + String(rc[cl]).replace('.', ',') + '%').join(' · ') + '.';
+  const e = document.getElementById('pc-err'); e.hidden = !err.length; e.innerHTML = err.map(esc).join('<br>');
+  document.getElementById('btn-aplicar').disabled = err.length > 0;
+}
+document.getElementById('screen-supuestos').addEventListener('input', e => { if(e.target.closest && e.target.closest('#sup-perfil')) refrescarPerfilCliente(); });
+
 function leerCarteras(){
   const v = el => { const x = parseFloat(el.value); return isNaN(x) ? null : x; };
   const conf = {rendClase: {}, topes: {}, especifico: {}};
@@ -2455,7 +2547,8 @@ function abrirSupuestosCliente(id){
   pintarSupuestos(supuestosDe(c));
   pintarNA(c, supuestosDe(c));
   mostrarCamposSup(tipoDe(c) === 'institucion');
-  mostrarCarteras(false, c.perfil);
+  document.getElementById('sup-carteras').hidden = true; document.getElementById('btn-aplicar').disabled = false;
+  pintarPerfilCliente(c, supuestosDe(c));
   marcarDistintos(); estadoSup('');
   mostrar('screen-supuestos');
 }
@@ -2469,6 +2562,7 @@ function abrirSupuestosFirma(){
   pintarSupuestos(firma);
   pintarNA(null, firma);
   mostrarCamposSup(false);
+  document.getElementById('sup-perfil').hidden = true;
   mostrarCarteras(true, null);
   marcarDistintos(); estadoSup('');
   mostrar('screen-supuestos');
@@ -4351,7 +4445,7 @@ function xmlCliente(c, p, asig, sup){
   clasesVis().forEach(([t,k])=>{
     n++; filas += `<row r="${n}">` + celda('A'+n, t, EST.bold) + celda('B'+n, (asig[k]||0)/100, EST.pct) + celda('C'+n, ((aeX[k]||0)).toFixed(1) + '%') + `</row>`;
   });
-  Ftxt('Topes de la firma para el perfil', topesTxt(c.perfil));
+  Ftxt('Topes del perfil ' + PERFILES[c.perfil].label.toLowerCase() + ((carterasSup()[c.perfil] || {}).propios ? ' (propios del cliente)' : ' (de la firma)'), topesTxt(c.perfil));
   Ftxt('Ajuste de la cartera sugerida', notaTopes(c.perfil));
   Fnum('Rendimiento de la cartera de equilibrio', ceX.rendimiento, EST.pct);
   Fnum('Volatilidad anual de la cartera de equilibrio', ceX.x, EST.pct);
@@ -5538,7 +5632,7 @@ function xmlInstitucion(c, p, asig, sup){
     + celda('C'+n,'Cartera de equilibrio',EST.encab) + `</row>`;
   clasesVis().forEach(([t,k]) => {
     n++; filas += `<row r="${n}">` + celda('A'+n, t, EST.bold) + celda('B'+n, (asig[k]||0)/100, EST.pct) + celda('C'+n, (aeI[k]||0)/100, EST.pct) + `</row>`; });
-  Ftxt('Topes de la firma para el perfil', topesTxt(c.perfil));
+  Ftxt('Topes del perfil ' + PERFILES[c.perfil].label.toLowerCase() + ((carterasSup()[c.perfil] || {}).propios ? ' (propios del cliente)' : ' (de la firma)'), topesTxt(c.perfil));
   Ftxt('Ajuste de la cartera sugerida', notaTopes(c.perfil));
   Fnum('Rendimiento de la cartera de equilibrio', ceI.rendimiento, EST.pct);
   Fnum('Volatilidad anual de la cartera de equilibrio', ceI.x, EST.pct);
@@ -6774,6 +6868,7 @@ function mostrar(pantalla){
 document.getElementById('btn-reset').onclick = ()=>{
   pintarSupuestos(modoSup.tipo === 'cliente' ? firma : SUPUESTOS_EXCEL);
   if(modoSup.tipo === 'firma') pintarCarteras(null);
+  else { const c = clientes.find(x => x.id === modoSup.id); if(c) pintarPerfilCliente(c, Object.assign({}, firma, {carterasCliente: null})); }
   if(modoSup.tipo === 'cliente'){ const c = clientes.find(x => x.id === modoSup.id); if(c) pintarNA(c, firma); }
   marcarDistintos();
 };
@@ -6861,4 +6956,4 @@ cargar();
 
 
 
-<!-- Chotocruz & Co. · Entrega 48 · 28 de octubre de 2026 -->
+<!-- Chotocruz & Co. · Entrega 49 · 28 de octubre de 2026 -->
