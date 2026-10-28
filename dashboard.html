@@ -89,6 +89,9 @@
   .cart-tabla tr.ini td{border-top:1.5px solid var(--rule);}
   .cart-tabla td.res{font-weight:700;}
   .cart-tabla td.res.aj{color:#A2543A;}
+  .cart-tabla tr.actual td{background:#F5F3EA;}
+  #sup-carteras.lectura input{border-bottom-color:transparent;color:var(--ink);-webkit-text-fill-color:var(--ink);opacity:1;}
+  .cart-nota{font-size:12.5px;color:#5A5E44;margin:10px 0 0;}
   .cart-err{color:#A2543A;font-size:13px;line-height:1.6;margin:12px 0 0;}
   @media (max-width:760px){ .cart-rend{grid-template-columns:1fr 1fr;} }
   .sc-cab h3{font-size:15px;font-weight:700;color:var(--black);margin:0 0 6px;letter-spacing:-.005em;}
@@ -624,6 +627,7 @@
         <p class="cart-sub">Rendimiento esperado por clase de activo (% anual, en dólares)</p>
         <div class="cart-rend" id="cart-rend"></div>
         <div class="cart-tabla" id="cart-tabla"></div>
+        <p class="cart-nota" id="cart-nota" hidden></p>
         <p class="cart-err" id="cart-err" hidden></p>
       </div>
       <div class="sup-cliente" id="sup-cliente" hidden></div>
@@ -2367,7 +2371,7 @@ function pintarCarteras(conf){
     `<label class="cart-r"><span>${nom}</span><input type="number" step="0.01" data-rc="${k}" value="${n(conf.rendClase[k])}"></label>`).join('');
   const filas = ESCALA.map(p => CLASES_ACT.map(([nom, k], i) => {
     const e = conf.especifico[p];
-    return `<tr class="${i ? '' : 'ini'}">${i ? '' : `<td class="perfil" rowspan="4">${PERFILES[p].label}<small data-ret="${p}"></small></td>`}
+    return `<tr class="${i ? '' : 'ini'}" data-perfil="${p}">${i ? '' : `<td class="perfil" rowspan="4">${PERFILES[p].label}<small data-ret="${p}"></small></td>`}
       <td class="cl">${nom}</td><td>${fmtPeso(ALLOC_SCHWAB[p][k] || 0).replace('.', ',')}%</td>
       <td><input type="number" step="0.5" min="0" max="100" data-p="${p}" data-k="${k}" data-t="0" value="${conf.topes[p][k][0]}"></td>
       <td><input type="number" step="0.5" min="0" max="100" data-p="${p}" data-k="${k}" data-t="1" value="${conf.topes[p][k][1]}"></td>
@@ -2375,6 +2379,20 @@ function pintarCarteras(conf){
       <td class="res" data-res="${p}|${k}"></td></tr>`; }).join('')).join('');
   document.getElementById('cart-tabla').innerHTML = `<table><thead><tr><th>Perfil</th><th>Clase de activo</th><th>Cartera modelo</th><th>Mínimo %</th><th>Máximo %</th><th>% específico</th><th>Cartera sugerida</th></tr></thead><tbody>${filas}</tbody></table>`;
   refrescarCarteras();
+}
+// Carteras en la pantalla de supuestos: en los valores de la firma se editan; en los supuestos de un
+// cliente se muestran de solo lectura (son de la firma), con el perfil del cliente resaltado.
+function mostrarCarteras(editable, perfil){
+  const caja = document.getElementById('sup-carteras');
+  caja.hidden = false; caja.classList.toggle('lectura', !editable);
+  pintarCarteras(firma.carteras);
+  caja.querySelectorAll('input').forEach(el => el.disabled = !editable);
+  caja.querySelectorAll('tr[data-perfil]').forEach(tr => tr.classList.toggle('actual', !!perfil && tr.dataset.perfil === perfil));
+  const nota = document.getElementById('cart-nota');
+  nota.hidden = editable;
+  nota.textContent = editable ? '' : 'Las carteras y sus topes son de la firma: se modifican en «Valores de la firma» y aplican a todos los clientes.'
+    + (perfil ? ' Resaltado, el perfil de este cliente (' + PERFILES[perfil].label.toLowerCase() + ').' : '');
+  if(!editable) document.getElementById('btn-aplicar').disabled = false;
 }
 function leerCarteras(){
   const v = el => { const x = parseFloat(el.value); return isNaN(x) ? null : x; };
@@ -2437,7 +2455,7 @@ function abrirSupuestosCliente(id){
   pintarSupuestos(supuestosDe(c));
   pintarNA(c, supuestosDe(c));
   mostrarCamposSup(tipoDe(c) === 'institucion');
-  document.getElementById('sup-carteras').hidden = true; document.getElementById('btn-aplicar').disabled = false;
+  mostrarCarteras(false, c.perfil);
   marcarDistintos(); estadoSup('');
   mostrar('screen-supuestos');
 }
@@ -2451,7 +2469,7 @@ function abrirSupuestosFirma(){
   pintarSupuestos(firma);
   pintarNA(null, firma);
   mostrarCamposSup(false);
-  document.getElementById('sup-carteras').hidden = false; pintarCarteras(firma.carteras);
+  mostrarCarteras(true, null);
   marcarDistintos(); estadoSup('');
   mostrar('screen-supuestos');
 }
@@ -6843,4 +6861,4 @@ cargar();
 
 
 
-<!-- Chotocruz & Co. · Entrega 47 · 28 de octubre de 2026 -->
+<!-- Chotocruz & Co. · Entrega 48 · 28 de octubre de 2026 -->
