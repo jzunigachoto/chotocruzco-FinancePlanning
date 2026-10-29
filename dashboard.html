@@ -105,6 +105,22 @@
   .pc-formula{font-size:14px;font-weight:600;color:var(--black);margin:2px 0 10px;}
   .barra-port{display:flex;height:22px;border-radius:2px;overflow:hidden;margin:6px 0 8px;}
   .barra-port span{display:block;height:100%;}
+  /* Porcentaje del portafolio en colones: pasos */
+  .cp-paso{display:grid;grid-template-columns:30px 1fr;gap:0 12px;padding:16px 0;border-top:1px solid var(--rule-2);}
+  .cp-paso:first-of-type{border-top:0;padding-top:4px;}
+  .cp-n{width:24px;height:24px;border-radius:50%;background:var(--ink);color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center;margin-top:1px;}
+  .cp-t{font-size:14px;color:var(--ink);margin-bottom:8px;}
+  .cp-t span{color:var(--ink-45);font-size:12px;margin-left:6px;}
+  .cp-tab{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:13px;}
+  .cp-tab th{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-45);font-weight:600;text-align:right;padding:0 0 6px 10px;border-bottom:1px solid var(--rule);}
+  .cp-tab th:first-child,.cp-tab td:first-child{text-align:left;padding-left:0;}
+  .cp-tab td{text-align:right;padding:7px 0 7px 10px;border-bottom:1px solid var(--rule-2);}
+  .cp-tab tr.pct td{color:var(--gold);font-weight:500;}
+  .cp-ecu{font-size:13px;color:var(--ink);padding:7px 0;border-bottom:1px solid var(--rule-2);font-variant-numeric:tabular-nums;}
+  .cp-ecu b{font-weight:400;color:var(--gold);}
+  .cp-ecu small{font-size:13px;color:var(--ink-45);}
+  .cp-rf{display:grid;grid-template-columns:170px 1fr;gap:22px;align-items:center;}
+  @media (max-width:700px){ .cp-rf{grid-template-columns:1fr;justify-items:center;} }
   /* Porcentaje del portafolio en colones: dona y tres cifras */
   .col-grid{display:grid;grid-template-columns:240px 1fr;gap:30px;align-items:center;margin:8px 0 6px;}
   .col-bloque{border-left:3px solid var(--gold);padding:2px 0 2px 14px;margin:0 0 16px;}
@@ -1377,6 +1393,24 @@ function donaCanvas(cv, seg, centro, sub, px){
   return cv;
 }
 // Portafolio con la renta fija separada en Costa Rica y EE. UU.
+// Sección «Porcentaje del portafolio en colones para cubrir gastos», en orden:
+// 1) gasto al mes y al año, por moneda (y su peso en el gasto total); 2) capital en colones = gasto anual
+// en colones ÷ rendimiento de los bonos en colones; 3) la renta fija de la cartera (100%) se reparte entre
+// Costa Rica (hasta el capital requerido) y EE. UU. (el resto).
+function seccionColones(R, f, crcPref){
+  const p1 = v => (v*100).toFixed(1).replace('.', ',') + '%', crc = v => (crcPref || '₡') + fmt(Math.round(v));
+  const gasto = [
+    ['Al mes', crc(R.gC * R.tc / 12) + ' (' + f(R.gC / 12) + ')', f(R.gU / 12), f(R.gT / 12)],
+    ['Al año', crc(R.gC * R.tc) + ' (' + f(R.gC) + ')', f(R.gU), f(R.gT)],
+    ['% del gasto total', p1(R.gT > 0 ? R.gC / R.gT : 0), p1(R.gT > 0 ? R.gU / R.gT : 0), '100%']];
+  const capital = R.gC < 0.5 ? {ecu: 'Sin gastos en colones: no necesita bonos en Costa Rica.', res: f(0), pct: p1(0)}
+    : {ecu: crc(R.gC * R.tc) + ' ÷ ' + p1(R.r) + ' = ' + crc(R.reqCrc), res: f(R.req), pct: p1(R.reqPct || 0)};
+  capital.linea = R.gC < 0.5 ? capital.ecu : capital.ecu + ' = ' + capital.res + ' (' + capital.pct + ' del portafolio)';
+  const rf = [['Costa Rica · bonos en colones', R.crDeRf, f(R.cr), COLOR_PORT['Bonos en Costa Rica']], ['EE. UU. · bonos en dólares', R.usDeRf, f(R.us), COLOR_PORT['Bonos en EE. UU.']]];
+  return {gasto, capital, rf, rfTit: 'Renta fija de la cartera sugerida: ' + p1(R.rfPct) + ' del portafolio = 100%',
+    rfTot: ['Total de renta fija', '100%', f(R.RF)], centro: p1(R.crDeRf), falta: R.falta > 0.5 ? 'Faltan ' + f(R.falta) + ' para cubrir el capital requerido: toda la renta fija va a Costa Rica. ' + (R.cabeEnTope ? 'Puede subirse a ' + p1(R.req / R.cap) + ' del portafolio, dentro del tope del perfil (' + p1(R.rfMaxPct) + ').' : 'Ni el tope del perfil (' + p1(R.rfMaxPct) + ') lo cubre.') : '',
+    nota: 'Costa Rica primero, hasta el capital requerido; el resto, EE. UU.'};
+}
 function segmentosColones(R){
   return [['Bonos en colones · Costa Rica', R.cap > 0 ? R.cr / R.cap : 0, COLOR_PORT['Bonos en Costa Rica']],
     ['Bonos en dólares · EE. UU.', R.cap > 0 ? R.us / R.cap : 0, COLOR_PORT['Bonos en EE. UU.']],
@@ -1687,10 +1721,10 @@ function caminosPlan(c, sup, fm){
   const infI = sup.inflacion, expo = base.totalAnios - 1 + (base.mesesPrimer || 12) / 12, anioFin = base.filas.length ? base.filas[base.filas.length - 1].anio : '';
   const dec = (v, d) => String((Math.round(v * Math.pow(10, d)) / Math.pow(10, d)).toFixed(d)).replace('.', ',');
   const proc = [];
-  proc.push(['Método', 'Se mueve una sola variable, con todo lo demás igual, hasta el punto en que el plan deja de alcanzar el objetivo: ningún año con gasto sin cubrir y saldo final real igual o mayor que la herencia.']);
-  if(ok && eq.estado !== 'sin-rendimiento' && eq.r != null) proc.push(['Rendimiento', 'Mínimo que cumple el objetivo: ' + p1(eq.r) + '. Margen = ' + p1(base.retorno) + ' − ' + p1(eq.r) + ' = ' + dec((base.retorno - eq.r)*100, 1) + ' puntos.']);
-  if(ok && pm.k != null) proc.push(['Capital inicial', 'Mínimo que cumple el objetivo: ' + fm(pm.k) + '. Margen = ' + fm(base.capital) + ' − ' + fm(pm.k) + ' = ' + fm(base.capital - pm.k) + '.']);
-  if(ok && factorGasto) proc.push(['Gasto familiar', 'Máximo que cumple el objetivo: ' + fm(base.gastoMensual) + ' × ' + dec(factorGasto, 4) + ' = ' + fm(base.gastoMensual * factorGasto) + ' al mes en dólares de hoy (+' + Math.floor((factorGasto - 1)*100) + '%).']);
+  proc.push(['Método', 'Búsqueda por bisección, 40 pruebas por variable: en cada prueba se recalcula la proyección y se verifica el objetivo (ningún año sin cubrir y saldo final real igual o mayor que la herencia).']);
+  if(ok && eq.estado !== 'sin-rendimiento' && eq.r != null) proc.push(['Rendimiento', 'Se prueban rendimientos entre 0% y 30%. El menor con el que se cumple el objetivo es ' + p1(eq.r) + ' (rendimiento de equilibrio). Margen = ' + p1(base.retorno) + ' − ' + p1(eq.r) + ' = ' + dec((base.retorno - eq.r)*100, 1) + ' puntos.']);
+  if(ok && pm.k != null) proc.push(['Capital inicial', 'Se prueban capitales iniciales desde $0, con el rendimiento esperado (' + p1(base.retorno) + '). El menor con el que se cumple el objetivo es ' + fm(pm.k) + '. Margen = ' + fm(base.capital) + ' − ' + fm(pm.k) + ' = ' + fm(base.capital - pm.k) + '.']);
+  if(ok && factorGasto) proc.push(['Gasto familiar', 'El gasto familiar de todos los años (en el retiro, con su porcentaje) se multiplica por un factor y se prueban factores desde 1. El mayor con el que se cumple el objetivo es ' + dec(factorGasto, 4) + ': ' + fm(base.gastoMensual) + ' × ' + dec(factorGasto, 4) + ' = ' + fm(base.gastoMensual * factorGasto) + ' al mes en dólares de hoy (+' + Math.floor((factorGasto - 1)*100) + '%). Con un gasto mayor, algún año quedaría sin cubrir o el saldo final real bajaría de la herencia' + (meta > 0 ? ' (' + fm(meta) + ')' : '') + '.']);
   proc.push(['Herencia', 'Saldo final real = saldo nominal ' + anioFin + ' ÷ (1 + inflación)^años = ' + fm(base.finalNominal) + ' ÷ (1 + ' + dec(infI, 1) + '%)^' + dec(expo, 2) + ' = ' + fm(base.finalReal) + '.'
     + (meta > 0 ? ' Menos la herencia (' + fm(meta) + ') = ' + fm(base.finalReal - meta) + '.' : '')]);
   const si = filas.filter(f => f.alcanza);
@@ -4112,7 +4146,7 @@ function textoRentaFija(R, f){
   const p1 = v => (v*100).toFixed(1).replace('.', ',') + '%', p2 = v => { const t = (Math.round(v*10000)/100).toFixed(2).replace(/0$/, ''); return t.replace('.', ',') + '%'; };
   if(R.gC < 0.5) return 'El cliente no tiene gastos recurrentes en colones: no necesita bonos en Costa Rica y toda la renta fija de su cartera (' + f(R.RF) + ') puede estar en bonos en dólares.';
   let t = 'Para pagar ' + f(R.gC) + ' al año de gastos en colones con los intereses de bonos locales al ' + p2(R.r) + ', necesita ' + f(R.req) + ' en Costa Rica (' + p1(R.reqPct || 0) + ' del portafolio). ';
-  if(R.falta < 0.5) t += 'La renta fija de su cartera (' + p1(R.rfPct) + ', ' + f(R.RF) + ') lo cubre: ' + p1(R.crDeRf) + ' en bonos en Costa Rica y ' + p1(R.usDeRf) + ' en bonos en EE. UU. (' + f(R.us) + ').';
+  if(R.falta < 0.5) t += 'La renta fija de su cartera (' + p1(R.rfPct) + ', ' + f(R.RF) + ') lo cubre. De esa renta fija, ' + p1(R.crDeRf) + ' va a bonos en Costa Rica (' + f(R.cr) + ') y ' + p1(R.usDeRf) + ' a bonos en EE. UU. (' + f(R.us) + ').';
   else if(R.cabeEnTope) t += 'La renta fija de su cartera (' + p1(R.rfPct) + ') no alcanza: faltan ' + f(R.falta) + '. Puede subirse a ' + p1(R.req / R.cap) + ', dentro del tope del perfil (' + p1(R.rfMaxPct) + '), y toda iría a Costa Rica.';
   else t += 'Ni con el tope de renta fija del perfil (' + p1(R.rfMaxPct) + ') se cubre: los bonos en Costa Rica pagarían ' + p1(R.RF / R.req) + ' de esos gastos; el resto sale del portafolio.';
   return t;
@@ -4141,11 +4175,18 @@ function flujoMonedaHTML(c, p){
       <h2 class="section-title" style="font-size:16px;">Porcentaje del portafolio en colones para cubrir gastos</h2>
       <p class="section-sub" style="margin-bottom:6px;">Cuánto del portafolio debe estar en bonos en colones (Costa Rica) para que sus intereses paguen los gastos en colones; el resto de la renta fija va a bonos en dólares (EE. UU.).</p>
       <p class="veredicto ${ok ? 'ok' : 'alerta'}" style="margin:6px 0 14px;">${esc(textoRentaFija(R, usd))}</p>
-      <div class="col-grid">
-        <div>${donaSVG(segmentosColones(R), p1(R.cap > 0 ? R.cr / R.cap : 0), 'en bonos en colones', 240)}
-          <div class="col-ley">${segmentosColones(R).map(([n, v, col]) => `<span><i style="background:${col}"></i>${n.replace(' · Costa Rica', '').replace(' · EE. UU.', '')} ${p1(v)}</span>`).join('')}</div></div>
-        <div>${bloquesColones(R, usd).map(([t, v, x, col]) => `<div class="col-bloque" style="border-left-color:${col}"><div class="col-lbl">${esc(t)}</div><div class="col-num"${col === '#8C3A2B' ? ' style="color:var(--alert)"' : ''}>${esc(v)}</div><div class="col-sub">${esc(x)}</div></div>`).join('')}</div>
-      </div>
+      ${(() => { const S = seccionColones(R, usd);
+        return `<div class="cp-paso"><div class="cp-n">1</div><div><div class="cp-t">Gasto del cliente, por moneda<span>valor de hoy</span></div>
+          <table class="cp-tab"><thead><tr><th></th><th>En colones</th><th>En dólares</th><th>Total</th></tr></thead><tbody>
+          ${S.gasto.map((r, i) => `<tr${i === 2 ? ' class="pct"' : ''}><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td></tr>`).join('')}</tbody></table></div></div>
+        <div class="cp-paso"><div class="cp-n">2</div><div><div class="cp-t">Capital en colones que paga ese gasto con sus intereses</div>
+          <div class="cp-ecu">${esc(S.capital.linea)}</div></div></div>
+        <div class="cp-paso"><div class="cp-n">3</div><div><div class="cp-t">${esc(S.rfTit)}<span>${esc(S.nota)}</span></div>
+          <div class="cp-rf"><div>${donaSVG(S.rf.map(x => [x[0], x[1], x[3]]), S.centro, 'en Costa Rica', 170)}</div>
+          <table class="cp-tab"><thead><tr><th>Renta fija</th><th>% de la renta fija</th></tr></thead><tbody>
+          ${S.rf.map(r => `<tr><td><span class="sw" style="display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:8px;background:${r[3]}"></span>${r[0]}</td><td>${(r[1]*100).toFixed(1).replace('.', ',')}%</td></tr>`).join('')}
+          <tr class="pct"><td>${S.rfTot[0]}</td><td>${S.rfTot[1]}</td></tr></tbody></table></div>
+          ${S.falta ? `<p class="veredicto alerta" style="margin-top:10px;">${esc(S.falta)}</p>` : ''}</div></div>`; })()}
       <details class="detalle"><summary>Detalle del cálculo: gasto por moneda, capital requerido y renta fija</summary>
       <p class="obj-tit">1. Gasto anual por moneda <span>valor de hoy, según la moneda en que el cliente lo declaró</span></p>
       <table class="tabla-obj tabla-mon"><colgroup><col style="width:32%"><col style="width:17%"><col style="width:17%"><col style="width:17%"><col style="width:17%"></colgroup>
@@ -6718,19 +6759,27 @@ async function exportarFicha(c, p, asig){
       titulo('Porcentaje del portafolio en colones para cubrir gastos', y); y += 5;
       subtitulo('Cuánto del portafolio debe estar en bonos en colones (Costa Rica) para que sus intereses paguen los gastos en colones; el resto de la renta fija va a bonos en dólares (EE. UU.).');
       recuadroPdf(textoRentaFija(R, usdPdf), okR); y += 1;
-      { const seg = segmentosColones(R), d = 58, y0 = y;
-        doc.addImage(donaCanvas(document.createElement('canvas'), seg, (R.cap > 0 ? R.cr / R.cap * 100 : 0).toFixed(1).replace('.', ',') + '%', 'en bonos en colones', 600).toDataURL('image/png'), 'PNG', M, y0, d, d, undefined, 'FAST');
-        let yl = y0 + d + 4; doc.setFontSize(6.4);
-        seg.forEach(([n, v, col]) => { doc.setFillColor(...hexRgb(col)); doc.rect(M + 2, yl - 2.2, 2.4, 2.4, 'F'); doc.setTextColor(...NEGRO); doc.text(n + '  ' + (v*100).toFixed(1).replace('.', ',') + '%', M + 6, yl); yl += 3.6; });
-        const xb = M + d + 10, wb = W - M - xb; let yb = y0 + 6;
-        bloquesColones(R, usdPdf, 'CRC ').forEach(([t, v, x, col]) => {
-          doc.setFontSize(7); const l = doc.splitTextToSize(x, wb - 6); const hb = 12 + l.length * 3.2;
-          doc.setFillColor(...hexRgb(col)); doc.rect(xb, yb - 3, 0.9, hb, 'F');
-          doc.setFontSize(6.4); doc.setTextColor(...GRIS); doc.text(t.toUpperCase(), xb + 4, yb);
-          doc.setFontSize(12); doc.setTextColor(...(col === '#8C3A2B' ? [140,58,43] : NEGRO)); doc.text(v, xb + 4, yb + 6);
-          doc.setFontSize(7); doc.setTextColor(...GRIS); doc.text(l, xb + 4, yb + 10.5);
-          yb += hb + 4; });
-        y = Math.max(yl, yb) + 4; }
+      { const S = seccionColones(R, usdPdf, 'CRC '), paso = (n, t, sub) => { asegurar(16);
+          doc.setFillColor(...VERDE); doc.circle(M + 2.6, y - 1.2, 2.4, 'F'); doc.setFont('helvetica','bold'); doc.setFontSize(7); doc.setTextColor(255, 255, 255); doc.text(String(n), M + 2.6, y - 0.1, {align: 'center'});
+          doc.setFontSize(8); doc.setTextColor(...NEGRO); doc.text(t, M + 7, y); const wT = doc.getTextWidth(t); doc.setFont('helvetica','normal');
+          if(sub){ doc.setFontSize(6.6); doc.setTextColor(...GRIS); doc.text(sub, M + 7 + wT + 3, y); } y += 4.5; };
+        paso(1, 'Gasto del cliente, por moneda', 'valor de hoy');
+        tablaPdf(['', 'En colones', 'En dólares', 'Total'], S.gasto.map((r, i) => r.map(x => i === 2 ? {t: x, b: true} : x)), [40, 62, 36, 36], [1, 2, 3]); y += 3;
+        paso(2, 'Capital en colones que paga ese gasto con sus intereses', '');
+        doc.setFontSize(7.4); doc.setTextColor(...NEGRO); doc.text(S.capital.linea, M + 7, y + 0.5); y += 7;
+        paso(3, S.rfTit, '');
+        doc.setFontSize(6.6); doc.setTextColor(...GRIS); doc.text(S.nota, M + 7, y - 0.5); y += 2.5;
+        const d = 38, y0 = y; doc.addImage(donaCanvas(document.createElement('canvas'), S.rf.map(x => [x[0], x[1], x[3]]), S.centro, 'en Costa Rica', 500).toDataURL('image/png'), 'PNG', M + 7, y0, d, d, undefined, 'FAST');
+        const xt = M + d + 16, wt = W - M - xt; let yt = y0 + 8;
+        doc.setFont('helvetica','bold'); doc.setFontSize(6.4); doc.setTextColor(...GRIS); doc.text('RENTA FIJA', xt, yt); doc.text('% DE LA RENTA FIJA', xt + wt, yt, {align: 'right'}); doc.setFont('helvetica','normal');
+        doc.setDrawColor(...LINEA); doc.setLineWidth(0.25); doc.line(xt, yt + 1.6, xt + wt, yt + 1.6); yt += 6.5;
+        S.rf.concat([[S.rfTot[0], 1, S.rfTot[2], null]]).forEach(([n, v, m, col]) => { doc.setFontSize(7.6);
+          if(col){ doc.setFillColor(...hexRgb(col)); doc.rect(xt, yt - 2.4, 2.6, 2.6, 'F'); } else doc.setFont('helvetica','bold');
+          doc.setTextColor(...NEGRO); doc.text(n, xt + (col ? 4.5 : 0), yt); doc.text((v*100).toFixed(1).replace('.', ',').replace(',0', '') + '%', xt + wt, yt, {align: 'right'});
+          doc.setFont('helvetica','normal'); doc.setDrawColor(226, 229, 214); doc.line(xt, yt + 2.4, xt + wt, yt + 2.4); yt += 7; });
+        y = Math.max(y0 + d, yt) + 3;
+        if(S.falta){ recuadroPdf(S.falta, false); }
+        y += 2; }
       asegurar(30);
       doc.setFont('helvetica','bold'); doc.setFontSize(7.6); doc.setTextColor(...NEGRO); doc.text('1. Gasto anual por moneda (valor de hoy)', M, y); y += 4; doc.setFont('helvetica','normal');
       tablaPdf(['Gasto', 'Colones (CRC)', 'Colones en US$', 'Dólares (US$)', 'Total (US$)'], T.gas.map((r, i, a) => r.map(x => i >= a.length - 2 ? {t: x, b: true} : x)), [62, 28, 28, 28, 28], [1, 2, 3, 4]);
@@ -7185,18 +7234,29 @@ async function exportarPresentacion(c, p, asig){
       // diapositiva 1: dona del portafolio y las tres cifras que explican el porcentaje
       { const sd = nueva('Porcentaje del portafolio en colones para cubrir gastos', 'Cuánto del portafolio debe estar en bonos en colones para que sus intereses paguen los gastos en colones; el resto de la renta fija va a EE. UU.');
         recuadro(sd, M, 1.75, W - 2*M, 0.62, textoRentaFija(R, usdPdf), okR ? ORO : ROJO, 10.5);
-        const seg = segmentosColones(R), d = 3.45;
-        sd.addImage({data: donaCanvas(document.createElement('canvas'), seg, (R.cap > 0 ? R.cr / R.cap * 100 : 0).toFixed(1).replace('.', ',') + '%', 'en bonos en colones', 700).toDataURL('image/png'), x: M + 0.3, y: 2.55, w: d, h: d});
-        seg.forEach(([n, v, col], i) => { const xx = M + (i % 2) * 2.35, yy = 6.22 + Math.floor(i / 2) * 0.22;
-          sd.addShape(pptx.ShapeType.rect, {x: xx, y: yy + 0.04, w: 0.12, h: 0.12, fill: {color: col.replace('#', '')}, line: {color: col.replace('#', ''), width: 0}});
-          sd.addText(n.replace(' · Costa Rica', '').replace(' · EE. UU.', '') + '  ' + (v*100).toFixed(1).replace('.', ',') + '%', {x: xx + 0.18, y: yy, w: 2.15, h: 0.2, fontFace: FONT, fontSize: 9, color: NEGRO, margin: 0}); });
-        let yb = 2.6; const xb = M + 5.0, wb = W - M - xb;
-        bloquesColones(R, usdPdf).forEach(([t, v, x, col]) => {
-          sd.addShape(pptx.ShapeType.rect, {x: xb, y: yb, w: 0.06, h: 1.0, fill: {color: col.replace('#', '')}, line: {color: col.replace('#', ''), width: 0}});
-          sd.addText(t.toUpperCase(), {x: xb + 0.22, y: yb, w: wb - 0.3, h: 0.25, fontFace: FONT, fontSize: 9, color: GRIS, charSpacing: 1, margin: 0});
-          sd.addText(v, {x: xb + 0.22, y: yb + 0.25, w: wb - 0.3, h: 0.42, fontFace: FONT, fontSize: 20, color: col === '#8C3A2B' ? ROJO : NEGRO, margin: 0, fit: 'shrink'});
-          sd.addText(x, {x: xb + 0.22, y: yb + 0.67, w: wb - 0.3, h: 0.36, fontFace: FONT, fontSize: 10, color: GRIS, margin: 0, valign: 'top', fit: 'shrink'});
-          yb += 1.22; });
+        const S = seccionColones(R, usdPdf), CW = [4.5, 3.3, W - 2*M - 0.6 - 7.8], y0 = 2.6; let cw = CW[0];
+        const tit = (n, x, t, sub) => {
+          sd.addShape(pptx.ShapeType.ellipse, {x, y: y0, w: 0.3, h: 0.3, fill: {color: VERDE}, line: {color: VERDE, width: 0}});
+          sd.addText(String(n), {x, y: y0, w: 0.3, h: 0.3, align: 'center', valign: 'middle', fontFace: FONT, fontSize: 10, bold: true, color: 'FFFFFF', margin: 0});
+          sd.addText(t, {x: x + 0.4, y: y0 - 0.04, w: cw - 0.45, h: 0.4, fontFace: FONT, fontSize: 11, bold: true, color: NEGRO, margin: 0, valign: 'top', fit: 'shrink'});
+          if(sub) sd.addText(sub, {x: x + 0.4, y: y0 + 0.36, w: cw - 0.45, h: 0.4, fontFace: FONT, fontSize: 8.5, color: GRIS, margin: 0, valign: 'top'}); };
+        // 1. gasto por moneda
+        let x = M; cw = CW[0]; tit(1, x, 'Gasto del cliente, por moneda', 'valor de hoy');
+        const tg1 = [tablaCab(['', 'Colones', 'Dólares', 'Total'])].concat(S.gasto.map((r, i) => r.map((v, k) => ({text: v, options: {align: k ? 'right' : 'left', bold: i === 2, color: i === 2 ? ORO : NEGRO}}))));
+        [1, 2, 3].forEach(k => tg1[0][k].options.align = 'right');
+        sd.addTable(tg1, {x, y: y0 + 0.85, w: cw, colW: [1.0, 1.7, 0.85, 0.95], fontFace: FONT, fontSize: 9, border: {type: 'solid', color: LINEA, pt: 0.5}, rowH: 0.34, margin: 0.04, autoPage: false});
+        // 2. capital en colones
+        x = M + CW[0] + 0.3; cw = CW[1]; tit(2, x, 'Capital en colones que paga ese gasto con sus intereses', '');
+        sd.addText(S.capital.linea, {x: x + 0.4, y: y0 + 0.85, w: cw - 0.45, h: 0.9, fontFace: FONT, fontSize: 11, color: NEGRO, margin: 0, valign: 'top'});
+        // 3. reparto de la renta fija (100%)
+        x = M + CW[0] + CW[1] + 0.6; cw = CW[2]; tit(3, x, S.rfTit, S.nota);
+        const dd = 1.75; sd.addImage({data: donaCanvas(document.createElement('canvas'), S.rf.map(r => [r[0], r[1], r[3]]), S.centro, 'en Costa Rica', 600).toDataURL('image/png'), x: x + (cw - dd) / 2, y: y0 + 0.85, w: dd, h: dd});
+        const tr = [tablaCab(['Renta fija', '% de la renta fija'])].concat(S.rf.map(r => [{text: [{text: '■  ', options: {color: r[3].replace('#', '')}}, {text: r[0], options: {color: NEGRO}}]},
+          {text: (r[1]*100).toFixed(1).replace('.', ',') + '%', options: {align: 'right'}}]),
+          [[{text: S.rfTot[0], options: {bold: true}}, {text: S.rfTot[1], options: {align: 'right', bold: true}}]]);
+        tr[0][1].options.align = 'right';
+        sd.addTable(tr, {x, y: y0 + 2.7, w: cw, colW: [cw - 1.4, 1.4], fontFace: FONT, fontSize: 9, color: NEGRO, border: {type: 'solid', color: LINEA, pt: 0.5}, rowH: 0.3, margin: 0.04, autoPage: false});
+        if(S.falta) sd.addText(S.falta, {x: M, y: 6.2, w: W - 2*M, h: 0.4, fontFace: FONT, fontSize: 9, color: ROJO, margin: 0});
       }
       // diapositiva 2: gasto por moneda y capital requerido (detalle)
       const s = nueva('Porcentaje del portafolio en colones: detalle del cálculo', 'Gasto anual por moneda, capital requerido en Costa Rica y renta fija de la cartera sugerida');
@@ -7360,4 +7420,4 @@ cargar();
 
 
 
-<!-- Chotocruz & Co. · Entrega 55 · 29 de octubre de 2026 -->
+<!-- Chotocruz & Co. · Entrega 57 · 29 de octubre de 2026 -->
