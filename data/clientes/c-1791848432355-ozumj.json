@@ -64,42 +64,20 @@
   ],
   "donacionesAnualesUsdHoy": 0,
   "donacionesMoneda": null,
-  "ventasActivos": [
-    {
-      "concepto": "Venta de LOTES SIN DESARROLLAR",
-      "origen": "inmueble",
-      "anio": 2031,
-      "monto": 1000000,
-      "moneda": "USD",
-      "valor": 1000000,
-      "valorMoneda": "USD",
-      "deuda": 0,
-      "deudaMoneda": "USD",
-      "pctInvierte": 100
-    },
-    {
-      "concepto": "Venta de PROPIEDAD URUCA",
-      "origen": "inmueble",
-      "anio": 2036,
-      "monto": 26000000,
-      "moneda": "USD",
-      "valor": 26000000,
-      "valorMoneda": "USD",
-      "deuda": 0,
-      "deudaMoneda": "USD",
-      "pctInvierte": 100
-    }
-  ],
+  "ventasActivos": [],
   "capitalPrivado": {
     "valor": 0,
     "moneda": "USD",
     "detalle": ""
   },
+  "retirosPortafolio": [],
   "estructuraJuridica": {
-    "tipos": [
-      "Ninguna de las anteriores"
-    ],
-    "detalle": ""
+    "posee": "no",
+    "tipos": [],
+    "detalle": "",
+    "portafolioDentro": "",
+    "conPortafolio": [],
+    "fueraPortafolio": []
   },
   "apoyosDependientes": [
     {
@@ -181,6 +159,10 @@
   "patrimonio": {
     "vivienda": {
       "situacion": "propia",
+      "valor": 3700000,
+      "valorMoneda": "USD",
+      "alquilerMensual": null,
+      "alquilerMoneda": null,
       "hipoteca": null
     },
     "inmuebles": {
@@ -195,10 +177,10 @@
           "saldoDeuda": 0,
           "deudaMoneda": "USD",
           "moneda": "USD",
-          "estimaVender": true,
-          "anioVenta": 2031,
-          "inviertePortafolio": "si",
-          "pctInvierte": 100
+          "estimaVender": false,
+          "anioVenta": null,
+          "inviertePortafolio": null,
+          "pctInvierte": null
         },
         {
           "nombre": "PROPIEDAD URUCA",
@@ -209,10 +191,10 @@
           "saldoDeuda": 0,
           "deudaMoneda": "USD",
           "moneda": "USD",
-          "estimaVender": true,
-          "anioVenta": 2036,
-          "inviertePortafolio": "si",
-          "pctInvierte": 100
+          "estimaVender": false,
+          "anioVenta": null,
+          "inviertePortafolio": null,
+          "pctInvierte": null
         },
         {
           "nombre": "CASA RESIDENCIA",
@@ -230,16 +212,20 @@
         }
       ]
     },
-    "empresa": {
-      "propietario": true,
-      "plan": "mantener",
-      "valor": 38500000,
-      "valorMoneda": "USD",
-      "participacionPct": 80,
-      "inviertePortafolio": null,
-      "pctInvierte": null,
-      "aniosHastaEvento": null
-    },
+    "empresas": [
+      {
+        "numero": 1,
+        "nombre": "EMPRESA",
+        "propietario": true,
+        "plan": "mantener",
+        "valor": 38500000,
+        "valorMoneda": "USD",
+        "participacionPct": 80,
+        "inviertePortafolio": null,
+        "pctInvierte": null,
+        "aniosHastaEvento": null
+      }
+    ],
     "deudas": {
       "tiene": false,
       "moneda": null,
@@ -264,11 +250,14 @@
   "metas": [
     {
       "tipo": "negocio",
+      "detalle": "",
       "montoUsdHoy": 2500000,
       "moneda": "USD",
       "anio": 2027,
       "prioridad": "esencial",
-      "financiamiento": "credito-portafolio"
+      "financiamiento": "credito-portafolio",
+      "tasaCredito": 8.4,
+      "plazoCreditoAnios": 10
     }
   ],
   "creadoEn": 1791848432357,
@@ -343,7 +332,7 @@
         {
           "id": "q6",
           "campo": "Q6 - Retorno esperado y caída máxima",
-          "valor": "Rendimiento esperado anual de 5% a 5,5% · pérdida anual esperada de −5%",
+          "valor": "Rendimiento esperado anual de 5% a 5,5% · posible pérdida en un año desfavorable de hasta −5%",
           "codigo": "0"
         }
       ]
@@ -896,6 +885,18 @@
           "codigo": "propia"
         },
         {
+          "id": "viv-valor",
+          "campo": "Vivienda principal: valor estimado (monto)",
+          "valor": "3,700,000",
+          "codigo": "3,700,000"
+        },
+        {
+          "id": "viv-valor-moneda",
+          "campo": "Vivienda principal: valor estimado (moneda)",
+          "valor": "USD",
+          "codigo": "USD"
+        },
+        {
           "id": "inmuebles-n",
           "campo": "Cantidad de inmuebles de inversión",
           "valor": "3",
@@ -946,20 +947,8 @@
         {
           "id": "",
           "campo": "Inmueble 1: estima venderlo",
-          "valor": "Sí",
-          "codigo": "si"
-        },
-        {
-          "id": "",
-          "campo": "Inmueble 1: año de venta",
-          "valor": "2031",
-          "codigo": "2031"
-        },
-        {
-          "id": "",
-          "campo": "Inmueble 1: invierte la venta en el portafolio",
-          "valor": "Sí, todo",
-          "codigo": "si"
+          "valor": "No",
+          "codigo": "no"
         },
         {
           "id": "",
@@ -1006,20 +995,8 @@
         {
           "id": "",
           "campo": "Inmueble 2: estima venderlo",
-          "valor": "Sí",
-          "codigo": "si"
-        },
-        {
-          "id": "",
-          "campo": "Inmueble 2: año de venta",
-          "valor": "2036",
-          "codigo": "2036"
-        },
-        {
-          "id": "",
-          "campo": "Inmueble 2: invierte la venta en el portafolio",
-          "valor": "Sí, todo",
-          "codigo": "si"
+          "valor": "No",
+          "codigo": "no"
         },
         {
           "id": "",
@@ -1075,36 +1052,42 @@
       "pagina": 2,
       "seccion": "Planificación financiera",
       "n": "15",
-      "clave": "empresa",
-      "pregunta": "¿Es propietario de una empresa?",
+      "clave": "empresas-n",
+      "pregunta": "¿Es propietario de empresas? Indique cuántas",
       "detalle": [
         {
-          "id": "empresa",
-          "campo": "Propietario de empresa",
-          "valor": "Sí",
-          "codigo": "si"
+          "id": "empresas-n",
+          "campo": "Cantidad de empresas",
+          "valor": "1",
+          "codigo": "1"
         },
         {
-          "id": "empresa-part",
-          "campo": "Empresa: porcentaje de participación",
+          "id": "",
+          "campo": "Empresa 1: nombre",
+          "valor": "EMPRESA",
+          "codigo": "EMPRESA"
+        },
+        {
+          "id": "",
+          "campo": "Empresa 1: porcentaje de participación",
           "valor": "80",
           "codigo": "80"
         },
         {
-          "id": "empresa-valor",
-          "campo": "Empresa: valor estimado (monto)",
+          "id": "",
+          "campo": "Empresa 1: valor estimado (monto)",
           "valor": "38,500,000",
           "codigo": "38,500,000"
         },
         {
-          "id": "empresa-valor-moneda",
-          "campo": "Empresa: valor estimado (moneda)",
+          "id": "",
+          "campo": "Empresa 1: valor estimado (moneda)",
           "valor": "USD",
           "codigo": "USD"
         },
         {
-          "id": "empresa-plan",
-          "campo": "Plan sobre la empresa",
+          "id": "",
+          "campo": "Empresa 1: plan",
           "valor": "No lo estimo por ahora",
           "codigo": "mantener"
         }
@@ -1144,21 +1127,6 @@
       "pagina": 2,
       "seccion": "Planificación financiera",
       "n": "18",
-      "clave": "c1-tiene",
-      "pregunta": "¿Planea un retiro de este portafolio distinto de sus metas, y cuándo y de cuánto sería?",
-      "detalle": [
-        {
-          "id": "c1-tiene",
-          "campo": "Primer retiro del portafolio",
-          "valor": "No",
-          "codigo": "no"
-        }
-      ]
-    },
-    {
-      "pagina": 2,
-      "seccion": "Planificación financiera",
-      "n": "19",
       "clave": "metas-n",
       "pregunta": "¿Cuántas metas específicas desea financiar con su patrimonio?",
       "detalle": [
@@ -1203,6 +1171,33 @@
           "campo": "Meta 1: financiamiento",
           "valor": "Con un crédito respaldado por el portafolio",
           "codigo": "credito-portafolio"
+        },
+        {
+          "id": "",
+          "campo": "Meta 1: tasa del crédito (%)",
+          "valor": "8.4",
+          "codigo": "8.4"
+        },
+        {
+          "id": "",
+          "campo": "Meta 1: plazo del crédito (años)",
+          "valor": "10",
+          "codigo": "10"
+        }
+      ]
+    },
+    {
+      "pagina": 2,
+      "seccion": "Planificación financiera",
+      "n": "19",
+      "clave": "c1-tiene",
+      "pregunta": "¿Planea retiros adicionales de este portafolio, distintos de las metas indicadas en la pregunta anterior?",
+      "detalle": [
+        {
+          "id": "c1-tiene",
+          "campo": "Retiros adicionales del portafolio",
+          "valor": "No",
+          "codigo": "no"
         }
       ]
     },
@@ -1273,14 +1268,14 @@
       "pagina": 2,
       "seccion": "Planificación financiera",
       "n": "23",
-      "clave": "estr-sa-cr",
-      "pregunta": "Indique cuáles de las siguientes estructuras jurídicas posee",
+      "clave": "estr-tiene",
+      "pregunta": "¿Posee estructuras jurídicas?",
       "detalle": [
         {
-          "id": "seleccion",
-          "campo": "Selección",
-          "valor": "Ninguna de las anteriores",
-          "codigo": ""
+          "id": "estr-tiene",
+          "campo": "Posee estructuras jurídicas",
+          "valor": "No",
+          "codigo": "no"
         }
       ]
     },
@@ -1391,6 +1386,9 @@
     "capital-moneda": "USD",
     "c5-pct": "100",
     "vivienda": "propia",
+    "viv-valor": "3,700,000",
+    "viv-valor-moneda": "USD",
+    "viv-alquiler-moneda": "USD",
     "hipoteca-saldo-moneda": "USD",
     "hipoteca-cuota-moneda": "USD",
     "inmuebles-n": "3",
@@ -1401,9 +1399,7 @@
     "n:Inmueble 1: renta mensual neta (moneda)": "USD",
     "n:Inmueble 1: saldo de deuda": "0",
     "n:Inmueble 1: saldo de deuda (moneda)": "USD",
-    "n:Inmueble 1: estima venderlo": "si",
-    "n:Inmueble 1: año de venta": "2031",
-    "n:Inmueble 1: invierte la venta en el portafolio": "si",
+    "n:Inmueble 1: estima venderlo": "no",
     "n:Inmueble 2: nombre": "PROPIEDAD URUCA",
     "n:Inmueble 2: valor estimado": "26,000,000",
     "n:Inmueble 2: valor estimado (moneda)": "USD",
@@ -1411,9 +1407,7 @@
     "n:Inmueble 2: renta mensual neta (moneda)": "USD",
     "n:Inmueble 2: saldo de deuda": "0",
     "n:Inmueble 2: saldo de deuda (moneda)": "USD",
-    "n:Inmueble 2: estima venderlo": "si",
-    "n:Inmueble 2: año de venta": "2036",
-    "n:Inmueble 2: invierte la venta en el portafolio": "si",
+    "n:Inmueble 2: estima venderlo": "no",
     "n:Inmueble 3: nombre": "CASA RESIDENCIA",
     "n:Inmueble 3: valor estimado": "3,700,000",
     "n:Inmueble 3: valor estimado (moneda)": "USD",
@@ -1422,16 +1416,15 @@
     "n:Inmueble 3: saldo de deuda": "0",
     "n:Inmueble 3: saldo de deuda (moneda)": "USD",
     "n:Inmueble 3: estima venderlo": "no",
-    "empresa": "si",
-    "empresa-part": "80",
-    "empresa-valor": "38,500,000",
-    "empresa-valor-moneda": "USD",
-    "empresa-plan": "mantener",
+    "empresas-n": "1",
+    "n:Empresa 1: nombre": "EMPRESA",
+    "n:Empresa 1: porcentaje de participación": "80",
+    "n:Empresa 1: valor estimado (monto)": "38,500,000",
+    "n:Empresa 1: valor estimado (moneda)": "USD",
+    "n:Empresa 1: plan": "mantener",
     "pe-tiene": "no",
     "pe-moneda": "USD",
     "ventas-n": "0",
-    "c1-tiene": "no",
-    "c1-moneda": "USD",
     "metas-n": "1",
     "n:Meta 1: tipo": "negocio",
     "n:Meta 1: monto (valor de hoy)": "2,500,000",
@@ -1439,6 +1432,9 @@
     "n:Meta 1: año estimado": "2027",
     "n:Meta 1: prioridad": "esencial",
     "n:Meta 1: financiamiento": "credito-portafolio",
+    "n:Meta 1: tasa del crédito (%)": "8.4",
+    "n:Meta 1: plazo del crédito (años)": "10",
+    "c1-tiene": "no",
     "herencia": "indistinto",
     "herencia-moneda": "USD",
     "seguro-vida": true,
@@ -1450,13 +1446,18 @@
     "vida-moneda": "USD",
     "moneda-usd": "100",
     "moneda-crc": "0",
+    "estr-tiene": "no",
     "estr-sa-cr": false,
     "estr-pa": false,
     "estr-offshore": false,
     "estr-fundacion": false,
     "estr-fideicomiso": false,
-    "estr-ninguna": true,
     "estructuras-sel": "Ninguna de las anteriores",
+    "estr-sa-cr-port": false,
+    "estr-pa-port": false,
+    "estr-offshore-port": false,
+    "estr-fundacion-port": false,
+    "estr-fideicomiso-port": false,
     "comentarios": "no",
     "nombres": "Victor Emilio",
     "apellidos": "Herrera",
@@ -1474,7 +1475,7 @@
     "distrito": "San Rafael",
     "direccion": "Torre Country"
   },
-  "modificadoEn": 1793131030564,
+  "modificadoEn": 1793308164092,
   "historialEdiciones": [
     1792100359416,
     1792102121912,
@@ -1484,6 +1485,7 @@
     1793128681161,
     1793128748845,
     1793130686972,
-    1793131030564
+    1793131030564,
+    1793308164092
   ]
 }
