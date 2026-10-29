@@ -1123,6 +1123,21 @@
                 <option value="hipoteca">Propia, con hipoteca</option>
                 <option value="alquilada">Alquilada</option>
               </select>
+              <div class="sub-q" id="viv-valor-detalle" hidden>
+                <span class="mini">Valor estimado de la vivienda</span>
+                <div class="amount">
+                  <input type="number" min="0" id="viv-valor" name="Vivienda principal: valor estimado (monto)" placeholder="250.000">
+                  <select id="viv-valor-moneda" name="Vivienda principal: valor estimado (moneda)"><option>USD</option><option>CRC</option></select>
+                </div>
+              </div>
+              <div class="sub-q" id="viv-alquiler-detalle" hidden>
+                <span class="mini">Alquiler mensual de la vivienda</span>
+                <div class="amount">
+                  <input type="number" min="0" id="viv-alquiler" name="Vivienda principal: alquiler mensual (monto)" placeholder="1.200">
+                  <select id="viv-alquiler-moneda" name="Vivienda principal: alquiler mensual (moneda)"><option>USD</option><option>CRC</option></select>
+                </div>
+                <p class="hint">Informativo: el alquiler ya forma parte de su gasto familiar mensual.</p>
+              </div>
               <div class="sub-q" id="hipoteca-detalle" hidden>
                 <span class="mini">Saldo pendiente de la hipoteca</span>
                 <div class="amount">
@@ -1169,11 +1184,9 @@
               <select id="pe-tiene" name="Inversiones de capital privado"><option value="" disabled selected>Seleccione una opción</option><option value="no">No</option><option value="si">Sí</option></select>
               <p class="hint">Participaciones en empresas que no cotizan en bolsa (distintas de la empresa de la pregunta anterior) o fondos de capital privado. Se usa para calcular su patrimonio total.</p>
               <div class="sub-q" id="pe-detalle" hidden>
-                <span class="mini">Valor estimado de la empresa o fondo (100%)</span>
+                <span class="mini">Monto total invertido</span>
                 <div class="amount"><input type="number" min="0" id="pe-valor" name="Capital privado: valor estimado (monto)" placeholder="250.000">
                   <select id="pe-moneda" name="Capital privado: valor estimado (moneda)"><option>USD</option><option>CRC</option></select></div>
-                <span class="mini espacio">Porcentaje de participación actual</span>
-                <div class="amount"><input type="number" min="0.01" max="100" step="0.01" id="pe-part" name="Capital privado: porcentaje de participación" placeholder="15"><div class="unit">%</div></div>
                 <span class="mini espacio">Detalle (empresa o fondo)</span>
                 <input id="pe-detalle-txt" name="Capital privado: detalle" placeholder="Participación en…">
               </div>
@@ -1882,11 +1895,13 @@ const CONDICIONALES = [
   {control:'f-fcl-traslado',  detalle:'f-fcl-anio-detalle',    campos:['f-fcl-anio'],                  aplica: v => v === 'quinquenio'},
   {control:'f-vol-traslado',  detalle:'f-vol-anio-detalle',    campos:['f-vol-anio'],                  aplica: v => v === 'anio'},
   {control:'pension-regimen', detalle:'pension-detalle',       campos:['pension-recibe','pension-monto','pension-edad'], aplica: v => !!v && v !== 'ninguno'},
+  {control:'vivienda',        detalle:'viv-valor-detalle',     campos:['viv-valor'],                   aplica: v => v === 'propia' || v === 'hipoteca'},
+  {control:'vivienda',        detalle:'viv-alquiler-detalle',  campos:['viv-alquiler'],                aplica: v => v === 'alquilada'},
   {control:'vivienda',        detalle:'hipoteca-detalle',      campos:['hipoteca-saldo','hipoteca-cuota','hipoteca-tasa','hipoteca-plazo'], aplica: v => v === 'hipoteca'},
   {control:'inmuebles-n',     detalle:'inmuebles-detalle',     campos:[],                              aplica: v => +v > 0},
   {control:'deudas-tiene',    detalle:'deudas-detalle-q',      campos:['deudas-n','deudas-en-gasto'],  aplica: v => v === 'si'},
   {control:'donaciones-tiene', detalle:'donaciones-detalle',   campos:['donaciones-monto'],            aplica: v => v === 'si'},
-  {control:'pe-tiene',        detalle:'pe-detalle',            campos:['pe-valor','pe-part'],          aplica: v => v === 'si'},
+  {control:'pe-tiene',        detalle:'pe-detalle',            campos:['pe-valor'],                    aplica: v => v === 'si'},
   {control:'c1-tiene',        detalle:'c1-detalle',            campos:['retiros-n'],                   aplica: v => v === 'si'},
   {control:'seguro-vida',     detalle:'vida-detalle',          campos:['vida-suma'],                   aplica: v => v === true},
   {control:'herencia',        detalle:'herencia-detalle',      campos:['herencia-monto'],              aplica: v => v === 'herencia'}
@@ -2613,7 +2628,7 @@ document.getElementById('form').addEventListener('submit', async function(e){
         concepto: 'Venta de ' + ((f.nombre || '').toUpperCase() || 'la empresa'), origen: 'empresa', anio: ANIO_ACTUAL + (+f.anios || 0),
         monto: (+f.valor || 0) * (f.part != null ? +f.part : 100)/100 * (f.invierte === 'parte' ? (+f.pct || 0)/100 : 1), moneda: f.moneda || 'USD'})),
       leerFilas('ventas-filas').map(f => ({concepto: f.activo || 'Venta de activos', origen: 'otro', anio: f.anio, monto: f.monto, moneda: f.moneda || 'USD'}))),
-    capitalPrivado: val('pe-tiene') === 'si' ? {valor: +val('pe-valor') || 0, moneda: val('pe-moneda'), participacionPct: val('pe-part') === '' ? null : +val('pe-part'), detalle: val('pe-detalle-txt').trim()} : (val('pe-tiene') === 'no' ? {valor: 0, moneda: 'USD', detalle: ''} : null),
+    capitalPrivado: val('pe-tiene') === 'si' ? {valor: +val('pe-valor') || 0, moneda: val('pe-moneda'), participacionPct: null, detalle: val('pe-detalle-txt').trim()} : (val('pe-tiene') === 'no' ? {valor: 0, moneda: 'USD', detalle: ''} : null),
     // Retiros adicionales del portafolio (pregunta de retiros): motivo, año y monto de cada uno
     retirosPortafolio: val('c1-tiene') === 'si' ? leerFilas('retiros-filas').map(x => ({nombre: (x.nombre || '').trim(), anio: x.anio, montoUsdHoy: x.monto, moneda: x.moneda || 'USD'})) : [],
     estructuraJuridica: {posee: val('estr-tiene'), tipos: [...document.querySelectorAll('.estr')].filter(x => x.checked).map(x => x.value), detalle: val('estructuras-detalle').trim(),
@@ -2676,6 +2691,11 @@ document.getElementById('form').addEventListener('submit', async function(e){
     patrimonio: {
       vivienda: {
         situacion: val('vivienda'),
+        // valor estimado (propia o con hipoteca) o alquiler mensual (alquilada), cada uno con su moneda
+        valor: (val('vivienda') === 'propia' || val('vivienda') === 'hipoteca') && val('viv-valor') !== '' ? +val('viv-valor') : null,
+        valorMoneda: (val('vivienda') === 'propia' || val('vivienda') === 'hipoteca') ? val('viv-valor-moneda') : null,
+        alquilerMensual: val('vivienda') === 'alquilada' && val('viv-alquiler') !== '' ? +val('viv-alquiler') : null,
+        alquilerMoneda: val('vivienda') === 'alquilada' ? val('viv-alquiler-moneda') : null,
         hipoteca: val('vivienda') === 'hipoteca' ? {
           saldo: +val('hipoteca-saldo'), saldoMoneda: val('hipoteca-saldo-moneda'),
           cuotaMensual: +val('hipoteca-cuota'), cuotaMoneda: val('hipoteca-cuota-moneda'),
@@ -3030,4 +3050,4 @@ function datosDesdeRegistro(r){
 
 
 
-<!-- Chotocruz & Co. · Entrega 49 · 28 de octubre de 2026 -->
+<!-- Chotocruz & Co. · Entrega 50 · 28 de octubre de 2026 -->
