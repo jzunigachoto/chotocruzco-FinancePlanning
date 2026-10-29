@@ -27,7 +27,7 @@
   "edad": 66,
   "edadRetiro": 66,
   "versionPerfil": 2,
-  "situacionPortafolio": "aporta",
+  "situacionPortafolio": "vive",
   "respuestas": {
     "q1": 6.67,
     "q2": 6.67,
@@ -92,7 +92,7 @@
   "capitalPrivado": {
     "valor": 500000,
     "moneda": "USD",
-    "participacionPct": 2,
+    "participacionPct": null,
     "detalle": "Daki"
   },
   "retirosPortafolio": [
@@ -171,6 +171,10 @@
   "patrimonio": {
     "vivienda": {
       "situacion": "propia",
+      "valor": 1000000,
+      "valorMoneda": "USD",
+      "alquilerMensual": null,
+      "alquilerMoneda": null,
       "hipoteca": null
     },
     "inmuebles": {
@@ -319,18 +323,18 @@
       "seccion": "Perfil de riesgo",
       "n": "06",
       "clave": "q7",
-      "pregunta": "Para alcanzar sus metas financieras, ¿qué prefiere?",
+      "pregunta": "Para que su portafolio sostenga sus retiros, ¿qué prefiere?",
       "detalle": [
         {
           "id": "q7-situacion",
           "campo": "Q7 - Situación frente al portafolio",
-          "valor": "Aporto a mis inversiones",
-          "codigo": "aporta"
+          "valor": "Vivo de mis inversiones: retiro de ellas para mis gastos",
+          "codigo": "vive"
         },
         {
           "id": "q7",
           "campo": "Q7 - Aporte frente a rendimiento",
-          "valor": "Aumentar mis aportes y mantener un riesgo bajo",
+          "valor": "Reducir mis retiros y mantener un riesgo bajo",
           "codigo": "0"
         }
       ]
@@ -862,6 +866,18 @@
           "codigo": "propia"
         },
         {
+          "id": "viv-valor",
+          "campo": "Vivienda principal: valor estimado (monto)",
+          "valor": "1,000,000",
+          "codigo": "1,000,000"
+        },
+        {
+          "id": "viv-valor-moneda",
+          "campo": "Vivienda principal: valor estimado (moneda)",
+          "valor": "USD",
+          "codigo": "USD"
+        },
+        {
           "id": "inmuebles-n",
           "campo": "Cantidad de inmuebles de inversión",
           "valor": "3",
@@ -1052,12 +1068,6 @@
           "campo": "Capital privado: valor estimado (moneda)",
           "valor": "USD",
           "codigo": "USD"
-        },
-        {
-          "id": "pe-part",
-          "campo": "Capital privado: porcentaje de participación",
-          "valor": "2",
-          "codigo": "2"
         },
         {
           "id": "pe-detalle-txt",
@@ -1260,7 +1270,7 @@
     "q2": "6.67",
     "q3": "0",
     "q6": "5",
-    "q7-situacion": "aporta",
+    "q7-situacion": "vive",
     "q7": "0",
     "q4": "6.67",
     "q8": "7.5",
@@ -1342,6 +1352,9 @@
     "capital-moneda": "USD",
     "c5-pct": "81.30",
     "vivienda": "propia",
+    "viv-valor": "1,000,000",
+    "viv-valor-moneda": "USD",
+    "viv-alquiler-moneda": "USD",
     "hipoteca-saldo-moneda": "USD",
     "hipoteca-cuota-moneda": "USD",
     "inmuebles-n": "3",
@@ -1373,7 +1386,6 @@
     "pe-tiene": "si",
     "pe-valor": "500,000",
     "pe-moneda": "USD",
-    "pe-part": "2",
     "pe-detalle-txt": "Daki",
     "ventas-n": "0",
     "metas-n": "0",
@@ -1425,12 +1437,13 @@
     "distrito": "Granadilla",
     "direccion": "Condominio Bosques de Altamonte casa 106"
   },
-  "modificadoEn": 1793222677847,
+  "modificadoEn": 1793232664992,
   "historialEdiciones": [
     1792601212944,
     1792616313880,
     1793047605055,
     1793049254420,
-    1793222677847
+    1793222677847,
+    1793232664992
   ]
 }
