@@ -2423,7 +2423,9 @@ function objetivosCliente(c, p, sup, f){
 function presentacionDe(c, sup){
   const pr = (sup && sup.presentacion) || {}, fp = (typeof firma !== 'undefined' && firma && firma.presentacion) || {};
   const lista = t => String(t || '').split('\n').map(x => x.trim()).filter(Boolean);
-  return {portada: String(pr.portada || '').trim() || c.nombre || 'Cliente',
+  // «Familia» + apellidos era el valor automático de la entrega 58; si quedó guardado así, se usa el nombre del cliente
+  const ap = ((c.identificacion || {}).apellidos || '').trim(), port = String(pr.portada || '').trim();
+  return {portada: (port && !/^familia\s/i.test(port) ? port : '') || c.nombre || 'Cliente',
     pasos: lista(pr.pasos != null ? pr.pasos : fp.pasos != null ? fp.pasos : PPT_PASOS.join('\n'))};
 }
 // N/A en los supuestos: un supuesto puede quedar «no aplica» solo si ninguna respuesta del
@@ -7897,4 +7899,4 @@ cargar();
 
 
 
-<!-- Chotocruz & Co. · Entrega 63 · 29 de octubre de 2026 -->
+<!-- Chotocruz & Co. · Entrega 64 · 29 de octubre de 2026 -->
