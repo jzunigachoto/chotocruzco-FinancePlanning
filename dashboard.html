@@ -483,6 +483,8 @@
   .tabla-caminos th, .tabla-caminos td{text-align:left;white-space:normal;overflow-wrap:anywhere;}
   .tabla-esc{table-layout:auto;} .tabla-esc th:nth-child(2),.tabla-esc th:nth-child(5),.tabla-esc th:nth-child(7){white-space:nowrap;} .tabla-esc td.cam{min-width:190px;} .eq-datos.tres{grid-template-columns:repeat(3,minmax(0,1fr));} .obj-tit{margin:26px 0 8px;font-size:13.5px;font-weight:600;color:#141709;} .obj-tit span{font-weight:400;color:#7F8757;font-size:12px;margin-left:8px;}
   .tabla-obj{width:100%;border-collapse:collapse;table-layout:fixed;font-variant-numeric:tabular-nums;}
+  .grid-1{display:grid;grid-template-columns:1fr;gap:18px;}
+  textarea.ppt-area,#s-ppt-portada{width:100%;font-family:var(--font);font-weight:300;font-size:14px;color:var(--ink);border:1px solid var(--rule);background:#FBFBF7;padding:10px 12px;line-height:1.5;resize:vertical;}
   .tabla-obj th{text-align:left;font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-45);font-weight:600;padding:0 14px 9px 0;border-bottom:1px solid var(--rule);}
   .tabla-obj td{padding:9px 14px 9px 0;border-bottom:1px solid var(--rule-2);font-size:13px;color:#23270F;vertical-align:top;}
   .tabla-obj th, .tabla-obj td{text-align:left;white-space:normal;overflow:visible;text-overflow:clip;}
@@ -682,6 +684,25 @@
           <label for="s-fcl">Año de ingreso del FCL</label>
           <input type="number" min="1" max="60" id="s-fcl" value="5">
           <p class="hint">Solo para cuestionarios anteriores, que no indicaban el año de traslado del FCL. Los actuales lo declaran.</p>
+        </div>
+      </div>
+
+      <div class="block-title">Presentación (PowerPoint)</div>
+      <div class="grid-1">
+        <div class="field" id="f-ppt-portada">
+          <label for="s-ppt-portada">Nombre en la portada</label>
+          <input type="text" id="s-ppt-portada" placeholder="Familia …">
+          <p class="hint">Aparece en la portada de la presentación, por ejemplo «Familia Arguedas Ortiz». Si queda vacío, se usa «Familia» y los apellidos del cliente.</p>
+        </div>
+        <div class="field">
+          <label for="s-ppt-objetivos">Objetivos del cliente</label>
+          <textarea id="s-ppt-objetivos" rows="6" class="ppt-area"></textarea>
+          <p class="hint">Uno por línea, como «Título: descripción». Aparecen en la lámina «Objetivos Financieros».</p>
+        </div>
+        <div class="field">
+          <label for="s-ppt-pasos">Próximos pasos</label>
+          <textarea id="s-ppt-pasos" rows="4" class="ppt-area"></textarea>
+          <p class="hint">Uno por línea, en orden de ejecución. Aparecen en la lámina «Próximos pasos».</p>
         </div>
       </div>
 
@@ -2356,6 +2377,30 @@ function cargarSupuestos(){
 }
 function pintarSupuestos(s){
   for(const k in CAMPOS){ const el = document.getElementById(CAMPOS[k]); if(el){ el.value = s[k]; el.dataset.valor = s[k]; } }
+  // presentación: nombre de la portada (solo en los supuestos de un cliente), objetivos y próximos pasos
+  try{
+    const pc = modoSup.tipo === 'cliente' ? clientes.find(x => x.id === modoSup.id) : null, PR = presentacionDe(pc || {}, s);
+    document.getElementById('s-ppt-portada').value = pc ? PR.portada : '';
+    document.getElementById('f-ppt-portada').hidden = !pc;
+    document.getElementById('s-ppt-objetivos').value = PR.objetivos.map(([t, d]) => t ? t + ': ' + d : d).join('\n');
+    document.getElementById('s-ppt-pasos').value = PR.pasos.join('\n');
+  }catch(e){}
+}
+// Presentación: textos que no salen del cuestionario. La firma define los objetivos y los próximos pasos
+// por defecto; el asesor los ajusta en los supuestos de cada cliente, junto con el nombre de la portada.
+const PPT_OBJETIVOS = ['Preservación del patrimonio: Proteger el capital acumulado, priorizando inversiones de alta calidad crediticia y un nivel de riesgo conservador.',
+  'Sostenibilidad financiera durante el retiro: Generar ingresos que permitan cubrir los gastos familiares y mantener el estilo de vida a largo plazo.',
+  'Planificación sucesoria: Preservar el patrimonio para su eventual transferencia a las siguientes generaciones.',
+  'Diversificación internacional: Reducir la concentración de inversiones en Costa Rica mediante una mayor exposición a mercados internacionales.',
+  'Optimización del capital disponible: Incorporar gradualmente el capital mantenido en liquidez a una estrategia de inversión alineada con sus objetivos y perfil de riesgo.'];
+const PPT_PASOS = ['Formalización de acuerdos de asesoría', 'Apertura de cuenta en banco del exterior', 'Implementación de estrategia de inversión', 'Revisión de estructura legal y fiscal actual'];
+function presentacionDe(c, sup){
+  const pr = (sup && sup.presentacion) || {}, fp = (typeof firma !== 'undefined' && firma && firma.presentacion) || {};
+  const lista = t => String(t || '').split('\n').map(x => x.trim()).filter(Boolean);
+  const ap = ((c.identificacion || {}).apellidos || '').trim();
+  return {portada: String(pr.portada || '').trim() || (ap ? 'Familia ' + ap : (c.nombre || 'Cliente')),
+    objetivos: lista(pr.objetivos != null ? pr.objetivos : fp.objetivos != null ? fp.objetivos : PPT_OBJETIVOS.join('\n')).map(x => { const i = x.indexOf(':'); return i > 0 ? [x.slice(0, i).trim(), x.slice(i + 1).trim()] : ['', x]; }),
+    pasos: lista(pr.pasos != null ? pr.pasos : fp.pasos != null ? fp.pasos : PPT_PASOS.join('\n'))};
 }
 // N/A en los supuestos: un supuesto puede quedar «no aplica» solo si ninguna respuesta del
 // cliente lo usa. Si el cliente respondió la pregunta que lo alimenta, el supuesto es obligatorio.
@@ -2484,6 +2529,9 @@ function leerSupuestos(){
   if(na.length) s.na = na;
   // Las carteras por perfil (topes y porcentajes específicos) son de la firma: se leen solo en ese modo.
   s.asignacion = CARTERAS;
+  const lp = id => (document.getElementById(id) || {}).value || '';
+  s.presentacion = {objetivos: lp('s-ppt-objetivos'), pasos: lp('s-ppt-pasos')};
+  if(modoSup.tipo === 'cliente') s.presentacion.portada = lp('s-ppt-portada').trim();
   if(modoSup.tipo === 'firma') s.carteras = leerCarteras();
   else s.carterasCliente = leerCarterasCliente();
   return s;
@@ -3298,7 +3346,7 @@ function veredictoInst(c, p, eq){
   if(eq.estado === 'inalcanzable')
     return `Ningún rendimiento razonable permite ${objetivo}. El plan necesita ajustes en los retiros, los aportes o el capital mínimo antes que en la cartera.`;
   if(holgura >= 0)
-    return `Para ${objetivo}, el portafolio necesita un rendimiento de ${pct1(eq.r)} anual. La cartera del perfil ${PERFILES[c.perfil].label.toLowerCase()} rinde ${pct1(p.retorno)}: el objetivo se cumple con una holgura de ${(holgura*100).toFixed(1)} puntos.`;
+    return `Para ${objetivo}, el portafolio necesita un rendimiento de ${pct1(eq.r)} anual. La cartera del perfil ${PERFILES[c.perfil].label.toLowerCase()} rinde ${pct1(p.retorno)}: el objetivo se cumple con una holgura de ${(holgura*100).toFixed(1).replace('.', ',')} puntos.`;
   if(req)
     return `Para ${objetivo}, el portafolio necesita un rendimiento de ${pct1(eq.r)} anual, por encima del ${pct1(p.retorno)} de la cartera sugerida. Lo cubriría un perfil ${PERFILES[req].label.toLowerCase()}, que excede el perfil de riesgo de la institución: el ajuste debe venir del plan, no de la cartera.`;
   return `Para ${objetivo}, el portafolio necesita un rendimiento de ${pct1(eq.r)} anual, por encima de lo que rinde cualquiera de las carteras modelo. El plan necesita ajustes en los retiros, los aportes o el capital mínimo.`;
@@ -3359,7 +3407,7 @@ function renderInstitucion(c){
         <ul class="card-lista">
           <li><span>Perfil de riesgo</span><b>${c.diag.perfilRiesgo ? PERFILES[c.diag.perfilRiesgo].label : '—'}</b><small>Cuestionario 1 · puntaje ${n1c(c.diag.disposicion)} de 10</small></li>
           <li><span>Rendimiento esperado</span><b>${pct(p.retorno)}</b><small>Cartera modelo del perfil de riesgo</small></li>
-          <li><span>Rendimiento mínimo necesario</span><b>${eq.estado === 'inalcanzable' ? 'Más de 30%' : eq.estado === 'sin-rendimiento' ? '0.0%' : pct(eq.r)}</b><small>Rendimiento de equilibrio de la institución</small></li>
+          <li><span>Rendimiento mínimo necesario</span><b>${eq.estado === 'inalcanzable' ? 'Más de 30%' : eq.estado === 'sin-rendimiento' ? '0,0%' : pct(eq.r)}</b><small>Rendimiento de equilibrio de la institución</small></li>
           <li><span>Cartera sugerida</span><b>${clasesVis().map(([, k]) => fmtPeso(asig[k] || 0).replace('.', ',') + '%').join(' · ')}</b><small>${clasesVis().map(([n]) => n).join(' · ').replace(/ · ([A-Z])/g, (m, l) => ' · ' + l.toLowerCase())}</small></li>
         </ul>
       </div>
@@ -3488,12 +3536,13 @@ ${respuestasHTML(c)}
 
 // Edad final del horizonte en texto: si la pareja es menor, el horizonte llega a su edad final.
 function hastaEdadTxt(p, sup){ return sup.edadFinal + ' años' + (p && p.horizontePareja ? ' de su pareja' : ''); }
-function veredictoPersona(c, p, eq){
+function veredictoPersona(c, p, eq, fm){
+  fm = fm || usd;
   const req = perfilRequerido(eq);
   const holgura = eq.r == null ? null : p.retorno - eq.r;
   const pct1 = v => (v*100).toFixed(1).replace('.', ',') + '%';
   const objetivo = eq.meta > 0
-    ? `sostener su gasto hasta los ${hastaEdadTxt(p, supuestos)} y dejar una herencia de ${usd(eq.meta)} en dólares de hoy`
+    ? `sostener su gasto hasta los ${hastaEdadTxt(p, supuestos)} y dejar una herencia de ${fm(eq.meta)} en dólares de hoy`
     : `sostener su gasto hasta los ${hastaEdadTxt(p, supuestos)} sin que el portafolio se agote`;
   let veredicto;
   if(eq.estado === 'sin-rendimiento')
@@ -3501,7 +3550,7 @@ function veredictoPersona(c, p, eq){
   else if(eq.estado === 'inalcanzable')
     veredicto = `Ningún rendimiento razonable permite ${objetivo}. Los caminos para alcanzar el objetivo se detallan más adelante.`;
   else if(holgura >= 0)
-    veredicto = `Para ${objetivo}, el plan necesita un rendimiento de ${pct1(eq.r)} anual. La cartera del perfil ${PERFILES[c.perfil].label.toLowerCase()} rinde ${pct1(p.retorno)}: el objetivo se cumple con una holgura de ${(holgura*100).toFixed(1)} puntos.`;
+    veredicto = `Para ${objetivo}, el plan necesita un rendimiento de ${pct1(eq.r)} anual. La cartera del perfil ${PERFILES[c.perfil].label.toLowerCase()} rinde ${pct1(p.retorno)}: el objetivo se cumple con una holgura de ${(holgura*100).toFixed(1).replace('.', ',')} puntos.`;
   else if(req)
     veredicto = `Para ${objetivo}, el plan necesita un rendimiento de ${pct1(eq.r)} anual, por encima del ${pct1(p.retorno)} de la cartera sugerida. Lo cubriría la cartera del perfil ${PERFILES[req].label.toLowerCase()}, por encima del perfil de riesgo del cliente. Los caminos para alcanzar el objetivo se detallan más adelante.`;
   else
@@ -3995,7 +4044,7 @@ function objetivosPlan(c, p, sup, f){
 // (cartera del perfil), rendimiento mínimo necesario (equilibrio) y dos cifras del resultado.
 function cifrasClave(c, p, sup, f, esInst, anioFin){
   const d = c.diag || {}, eq = esInst ? rendimientoEquilibrioInst(c, sup) : rendimientoEquilibrio(c, sup);
-  const nec = eq.estado === 'inalcanzable' ? 'Más de 30%' : eq.estado === 'sin-rendimiento' ? '0.0%' : pct(eq.r);
+  const nec = eq.estado === 'inalcanzable' ? 'Más de 30%' : eq.estado === 'sin-rendimiento' ? '0,0%' : pct(eq.r);
   const falta = eq.estado === 'inalcanzable' || (eq.r != null && eq.r > p.retorno + 1e-9);
   const n1x = v => v == null || isNaN(v) ? '-' : (Math.round(v*10)/10).toFixed(1).replace('.', ',');
   const base = [
@@ -6978,6 +7027,403 @@ async function exportarPresentacion(c, p, asig){
     const pmP = esInst ? null : portafolioMinimo(c, supuestos);
     const cifras = cifrasClave(c, p, supuestos, usdPdf, esInst, anioFin);
 
+    if(!esInst){
+    // ======== Presentación de familias y personas (modelo 2) ========
+    // Orden: portada · introducción · objetivos · activos (y pasivos, si hay) · ingresos y gastos por moneda ·
+    // gastos extraordinarios · próximos 12 meses · perfil de riesgo · cifras clave · rendimiento de equilibrio ·
+    // proyección · ¿alcanza el plan? (oculta) · carteras · porcentaje en colones · margen del plan ·
+    // conclusiones · próximos pasos · detalle de colones (oculta) · metodología (oculta) · supuestos.
+    const PR = presentacionDe(c, supuestos), O = objetivosPlan(c, p, supuestos, usdPdf), APp = activosPasivos(c, supuestos), dg = dg0;
+    const kM = caminosPlan(c, supuestos, usdPdf);
+    SEP_DEC = ',';
+    const palabra = n => ['cero', 'un', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve', 'diez'][n] || String(n);
+    const tarjeta = (s, x, y, w, h, t, v, d, al) => {
+      s.addShape(pptx.ShapeType.rect, {x, y, w, h, fill: {color: CLARO}, line: {color: LINEA, width: 0.75}});
+      s.addShape(pptx.ShapeType.rect, {x, y, w, h: 0.06, fill: {color: ORO}, line: {color: ORO, width: 0}});
+      s.addText(t, {x: x + 0.19, y: y + 0.16, w: w - 0.38, h: 0.22, fontFace: FONT, fontSize: 8.5, color: GRIS, charSpacing: 1, margin: 0});
+      s.addText(v, {x: x + 0.19, y: y + 0.41, w: w - 0.38, h: 0.39, fontFace: FONT, fontSize: 18, bold: true, color: al ? ROJO : NEGRO, margin: 0, fit: 'shrink'});
+      if(d) s.addText(d, {x: x + 0.19, y: y + 0.83, w: w - 0.38, h: 0.25, fontFace: FONT, fontSize: 11, color: GRIS, margin: 0, fit: 'shrink'});
+    };
+    const pc = (v, tot) => tot > 0 ? (v / tot * 100).toFixed(1).replace('.', ',') + '%' : '-';
+    const corto = t => String(t).split(':')[0];
+    // tabla de activos o de pasivos con tres tarjetas a la derecha (mismo formato)
+    const laminaAP = (titTabla, cab, filas, tot, tarjetas, nota) => {
+      const s = nueva('Perfil del cliente: cifras clave, activos y pasivos', 'Activos en orden de liquidez y pasivos en orden de exigibilidad, en dólares');
+      s.addText(titTabla, {x: M, y: 1.89, w: 7.78, h: 0.3, fontFace: FONT, fontSize: 12, bold: true, color: NEGRO, margin: 0});
+      const n = filas.length + 2, rh = Math.min(0.5, 4.0 / n), fs = rh >= 0.42 ? 12 : rh >= 0.32 ? 10.5 : 9;
+      const cabT = tablaCab(cab); [1, 2, 3].forEach(k => cabT[k].options.align = 'center');
+      const cel = (t, o) => ({text: t, options: Object.assign({}, o)});
+      s.addTable([cabT].concat(filas.map(r => [cel(r[0]), cel(r[1]), cel(r[2], {align: 'right'}), cel(r[3], {align: 'right'})]),
+        [[cel(tot[0], {bold: true}), cel(''), cel(tot[1], {bold: true, align: 'right'}), cel(tot[2], {bold: true, align: 'right'})]]),
+        {x: M, y: 2.28, w: 7.78, colW: [3.472, 1.319, 1.806, 1.183], fontFace: FONT, fontSize: fs, color: NEGRO, border: {type: 'solid', color: LINEA, pt: 0.5}, rowH: rh, margin: 0.04, autoPage: false, valign: 'middle'});
+      tarjetas.forEach(([t, v, d, al], i) => tarjeta(s, 8.71, 2.28 + i * 1.39, 4.03, 1.22, t, v, d, al));
+      if(nota) s.addText([{text: 'Nota: ', options: {bold: true}}, {text: nota}], {x: M, y: 2.28 + rh * n + 0.08, w: 7.78, h: 0.25, fontFace: FONT, fontSize: 11, color: NEGRO, margin: 0});
+      return s;
+    };
+
+    // 1. Portada
+    {
+      const s = pptx.addSlide();
+      s.background = {color: OSC};
+      s.addImage({data: LOGO_PDF, x: M, y: 0.7, w: 2.14, h: 0.46});
+      s.addShape(pptx.ShapeType.line, {x: M, y: 3.05, w: 0.9, h: 0, line: {color: ORO, width: 2.5}});
+      s.addText('Resultados de la Planificación Financiera', {x: M, y: 3.2, w: W - 2*M, h: 0.5, fontFace: FONT, fontSize: 28, color: 'CDCDBE', margin: 0});
+      s.addText(PR.portada, {x: M, y: 3.93, w: W - 2*M, h: 0.9, fontFace: FONT, fontSize: 36, bold: true, color: 'FFFFFF', margin: 0, fit: 'shrink'});
+      s.addText(hoy + '   ·   Documento Confidencial', {x: M, y: 6.5, w: W - 2*M, h: 0.35, fontFace: FONT, fontSize: 11, color: '969882', margin: 0});
+      s.addImage({data: ISOTIPO_B64, x: W - M - 0.45, y: H - 1.15, w: 0.45, h: 0.62});
+    }
+    // 2. Introducción
+    {
+      const s = nueva('Introducción', '');
+      const par = ['Este documento presenta el diagnóstico de planificación financiera de ' + (c.nombre || 'el cliente') + ', preparado por Chotocruz & Co. a partir de los cuestionarios de perfil de riesgo y de planificación financiera y de los supuestos para los mercados financieros en el largo plazo de la firma.',
+        'Su propósito es definir los objetivos financieros del cliente, definir su perfil de riesgo, cuantificar sus activos y pasivos, y mostrar cómo evolucionaría su situación financiera en el largo plazo.'];
+      s.addText(par.map(t => ({text: t, options: {breakLine: true, paraSpaceAfter: 10}})), {x: M, y: 1.65, w: 6.07, h: 2.6, fontFace: FONT, fontSize: 13, color: NEGRO, valign: 'top', margin: 0, lineSpacingMultiple: 1.15});
+      s.addText('CONTENIDO', {x: 7.81, y: 1.23, w: 4.2, h: 0.3, fontFace: FONT, fontSize: 10, color: ORO, charSpacing: 1.5, bold: true, margin: 0});
+      const cont = ['Objetivos del cliente', 'Perfil de riesgo', 'Proyección de Ingresos y gastos', 'Proyección del portafolio', 'Rendimiento de equilibrio y portafolio sugerido', 'Supuestos'];
+      s.addText(cont.map((t, i) => ({text: (i + 1) + '.  ' + t, options: {breakLine: true, paraSpaceAfter: 6}})), {x: 7.81, y: 1.63, w: 4.2, h: 3.2, fontFace: FONT, fontSize: 14, color: NEGRO, valign: 'top', margin: 0});
+      recuadro(s, M, 5.75, W - 2*M, 0.6, introduccionFicha(c, p, esInst).nota, ORO, 10.5);
+    }
+    // 3. Objetivos financieros
+    {
+      const s = nueva('Objetivos Financieros', '');
+      kpis(s, 1.55, [['Independencia financiera', p.aniosAcum === 0 ? 'Alcanzada' : O.kpis[0][1], O.kpis[0][2]], O.kpis[1]], 1.5);
+      if(PR.objetivos.length){
+        s.addText('OBJETIVOS DEL CLIENTE', {x: M, y: 3.33, w: 8.33, h: 0.22, fontFace: FONT, fontSize: 8.5, color: GRIS, charSpacing: 1, margin: 0});
+        const rh = Math.min(0.53, (6.75 - 3.61) / PR.objetivos.length);
+        PR.objetivos.forEach(([t, d], i) => {
+          const y = 3.61 + i * rh;
+          s.addShape(pptx.ShapeType.line, {x: M, y, w: W - 2*M, h: 0, line: {color: LINEA, width: 0.75}});
+          s.addText(String(i + 1), {x: M, y, w: 0.42, h: rh, fontFace: FONT, fontSize: 16, bold: true, color: ORO, margin: 0, valign: 'middle'});
+          s.addText((t ? [{text: t + ': ', options: {bold: true}}] : []).concat([{text: d}]), {x: 1.06, y, w: 11.68, h: rh, fontFace: FONT, fontSize: 12, color: NEGRO, margin: 0, valign: 'middle', fit: 'shrink'});
+        });
+        s.addShape(pptx.ShapeType.line, {x: M, y: 3.61 + PR.objetivos.length * rh, w: W - 2*M, h: 0, line: {color: LINEA, width: 0.75}});
+      }
+    }
+    // 4. Activos (y 4b. pasivos, solo si el cliente los tiene)
+    {
+      const hayP = APp.pasivos.length > 0;
+      laminaAP('Activos · en orden de liquidez', ['Activo', 'Liquidez', 'Valor (US$)', '%'],
+        APp.activos.map(x => [x.concepto, corto(x.liquidez), usdPdf(x.usd), pc(x.usd, APp.totA)]), ['Total de activos', usdPdf(APp.totA), '100%'],
+        [['PATRIMONIO TOTAL', usdPdf(APp.totA), 'suma de los ' + palabra(APp.activos.length) + ' activos declarados'],
+         ['PORTAFOLIO LÍQUIDO', pc(APp.liquido, APp.totA) + ' del patrimonio', 'el portafolio de inversión, ' + usdPdf(APp.liquido)],
+         ['PASIVOS', usdPdf(APp.totP), hayP ? 'suma de los ' + palabra(APp.pasivos.length) + ' pasivos declarados' : 'el cliente no declaró deudas ni pasivos']],
+        hayP ? 'el detalle de los pasivos está en la lámina siguiente.' : 'el cliente no tiene pasivos.');
+      if(hayP) laminaAP('Pasivos · en orden de exigibilidad', ['Pasivo', 'Exigibilidad', 'Saldo (US$)', '%'],
+        APp.pasivos.map(x => [x.concepto, x.plazo.replace(' · ', ', '), usdPdf(x.usd), pc(x.usd, APp.totP)]), ['Total de pasivos', usdPdf(APp.totP), '100%'],
+        [['TOTAL DE PASIVOS', usdPdf(APp.totP), 'suma de los ' + palabra(APp.pasivos.length) + ' pasivos declarados'],
+         ['PASIVOS DE CORTO PLAZO', usdPdf(APp.corto), 'terminan a más tardar en ' + (+supuestos.anioInicio + 1)],
+         ['PATRIMONIO NETO', usdPdf(APp.neto), 'total de activos menos total de pasivos', APp.neto < 0]], '');
+    }
+    // =================== 5. Ingresos y gastos por moneda ===================
+    if(!esInst){
+      const A = ingresosGastosPorMoneda(c, p, supuestos), T = A.tot;
+      const subM = 'Montos en valor de hoy, según la moneda en que el cliente los declaró · colones en US$ al tipo de cambio de ' + fmt(A.tc) + ' colones por dólar · total dolarizado: colones en US$ más dólares';
+      const s = nueva('Ingresos y gastos por moneda', subM);
+      s.addChart(pptx.ChartType.bar, [
+        {name: 'En dólares', labels: ['Ingresos', 'Gastos'], values: [Math.round(T.ingUsd), Math.round(T.gasUsd)]},
+        {name: 'En colones (en US$)', labels: ['Ingresos', 'Gastos'], values: [Math.round(T.ingCrc), Math.round(T.gasCrc)]}],
+        {x: M, y: 1.75, w: 4.3, h: 4.0, barDir: 'bar', barGrouping: 'stacked', chartColors: [VERDE, 'B3BC80'], showLegend: true, legendPos: 'b', legendFontSize: 10,
+         catAxisLabelFontSize: 11, valAxisLabelFontSize: 9, valAxisLabelFormatCode: '#,##0', valGridLine: {color: 'E3E6D8', size: 0.5}, barGapWidthPct: 60});
+      // la misma tabla del dashboard y la ficha: colones, colones en US$, dólares y total dolarizado, por sección
+      const dolP = v => Math.abs(v) < 0.5 ? '-' : usdPdf(v);
+      const filasSec = g => [[{text: g.titulo.toUpperCase(), options: {colspan: 5, bold: true, color: ORO, fontSize: 8.5, fill: {color: 'F5F3EA'}}}]]
+        .concat(g.filas.map(r => [{text: r.nombre, options: {bold: !!r.total}}].concat([fmtColones(r.colones), dolP(r.crc), dolP(r.usd)].map(t => ({text: t, options: {align: 'right', bold: !!r.total}})), [{text: dolP(r.crc + r.usd), options: {align: 'right', bold: true}}])));
+      const cabM = tablaCab(COLS_MONEDA); [1, 2, 3, 4].forEach(k => cabM[k].options.align = 'right');
+      const optM = (xT, yT, wT, n) => ({x: xT, y: yT, w: wT, colW: [wT - 4.9, 1.2, 1.2, 1.2, 1.3], fontFace: FONT, fontSize: 8.5, color: NEGRO,
+        border: {type: 'solid', color: LINEA, pt: 0.5}, rowH: 0.215, margin: 0.035, autoPage: false});
+      // las secciones no se parten entre diapositivas, salvo que una sola no quepa
+      const xT = M + 4.6, wT = W - M - xT, cabe1 = 18, cabeN = 22, hojas = [[]];
+      A.sec.forEach(g => { const f = filasSec(g), cap = hojas.length === 1 ? cabe1 : cabeN;
+        if(hojas[hojas.length - 1].length && hojas[hojas.length - 1].length + f.length > cap) hojas.push([]);
+        f.forEach(r => { if(hojas[hojas.length - 1].length >= (hojas.length === 1 ? cabe1 : cabeN)) hojas.push([]); hojas[hojas.length - 1].push(r); }); });
+      s.addTable([cabM].concat(hojas[0]), optM(xT, 1.8, wT));
+      hojas.slice(1).forEach(h => { const s2 = nueva('Ingresos y gastos por moneda (continuación)', subM); s2.addTable([cabM].concat(h), optM(M, 1.8, W - 2*M)); });
+      const L = lecturaMoneda(A, usdPdf);
+      recuadro(s, M, 6.0, W - 2*M, 0.55, L.texto, L.alerta ? ROJO : ORO, 10);
+    }
+
+
+    // 6. Gastos extraordinarios (centrada)
+    {
+      const s = nueva('Gastos Extraordinarios', '');
+      if(O.filas.length){
+        const filasT = O.grupos.flatMap(g => [[{text: g.titulo.toUpperCase(), options: {colspan: 4, bold: true, color: ORO, fontSize: 9, fill: {color: 'F5F3EA'}}}]]
+          .concat(g.filas.map(r => [r[0], r[1], {text: r[2], options: {align: 'right'}}, {text: r[3], options: {color: GRIS}}])));
+        const cabT = tablaCab(['Concepto', 'Año', 'Monto', 'Condición']); cabT[2].options.align = 'right';
+        const optT = (yT, n) => ({x: M, y: yT, w: W - 2*M, colW: [4.6, 1.7, 2.2, 3.63], fontFace: FONT, fontSize: n > 10 ? 9 : 10, color: NEGRO,
+          border: {type: 'solid', color: LINEA, pt: 0.5}, rowH: n > 10 ? 0.22 : 0.26, margin: 0.04, autoPage: false});
+        const cabe1 = 16, cabeN = 19, n1f = Math.min(filasT.length, cabe1), hT = (n1f + 1) * (n1f > 10 ? 0.22 : 0.26), y0 = 1.45 + Math.max(0, (6.85 - 1.45 - (0.51 + hT)) / 2);
+        s.addText('Metas y compromisos del plan · montos en dólares de hoy', {x: M, y: y0, w: W - 2*M, h: 0.3, fontFace: FONT, fontSize: 11, bold: true, color: NEGRO, margin: 0});
+        s.addTable([cabT].concat(filasT.slice(0, cabe1)), optT(y0 + 0.51, n1f));
+        for(let i = cabe1; i < filasT.length; i += cabeN){
+          const s2 = nueva('Gastos Extraordinarios (continuación)', 'Metas y compromisos del plan · montos en dólares de hoy');
+          s2.addTable([cabT].concat(filasT.slice(i, i + cabeN)), optT(1.8, 11));
+        }
+      } else s.addText(O.vacio, {x: M, y: 3.9, w: W - 2*M, h: 0.4, fontFace: FONT, fontSize: 12, color: GRIS, margin: 0, align: 'center'});
+    }
+    // =================== 4. Ingresos y gastos de los próximos 12 meses ===================
+    if(!esInst){
+      const R = datos12(p, usdPdf), D = R.D;
+      const s = nueva('Ingresos y gastos de los próximos 12 meses', R.sub);
+      s.addChart(pptx.ChartType.bar, [
+        {name: 'Ingresos', labels: D.filas.map(f => f.etiq), values: D.filas.map(f => Math.round(f.ing))},
+        {name: 'Gastos', labels: D.filas.map(f => f.etiq), values: D.filas.map(f => Math.round(f.gas))}],
+        {x: M, y: 1.75, w: 6.2, h: 3.0, barDir: 'col', barGrouping: 'clustered', chartColors: [VERDE, ORO], showLegend: true, legendPos: 'b', legendFontSize: 9,
+         catAxisLabelFontSize: 8, valAxisLabelFontSize: 8, valAxisLabelFormatCode: '#,##0', valGridLine: {color: 'E3E6D8', size: 0.5}, barGapWidthPct: 40});
+      R.datos.forEach(([t, v, d, al], i) => {
+        const x = M + i*2.1, y = 4.95, w = 1.95;
+        s.addText(t.toUpperCase(), {x, y, w, h: 0.4, fontFace: FONT, fontSize: 7.5, color: GRIS, charSpacing: 0.5, margin: 0, valign: 'top'});
+        s.addText(v, {x, y: y + 0.42, w, h: 0.4, fontFace: FONT, fontSize: 15, bold: true, color: al ? ROJO : NEGRO, margin: 0, fit: 'shrink'});
+        s.addText(d, {x, y: y + 0.84, w, h: 0.45, fontFace: FONT, fontSize: 8, color: GRIS, margin: 0, valign: 'top'});
+      });
+      const v12 = x => Math.abs(x) < 0.5 ? '-' : usdPdf(x), cR = t => ({text: t, options: {align: 'right'}});
+      const filasT = D.filas.map(x => [{text: x.mes}, cR(v12(x.ing)), cR(v12(x.gas)), {text: usdPdf(x.flujo), options: {align: 'right', color: x.flujo < -0.5 ? ROJO : NEGRO}}])
+        .concat(D.ext.map(x => [{text: 'Puntuales ' + x.anio}, cR(v12(x.ing)), cR(v12(x.gas)), cR(usdPdf(x.flujo))]), [
+          [{text: 'Total 12 meses', options: {bold: true}}, {text: usdPdf(D.tot.ing), options: {bold: true, align: 'right'}}, {text: usdPdf(D.tot.gas), options: {bold: true, align: 'right'}}, {text: usdPdf(D.tot.flujo), options: {bold: true, align: 'right'}}]]);
+      const cab = tablaCab(['Mes', 'Ingresos', 'Gastos', 'Flujo neto']); [1, 2, 3].forEach(k => cab[k].options.align = 'right');
+      const xT = M + 6.5, wT = W - M - xT;
+      s.addTable([cab].concat(filasT), {x: xT, y: 1.75, w: wT, colW: [wT - 4.2, 1.4, 1.4, 1.4], fontFace: FONT, fontSize: 8.5, color: NEGRO, border: {type: 'solid', color: LINEA, pt: 0.5}, rowH: 0.29, margin: 0.035, autoPage: false});
+      recuadro(s, M, 6.4, W - 2*M, 0.42, R.nota, ORO, 8.5);
+    }
+
+
+    // 8. Perfil del cliente: perfil de riesgo (centrado)
+    {
+      const s = nueva('Perfil del cliente', 'Perfil de riesgo (cuestionario 1), que define la cartera, y resumen de activos y pasivos');
+      const x0 = 3.35, w0 = 5.82;
+      s.addText('Perfil de riesgo', {x: x0, y: 1.8, w: w0, h: 0.35, fontFace: FONT, fontSize: 14, bold: true, color: NEGRO, margin: 0});
+      s.addImage({data: lienzo(cv => dibujarPlano(dg, cv, 400, 4)), x: x0, y: 2.2, w: 2.9, h: 2.9});
+      const v10 = v => v == null || isNaN(v) ? 'Sin dato' : n1(v) + ' de 10';
+      s.addTable([['Tolerancia al riesgo', v10(dg.tolerancia)], ['Apetito de riesgo', v10(dg.apetito)]].map(([n, v]) => [{text: n, options: {color: NEGRO}}, {text: v, options: {bold: true, align: 'right', color: NEGRO}}]),
+        {x: x0 + 3.05, y: 2.35, w: w0 - 3.05, colW: [w0 - 3.05 - 1.05, 1.05], fontFace: FONT, fontSize: 11, rowH: 0.36, margin: 0.04, border: [{type: 'none'}, {type: 'none'}, {type: 'solid', color: LINEA, pt: 0.5}, {type: 'none'}]});
+      total(s, x0, 5.3, w0, 'Puntaje del perfil de riesgo', 'promedio ponderado de las diez preguntas', dg.disposicion, 'Perfil de riesgo', dg.perfilRiesgo ? PERFILES[dg.perfilRiesgo].label : '-');
+    }
+    // 9. Cifras clave (centrada)
+    {
+      const s = nueva('Perfil del cliente: cifras clave, activos y pasivos', 'Activos en orden de liquidez y pasivos en orden de exigibilidad, en dólares');
+      kpis(s, 1.75 + (6.85 - 1.75 - 1.45) / 2, cifras, 1.45);
+    }
+    // =================== Complementos: rendimiento de equilibrio ===================
+    const eqP = esInst ? rendimientoEquilibrioInst(c, supuestos) : rendimientoEquilibrio(c, supuestos);
+    const ceP = carteraEquilibrio(eqP), aeP = redondeoAsig(ceP.asig);
+    const reqP = perfilRequerido(eqP);
+    const holP = eqP.r == null ? null : p.retorno - eqP.r;
+    const verP = esInst ? veredictoInst(c, p, eqP) : veredictoPersona(c, p, eqP, usdPdf);
+    {
+      const s = nueva('Rendimiento de equilibrio', 'El rendimiento mínimo que necesita el plan, frente a la cartera sugerida');
+      const hF = 4.1, wF = hF * FRONT_W / FRONT_H;
+      s.addImage({data: lienzo(cv => dibujarFrontera(c, p, eqP, cv, 4)), x: M, y: 1.85, w: wF, h: hF});
+      const x = M + wF + 0.5, w = W - M - x;
+      let y = 1.95;
+      [['Rendimiento de equilibrio', eqP.estado === 'inalcanzable' ? 'Más de 30%' : pct(eqP.r)],
+       ['Cartera sugerida', pct(p.retorno) + ' · ' + PERFILES[c.perfil].label],
+       [holP == null || holP >= 0 ? 'Holgura' : 'Brecha', holP == null ? '-' : (holP >= 0 ? '+' : '-') + (Math.abs(holP)*100).toFixed(1).replace('.', ',') + ' pts'],
+       ['Perfil que exige el objetivo', reqP ? PERFILES[reqP].label : 'Ninguno alcanza']].forEach(([t, v]) => {
+        s.addText(t.toUpperCase(), {x, y, w, h: 0.28, fontFace: FONT, fontSize: 9.5, color: GRIS, charSpacing: 1, margin: 0});
+        s.addText(v, {x, y: y + 0.28, w, h: 0.5, fontFace: FONT, fontSize: 20, bold: true, color: NEGRO, margin: 0, fit: 'shrink'});
+        y += 1.0;
+      });
+      recuadro(s, M, 6.05, W - 2*M, 0.62, verP, holP != null && holP >= 0 ? ORO : ROJO, 11);
+    }
+
+    // =================== 6. Proyección del portafolio ===================
+    {
+      const s = nueva('Proyección del portafolio', esInst
+        ? `Valor nominal y en términos reales, de ${supuestos.anioInicio} a ${anioFin}` + (p.minimo > 0 ? '; la línea punteada es el capital mínimo en dólares de hoy' : '')
+        : `Valor nominal y en términos reales, de los ${p.edadInicial} a los ${p.edadFinalTitular} años${p.horizontePareja ? ' (' + supuestos.edadFinal + ' de su pareja)' : ''}`);
+      const wG = W - 2*M, hG = 4.0;
+      s.addImage({data: lienzo(cv => dibujarGrafico(p, cv, 4, Math.round(300 * wG / hG))), x: M, y: 1.8, w: wG, h: hG});
+      const cierre = esInst
+        ? (p.anioAgota ? `Bajo estos supuestos, el portafolio se agota en ${p.anioAgota}.`
+          : `Bajo estos supuestos, el portafolio cierra ${anioFin} con un saldo de ${usdPdf(p.finalReal)} en términos reales` +
+            (p.minimo > 0 ? (p.cumpleMeta ? `, por encima del capital mínimo de ${usdPdf(p.minimo)}.` : `, por debajo del capital mínimo de ${usdPdf(p.minimo)}.`) : '.'))
+        : '¿Alcanza el plan? ' + alcanzaPlan(c, p, usdPdf).texto;
+      const okA = esInst ? !p.anioAgota : alcanzaPlan(c, p, usdPdf).ok;
+      recuadro(s, M, 6.0, W - 2*M, 0.68, cierre, okA ? ORO : ROJO, 12);
+    }
+
+
+    // 12. ¿Alcanza el plan? (oculta): la respuesta, el flujo del dinero y cuatro cifras que la explican
+    {
+      const al = alcanzaPlan(c, p, usdPdf), r = p.resumen, anioF = p.filas[p.filas.length - 1].anio;
+      const s = nueva('¿Alcanza el plan?', 'La respuesta y sus razones, con las cifras de toda la proyección');
+      recuadro(s, M, 1.75, W - 2*M, 0.62, al.texto, al.ok ? ORO : ROJO, 12);
+      const G = sankeyPlan(p, usdPdf), hS = 3.85, wS = Math.min(6.7, hS * G.W / G.H);
+      s.addText('De dónde sale y a dónde va el dinero del plan · ' + p.totalAnios + ' años, dólares nominales', {x: M, y: 2.55, w: 6.7, h: 0.28, fontFace: FONT, fontSize: 10, bold: true, color: NEGRO, margin: 0});
+      s.addImage({data: sankeyCanvas(document.createElement('canvas'), G, usdPdf, 3).toDataURL('image/png'), x: M, y: 2.9, w: wS, h: wS * G.H / G.W});
+      const falt = -r.flujoTotal, hol = holP, cards = [];
+      cards.push(r.flujoTotal < 0
+        ? ['Rendimientos frente al faltante', (r.rendimientos / falt).toFixed(1).replace('.', ',') + ' veces', 'En ' + p.totalAnios + ' años los gastos superan a los ingresos en ' + usdPdf(falt) + '; los rendimientos suman ' + usdPdf(r.rendimientos) + '.', r.rendimientos < falt]
+        : ['Ingresos frente a gastos', 'Superávit', 'Los ingresos y las ventas de activos superan a los gastos en ' + usdPdf(r.flujoTotal) + '.', false]);
+      cards.push(['Margen de rendimiento', hol == null ? 'Sin margen' : (hol >= 0 ? '+' : '−') + (Math.abs(hol)*100).toFixed(1).replace('.', ',') + ' pts',
+        eqP.r == null ? 'Ninguna cartera modelo rinde lo que el plan necesita.' : 'Necesita ' + pct(eqP.r) + ' anual; la cartera sugerida rinde ' + pct(p.retorno) + '.', hol == null || hol < 0]);
+      cards.push(['Saldo final real', usdPdf(p.finalReal), p.edadAgota ? 'Se agota a los ' + p.edadAgota + ' años.' : 'No se agota. En ' + anioF + ' cierra con ' + usdPdf(p.finalNominal) + ' nominales.', !!p.edadAgota]);
+      if(al.meta > 0) cards.push(['Herencia frente al objetivo', (p.finalReal >= al.meta ? '+' : '−') + usdPdf(Math.abs(p.finalReal - al.meta)), 'Herencia deseada: ' + usdPdf(al.meta) + ' en dólares de hoy.', p.finalReal < al.meta]);
+      const xc = M + 7.0, wc = (W - M - xc - 0.2) / 2, hc = 1.85;
+      cards.forEach(([t, v, d, a], i) => { const x = xc + (i % 2) * (wc + 0.2), y = 2.55 + Math.floor(i / 2) * (hc + 0.2);
+        s.addShape(pptx.ShapeType.rect, {x, y, w: wc, h: hc, fill: {color: CLARO}, line: {color: LINEA, width: 0.75}});
+        s.addShape(pptx.ShapeType.rect, {x, y, w: wc, h: 0.06, fill: {color: a ? ROJO : ORO}, line: {color: a ? ROJO : ORO, width: 0}});
+        s.addText(t.toUpperCase(), {x: x + 0.15, y: y + 0.15, w: wc - 0.3, h: 0.36, fontFace: FONT, fontSize: 8, color: GRIS, charSpacing: 0.5, margin: 0, valign: 'top'});
+        s.addText(v, {x: x + 0.15, y: y + 0.52, w: wc - 0.3, h: 0.45, fontFace: FONT, fontSize: 18, bold: true, color: a ? ROJO : NEGRO, margin: 0, fit: 'shrink'});
+        s.addText(d, {x: x + 0.15, y: y + 1.0, w: wc - 0.3, h: hc - 1.08, fontFace: FONT, fontSize: 9, color: NEGRO, margin: 0, valign: 'top', fit: 'shrink'}); });
+      s.hidden = true;
+    }
+    // =================== Complementos: carteras ===================
+    {
+      const s = nueva('Cartera sugerida y cartera de equilibrio', 'La cartera de equilibrio es la combinación de carteras modelo vecinas que rinde exactamente el rendimiento de equilibrio, con el menor riesgo posible');
+      const eAsig = estadisticaCartera(asig);
+      const cols = [
+        ['Cartera sugerida', PERFILES[c.perfil].label + ' · rinde ' + pct(p.retorno), asig, 'pastel-asig', eAsig],
+        ['Cartera de equilibrio', ceP.alcanzable ? 'Rinde ' + pct(ceP.rendimiento) : 'Rinde ' + pct(ceP.rendimiento) + ' (máximo disponible)', aeP, 'pastel-eq', ceP]
+      ];
+      const wc = (W - 2*M) / 2;
+      cols.forEach(([t, sub, a, id, est], k) => {
+        const x = M + k*wc;
+        s.addText(t, {x, y: 1.85, w: wc, h: 0.4, fontFace: FONT, fontSize: 16, bold: true, color: NEGRO, align: 'center', margin: 0});
+        s.addText(sub, {x, y: 2.22, w: wc, h: 0.3, fontFace: FONT, fontSize: 11, color: GRIS, align: 'center', margin: 0});
+        const cv = document.getElementById(id);
+        const n4 = clasesVis().length > 3, dP = n4 ? 2.2 : 2.4;
+        if(cv) s.addImage({data: cv.toDataURL('image/png'), x: x + (wc - dP)/2, y: 2.6, w: dP, h: dP});
+        const filas = clasesVis().map(([n, kk]) => [
+          {text: '■', options: {color: COLOR_CLASE[kk].replace('#', ''), fontSize: 14}}, {text: n}, {text: fmtPeso(a[kk]) + '%', options: {align: 'right', bold: true}}]);
+        s.addTable(filas, {x: x + (wc - 3.6)/2, y: n4 ? 4.95 : 5.15, w: 3.6, colW: [0.35, 2.2, 1.05], fontFace: FONT, fontSize: 11.5, color: NEGRO, rowH: 0.27, margin: 0.02, border: {type: 'none'}});
+        s.addText('Volatilidad anual ' + ((est.x != null ? est.x : est.vol)*100).toFixed(1).replace('.', ',') + '% · peor año ' + (est.peor*100).toFixed(1).replace('.', ',') + '% (' + est.anioPeor + ')',
+          {x, y: (n4 ? 4.95 : 5.15) + 0.27*clasesVis().length + 0.18, w: wc, h: 0.3, fontFace: FONT, fontSize: 10, color: GRIS, align: 'center', margin: 0});
+      });
+      s.addText(notaTopes(c.perfil) + ' Riesgo: volatilidad anual de cada cartera con la serie de EE. UU. de ' + HIST.desde + ' a ' + HIST.hasta + ' (A. Damodaran, NYU Stern).' + (ceP.nota ? ' ' + ceP.nota : ''),
+        {x: M, y: 6.58, w: W - 2*M, h: 0.32, valign: 'top', fontFace: FONT, fontSize: 8, color: GRIS, margin: 0});
+    }
+
+    {
+      const R = rentaFijaPorPais(c, p, supuestos), T = tablasRentaFija(R, usdPdf), okR = R.gC < 0.5 || R.falta < 0.5;
+      const cR = (t, b) => ({text: t, options: {align: 'right', bold: !!b}});
+      // diapositiva 1: dona del portafolio y las tres cifras que explican el porcentaje
+      { const sd = nueva('Porcentaje del portafolio en colones para cubrir gastos', 'Cuánto del portafolio debe estar en bonos en colones para que sus intereses paguen los gastos en colones; el resto de la renta fija va a EE. UU.');
+        recuadro(sd, M, 1.75, W - 2*M, 0.62, textoRentaFija(R, usdPdf), okR ? ORO : ROJO, 10.5);
+        const S = seccionColones(R, usdPdf), CW = [4.5, 3.3, W - 2*M - 0.6 - 7.8], y0 = 2.6; let cw = CW[0];
+        const tit = (n, x, t, sub) => {
+          sd.addShape(pptx.ShapeType.ellipse, {x, y: y0, w: 0.3, h: 0.3, fill: {color: VERDE}, line: {color: VERDE, width: 0}});
+          sd.addText(String(n), {x, y: y0, w: 0.3, h: 0.3, align: 'center', valign: 'middle', fontFace: FONT, fontSize: 10, bold: true, color: 'FFFFFF', margin: 0});
+          sd.addText(t, {x: x + 0.4, y: y0 - 0.04, w: cw - 0.45, h: 0.4, fontFace: FONT, fontSize: 11, bold: true, color: NEGRO, margin: 0, valign: 'top', fit: 'shrink'});
+          if(sub) sd.addText(sub, {x: x + 0.4, y: y0 + 0.36, w: cw - 0.45, h: 0.4, fontFace: FONT, fontSize: 8.5, color: GRIS, margin: 0, valign: 'top'}); };
+        // 1. gasto por moneda
+        let x = M; cw = CW[0]; tit(1, x, 'Gasto del cliente, por moneda', 'valor de hoy');
+        const tg1 = [tablaCab(['', 'Colones', 'Dólares', 'Total'])].concat(S.gasto.map((r, i) => r.map((v, k) => ({text: v, options: {align: k ? 'right' : 'left', bold: i === 2, color: i === 2 ? ORO : NEGRO}}))));
+        [1, 2, 3].forEach(k => tg1[0][k].options.align = 'right');
+        sd.addTable(tg1, {x, y: y0 + 0.85, w: cw, colW: [1.0, 1.7, 0.85, 0.95], fontFace: FONT, fontSize: 9, border: {type: 'solid', color: LINEA, pt: 0.5}, rowH: 0.34, margin: 0.04, autoPage: false});
+        // 2. capital en colones
+        x = M + CW[0] + 0.3; cw = CW[1]; tit(2, x, 'Capital en colones que paga ese gasto con sus intereses', '');
+        sd.addText(S.capital.linea, {x: x + 0.4, y: y0 + 0.85, w: cw - 0.45, h: 0.9, fontFace: FONT, fontSize: 11, color: NEGRO, margin: 0, valign: 'top'});
+        // 3. reparto de la renta fija (100%)
+        x = M + CW[0] + CW[1] + 0.6; cw = CW[2]; tit(3, x, S.rfTit, S.nota);
+        const dd = 1.75; sd.addImage({data: donaCanvas(document.createElement('canvas'), S.rf.map(r => [r[0], r[1], r[3]]), S.centro, 'en Costa Rica', 600).toDataURL('image/png'), x: x + (cw - dd) / 2, y: y0 + 0.85, w: dd, h: dd});
+        const tr = [tablaCab(['Renta fija', '% de la renta fija'])].concat(S.rf.map(r => [{text: [{text: '■  ', options: {color: r[3].replace('#', '')}}, {text: r[0], options: {color: NEGRO}}]},
+          {text: (r[1]*100).toFixed(1).replace('.', ',') + '%', options: {align: 'right'}}]),
+          [[{text: S.rfTot[0], options: {bold: true}}, {text: S.rfTot[1], options: {align: 'right', bold: true}}]]);
+        tr[0][1].options.align = 'right';
+        sd.addTable(tr, {x, y: y0 + 2.7, w: cw, colW: [cw - 1.4, 1.4], fontFace: FONT, fontSize: 9, color: NEGRO, border: {type: 'solid', color: LINEA, pt: 0.5}, rowH: 0.3, margin: 0.04, autoPage: false});
+        if(S.falta) sd.addText(S.falta, {x: M, y: 6.2, w: W - 2*M, h: 0.4, fontFace: FONT, fontSize: 9, color: ROJO, margin: 0});
+      }
+    }
+    // =================== Complementos: caminos o margen del plan ===================
+    {
+      const k = kM;
+      const s = nueva(k.ok ? 'Margen del plan' : 'Caminos para alcanzar el objetivo', k.ok
+        ? 'Hasta dónde puede moverse cada variable, una a la vez y con todo lo demás igual, sin que el plan deje de alcanzar el objetivo'
+        : 'Cambio que, por sí solo y con todo lo demás igual, permite cumplir el objetivo. Montos en dólares de hoy');
+      const filas = k.filas.map(x => [
+        {text: x.camino, options: {bold: true}}, {text: x.hoy, options: {color: GRIS}},
+        {text: x.necesario, options: {bold: x.alcanza, color: x.alcanza ? NEGRO : GRIS}}, {text: x.nota + (x.alcanza ? '' : ' (no basta por sí solo)'), options: {color: GRIS, fontSize: 9.5}}]);
+      const hTab = (k.filas.length + 1) * 0.42, hBloque = hTab + 0.3 + 0.62, yT = 1.75 + Math.max(0, (6.85 - 1.75 - hBloque) / 2);
+      s.addTable([tablaCab([k.ok ? 'Variable' : 'Camino', 'Hoy', k.ok ? 'Límite' : 'Necesario', 'Lectura'])].concat(filas), {x: M, y: yT, w: W - 2*M, colW: [3.0, 1.8, 2.2, 5.13], fontFace: FONT, fontSize: 10.5, color: NEGRO,
+        border: {type: 'solid', color: LINEA, pt: 0.5}, margin: 0.06, autoPage: false, rowH: 0.36});
+      recuadro(s, M, Math.min(6.2, yT + hTab + 0.3), W - 2*M, 0.62, k.resumen, k.ok || k.n ? ORO : ROJO, 11);
+    }
+
+    // 16. Conclusiones para la toma de decisiones
+    {
+      const L = conclusionesPlan(c, p, supuestos, usdPdf), busca = t => L.find(x => x[0] === t);
+      const iP = k => ESCALA.indexOf(k), eA = estadisticaCartera(asig), perfilC = dg.perfilRiesgo || c.perfil;
+      const clases = clasesVis().filter(([n, k]) => (asig[k] || 0) > 0).map(([n, k]) => n.toLowerCase() + ' ' + fmtPeso(asig[k]) + '%');
+      const listaY = a => a.length > 1 ? a.slice(0, -1).join(', ') + ' y ' + a[a.length - 1] : (a[0] || '');
+      const tasa = busca('Tasa de retiro'), real = busca('Rendimiento real'), colon = busca('Exposición al colón');
+      const cards = [
+        ['Rendimientos del portafolio (mínimo requerido vs rendimiento esperado)', eqP.estado === 'inalcanzable' ? 'Más de 30% vs ' + pct(p.retorno) : pct(eqP.r) + ' vs ' + pct(p.retorno),
+          eqP.estado === 'inalcanzable' ? 'Ningún rendimiento razonable cumple el objetivo; la cartera sugerida rinde ' + pct(p.retorno) + '.'
+            : 'El plan necesita como mínimo ' + pct(eqP.r) + ' anual (rendimiento de equilibrio) y la cartera sugerida rinde ' + pct(p.retorno) + ': ' + (holP >= 0 ? 'holgura de ' : 'faltan ') + (Math.abs(holP)*100).toFixed(1).replace('.', ',') + ' puntos.',
+          holP == null || holP < 0],
+        tasa ? ['Retiros del portafolio / portafolio total', tasa[1], tasa[2], tasa[3]] : null,
+        real || null,
+        ['Portafolio sugerido', PERFILES[c.perfil].label + ' · ' + pct(p.retorno), 'Cartera del perfil ' + PERFILES[c.perfil].label.toLowerCase() + ': ' + listaY(clases) + '. Volatilidad anual ' + (eA.vol*100).toFixed(1).replace('.', ',') + '%; peor año ' + (eA.peor*100).toFixed(1).replace('.', ',') + '% (' + eA.anioPeor + ').', false],
+        colon ? [colon[0], String(colon[1]).replace(/ del gasto$/, ' del gasto total'), colon[2], colon[3]] : null,
+        ['Perfil de riesgo', PERFILES[perfilC].label, 'Puntaje ' + n1(dg.disposicion) + ' de 10 (tolerancia ' + n1(dg.tolerancia) + ', apetito ' + n1(dg.apetito) + '). '
+          + (reqP ? 'El objetivo exige el perfil ' + PERFILES[reqP].label.toLowerCase() + (iP(reqP) <= iP(perfilC) ? ': la cartera sugerida es coherente con su perfil.' : ': por encima de su perfil de riesgo.') : 'Ningún perfil alcanza el objetivo.'),
+          !reqP || iP(reqP) > iP(perfilC)]];
+      const s2 = nueva('Conclusiones para la toma de decisiones', 'Lo que dicen los datos del cliente y la proyección sobre su plan · en rojo, lo que requiere atención');
+      const wc = 5.92, hc = 1.53;
+      cards.filter(Boolean).forEach((k, i) => { const [t, v, x, al] = k;
+        const xx = M + (i % 2) * (wc + 0.3), yy = 1.75 + Math.floor(i / 2) * (hc + 0.2);
+        s2.addShape(pptx.ShapeType.rect, {x: xx, y: yy, w: wc, h: hc, fill: {color: CLARO}, line: {color: LINEA, width: 0.75}});
+        s2.addShape(pptx.ShapeType.rect, {x: xx, y: yy, w: 0.06, h: hc, fill: {color: al ? ROJO : ORO}, line: {color: al ? ROJO : ORO, width: 0}});
+        s2.addText(t.toUpperCase(), {x: xx + 0.2, y: yy + 0.1, w: 2.6, h: 0.42, fontFace: FONT, fontSize: 8.5, color: GRIS, charSpacing: 0.5, margin: 0, valign: 'top'});
+        s2.addText(v, {x: xx + 0.2, y: yy + 0.55, w: 2.6, h: 0.45, fontFace: FONT, fontSize: 16, bold: true, color: al ? ROJO : NEGRO, margin: 0, fit: 'shrink'});
+        s2.addText(x, {x: xx + 2.9, y: yy + 0.08, w: wc - 3.05, h: hc - 0.16, fontFace: FONT, fontSize: 9.5, color: NEGRO, margin: 0, valign: 'middle', fit: 'shrink'});
+      });
+    }
+    // 17. Próximos pasos
+    if(PR.pasos.length){
+      const s = nueva('Próximos pasos', 'Acciones para poner en marcha el plan, en orden de ejecución');
+      const paso = Math.min(1.22, (6.66 - 1.78) / PR.pasos.length), hp = paso - 0.25;
+      PR.pasos.forEach((t, i) => { const y = 1.78 + i * paso;
+        s.addShape(pptx.ShapeType.rect, {x: M, y, w: W - 2*M, h: hp, fill: {color: CLARO}, line: {color: LINEA, width: 0.75}});
+        s.addShape(pptx.ShapeType.rect, {x: M, y, w: 0.06, h: hp, fill: {color: ORO}, line: {color: ORO, width: 0}});
+        s.addText(String(i + 1), {x: 0.85, y, w: 0.83, h: hp, fontFace: FONT, fontSize: 28, bold: true, color: ORO, margin: 0, valign: 'middle'});
+        s.addText(t, {x: 1.85, y, w: 10.61, h: hp, fontFace: FONT, fontSize: 18, bold: true, color: NEGRO, margin: 0, valign: 'middle', fit: 'shrink'}); });
+    }
+    {
+      const R = rentaFijaPorPais(c, p, supuestos), T = tablasRentaFija(R, usdPdf), okR = R.gC < 0.5 || R.falta < 0.5;
+      const cR = (t, b) => ({text: t, options: {align: 'right', bold: !!b}});
+      // diapositiva 2: gasto por moneda y capital requerido (detalle)
+      const s = nueva('Porcentaje del portafolio en colones: detalle del cálculo', 'Gasto anual por moneda, capital requerido en Costa Rica y renta fija de la cartera sugerida');
+      s.addText('1. Gasto anual por moneda · valor de hoy', {x: M, y: 1.95, w: 7.0, h: 0.3, fontFace: FONT, fontSize: 11, bold: true, color: NEGRO, margin: 0});
+      const tg = [tablaCab(['Gasto', 'Colones (₡)', 'En US$', 'Dólares', 'Total'])].concat(T.gas.map((r, i, a) => [{text: r[0], options: {bold: i >= a.length - 2}}].concat(r.slice(1).map(x => cR(x, i >= a.length - 2)))));
+      [1, 2, 3, 4].forEach(k => tg[0][k].options.align = 'right');
+      s.addTable(tg, {x: M, y: 2.3, w: 7.0, colW: [2.4, 1.3, 1.1, 1.1, 1.1], fontFace: FONT, fontSize: 8.5, color: NEGRO, border: {type: 'solid', color: LINEA, pt: 0.5}, rowH: 0.26, margin: 0.035, autoPage: false});
+      const x2 = M + 7.3, w2 = W - M - x2;
+      s.addText('2. Capital requerido en Costa Rica', {x: x2, y: 1.95, w: w2, h: 0.3, fontFace: FONT, fontSize: 11, bold: true, color: NEGRO, margin: 0});
+      s.addText('Gasto anual en colones ÷ rendimiento de los bonos locales: sus intereses pagan el gasto sin consumir el capital. ' + T.formula, {x: x2, y: 2.27, w: w2, h: 0.62, fontFace: FONT, fontSize: 9, color: GRIS, margin: 0, valign: 'top'});
+      const tt = [tablaCab(['Rendimiento (asesor)', 'Capital (₡)', 'En US$', '% port.'])].concat(T.tasas.map(r => [{text: r[0], options: {bold: r[4]}}, cR(r[1], r[4]), cR(r[2], r[4]), cR(r[3], r[4])]));
+      [1, 2, 3].forEach(k => tt[0][k].options.align = 'right');
+      s.addTable(tt, {x: x2, y: 2.95, w: w2, colW: [1.5, 1.45, 1.05, w2 - 4.0], fontFace: FONT, fontSize: 8.5, color: NEGRO, border: {type: 'solid', color: LINEA, pt: 0.5}, rowH: 0.26, margin: 0.035, autoPage: false});
+      // reparto de la renta fija, en la misma diapositiva de detalle
+      s.addText('3. Renta fija de la cartera sugerida · perfil ' + PERFILES[c.perfil].label.toLowerCase() + ' · ' + (R.rfPct*100).toFixed(1).replace('.', ',') + '% del portafolio (tope ' + (R.rfMaxPct*100).toFixed(1).replace('.', ',') + '%)',
+        {x: x2, y: 3.75, w: w2, h: 0.3, fontFace: FONT, fontSize: 11, bold: true, color: NEGRO, margin: 0, fit: 'shrink'});
+      const td = [tablaCab(['Renta fija', '% de la RF', '% port.', 'Monto (US$)'])].concat(T.dist.map((r, i) => [{text: r[0], options: {bold: i === 2}}].concat(r.slice(1).map(x => cR(x, i === 2)))));
+      [1, 2, 3].forEach(k => td[0][k].options.align = 'right');
+      s.addTable(td, {x: x2, y: 4.1, w: w2, colW: [2.2, 0.95, 0.85, w2 - 4.0], fontFace: FONT, fontSize: 8.5, color: NEGRO, border: {type: 'solid', color: LINEA, pt: 0.5}, rowH: 0.26, margin: 0.035, autoPage: false});
+      if(T.neto) s.addText(T.neto, {x: M, y: 6.25, w: W - 2*M, h: 0.4, fontFace: FONT, fontSize: 9, color: GRIS, margin: 0, valign: 'top'});
+      s.hidden = true;
+    }
+    {
+      const k = kM;
+      const s2 = nueva((k.ok ? 'Margen del plan' : 'Caminos para alcanzar el objetivo') + ': metodología de cálculo', 'De dónde sale cada cifra, con los datos del cliente');
+      s2.addTable(k.proc.map(([t, x]) => [{text: t, options: {bold: true}}, {text: x, options: {color: NEGRO}}]),
+        {x: M, y: 1.85, w: W - 2*M, colW: [2.4, W - 2*M - 2.4], fontFace: FONT, fontSize: 10.5, color: NEGRO, border: {type: 'solid', color: LINEA, pt: 0.5}, margin: 0.08, autoPage: false});
+      s2.hidden = true;
+    }
+    // =================== Complementos: supuestos aplicados ===================
+    {
+      const s = nueva('Supuestos aplicados', 'Valores del asesor y datos del cuestionario con los que se calculó la proyección');
+      const partes = textoSupuestosFicha(c, p, esInst, anioFin).replace(/\.\s*Montos expresados.*$/, '').split(' · ');
+      const mitad = Math.ceil(partes.length / 2);
+      [partes.slice(0, mitad), partes.slice(mitad)].forEach((lista, i) => {
+        s.addText(lista.map(t => ({text: t, options: {bullet: {code: '25A0'}, breakLine: true}})),
+          {x: M + i*(W - 2*M)/2, y: 1.9, w: (W - 2*M)/2 - 0.2, h: 4.5, fontFace: FONT, fontSize: 12.5, color: NEGRO, valign: 'top', paraSpaceAfter: 4, fit: 'shrink'});
+      });
+      s.addText('Montos expresados en dólares de los Estados Unidos.', {x: M, y: 6.45, w: W - 2*M, h: 0.25, fontFace: FONT, fontSize: 9, color: GRIS, margin: 0});
+    }
+
+    } else {
     // =================== Portada ===================
     {
       const s = pptx.addSlide();
@@ -7308,6 +7754,7 @@ async function exportarPresentacion(c, p, asig){
       s.addText('Montos expresados en dólares de los Estados Unidos.', {x: M, y: 6.45, w: W - 2*M, h: 0.25, fontFace: FONT, fontSize: 9, color: GRIS, margin: 0});
     }
 
+    }
     await pptx.writeFile({fileName: `ChyCo - ${limpiar(c.nombre)} - presentacion.pptx`});
   }catch(e){
     alert('No se pudo generar la presentación: ' + (e.message||'error desconocido'));
@@ -7420,4 +7867,4 @@ cargar();
 
 
 
-<!-- Chotocruz & Co. · Entrega 57 · 29 de octubre de 2026 -->
+<!-- Chotocruz & Co. · Entrega 58 · 29 de octubre de 2026 -->
