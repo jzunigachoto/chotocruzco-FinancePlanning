@@ -99,10 +99,10 @@
     {
       "beneficiario": "otro",
       "motivo": "salud",
-      "montoAnualUsdHoy": 60000,
+      "montoAnualUsdHoy": 30000,
       "moneda": "USD",
       "anioInicio": 2026,
-      "anios": 20
+      "anios": 1
     }
   ],
   "legado": {
@@ -251,12 +251,12 @@
     {
       "tipo": "negocio",
       "detalle": "",
-      "montoUsdHoy": 2500000,
+      "montoUsdHoy": 5000000,
       "moneda": "USD",
       "anio": 2027,
       "prioridad": "esencial",
       "financiamiento": "credito-portafolio",
-      "tasaCredito": 8.4,
+      "tasaCredito": 5.1,
       "plazoCreditoAnios": 10
     }
   ],
@@ -740,8 +740,8 @@
         {
           "id": "",
           "campo": "Dependiente 3: monto anual (valor de hoy)",
-          "valor": "60,000",
-          "codigo": "60,000"
+          "valor": "30,000",
+          "codigo": "30,000"
         },
         {
           "id": "",
@@ -758,8 +758,8 @@
         {
           "id": "",
           "campo": "Dependiente 3: años de duración",
-          "valor": "20",
-          "codigo": "20"
+          "valor": "1",
+          "codigo": "1"
         }
       ]
     },
@@ -1145,8 +1145,8 @@
         {
           "id": "",
           "campo": "Meta 1: monto (valor de hoy)",
-          "valor": "2,500,000",
-          "codigo": "2,500,000"
+          "valor": "5,000,000",
+          "codigo": "5,000,000"
         },
         {
           "id": "",
@@ -1175,8 +1175,8 @@
         {
           "id": "",
           "campo": "Meta 1: tasa del crédito (%)",
-          "valor": "8.4",
-          "codigo": "8.4"
+          "valor": "5.1",
+          "codigo": "5.1"
         },
         {
           "id": "",
@@ -1368,10 +1368,10 @@
     "n:Dependiente 2: años de duración": "2",
     "n:Dependiente 3: parentesco": "otro",
     "n:Dependiente 3: motivo del retiro": "salud",
-    "n:Dependiente 3: monto anual (valor de hoy)": "60,000",
+    "n:Dependiente 3: monto anual (valor de hoy)": "30,000",
     "n:Dependiente 3: moneda": "USD",
     "n:Dependiente 3: año de inicio": "2026",
-    "n:Dependiente 3: años de duración": "20",
+    "n:Dependiente 3: años de duración": "1",
     "donaciones-tiene": "no",
     "donaciones-moneda": "USD",
     "deudas-tiene": "no",
@@ -1427,12 +1427,12 @@
     "ventas-n": "0",
     "metas-n": "1",
     "n:Meta 1: tipo": "negocio",
-    "n:Meta 1: monto (valor de hoy)": "2,500,000",
+    "n:Meta 1: monto (valor de hoy)": "5,000,000",
     "n:Meta 1: moneda": "USD",
     "n:Meta 1: año estimado": "2027",
     "n:Meta 1: prioridad": "esencial",
     "n:Meta 1: financiamiento": "credito-portafolio",
-    "n:Meta 1: tasa del crédito (%)": "8.4",
+    "n:Meta 1: tasa del crédito (%)": "5.1",
     "n:Meta 1: plazo del crédito (años)": "10",
     "c1-tiene": "no",
     "herencia": "indistinto",
@@ -1475,7 +1475,7 @@
     "distrito": "San Rafael",
     "direccion": "Torre Country"
   },
-  "modificadoEn": 1793308164092,
+  "modificadoEn": 1793310645129,
   "historialEdiciones": [
     1792100359416,
     1792102121912,
@@ -1486,6 +1486,7 @@
     1793128748845,
     1793130686972,
     1793131030564,
-    1793308164092
+    1793308164092,
+    1793310645129
   ]
 }
