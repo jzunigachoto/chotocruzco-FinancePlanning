@@ -1,7 +1,7 @@
 {
   "cliente": "c-1791848432355-ozumj",
   "nombre": "Victor Emilio Herrera",
-  "guardadoEn": 1793308640351,
+  "guardadoEn": 1793308756287,
   "supuestos": {
     "tipoCambio": 450,
     "inflacionLocal": 3,
@@ -70,7 +70,7 @@
     },
     "presentacion": {
       "pasos": "Formalización de acuerdos de asesoría\nApertura de cuenta en banco del exterior\nImplementación de estrategia de inversión\nRevisión de estructura legal y fiscal actual",
-      "portada": "Familia Herrera"
+      "portada": "Victor Emilio Herrera"
     },
     "carterasCliente": {
       "perfil": "moderado",
