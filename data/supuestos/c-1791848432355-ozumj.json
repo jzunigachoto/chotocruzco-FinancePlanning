@@ -1,7 +1,7 @@
 {
   "cliente": "c-1791848432355-ozumj",
   "nombre": "Victor Emilio Herrera",
-  "guardadoEn": 1793304188204,
+  "guardadoEn": 1793304733322,
   "supuestos": {
     "tipoCambio": 450,
     "inflacionLocal": 3,
@@ -67,6 +67,11 @@
         "ef": 5,
         "alt": 0
       }
+    },
+    "presentacion": {
+      "objetivos": "Preservación del patrimonio: Proteger el capital acumulado, priorizando inversiones de alta calidad crediticia y un nivel de riesgo conservador.\nSostenibilidad financiera durante el retiro: Generar ingresos que permitan cubrir los gastos familiares y mantener el estilo de vida a largo plazo.\nPlanificación sucesoria: Preservar el patrimonio para su eventual transferencia a las siguientes generaciones.\nDiversificación internacional: Reducir la concentración de inversiones en Costa Rica mediante una mayor exposición a mercados internacionales.\nOptimización del capital disponible: Incorporar gradualmente el capital mantenido en liquidez a una estrategia de inversión alineada con sus objetivos y perfil de riesgo.",
+      "pasos": "Formalización de acuerdos de asesoría\nApertura de cuenta en banco del exterior\nImplementación de estrategia de inversión\nRevisión de estructura legal y fiscal actual",
+      "portada": "Familia Herrera"
     },
     "carterasCliente": null
   }
