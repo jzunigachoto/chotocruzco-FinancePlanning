@@ -1,7 +1,7 @@
 {
   "cliente": "c-1792597156606-lhwqr",
   "nombre": "Juan Carlos Arguedas Tinajero",
-  "guardadoEn": 1793286678644,
+  "guardadoEn": 1793391613237,
   "supuestos": {
     "tipoCambio": 450,
     "inflacionLocal": 3.9,
@@ -67,6 +67,10 @@
         "ef": 5,
         "alt": 0
       }
+    },
+    "presentacion": {
+      "pasos": "Formalización de acuerdos de asesoría\nApertura de cuenta en banco del exterior\nImplementación de estrategia de inversión\nRevisión de estructura legal y fiscal actual",
+      "portada": "Juan Carlos Arguedas Tinajero"
     },
     "carterasCliente": null
   }
