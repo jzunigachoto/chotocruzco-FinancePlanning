@@ -1,7 +1,7 @@
 {
   "cliente": "c-1792797176913-pr73f",
   "nombre": "Ana Rojas Gómez",
-  "guardadoEn": 1792798097763,
+  "guardadoEn": 1793399299274,
   "supuestos": {
     "tipoCambio": 450,
     "inflacionLocal": 3.9,
@@ -21,6 +21,7 @@
     "modalidadRop": 1,
     "expectativaRop": 87,
     "edadFinProgramado": 100,
+    "rfColones": 6,
     "na": [
       "inflacionVoluntaria",
       "anioIngresoFcl",
@@ -36,28 +37,59 @@
       "conservador": {
         "rv": 20,
         "rf": 50,
-        "ef": 30
+        "ef": 30,
+        "alt": 0
       },
       "moderadoConservador": {
-        "rv": 40,
-        "rf": 42.5,
-        "ef": 17.5
+        "rv": 35,
+        "rf": 47.5,
+        "ef": 17.5,
+        "alt": 0
       },
       "moderado": {
-        "rv": 60,
-        "rf": 35,
-        "ef": 5
+        "rv": 40,
+        "rf": 55,
+        "ef": 5,
+        "alt": 0
       },
       "moderadoAgresivo": {
-        "rv": 77.5,
-        "rf": 17.5,
-        "ef": 5
+        "rv": 70,
+        "rf": 25,
+        "ef": 5,
+        "alt": 0
       },
       "agresivo": {
-        "rv": 95,
-        "rf": 0,
-        "ef": 5
+        "rv": 90,
+        "rf": 5,
+        "ef": 5,
+        "alt": 0
       }
+    },
+    "presentacion": {
+      "pasos": "Formalización de la relación de asesoría\nDiagnóstico patrimonial integral: Evaluación de la situación financiera y patrimonial actual.\nApertura de cuenta de inversión internacional\nImplementación de la estrategia de inversión: Estructuración y ejecución del portafolio conforme a los objetivos financieros y perfil de riesgo.\nRevisión de la estructura legal y fiscal: Evaluación de la estructura actual e identificación de oportunidades de optimización patrimonial.",
+      "portada": "Ana Rojas Gómez"
+    },
+    "carterasCliente": {
+      "perfil": "moderadoConservador",
+      "topes": {
+        "rv": [
+          5,
+          15
+        ],
+        "rf": [
+          70,
+          80
+        ],
+        "ef": [
+          0,
+          5
+        ],
+        "alt": [
+          0,
+          0
+        ]
+      },
+      "especifico": null
     }
   }
 }
