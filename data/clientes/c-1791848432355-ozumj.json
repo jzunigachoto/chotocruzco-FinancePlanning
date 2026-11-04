@@ -65,15 +65,7 @@
   ],
   "donacionesAnualesUsdHoy": 0,
   "donacionesMoneda": null,
-  "ventasActivos": [
-    {
-      "concepto": "Venta de INVERSIÓN ADICIONAL EN EMPRESA DE TRANSPORTE PARA RENOVACIÓN DE FLOTILLA",
-      "origen": "empresa",
-      "anio": 2036,
-      "monto": 5000000,
-      "moneda": "USD"
-    }
-  ],
+  "ventasActivos": [],
   "capitalPrivado": {
     "valor": 0,
     "moneda": "USD",
@@ -230,13 +222,13 @@
         "numero": 2,
         "nombre": "INVERSIÓN ADICIONAL EN EMPRESA DE TRANSPORTE PARA RENOVACIÓN DE FLOTILLA",
         "propietario": true,
-        "plan": "vender",
+        "plan": "mantener",
         "valor": 5000000,
         "valorMoneda": "USD",
         "participacionPct": 100,
-        "inviertePortafolio": "si",
-        "pctInvierte": 100,
-        "aniosHastaEvento": 10
+        "inviertePortafolio": null,
+        "pctInvierte": null,
+        "aniosHastaEvento": null
       }
     ],
     "deudas": {
@@ -1077,20 +1069,8 @@
         {
           "id": "",
           "campo": "Empresa 2: plan",
-          "valor": "Sí, estimo venderla",
-          "codigo": "vender"
-        },
-        {
-          "id": "",
-          "campo": "Empresa 2: años hasta la venta o traspaso",
-          "valor": "10",
-          "codigo": "10"
-        },
-        {
-          "id": "",
-          "campo": "Empresa 2: invierte la venta en el portafolio",
-          "valor": "Sí, todo",
-          "codigo": "si"
+          "valor": "No lo estimo por ahora",
+          "codigo": "mantener"
         }
       ]
     },
@@ -1384,9 +1364,7 @@
     "n:Empresa 2: porcentaje de participación": "100",
     "n:Empresa 2: valor estimado (monto)": "5,000,000",
     "n:Empresa 2: valor estimado (moneda)": "USD",
-    "n:Empresa 2: plan": "vender",
-    "n:Empresa 2: años hasta la venta o traspaso": "10",
-    "n:Empresa 2: invierte la venta en el portafolio": "si",
+    "n:Empresa 2: plan": "mantener",
     "pe-tiene": "no",
     "pe-moneda": "USD",
     "ventas-n": "0",
@@ -1434,7 +1412,7 @@
     "distrito": "San Rafael",
     "direccion": "Torre Country"
   },
-  "modificadoEn": 1793820398724,
+  "modificadoEn": 1793833314291,
   "historialEdiciones": [
     1792100359416,
     1792102121912,
@@ -1448,6 +1426,7 @@
     1793308164092,
     1793310645129,
     1793812163122,
-    1793820398725
+    1793820398725,
+    1793833314291
   ]
 }
