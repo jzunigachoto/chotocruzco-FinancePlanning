@@ -1,7 +1,7 @@
 {
   "cliente": "c-1791848432355-ozumj",
   "nombre": "Victor Emilio Herrera",
-  "guardadoEn": 1793826315097,
+  "guardadoEn": 1793828345424,
   "supuestos": {
     "tipoCambio": 450,
     "inflacionLocal": 3,
@@ -21,7 +21,7 @@
     "modalidadRop": 1,
     "expectativaRop": 87,
     "edadFinProgramado": 100,
-    "rfColones": 6,
+    "rfColones": 8,
     "na": [
       "inflacionRop",
       "inflacionVoluntaria",
@@ -39,31 +39,41 @@
     "asignacion": {
       "conservador": {
         "rv": 20,
+        "rfcr": 0,
         "rf": 50,
+        "rfem": 0,
         "ef": 30,
         "alt": 0
       },
       "moderadoConservador": {
         "rv": 35,
+        "rfcr": 0,
         "rf": 47.5,
+        "rfem": 0,
         "ef": 17.5,
         "alt": 0
       },
       "moderado": {
         "rv": 40,
+        "rfcr": 0,
         "rf": 55,
+        "rfem": 0,
         "ef": 5,
         "alt": 0
       },
       "moderadoAgresivo": {
         "rv": 70,
+        "rfcr": 0,
         "rf": 25,
+        "rfem": 0,
         "ef": 5,
         "alt": 0
       },
       "agresivo": {
         "rv": 90,
+        "rfcr": 0,
         "rf": 5,
+        "rfem": 0,
         "ef": 5,
         "alt": 0
       }
@@ -79,12 +89,20 @@
           35,
           40
         ],
-        "rf": [
-          45,
+        "rfcr": [
+          20,
           50
         ],
-        "ef": [
+        "rf": [
           10,
+          50
+        ],
+        "rfem": [
+          10,
+          20
+        ],
+        "ef": [
+          0,
           10
         ],
         "alt": [
@@ -93,7 +111,11 @@
         ]
       },
       "especifico": null,
-      "rendClase": null
+      "rendClase": {
+        "rv": 9,
+        "rf": 4.8,
+        "ef": 3
+      }
     }
   }
 }
