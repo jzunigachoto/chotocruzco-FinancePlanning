@@ -144,6 +144,12 @@
   @media (max-width:700px){ .concl-grid{grid-template-columns:1fr;} .concl{border-right:none;} }
   .proc-lista{margin:6px 0 0;display:grid;grid-template-columns:170px 1fr;gap:8px 18px;font-size:12.5px;line-height:1.55;}
   .proc-lista dt{font-weight:600;color:var(--black);}
+  .tabla-cuenta{width:100%;max-width:640px;border-collapse:collapse;font-size:13px;margin-top:6px;}
+  .tabla-cuenta td{padding:7px 4px;border-bottom:1px solid #E6E8DC;vertical-align:top;}
+  .tabla-cuenta td span{display:block;font-size:11px;color:#8A8C76;margin-top:1px;}
+  .tabla-cuenta td.der{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;}
+  .tabla-cuenta td.neg{color:#A2543A;}
+  .tabla-cuenta tr.tot td{font-weight:700;border-top:1.5px solid #2B3014;border-bottom:none;}
   .proc-lista dd{margin:0;color:#3A3D2A;}
   @media (max-width:640px){ .proc-lista{grid-template-columns:1fr;} }
   .cart-err{color:#A2543A;font-size:13px;line-height:1.6;margin:12px 0 0;}
@@ -1372,14 +1378,38 @@ function activosPasivosHTML(c){
       </tbody></table>` : '<p class="nota-riesgo">El cliente no declaró deudas ni pasivos.</p>'}
     </div>`;
 }
+// Diferencia entre dos rendimientos tal como se muestran (a un decimal), para que la resta
+// impresa cuadre: 6,0% − 5,0% = 1,0 puntos. Si el redondeo borrara una diferencia negativa, se deja la exacta.
+function difPts(a, b){ const d = Math.round(a*1000)/1000 - Math.round(b*1000)/1000; return (a - b < 0 && d >= 0) ? a - b : d; }
+// La cuenta del plan: una suma que cualquiera puede verificar. Capital inicial + ingresos + ventas
+// de activos + rendimientos − gastos (+ gasto que el portafolio no pudo cubrir) = saldo final nominal.
+// Explica por qué un plan puede alcanzar aunque los rendimientos sean menores que el faltante:
+// la diferencia sale del capital inicial.
+function cuentaPlan(c, p, f){
+  f = f || usd;
+  const r = p.resumen, G = r.gasOrd + r.gasExt, I = r.ingOrd + r.ingExt, V = r.flujoInv || 0, D = r.deficit > 0.5 ? r.deficit : 0;
+  const N = p.finalNominal, cap = r.capital, usado = cap - N;
+  const filas = [['Capital inicial', cap, ''], ['+ Ingresos de toda la proyección', I, 'Ingresos por actividad, pensiones, alquileres y otros']];
+  if(Math.abs(V) > 0.5) filas.push([(V >= 0 ? '+ ' : '− ') + 'Ventas de activos invertidas en el portafolio', V, '']);
+  filas.push(['+ Rendimientos del portafolio', r.rendimientos, 'Con la cartera sugerida, ' + (p.retorno*100).toFixed(1).replace('.', ',') + '% anual']);
+  filas.push(['− Gastos de toda la proyección', -G, 'Gasto familiar, dependientes, gastos extraordinarios y metas']);
+  if(D) filas.push(['+ Gasto que el portafolio no pudo cubrir', D, 'Faltó dinero para pagarlo']);
+  filas.push(['= Saldo final del portafolio', N, f(p.finalReal) + ' en dólares de hoy']);
+  const anioFin = p.filas[p.filas.length - 1].anio;
+  let lectura;
+  if(D) lectura = 'El capital inicial, los ingresos y los rendimientos no alcanzan para todos los gastos: el portafolio se agota' + (p.edadAgota ? ' a los ' + p.edadAgota + ' años' : '') + ' y quedan ' + f(D) + ' de gasto sin cubrir.';
+  else if(usado > 0.5) lectura = 'Los ingresos (' + f(I) + ') y los rendimientos (' + f(r.rendimientos) + ') no pagan todos los gastos (' + f(G) + '): la diferencia, ' + f(usado) + ', sale del capital inicial. Aun así el portafolio no se agota y cierra ' + anioFin + ' con ' + f(N) + ' (' + f(p.finalReal) + ' en dólares de hoy).';
+  else lectura = 'Los ingresos y los rendimientos pagan todos los gastos y sobran ' + f(-usado) + ': el portafolio crece de ' + f(cap) + ' a ' + f(N) + ' (' + f(p.finalReal) + ' en dólares de hoy).';
+  return {filas, lectura, usado, total: N};
+}
 function razonesPlan(c, p, sup, f){
   f = f || usd; sup = sup || supuestos;
   const al = alcanzaPlan(c, p, f), r = p.resumen, eq = rendimientoEquilibrio(c, sup), p1 = v => (v*100).toFixed(1).replace('.', ',') + '%';
   const anioFin = p.filas[p.filas.length - 1].anio, picoF = p.filas.reduce((m, x) => x.portafolioReal > m.portafolioReal ? x : m, p.filas[0]);
   const deficitFlujo = -r.flujoTotal, razones = [];
-  if(r.flujoTotal < 0) razones.push(['Los rendimientos pagan el faltante', 'En ' + p.totalAnios + ' años, los gastos superan a los ingresos en ' + f(deficitFlujo) + '; los rendimientos del portafolio suman ' + f(r.rendimientos) + (r.rendimientos > deficitFlujo ? ', ' + (r.rendimientos / deficitFlujo).toFixed(1).replace('.', ',') + ' veces ese faltante.' : ', menos que ese faltante.')]);
+  if(r.flujoTotal < 0) razones.push(['Cómo se pagan los gastos', cuentaPlan(c, p, f).lectura]);
   else razones.push(['Los ingresos cubren los gastos', 'En ' + p.totalAnios + ' años, los ingresos y las ventas de activos superan a los gastos en ' + f(r.flujoTotal) + ': el portafolio solo acumula.']);
-  if(eq.r != null && eq.estado !== 'inalcanzable') razones.push(['Margen de rendimiento', 'El plan necesita ' + (eq.estado === 'sin-rendimiento' ? '0%' : p1(eq.r)) + ' anual y la cartera sugerida rinde ' + p1(p.retorno) + ': ' + (p.retorno >= eq.r ? 'sobran ' : 'faltan ') + p1(Math.abs(p.retorno - eq.r)).replace('%', ' puntos') + '.']);
+  if(eq.r != null && eq.estado !== 'inalcanzable') razones.push(['Margen de rendimiento', 'El plan necesita ' + (eq.estado === 'sin-rendimiento' ? '0%' : p1(eq.r)) + ' anual y la cartera sugerida rinde ' + p1(p.retorno) + ': ' + (p.retorno >= eq.r ? 'sobran ' : 'faltan ') + p1(Math.abs(difPts(p.retorno, eq.r))).replace('%', ' puntos') + '.']);
   else razones.push(['Margen de rendimiento', 'Ninguna cartera modelo rinde lo que el plan necesita.']);
   razones.push(['Saldo del portafolio', p.edadAgota ? 'Se agota a los ' + p.edadAgota + ' años.' : (picoF.anio === anioFin ? 'No se agota: crece en términos reales hasta el final' : 'No se agota: llega a su máximo en ' + picoF.anio + ' (' + f(picoF.portafolioReal) + ' en dólares de hoy)') + ' y cierra ' + anioFin + ' con ' + f(p.finalReal) + ' reales (' + f(p.finalNominal) + ' nominales).']);
   if(al.meta > 0) razones.push(['Herencia', p.finalReal >= al.meta ? 'Deja ' + f(p.finalReal - al.meta) + ' más que la herencia de ' + f(al.meta) + ', en dólares de hoy.' : 'Quedan ' + f(al.meta - p.finalReal) + ' por debajo de la herencia de ' + f(al.meta) + ', en dólares de hoy.']);
@@ -1505,20 +1535,21 @@ function sankeyPlan(p, f){
   return G;
 }
 function flujoHTML(c, p){
-  const Z = razonesPlan(c, p, supuestos, usd), r = p.resumen;
-  const cifras = [['Ingresos totales', r.ingOrd + r.ingExt], ['Gastos totales', -(r.gasOrd + r.gasExt)], ['Rendimientos del portafolio', r.rendimientos], ['Saldo final nominal', p.finalNominal], ['Saldo final real', p.finalReal]];
+  const Z = razonesPlan(c, p, supuestos, usd), K = cuentaPlan(c, p, usd);
   return `
     <div class="donut-card">
       <h2 class="section-title" style="font-size:16px;">¿Alcanza el plan?</h2>
       <p class="veredicto ${Z.al.ok ? 'ok' : 'alerta'}" style="margin:8px 0 16px;font-size:15px;">${esc(Z.al.texto)}</p>
       <p class="obj-tit">De dónde sale y a dónde va el dinero del plan <span>${p.totalAnios} años · dólares nominales · el grosor de cada flujo es su monto</span></p>
       ${sankeySVG(sankeyPlan(p, usd), usd)}
+      <p class="nota-riesgo" style="margin-top:6px;">Cómo leerlo: a la izquierda, de dónde sale el dinero; a la derecha, en qué se usa y cuánto queda en el portafolio. Los dos lados suman lo mismo.</p>
+      <p class="obj-tit" style="margin-top:14px;">La cuenta del plan <span>${p.totalAnios} años · dólares nominales · se puede verificar sumando</span></p>
+      <table class="tabla-cuenta"><tbody>
+        ${K.filas.map(([t, v, d], i) => `<tr class="${i === K.filas.length - 1 ? 'tot' : ''}"><td>${esc(t)}${d ? `<span>${esc(d)}</span>` : ''}</td><td class="der ${v < 0 ? 'neg' : ''}">${v < 0 ? '−' + usd(-v) : usd(v)}</td></tr>`).join('')}
+      </tbody></table>
       <p class="obj-tit" style="margin-top:14px;">Por qué <span>cifras de toda la proyección</span></p>
       <dl class="proc-lista">${Z.razones.map(([t, x]) => `<dt>${esc(t)}</dt><dd>${esc(x)}</dd>`).join('')}</dl>
-      <div class="datos-grid" style="margin-top:18px;">
-        ${cifras.map(([t, v]) => `<div class="dato"><div class="dato-label">${t}</div><div class="dato-valor ${v < 0 ? 'neg' : ''}">${usd(v)}</div></div>`).join('')}
-      </div>
-      <p class="nota-riesgo">Dólares nominales, salvo el saldo final real (dólares de hoy, con la inflación de ${String(supuestos.inflacion).replace('.', ',')}%).</p>
+      <p class="nota-riesgo">Dólares nominales, salvo los montos «en dólares de hoy», que descuentan la inflación de ${String(supuestos.inflacion).replace('.', ',')}% anual.</p>
     </div>`;
 }
 
@@ -1663,7 +1694,7 @@ function caminosPlan(c, sup, fm){
   const anual = base.gastoMensual * 12;
   const filas = [];
   const fila = (camino, hoy, necesario, nota, alcanza) => filas.push({camino, hoy, necesario, nota, alcanza});
-  let factorGasto = null;
+  let factorGasto = null, factorExtra = null, totExtOk = 0;
   const acum = base.aniosAcum > 0 && base.aniosAcum < base.totalAnios;
   const conGastoExtra = base.gastosExtra.length > 0 || base.gastosExtraAnual > 0;
   const trabaja = base.ingresoMensual > 0 && acum;
@@ -1679,7 +1710,7 @@ function caminosPlan(c, sup, fm){
     if(acum){
       let hi = Math.max(10000, anual); for(let i = 0; i < 14 && !cumple({aporteAnual: hi}); i++) hi *= 2;
       if(cumple({aporteAnual: hi})){ const a = bis(x => cumple({aporteAnual: x}), 0, hi);
-        fila('Aporte anual adicional al portafolio', '—', fm(a) + ' al año', 'Durante los ' + base.aniosAcum + ' años de acumulación, en dólares de hoy' + (base.ingresoMensual > 0 ? ' (' + Math.round(a / (base.ingresoMensual*12) * 100) + '% del ingreso anual).' : '.'), true); }
+        fila('Aporte anual adicional al portafolio', '—', fm(a) + ' al año', (base.aniosAcum === 1 ? 'Durante el único año de acumulación' : 'Durante los ' + base.aniosAcum + ' años de acumulación') + ', en dólares de hoy' + (base.ingresoMensual > 0 ? ' (' + Math.round(a / (base.ingresoMensual*12) * 100) + '% del ingreso anual).' : '.'), true); }
       else fila('Aporte anual adicional al portafolio', '—', '—', 'Ningún aporte alcanza por sí solo.', false);
     }
     // 4. Gasto familiar
@@ -1717,7 +1748,7 @@ function caminosPlan(c, sup, fm){
   } else {
     // El plan alcanza: margen de cada variable
     fila('Rendimiento del portafolio', p1(base.retorno), eq.estado === 'sin-rendimiento' ? '0,0%' : p1(eq.r),
-      eq.estado === 'sin-rendimiento' ? 'Alcanza aun sin rendimiento.' : 'Margen de ' + ((base.retorno - eq.r)*100).toFixed(1).replace('.', ',') + ' puntos; alcanzaría con la cartera del perfil ' + PERFILES[req].label.toLowerCase() + '.', true);
+      eq.estado === 'sin-rendimiento' ? 'Alcanza aun sin rendimiento.' : 'Margen de ' + (difPts(base.retorno, eq.r)*100).toFixed(1).replace('.', ',') + ' puntos; alcanzaría con la cartera del perfil ' + PERFILES[req].label.toLowerCase() + '.', true);
     fila('Capital inicial', fm(base.capital), pm.estado === 'sin-portafolio' ? fm(0) : fm(pm.k),
       pm.estado === 'sin-portafolio' ? 'Alcanzaría aun sin capital inicial.' : 'Alcanzaría con ' + fm(base.capital - pm.k) + ' menos.', true);
     if(base.gastoMensual > 0){
@@ -1726,6 +1757,14 @@ function caminosPlan(c, sup, fm){
       factorGasto = F;
       fila('Gasto familiar', fm(base.gastoMensual) + ' al mes', F ? fm(base.gastoMensual * F) + ' al mes' : 'Sin límite práctico',
         !F ? 'El gasto podría multiplicarse sin dejar de alcanzar.' : F > 4 ? 'Podría más que triplicarse en todos los años.' : 'Podría aumentar hasta ' + Math.floor((F - 1)*100) + '% en todos los años.', true);
+    }
+    if(conGastoExtra){
+      const totExt = base.filas.reduce((a, f) => a + f.gastoExtra, 0);
+      let hi = 2; for(let i = 0; i < 10 && cumple({extraFactor: hi}); i++) hi *= 2;
+      const F = cumple({extraFactor: hi}) ? null : 1 + bis(v => !cumple({extraFactor: 1 + v}), 0, hi - 1);
+      factorExtra = F; totExtOk = totExt;
+      fila('Gastos extraordinarios', fm(totExt) + ' en total', F ? fm(totExt * F) + ' en total' : 'Sin límite práctico',
+        !F ? 'Podrían multiplicarse sin dejar de alcanzar.' : 'Podrían aumentar hasta ' + Math.floor((F - 1)*100) + '% (nominales, toda la proyección).', true);
     }
     if(trabaja && base.aniosAcum > 1){
       let e = null; for(let k = c.edadRetiro - 1; k > c.edad; k--){ if(cumple({edadRetiro: k})) e = k; else break; }
@@ -1738,9 +1777,10 @@ function caminosPlan(c, sup, fm){
   const dec = (v, d) => String((Math.round(v * Math.pow(10, d)) / Math.pow(10, d)).toFixed(d)).replace('.', ',');
   const proc = [];
   proc.push(['Método', 'Búsqueda por bisección, 40 pruebas por variable: en cada prueba se recalcula la proyección y se verifica el objetivo (ningún año sin cubrir y saldo final real igual o mayor que la herencia).']);
-  if(ok && eq.estado !== 'sin-rendimiento' && eq.r != null) proc.push(['Rendimiento', 'Se prueban rendimientos entre 0% y 30%. El menor con el que se cumple el objetivo es ' + p1(eq.r) + ' (rendimiento de equilibrio). Margen = ' + p1(base.retorno) + ' − ' + p1(eq.r) + ' = ' + dec((base.retorno - eq.r)*100, 1) + ' puntos.']);
+  if(ok && eq.estado !== 'sin-rendimiento' && eq.r != null) proc.push(['Rendimiento', 'Se prueban rendimientos entre 0% y 30%. El menor con el que se cumple el objetivo es ' + p1(eq.r) + ' (rendimiento de equilibrio). Margen = ' + p1(base.retorno) + ' − ' + p1(eq.r) + ' = ' + dec(difPts(base.retorno, eq.r)*100, 1) + ' puntos.']);
   if(ok && pm.k != null) proc.push(['Capital inicial', 'Se prueban capitales iniciales desde $0, con el rendimiento esperado (' + p1(base.retorno) + '). El menor con el que se cumple el objetivo es ' + fm(pm.k) + '. Margen = ' + fm(base.capital) + ' − ' + fm(pm.k) + ' = ' + fm(base.capital - pm.k) + '.']);
   if(ok && factorGasto) proc.push(['Gasto familiar', 'El gasto familiar de todos los años (en el retiro, con su porcentaje) se multiplica por un factor y se prueban factores desde 1. El mayor con el que se cumple el objetivo es ' + dec(factorGasto, 4) + ': ' + fm(base.gastoMensual) + ' × ' + dec(factorGasto, 4) + ' = ' + fm(base.gastoMensual * factorGasto) + ' al mes en dólares de hoy (+' + Math.floor((factorGasto - 1)*100) + '%). Con un gasto mayor, algún año quedaría sin cubrir o el saldo final real bajaría de la herencia' + (meta > 0 ? ' (' + fm(meta) + ')' : '') + '.']);
+  if(ok && factorExtra) proc.push(['Gastos extraordinarios', 'Los gastos extraordinarios de toda la proyección (sin las metas) se multiplican por un factor y se prueban factores desde 1. El mayor con el que se cumple el objetivo es ' + dec(factorExtra, 4) + ': ' + fm(totExtOk) + ' × ' + dec(factorExtra, 4) + ' = ' + fm(totExtOk * factorExtra) + ' en total, nominales (+' + Math.floor((factorExtra - 1)*100) + '%).']);
   proc.push(['Herencia', 'Saldo final real = saldo nominal ' + anioFin + ' ÷ (1 + inflación)^años = ' + fm(base.finalNominal) + ' ÷ (1 + ' + dec(infI, 1) + '%)^' + dec(expo, 2) + ' = ' + fm(base.finalReal) + '.'
     + (meta > 0 ? ' Menos la herencia (' + fm(meta) + ') = ' + fm(base.finalReal - meta) + '.' : '')]);
   const si = filas.filter(f => f.alcanza);
@@ -1784,16 +1824,31 @@ function mezclaCarteras(A, B, w){
 }
 function curvaModelo(){
   const asig = supuestos.asignacion || CARTERAS;
-  const orden = ESCALA.slice().sort((a,b) => retPerfil(a) - retPerfil(b));
-  const pts = orden.map(k => { const e = estadisticaCartera(asig[k]);
+  const todos = ESCALA.slice().sort((a,b) => retPerfil(a) - retPerfil(b));
+  const pts = todos.map(k => { const e = estadisticaCartera(asig[k]);
       return {perfil: k, x: e.vol, y: retPerfil(k), peor: e.peor, anioPeor: e.anioPeor}; });
-  const traza = [];
+  // Curva única: a más rendimiento, más riesgo. Si una cartera rinde menos que otra con igual o
+  // mayor riesgo (puede pasar cuando los topes de un cliente cambian su cartera), queda fuera de
+  // la curva y de las combinaciones. La cartera del perfil sugerido siempre queda en la curva.
+  const act = typeof clientes !== 'undefined' && typeof activoId !== 'undefined' ? clientes.find(x => x.id === activoId) : null;
+  const fijo = (act && act.perfil) || (supuestos.carterasCliente || {}).perfil || null;
+  const frente = pts.slice();
+  for(let i = 0; i < frente.length - 1; ){
+    if(frente[i].x >= frente[i+1].x - 1e-9){ frente.splice(frente[i].perfil === fijo ? i + 1 : i, 1); i = 0; }
+    else i++;
+  }
+  pts.forEach(pt => { pt.enCurva = frente.includes(pt); });
+  const orden = frente.map(pt => pt.perfil);
+  // 161 puntos en total (filas fijas del Excel), repartidos entre los tramos de la curva;
+  // el riesgo nunca retrocede, para que la curva sea una sola línea continua.
+  const traza = [], tramos = Math.max(1, orden.length - 1);
   for(let s2 = 0; s2 < orden.length - 1; s2++){
     const A = asig[orden[s2]], B = asig[orden[s2+1]];
     const rA = retPerfil(orden[s2]), rB = retPerfil(orden[s2+1]);
-    for(let k = (s2 ? 1 : 0); k <= 40; k++){
-      const w = k/40, m = mezclaCarteras(A, B, w);
-      traza.push({x: estadisticaCartera(m).vol, y: rA + (rB - rA)*w});
+    const n = s2 < tramos - 1 ? Math.floor(160 / tramos) : 160 - Math.floor(160 / tramos)*(tramos - 1);
+    for(let k = (s2 ? 1 : 0); k <= n; k++){
+      const w = k/n, m = mezclaCarteras(A, B, w), xv = estadisticaCartera(m).vol;
+      traza.push({x: traza.length ? Math.max(xv, traza[traza.length - 1].x) : xv, y: rA + (rB - rA)*w});
     }
   }
   // Cartera que rinde exactamente r. Por debajo de la conservadora se usa la
@@ -3362,7 +3417,7 @@ const TXT_INST = {
 };
 function veredictoInst(c, p, eq){
   const pct1 = v => (v*100).toFixed(1).replace('.', ',') + '%';
-  const holgura = eq.r == null ? null : p.retorno - eq.r;
+  const holgura = eq.r == null ? null : difPts(p.retorno, eq.r);
   const req = perfilRequerido(eq);
   const objetivo = eq.meta > 0
     ? `sostener sus flujos durante ${p.horizonte} años y conservar al final un capital mínimo de ${usd(eq.meta)} en dólares de hoy`
@@ -3396,7 +3451,7 @@ function renderInstitucion(c){
   const p = proyectarInst(c, supuestos);
   const eq = rendimientoEquilibrioInst(c, supuestos);
   const req = perfilRequerido(eq);
-  const holgura = eq.r == null ? null : p.retorno - eq.r;
+  const holgura = eq.r == null ? null : difPts(p.retorno, eq.r);
   const pct1 = v => (v*100).toFixed(1).replace('.', ',') + '%';
   const anioFin = supuestos.anioInicio + p.horizonte - 1;
   const num = v => usd(v);
@@ -3565,7 +3620,7 @@ function hastaEdadTxt(p, sup){ return sup.edadFinal + ' años' + (p && p.horizon
 function veredictoPersona(c, p, eq, fm){
   fm = fm || usd;
   const req = perfilRequerido(eq);
-  const holgura = eq.r == null ? null : p.retorno - eq.r;
+  const holgura = eq.r == null ? null : difPts(p.retorno, eq.r);
   const pct1 = v => (v*100).toFixed(1).replace('.', ',') + '%';
   const objetivo = eq.meta > 0
     ? `sostener su gasto hasta los ${hastaEdadTxt(p, supuestos)} y dejar una herencia de ${fm(eq.meta)} en dólares de hoy`
@@ -3589,7 +3644,7 @@ function renderDetalle(c){
   const asig = (supuestos.asignacion || CARTERAS)[c.perfil];
   const eq = rendimientoEquilibrio(c, supuestos);
   const req = perfilRequerido(eq);
-  const holgura = eq.r == null ? null : p.retorno - eq.r;
+  const holgura = eq.r == null ? null : difPts(p.retorno, eq.r);
   const pct1 = v => (v*100).toFixed(1).replace('.', ',') + '%';
   const objetivo = eq.meta > 0
     ? `sostener su gasto hasta los ${hastaEdadTxt(p, supuestos)} y dejar una herencia de ${usd(eq.meta)} en dólares de hoy`
@@ -3733,6 +3788,63 @@ ${respuestasHTML(c)}
 // (no bajo el eje, donde las franjas angostas los encimaban); la cartera sugerida se marca
 // con un anillo y la de equilibrio con un punto de color; la leyenda va bajo el eje.
 const FRONT_W = 520, FRONT_H = 360;
+// Curva suave que pasa exactamente por cada cartera modelo: interpolación cúbica monótona
+// (Fritsch-Carlson) con las pendientes ajustadas para que la curva sea cóncava, como una
+// frontera eficiente: una sola línea, sin quiebres ni ondas. La usan el dashboard, el PDF,
+// la presentación y el gráfico del Excel, para que los cuatro muestren la misma curva.
+function curvaSuave(pts){
+  const PD = pts.map(q => [q.x, q.y]), nP = PD.length;
+  const pend = (() => { if(nP < 2) return [0];
+    const d = PD.slice(0, -1).map((q, i) => (PD[i+1][1] - q[1]) / Math.max(PD[i+1][0] - q[0], 1e-9));
+    const m = PD.map((q, i) => i === 0 ? d[0] : i === nP - 1 ? d[nP - 2] : (d[i-1]*d[i] <= 0 ? 0 : (d[i-1] + d[i]) / 2));
+    for(let i = 0; i < nP - 1; i++){ if(Math.abs(d[i]) < 1e-12){ m[i] = m[i+1] = 0; continue; }
+      const a = m[i]/d[i], b = m[i+1]/d[i], t = a*a + b*b; if(t > 9){ const k = 3/Math.sqrt(t); m[i] = k*a*d[i]; m[i+1] = k*b*d[i]; } }
+    // concavidad: en cada tramo, 2·m0 + m1 ≥ 3·d y m0 + 2·m1 ≤ 3·d (solo donde los datos son cóncavos)
+    const conc = i => (i === 0 || d[i-1] >= d[i] - 1e-12) && (i === nP - 2 || d[i] >= d[i+1] - 1e-12);
+    for(let it = 0; it < 60; it++) for(let i = 0; i < nP - 1; i++){ if(!conc(i)) continue;
+      if(m[i] + 2*m[i+1] > 3*d[i] + 1e-12) m[i+1] = Math.max(0, (3*d[i] - m[i]) / 2);
+      if(2*m[i] + m[i+1] < 3*d[i] - 1e-12) m[i] = (3*d[i] - m[i+1]) / 2; }
+    return m; })();
+  const f = x => { if(nP < 2) return PD[0][1]; let i = 0; while(i < nP - 2 && x > PD[i+1][0]) i++;
+    const [x0, y0] = PD[i], [x1, y1] = PD[i+1], hh = x1 - x0, t = Math.max(0, Math.min(1, (x - x0)/hh));
+    const h00 = 2*t*t*t - 3*t*t + 1, h10 = t*t*t - 2*t*t + t, h01 = -2*t*t*t + 3*t*t, h11 = t*t*t - t*t;
+    return h00*y0 + h10*hh*pend[i] + h01*y1 + h11*hh*pend[i+1]; };
+  const muestras = n => { if(nP < 2) return [{x: PD[0][0], y: PD[0][1]}];
+    return Array.from({length: n}, (_, k) => { const x = PD[0][0] + (PD[nP-1][0] - PD[0][0])*k/(n - 1); return {x, y: f(x)}; }); };
+  const xPara = r => { if(nP < 2) return PD[0][0];
+    if(r <= PD[0][1]) return PD[0][0]; if(r >= PD[nP-1][1]) return PD[nP-1][0];
+    let lo = PD[0][0], hi = PD[nP-1][0]; for(let i = 0; i < 60; i++){ const m = (lo + hi)/2; if(f(m) < r) lo = m; else hi = m; } return (lo + hi)/2; };
+  return {f, muestras, xPara};
+}
+// Geometría del gráfico de equilibrio, compartida por el lienzo y el Excel: escala acercada a la
+// zona de las carteras (los ejes no empiezan necesariamente en 0%), la curva, la cartera de
+// equilibrio sobre la curva y la franja del perfil sugerido (de la mitad del tramo anterior a la
+// mitad del siguiente, con un ancho mínimo de una cuarta parte del eje para que se lea con claridad).
+function geometriaFrontera(c, eq, pts, ce){
+  const inalc = eq.r == null || eq.estado === 'inalcanzable';
+  const conEq = !inalc && eq.estado !== 'sin-rendimiento';
+  const xsD = pts.map(q => q.x).concat(ce && ce.x != null ? [ce.x] : []);
+  const ysD = pts.map(q => q.y).concat(conEq ? [eq.r] : []);
+  const pasoX = (Math.max(...xsD) - Math.min(...xsD)) > 0.12 ? 0.05 : 0.025;
+  const xMin = Math.max(0, Math.floor((Math.min(...xsD) - 0.012)/pasoX)*pasoX);
+  const xMax = Math.ceil((Math.max(...xsD) + 0.012)/pasoX)*pasoX;
+  const pasoY = (Math.max(...ysD) - Math.min(...ysD)) > 0.06 ? 0.02 : 0.01;
+  const yMin = Math.max(0, Math.floor((Math.min(...ysD) - 0.006)/pasoY)*pasoY);
+  const yMax = inalc ? Math.max(Math.ceil((Math.max(...ysD) + 0.012)/pasoY)*pasoY, yMin + 4*pasoY)
+                     : Math.ceil((Math.max(...ysD) + 0.008)/pasoY)*pasoY;
+  const curva = curvaSuave(pts);
+  const eqX = curva.xPara(ce.rendimiento), eqY = pts.length > 1 ? curva.f(eqX) : ce.rendimiento;
+  let franja = null; const iS = pts.findIndex(pt => pt.perfil === c.perfil);
+  if(iS >= 0){
+    const pt = pts[iS], ant = pts[iS - 1], sig = pts[iS + 1], rango = xMax - xMin;
+    let x0 = ant ? (ant.x + pt.x)/2 : pt.x - (sig ? (sig.x - pt.x)/2 : rango*0.1);
+    let x1 = sig ? (pt.x + sig.x)/2 : pt.x + (ant ? (pt.x - ant.x)/2 : rango*0.1);
+    const minA = rango*0.25;
+    if(x1 - x0 < minA){ x0 = pt.x - minA/2; x1 = pt.x + minA/2; }
+    franja = [Math.max(xMin, x0), Math.min(xMax, x1)];
+  }
+  return {inalc, conEq, pasoX, xMin, xMax, pasoY, yMin, yMax, curva, eqX, eqY, franja};
+}
 function dibujarFrontera(c, p, eq, destino, escala){
   const cv = destino || document.getElementById('frontera');
   if(!cv) return;
@@ -3741,41 +3853,42 @@ function dibujarFrontera(c, p, eq, destino, escala){
   cv.width = W*dpr; cv.height = H*dpr;
   const g = cv.getContext('2d'); g.scale(dpr,dpr);
   g.fillStyle = '#FFFFFF'; g.fillRect(0,0,W,H);
-  const {pts, traza} = curvaModelo();
+  const cmF = curvaModelo(), pts = cmF.pts.filter(q => q.enCurva), traza = cmF.traza, fuera = cmF.pts.filter(q => !q.enCurva);
   const ce = carteraEquilibrio(eq);
   const padL = 58, padR = 26, padT = 26, padB = 78;
   const w = W-padL-padR, h = H-padT-padB;
-  const xMax = Math.ceil((pts[pts.length - 1].x + 0.01)*20)/20;
-  const inalc = eq.r == null || eq.estado === 'inalcanzable';
-  const yMax = Math.max(0.10, !inalc ? Math.ceil((eq.r+0.015)*100)/100 : 0.10);
-  const X = x => padL + w*Math.max(0, Math.min(x, xMax))/xMax;
-  const Y = y => padT + h - h*Math.max(0, Math.min(y, yMax))/yMax;
+  const GF = geometriaFrontera(c, eq, pts, ce), {inalc, conEq, pasoX, xMin, xMax, pasoY, yMin, yMax} = GF;
+  const X = x => padL + w*(Math.max(xMin, Math.min(x, xMax)) - xMin)/(xMax - xMin);
+  const Y = y => padT + h - h*(Math.max(yMin, Math.min(y, yMax)) - yMin)/(yMax - yMin);
+  const nP = pts.length, curvaD = GF.curva.f;
+  const curvaPx = GF.curva.muestras(241).map(q => ({x: X(q.x), y: Y(q.y)}));
+  const xCE = X(GF.eqX), yCE = Y(GF.eqY);
+  const pctEje = (v, paso) => { const t = Math.round(v*1000)/10; return (paso < 0.01 || t % 1 ? t.toFixed(1).replace('.', ',') : String(Math.round(t))) + '%'; };
   const color = (inalc || eq.r > p.retorno + 1e-9) ? '#A2543A' : '#918042';
   const fuente = (t, peso) => (peso ? peso + ' ' : '') + t + 'px Satoshi, sans-serif';
 
-  // franja del perfil asignado, sombreada, con su rótulo arriba
-  let desde = 0;
-  pts.forEach(pt => {
-    if(pt.perfil === c.perfil){
-      g.fillStyle = '#EEF1E4'; g.fillRect(X(desde), padT, X(pt.x) - X(desde), h);
-      g.fillStyle = '#5A5E44'; g.font = fuente(9.5, 600); g.textAlign = 'center';
-      g.fillText('PERFIL SUGERIDO', (X(desde) + X(pt.x))/2, padT + 12);
-    }
-    desde = pt.x;
-  });
+  // franja del perfil sugerido: de la mitad del tramo anterior a la mitad del siguiente, con un
+  // ancho mínimo para que se lea con claridad; el rótulo va arriba, con el nombre del perfil
+  if(GF.franja){
+    const x0 = X(GF.franja[0]), x1 = X(GF.franja[1]);
+    g.fillStyle = '#E8EDDA'; g.fillRect(x0, padT, x1 - x0, h);
+    g.strokeStyle = '#C9D1B0'; g.lineWidth = 1; g.setLineDash([3,3]);
+    g.beginPath(); g.moveTo(x0, padT); g.lineTo(x0, padT + h); g.moveTo(x1, padT); g.lineTo(x1, padT + h); g.stroke(); g.setLineDash([]);
+    g.fillStyle = '#3E4326'; g.font = fuente(9.5, 700); g.textAlign = 'center';
+    g.fillText('PERFIL SUGERIDO', (x0 + x1)/2, padT + 12);
+  }
   // rejilla horizontal suave
-  const pasoY = yMax > 0.16 ? 0.04 : 0.02;
   g.strokeStyle = '#ECEEE4'; g.lineWidth = 1;
-  for(let v = pasoY; v <= yMax + 1e-9; v += pasoY){ g.beginPath(); g.moveTo(padL, Y(v)); g.lineTo(padL + w, Y(v)); g.stroke(); }
+  for(let v = yMin + pasoY; v <= yMax + 1e-9; v += pasoY){ g.beginPath(); g.moveTo(padL, Y(v)); g.lineTo(padL + w, Y(v)); g.stroke(); }
   // ejes
   g.strokeStyle = '#2B3014'; g.lineWidth = 1.1;
   g.beginPath(); g.moveTo(padL, padT); g.lineTo(padL, padT + h); g.lineTo(padL + w, padT + h); g.stroke();
   // rendimiento de equilibrio: su marca en el eje Y reemplaza la etiqueta de la rejilla cercana
-  const yEq = !inalc && eq.estado !== 'sin-rendimiento' ? Y(eq.r) : null;
+  const yEq = conEq ? Y(eq.r) : null;
   g.font = fuente(10.5); g.fillStyle = '#666653'; g.textAlign = 'right';
-  for(let v = 0; v <= yMax + 1e-9; v += pasoY){ if(yEq != null && Math.abs(Y(v) - yEq) < 12) continue; g.fillText(Math.round(v*100) + '%', padL - 9, Y(v) + 3.5); }
+  for(let v = yMin; v <= yMax + 1e-9; v += pasoY){ if(yEq != null && Math.abs(Y(v) - yEq) < 12) continue; g.fillText(pctEje(v, pasoY), padL - 9, Y(v) + 3.5); }
   g.textAlign = 'center';
-  for(let v = 0; v <= xMax + 1e-9; v += 0.05) g.fillText(Math.round(v*100) + '%', X(v), padT + h + 17);
+  for(let v = xMin; v <= xMax + 1e-9; v += pasoX) g.fillText(pctEje(v, pasoX), X(v), padT + h + 17);
   g.fillStyle = '#2B3014'; g.font = fuente(11);
   g.fillText('Riesgo del portafolio (volatilidad anual)', padL + w/2, padT + h + 36);
   g.save(); g.translate(14, padT + h/2); g.rotate(-Math.PI/2); g.fillText('Rendimiento esperado anual', 0, 0); g.restore();
@@ -3784,7 +3897,7 @@ function dibujarFrontera(c, p, eq, destino, escala){
   if(yEq != null){
     g.strokeStyle = color; g.lineWidth = 1.3; g.setLineDash([4,4]);
     g.beginPath(); g.moveTo(padL, yEq);
-    if(ce.alcanzable){ g.lineTo(X(ce.x), yEq); g.lineTo(X(ce.x), padT + h); } else g.lineTo(padL + w, yEq);
+    if(ce.alcanzable){ g.lineTo(xCE, yEq); g.lineTo(xCE, padT + h); } else g.lineTo(padL + w, yEq);
     g.stroke(); g.setLineDash([]);
     const txt = (eq.r*100).toFixed(1).replace('.', ',') + '%';
     g.font = fuente(10.5, 600); const ancho = g.measureText(txt).width + 10;
@@ -3797,28 +3910,78 @@ function dibujarFrontera(c, p, eq, destino, escala){
   }
 
   // curva de carteras modelo y sus puntos, con el nombre debajo y a la derecha del punto
-  g.strokeStyle = '#2B3014'; g.lineWidth = 2; g.beginPath();
-  traza.forEach((q, i) => i ? g.lineTo(X(q.x), Y(q.y)) : g.moveTo(X(q.x), Y(q.y)));
-  g.stroke();
-  pts.forEach((pt, i) => {
-    g.beginPath(); g.arc(X(pt.x), Y(pt.y), 3.6, 0, Math.PI*2); g.fillStyle = '#2B3014'; g.fill();
-    const ultimo = i === pts.length - 1, propio = pt.perfil === c.perfil;
-    g.font = fuente(10.5, propio ? 700 : null); g.fillStyle = '#2B3014'; g.textAlign = ultimo ? 'right' : 'left';
-    g.fillText(PERFILES[pt.perfil].label, X(pt.x) + (ultimo ? -8 : 8), Y(pt.y) + (ultimo ? -10 : 17));
+  g.strokeStyle = '#2B3014'; g.lineWidth = 2.4; g.lineCap = 'round'; g.lineJoin = 'round'; g.beginPath();
+  curvaPx.forEach((q, i) => i ? g.lineTo(q.x, q.y) : g.moveTo(q.x, q.y));
+  g.stroke(); g.lineCap = 'butt'; g.lineJoin = 'miter';
+  const punto = (x, y, r, relleno, borde) => { g.beginPath(); g.arc(x, y, r, 0, Math.PI*2); g.fillStyle = relleno; g.fill(); g.strokeStyle = '#FFFFFF'; g.lineWidth = borde; g.stroke(); };
+  pts.forEach(pt => { if(pt.perfil !== c.perfil) punto(X(pt.x), Y(pt.y), 3.8, '#2B3014', 1.6); });
+  // Nombres de las carteras: cada uno se coloca en la primera posición libre (sin tocar otro
+  // nombre, los puntos, la curva ni el borde). Si el punto está muy cerca de otro, el nombre se
+  // aleja y se une a su punto con una línea fina.
+  const ocupados = [];
+  const marcas = pts.map(q => ({x: X(q.x), y: Y(q.y), r: 6})).concat(ce && ce.x != null ? [{x: xCE, y: yCE, r: 9}] : []);
+  const asig0 = pts.find(q => q.perfil === c.perfil); if(asig0) marcas.push({x: X(asig0.x), y: Y(asig0.y), r: 11});
+  const muestra = curvaPx.slice();
+  // la guía punteada del equilibrio y su rótulo también se respetan
+  const guia = [];
+  if(yEq != null){ const xF = ce.alcanzable ? xCE : padL + w;
+    for(let x = padL; x <= xF; x += 4) guia.push({x, y: yEq});
+    if(ce.alcanzable) for(let y = yEq; y <= padT + h; y += 4) guia.push({x: xF, y});
+    else { g.font = fuente(10); const a2 = g.measureText('Por encima de todas las carteras modelo').width; ocupados.push({x0: padL + w - 4 - a2, x1: padL + w, y0: yEq - 18, y1: yEq + 2}); } }
+  if(fuera.length){
+    g.font = fuente(9); g.fillStyle = '#7A7C66'; g.textAlign = 'right';
+    const nota = fuera.map(q => PERFILES[q.perfil].label).join(' y ') + (fuera.length > 1 ? ' quedan' : ' queda') + ' fuera de la curva: con los topes fijados para este cliente, su riesgo no corresponde a su rendimiento.';
+    // abajo a la derecha: zona siempre libre (mucho riesgo y poco rendimiento)
+    const xN = padL + w - 6, lin = [''];
+    nota.split(' ').forEach(t => { const prueba = (lin[lin.length - 1] + ' ' + t).trim(); if(g.measureText(prueba).width > w*0.4 && lin[lin.length - 1]) lin.push(t); else lin[lin.length - 1] = prueba; });
+    const yN = padT + h - 10 - 12*(lin.length - 1), anN = Math.max(...lin.map(l => g.measureText(l).width));
+    lin.forEach((l, i) => g.fillText(l, xN, yN + 12*i)); ocupados.push({x0: xN - anN - 4, x1: xN + 2, y0: yN - 10, y1: yN + 12*(lin.length - 1) + 3});
+  }
+  const choca = (a, b) => a.x0 < b.x1 && b.x0 < a.x1 && a.y0 < b.y1 && b.y0 < a.y1;
+  const cerca = (r, m) => { const dx = Math.max(r.x0 - m.x, 0, m.x - r.x1), dy = Math.max(r.y0 - m.y, 0, m.y - r.y1); return dx*dx + dy*dy < m.r*m.r; };
+  const OPC = [[10, 15], [10, -7], [-10, -7], [-10, 15], [14, 30], [-14, -22], [14, -22], [-14, 30], [22, 44], [-22, -36], [22, -36], [-22, 44], [0, 58], [0, -50]];
+  pts.forEach(pt => {
+    const propio = pt.perfil === c.perfil, txt = PERFILES[pt.perfil].label;
+    g.font = fuente(10.5, propio ? 700 : null);
+    const an = g.measureText(txt).width, px = X(pt.x), py = Y(pt.y);
+    let mejor = null;
+    OPC.forEach(([dx, dy], k) => {
+      const izq = dx < 0 || (dx === 0 && px > padL + w/2);
+      const x0 = dx === 0 ? px - an/2 : (izq ? px + dx - an : px + dx), base = py + dy;
+      const r = {x0: x0 - 2, x1: x0 + an + 2, y0: base - 10, y1: base + 3};
+      let pena = k*0.01;
+      if(r.x0 < padL + 2 || r.x1 > padL + w - 2 || r.y0 < padT + 16 || r.y1 > padT + h - 2) pena += 100;
+      ocupados.forEach(o => { if(choca(r, o)) pena += 50; });
+      marcas.forEach(m => { if(cerca(r, m)) pena += 20; });
+      if(muestra.some(q => q.x > r.x0 - 2 && q.x < r.x1 + 2 && q.y > r.y0 - 2 && q.y < r.y1 + 2)) pena += 5;
+      if(guia.some(q => q.x > r.x0 - 3 && q.x < r.x1 + 3 && q.y > r.y0 - 4 && q.y < r.y1 + 4)) pena += 15;
+      if(!mejor || pena < mejor.pena) mejor = {pena, r, x0, base, lejos: k >= 4};
+    });
+    ocupados.push(mejor.r);
+    if(mejor.lejos){
+      const tx = Math.max(mejor.r.x0, Math.min(px, mejor.r.x1)), ty = py < mejor.base ? mejor.r.y0 : mejor.r.y1;
+      g.strokeStyle = '#9A9C86'; g.lineWidth = 0.8; g.beginPath(); g.moveTo(px, py); g.lineTo(tx, ty); g.stroke();
+    }
+    g.fillStyle = '#2B3014'; g.textAlign = 'left'; g.fillText(txt, mejor.x0, mejor.base);
   });
   // cartera sugerida: anillo
   const asignada = pts.find(pt => pt.perfil === c.perfil);
-  if(asignada){ g.beginPath(); g.arc(X(asignada.x), Y(asignada.y), 9, 0, Math.PI*2); g.strokeStyle = '#2B3014'; g.lineWidth = 1.5; g.stroke(); }
-  // cartera de equilibrio: punto de color
-  g.beginPath(); g.arc(X(ce.x), Y(ce.rendimiento), 5.5, 0, Math.PI*2); g.fillStyle = color; g.fill();
-  g.strokeStyle = '#FFFFFF'; g.lineWidth = 1.5; g.stroke();
+  // cartera sugerida: disco oscuro con borde blanco y centro claro, sobre la curva (no la tapa con un anillo)
+  if(asignada){ const ax = X(asignada.x), ay = Y(asignada.y); punto(ax, ay, 7.5, '#2B3014', 2.5); g.beginPath(); g.arc(ax, ay, 2.6, 0, Math.PI*2); g.fillStyle = '#FFFFFF'; g.fill(); }
+  // cartera de equilibrio: punto de color sobre la curva
+  punto(xCE, yCE, 6.5, color, 2.2);
 
   // leyenda bajo el eje
-  const yL = H - 14; let xL = padL;
-  g.font = fuente(10.5); g.textAlign = 'left';
+  const yL = H - 14;
+  const txtEq = ce.alcanzable ? 'Cartera de equilibrio' : 'Cartera de equilibrio (máximo disponible)';
+  let tamL = 10.5; g.font = fuente(tamL);
+  const anchoL = () => ['Cartera sugerida', txtEq].concat(yEq != null ? ['Rendimiento de equilibrio'] : []).reduce((t, x) => t + 40 + g.measureText(x).width, -22);
+  while(anchoL() > W - 20 && tamL > 8.5){ tamL -= 0.5; g.font = fuente(tamL); }
+  let xL = Math.max(10, Math.min(padL, W - 10 - anchoL()));
+  g.textAlign = 'left';
   const item = (dibujo, txt) => { dibujo(xL + 7, yL - 3.5); g.fillStyle = '#3A3F24'; g.fillText(txt, xL + 18, yL); xL += 18 + g.measureText(txt).width + 22; };
-  item((x, y) => { g.beginPath(); g.arc(x, y, 6, 0, Math.PI*2); g.strokeStyle = '#2B3014'; g.lineWidth = 1.4; g.stroke(); g.beginPath(); g.arc(x, y, 2.6, 0, Math.PI*2); g.fillStyle = '#2B3014'; g.fill(); }, 'Cartera sugerida');
-  item((x, y) => { g.beginPath(); g.arc(x, y, 5, 0, Math.PI*2); g.fillStyle = color; g.fill(); }, ce.alcanzable ? 'Cartera de equilibrio' : 'Cartera de equilibrio (máximo disponible)');
+  item((x, y) => { g.beginPath(); g.arc(x, y, 6, 0, Math.PI*2); g.fillStyle = '#2B3014'; g.fill(); g.beginPath(); g.arc(x, y, 2.1, 0, Math.PI*2); g.fillStyle = '#FFFFFF'; g.fill(); }, 'Cartera sugerida');
+  item((x, y) => { g.beginPath(); g.arc(x, y, 5, 0, Math.PI*2); g.fillStyle = color; g.fill(); }, txtEq);
   if(yEq != null) item((x, y) => { g.strokeStyle = color; g.lineWidth = 1.3; g.setLineDash([4,3]); g.beginPath(); g.moveTo(x - 7, y); g.lineTo(x + 7, y); g.stroke(); g.setLineDash([]); }, 'Rendimiento de equilibrio');
 }
 
@@ -4095,7 +4258,7 @@ function introduccionFicha(c, p, esInst){
     contenido: esInst
       ? ['Objetivos de la institución', 'Perfil de riesgo', 'Proyección del portafolio', 'Rendimiento de equilibrio y carteras', 'Supuestos aplicados']
       : ['Objetivos del cliente', 'Perfil de riesgo, activos y pasivos', 'Ingresos y gastos de los próximos 12 meses y por moneda', 'Proyección del portafolio, ¿alcanza el plan? y conclusiones',
-         'Rendimiento de equilibrio, cartera sugerida y porcentaje del portafolio en colones para cubrir gastos', 'Caminos para alcanzar el objetivo o margen del plan', 'Supuestos aplicados'],
+         'Rendimiento de equilibrio, cartera sugerida y porcentaje del portafolio en colones para cubrir gastos', 'Caminos para alcanzar el objetivo', 'Supuestos aplicados'],
     nota: 'Las cifras son estimaciones basadas en la información declarada y en los supuestos señalados; no constituyen una garantía de resultados futuros ni una recomendación de inversión.'};
 }
 // Ingresos y gastos después del retiro: subtítulo, cifras y nota (dashboard, ficha y presentación)
@@ -4392,8 +4555,8 @@ function dibujarMonedaPanel(c, p, destino, escala, anchoPx, alto){
 function caminosHTML(c){
   const k = caminosPlan(c, supuestos);
   return `<div class="donut-card">
-      <h2 class="section-title" style="font-size:16px;">${k.ok ? 'Margen del plan' : 'Caminos para alcanzar el objetivo'}</h2>
-      <p class="section-sub" style="margin-bottom:16px;">${k.ok ? 'Hasta dónde puede moverse cada variable, una a la vez y con todo lo demás igual, sin que el plan deje de alcanzar el objetivo.'
+      <h2 class="section-title" style="font-size:16px;">Caminos para alcanzar el objetivo</h2>
+      <p class="section-sub" style="margin-bottom:16px;">${k.ok ? 'El plan ya alcanza el objetivo. Para cada camino, el límite: hasta dónde puede moverse esa variable, una a la vez y con todo lo demás igual, sin que el plan deje de alcanzarlo.'
         : 'Cambio que, por sí solo y con todo lo demás igual, permite cumplir el objetivo. Montos en dólares de hoy. Punto dorado: alcanza por sí solo; punto gris: no basta por sí solo.'}</p>
       <table class="tabla-caminos"><colgroup><col class="c1"><col class="c2"><col class="c3"><col class="c4"></colgroup><thead><tr><th>${k.ok ? 'Variable' : 'Camino'}</th><th>Hoy</th><th>${k.ok ? 'Límite' : 'Necesario'}</th><th>Lectura</th></tr></thead><tbody>
       ${k.filas.map(f => `<tr class="${f.alcanza ? 'si' : 'no'}"><td class="cam"><span class="marca"></span>${esc(f.camino)}</td><td class="num">${esc(f.hoy)}</td><td class="num nec">${esc(f.necesario)}</td><td class="lect">${esc(f.nota)}</td></tr>`).join('')}
@@ -4680,6 +4843,7 @@ function xmlCliente(c, p, asig, sup){
   if(idn.paisEmisor) Ftxt('País emisor del pasaporte', idn.paisEmisor);
   if(idn.fechaNacimiento) Ftxt('Fecha de nacimiento', idn.fechaNacimiento);
   if(idn.ocupacion) Ftxt('Ocupación', idn.ocupacion);
+  if(idn.profesion) Ftxt('Profesión', idn.profesion);
   if(idn.estadoCivil) Ftxt('Estado civil', ({soltero:'Soltero(a)',casado:'Casado(a)',union:'Unión libre',divorciado:'Divorciado(a) o separado(a)',viudo:'Viudo(a)'})[idn.estadoCivil] || idn.estadoCivil);
   Ftxt('Correo electrónico', c.correo); Ftxt('Teléfono', c.telefono);
   const res = c.residencia || null;
@@ -4710,7 +4874,7 @@ function xmlCliente(c, p, asig, sup){
   if(eqX.estado === 'inalcanzable') Ftxt('Rendimiento mínimo necesario (equilibrio)', 'Más de 30%: no alcanzable');
   else Fnum('Rendimiento mínimo necesario (equilibrio)', eqX.r, EST.pct);
   Ftxt('Perfil que exige el objetivo', reqX ? PERFILES[reqX].label : 'Ninguna cartera modelo lo alcanza');
-  if(eqX.r != null) Fnum('Holgura frente a la cartera sugerida', p.retorno - eqX.r, EST.pct);
+  if(eqX.r != null) Fnum('Holgura frente a la cartera sugerida', difPts(p.retorno, eqX.r), EST.pct);
   Ftxt('Preferencia de moneda', c.preferenciaMoneda);
 
   // Datos de calificación del cliente. No entran en el cálculo de la proyección,
@@ -4787,6 +4951,8 @@ function xmlCliente(c, p, asig, sup){
       hg.otrosDependientes.aporteMensual != null ? 'aporte mensual ' + fmt(hg.otrosDependientes.aporteMensual) + ' ' + hg.otrosDependientes.moneda : ''].filter(Boolean).join(' · ')) + `</row>`; }
   const FUENTES = {salario:'Salario',empresa:'Empresa propia',honorarios:'Honorarios profesionales',rentas:'Rentas',pension:'Pensión (retirado)'};
   if(ig.fuentes || ig.fuentePrincipal) Ftxt('Fuentes del ingreso', (ig.fuentes || [ig.fuentePrincipal]).map(k => FUENTES[k] || k).join(' · '));
+  if(ig.empleo && ig.empleo.empresa) Ftxt('Compañía donde trabaja', ig.empleo.empresa);
+  if(ig.empleo && ig.empleo.puesto) Ftxt('Puesto', ig.empleo.puesto);
   if(pt.vivienda) Ftxt('Vivienda principal', ({propia:'Propia, sin deuda',hipoteca:'Propia, con hipoteca',alquilada:'Alquilada'})[pt.vivienda.situacion] || '—');
   if(pt.vivienda && +pt.vivienda.valor > 0){ n++; filas += `<row r="${n}">` + celda('A'+n,'Vivienda principal: valor estimado',EST.bold) + celda('B'+n,+pt.vivienda.valor,EST.num) + celda('C'+n,pt.vivienda.valorMoneda || 'USD') + `</row>`; }
   if(pt.vivienda && +pt.vivienda.alquilerMensual > 0){ n++; filas += `<row r="${n}">` + celda('A'+n,'Vivienda principal: alquiler mensual',EST.bold) + celda('B'+n,+pt.vivienda.alquilerMensual,EST.num) + celda('C'+n,(pt.vivienda.alquilerMoneda || 'USD') + ' · incluido en el gasto familiar') + `</row>`; }
@@ -4880,7 +5046,7 @@ function xmlCliente(c, p, asig, sup){
 
   {
     const k = caminosPlan(c, sup);
-    sec(k.ok ? 'Margen del plan' : 'Caminos para alcanzar el objetivo');
+    sec('Caminos para alcanzar el objetivo');
     n++; filas += `<row r="${n}">` + celda('A'+n, k.ok ? 'Variable' : 'Camino', EST.encab) + celda('B'+n, k.ok ? 'Límite' : 'Necesario', EST.encab) + celda('C'+n, 'Hoy · lectura', EST.encab) + `</row>`;
     k.filas.forEach(x => { n++; filas += `<row r="${n}">` + celda('A'+n, x.camino, EST.bold) + celda('B'+n, x.necesario) + celda('C'+n, (x.hoy === '—' ? '' : 'Hoy ' + x.hoy + ' · ') + x.nota + (x.alcanza ? '' : ' (no basta por sí solo)')) + `</row>`; });
     Ftxt('Lectura', k.resumen);
@@ -4900,6 +5066,7 @@ function xmlCliente(c, p, asig, sup){
   { const fx = v => '$' + fmt(Math.round(v)), Z = razonesPlan(c, p, sup, fx);
     sec('¿Alcanza el plan?');
     Ftxt('Respuesta', Z.al.texto);
+    cuentaPlan(c, p, fx).filas.forEach(([t, v]) => Fnum('Cuenta del plan: ' + t.replace(/^[+−=] /, ''), v, EST.num));
     Z.razones.forEach(([t, x]) => Ftxt(t, x));
     sec('Conclusiones para la toma de decisiones');
     conclusionesPlan(c, p, sup, fx).forEach(k => Ftxt(k[0] + (k[3] ? ' (requiere atención)' : ''), k[1] + ' · ' + k[2])); }
@@ -5874,7 +6041,8 @@ function xmlDatos(c, p, asig, eq){
   // A1:C4 pasteles · A6:C12 matriz de posición · E1:F82 curva de carteras modelo ·
   // H1:J9 carteras modelo, cartera sugerida, cartera de equilibrio y guía del equilibrio.
   const ce = carteraEquilibrio(eq), asigEq = redondeoAsig(ce.asig);
-  const {pts, traza} = curvaModelo();
+  const cmX = curvaModelo(), pts = cmX.pts.filter(q => q.enCurva), GX = geometriaFrontera(c, eq, pts, ce);
+  const traza = GX.curva.muestras(81);      // la misma curva suave del dashboard (filas 2 a 82)
   const filas = {};
   const pon = (ref, v, s) => { const r = +ref.replace(/[A-Z]+/, ''); (filas[r] = filas[r] || []).push(celda(ref, v, s)); };
   pon('A1','Clase'); pon('B1','Cartera sugerida'); pon('C1','Cartera de equilibrio');
@@ -5911,16 +6079,19 @@ function xmlDatos(c, p, asig, eq){
   const asg = pts.find(pt => pt.perfil === c.perfil) || pts[2];
   pon('H7','Cartera sugerida'); pon('I7', +asg.x.toFixed(6), EST.pct); pon('J7', asg.y, EST.pct);
   pon('H8', ce.alcanzable ? 'Cartera de equilibrio' : 'Cartera de equilibrio (máximo disponible)');
-  pon('I8', +ce.x.toFixed(6), EST.pct); pon('J8', +ce.rendimiento.toFixed(6), EST.pct);
+  pon('I8', +GX.eqX.toFixed(6), EST.pct); pon('J8', +GX.eqY.toFixed(6), EST.pct);
   // guía del rendimiento de equilibrio: del eje Y a la cartera de equilibrio
   pon('H9','Rendimiento de equilibrio');
   const inalc = eq.r == null || eq.estado === 'inalcanzable';
   if(!inalc){
-    const xMax = Math.ceil((pts[pts.length - 1].x + 0.01)*20)/20;
-    const guia = !ce.alcanzable ? [[0, eq.r], [xMax, eq.r]]
-               : [[0, eq.r], [ce.x, eq.r], [ce.x, Math.abs(ce.rendimiento - eq.r) < 1e-9 ? 0 : ce.rendimiento]];
+    const guia = !ce.alcanzable ? [[GX.xMin, eq.r], [GX.xMax, eq.r]]
+               : [[GX.xMin, eq.r], [GX.eqX, eq.r], [GX.eqX, GX.yMin]];
     guia.forEach(([x,y],i)=>{ const r = 9+i; pon('I'+r, +x.toFixed(6), EST.pct); pon('J'+r, +y.toFixed(6), EST.pct); });
   }
+  // franja del perfil sugerido (H13:J14): línea vertical gruesa en el centro de la franja
+  if(GX.franja){ const cx = (GX.franja[0] + GX.franja[1])/2;
+    pon('H13', 'PERFIL SUGERIDO'); pon('I13', +cx.toFixed(6), EST.pct); pon('J13', +GX.yMin.toFixed(6), EST.pct);
+    pon('I14', +cx.toFixed(6), EST.pct); pon('J14', +GX.yMax.toFixed(6), EST.pct); }
   // radar de la capacidad financiera (U1:W7): un eje por componente y su promedio
   const compsR = (valido(d.disposicion) ? [{nombre:'Perfil de riesgo', puntaje: d.disposicion}] : []).concat((d.componentesCapacidad || []).filter(x => valido(x.puntaje)));
   pon('U1', 'Componente'); pon('V1', tipoDe(c) === 'institucion' ? 'Institución' : 'Cliente'); pon('W1', 'Capacidad financiera');
@@ -6024,7 +6195,7 @@ function xmlInstitucion(c, p, asig, sup){
   if(eq.estado === 'inalcanzable') Ftxt('Rendimiento mínimo necesario (equilibrio)', 'Más de 30%: no alcanzable');
   else Fnum('Rendimiento mínimo necesario (equilibrio)', eq.r, EST.pct);
   Ftxt('Perfil que exige el objetivo', req ? PERFILES[req].label : 'Ninguna cartera modelo lo alcanza');
-  if(eq.r != null) Fnum('Holgura frente a la cartera sugerida', p.retorno - eq.r, EST.pct);
+  if(eq.r != null) Fnum('Holgura frente a la cartera sugerida', difPts(p.retorno, eq.r), EST.pct);
   Ftxt('Preferencia de moneda', c.preferenciaMoneda);
 
   sec('Datos de la proyección declarados');
@@ -6084,7 +6255,7 @@ async function exportarExcelInst(c, p, asig){
     zip.file('xl/worksheets/sheet1.xml', xmlInstitucion(c, p, asig, supuestos));
     zip.file('xl/worksheets/sheet2.xml', xmlProyeccionInst(c, p, supuestos));
     const eqX = rendimientoEquilibrioInst(c, supuestos);
-    zip.file('xl/worksheets/sheet3.xml', xmlDatos(c, p, asig, eqX));
+    zip.file('xl/worksheets/sheet3.xml', xmlDatos(c, p, asig, eqX)); zip._eqFrontera = eqX;
     await colorEquilibrio(zip, p, eqX);
     // Las gráficas leen exactamente las filas del horizonte, no las 60 de la plantilla
     const ultima = 11 + p.filas.length;
@@ -6147,6 +6318,56 @@ async function agregarRadarCapacidad(zip, c){
     '<Override PartName="/xl/charts/chart8.xml" ContentType="application/vnd.openxmlformats-officedocument.drawingml.chart+xml"/></Types>'));
 }
 // Formatos estándar: montos sin decimales, porcentajes y puntajes con un decimal
+// Gráfico «Rendimiento de equilibrio» del Excel con el mismo diseño del dashboard: ejes acercados,
+// una sola curva suave, franja ancha del perfil sugerido (una línea vertical gruesa del ancho de la
+// franja, detrás de todo), cartera sugerida como disco oscuro con centro blanco y cartera de
+// equilibrio con borde blanco, ambas sobre la curva.
+function estiloFronteraXlsx(t6, c, eq, cxG){
+  const cm = curvaModelo(), pts = cm.pts.filter(q => q.enCurva), ce = carteraEquilibrio(eq), G = geometriaFrontera(c, eq, pts, ce);
+  const A = 'xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"', n4 = v => String(Math.round(v*10000)/10000);
+  const LX = 0.14, LW = 0.80;
+  t6 = t6.replace('<c:plotArea><c:layout/>', `<c:plotArea><c:layout><c:manualLayout><c:layoutTarget val="inner"/><c:xMode val="edge"/><c:yMode val="edge"/><c:x val="${LX}"/><c:y val="0.12"/><c:w val="${LW}"/><c:h val="0.58"/></c:manualLayout></c:layout>`);
+  const ejes = t6.split('<c:valAx>');
+  if(ejes.length === 3){
+    ejes[1] = ejes[1].replace(/<c:scaling>[\s\S]*?<\/c:scaling>/, `<c:scaling><c:orientation val="minMax"/><c:max val="${n4(G.xMax)}"/><c:min val="${n4(G.xMin)}"/></c:scaling>`)
+      .replace(/<c:majorUnit val="[^"]*"\/>/, `<c:majorUnit val="${n4(G.pasoX)}"/>`).replace(/formatCode="0%"/, `formatCode="${G.pasoX < 0.05 ? '0.0%' : '0%'}"`);
+    ejes[2] = ejes[2].replace(/<c:scaling>[\s\S]*?<\/c:scaling>/, `<c:scaling><c:orientation val="minMax"/><c:max val="${n4(G.yMax)}"/><c:min val="${n4(G.yMin)}"/></c:scaling>`)
+      .replace(/<c:majorUnit val="[^"]*"\/>/, '').replace(/<\/c:valAx>/, `<c:majorUnit val="${n4(G.pasoY)}"/></c:valAx>`);
+    t6 = ejes.join('<c:valAx>');
+  }
+  t6 = t6.replace(/<c:ser>[\s\S]*?<\/c:ser>/g, ser => {
+    const h = (ser.match(/<c:f>'Datos'!\$([A-Z])\$(\d+)<\/c:f>/) || []).slice(1).join('');
+    if(h === 'E1') return ser.replace(/<a:ln ([^>]*)w="\d+"/, '<a:ln $1w="28575" cap="rnd"');
+    if(h === 'H7') return ser.replace(/<c:marker>[\s\S]*?<\/c:marker>/, `<c:marker><c:symbol val="circle"/><c:size val="11"/><c:spPr><a:solidFill ${A}><a:srgbClr val="2B3014"/></a:solidFill><a:ln w="25400"><a:solidFill ${A}><a:srgbClr val="FFFFFF"/></a:solidFill></a:ln></c:spPr></c:marker>`);
+    if(h === 'H8') return ser.replace(/<c:size val="\d+"\/>/, '<c:size val="10"/>').replace(/<a:ln w="\d+">/, '<a:ln w="25400">');
+    return ser;
+  });
+  // orden de dibujo: la franja primero (detrás), el centro blanco de la sugerida al final
+  const rotulo = `<c:spPr><a:noFill ${A}/><a:ln ${A}><a:noFill ${A}/></a:ln></c:spPr><c:txPr><a:bodyPr ${A}/><a:lstStyle ${A}/><a:p ${A}><a:pPr><a:defRPr sz="800" b="1"><a:solidFill ${A}><a:srgbClr val="3E4326"/></a:solidFill></a:defRPr></a:pPr><a:endParaRPr lang="es-CR"/></a:p></c:txPr>`;
+  const no = '<c:showLegendKey val="0"/><c:showVal val="0"/><c:showCatName val="0"/>';
+  const franja = !G.franja ? '' : `<c:ser><c:idx val="9"/><c:order val="0"/><c:tx><c:strRef><c:f>'Datos'!$H$13</c:f></c:strRef></c:tx>`
+    + `<c:spPr><a:ln ${A} w="${Math.min(20116800, Math.round((G.franja[1] - G.franja[0])/(G.xMax - G.xMin) * (cxG/12700) * LW * 12700))}" cap="flat"><a:solidFill ${A}><a:srgbClr val="BFCB9C"><a:alpha val="35000"/></a:srgbClr></a:solidFill></a:ln></c:spPr><c:marker><c:symbol val="none"/></c:marker>`
+    + `<c:dLbls><c:dLbl><c:idx val="1"/>${rotulo}<c:dLblPos val="b"/>${no}<c:showSerName val="1"/><c:showPercent val="0"/><c:showBubbleSize val="0"/></c:dLbl>${no}<c:showSerName val="0"/><c:showPercent val="0"/><c:showBubbleSize val="0"/></c:dLbls>`
+    + `<c:xVal><c:numRef><c:f>'Datos'!$I$13:$I$14</c:f></c:numRef></c:xVal><c:yVal><c:numRef><c:f>'Datos'!$J$13:$J$14</c:f></c:numRef></c:yVal><c:smooth val="0"/></c:ser>`;
+  const centro = `<c:ser><c:idx val="10"/><c:order val="10"/><c:tx><c:strRef><c:f>'Datos'!$H$7</c:f></c:strRef></c:tx><c:spPr><a:ln ${A}><a:noFill ${A}/></a:ln></c:spPr>`
+    + `<c:marker><c:symbol val="circle"/><c:size val="3"/><c:spPr><a:solidFill ${A}><a:srgbClr val="FFFFFF"/></a:solidFill><a:ln ${A}><a:noFill ${A}/></a:ln></c:spPr></c:marker>`
+    + `<c:xVal><c:numRef><c:f>'Datos'!$I$7</c:f></c:numRef></c:xVal><c:yVal><c:numRef><c:f>'Datos'!$J$7</c:f></c:numRef></c:yVal><c:smooth val="0"/></c:ser>`;
+  t6 = t6.replace(/<c:varyColors val="0"\/>/, m => m + franja).replace(/<c:axId val="501"\/><c:axId val="502"\/><\/c:scatterChart>/, m => centro + m);
+  // rótulos de las carteras a la derecha del punto (debajo de la curva); el último, a la izquierda
+  const ultimaFila = 1 + pts.length;
+  t6 = t6.replace(/<c:ser>[\s\S]*?<\/c:ser>/g, ser => { const m = ser.match(/<c:f>'Datos'!\$H\$(\d+)<\/c:f>/); const r = m ? +m[1] : 0;
+    return r >= 2 && r <= 6 ? ser.replace(/<c:dLblPos val="\w+"\/>/g, `<c:dLblPos val="${r === ultimaFila ? 'l' : 'r'}"/>`) : ser; });
+  // índices y orden de dibujo según la posición en el documento (la franja queda detrás de todo);
+  // la leyenda muestra solo la cartera sugerida y la cartera de equilibrio
+  let k = -1; const quedan = [];
+  t6 = t6.replace(/<c:ser><c:idx val="\d+"\/><c:order val="\d+"\/>([\s\S]*?<\/c:ser>)/g, (m, resto) => { k++;
+    const h = (resto.match(/<c:f>'Datos'!\$H\$(\d+)<\/c:f>/) || [])[1];
+    if((h === '7' && !resto.includes('<c:size val="3"/>')) || h === '8') quedan.push(k);
+    return `<c:ser><c:idx val="${k}"/><c:order val="${k}"/>` + resto; });
+  const borrar = Array.from({length: k + 1}, (_, i) => i).filter(i => !quedan.includes(i));
+  t6 = t6.replace(/<c:legend>[\s\S]*?<\/c:legend>/, '').replace(/<c:plotVisOnly/, `<c:legend><c:legendPos val="b"/>` + borrar.map(i => `<c:legendEntry><c:idx val="${i}"/><c:delete val="1"/></c:legendEntry>`).join('') + `<c:overlay val="0"/></c:legend><c:plotVisOnly`);
+  return t6;
+}
 async function estandarizarFormatos(zip){
   const f = zip.file('xl/styles.xml'); if(!f) return;
   let st = await f.async('string');
@@ -6181,7 +6402,13 @@ async function estandarizarFormatos(zip){
       if(m && (+m[1] === 7 || +m[1] === 8)) return ser.replace(/<c:dLbls>[\s\S]*?<\/c:dLbls>/, '');
       return pos ? ser.replace(/<c:dLblPos val="\w+"\/>/g, `<c:dLblPos val="${pos}"/>`) : ser;
     });
-    if(!/<c:legend>/.test(t6)) t6 = t6.replace(/<c:plotVisOnly/, `<c:legend><c:legendPos val="b"/>` + [0,1,2,3,4,5,7].map(k => `<c:legendEntry><c:idx val="${k}"/><c:delete val="1"/></c:legendEntry>`).join('') + `<c:overlay val="0"/></c:legend><c:plotVisOnly`);
+    if(zip._clienteRadar && zip._eqFrontera){
+      const dr = zip.file('xl/drawings/drawing1.xml'), dx = dr ? await dr.async('string') : '';
+      const an = (dx.match(/<oneCellAnchor>(?:(?!<\/oneCellAnchor>)[\s\S])*?name="Chart 6"[\s\S]*?<\/oneCellAnchor>/) || [''])[0];
+      const cxG = +((an.match(/<ext cx="(\d+)"/) || [])[1] || 4320000);
+      t6 = estiloFronteraXlsx(t6, zip._clienteRadar, zip._eqFrontera, cxG);
+    }
+    if(!/<c:legend>/.test(t6)) t6 = t6.replace(/<c:plotVisOnly/, `<c:legend><c:legendPos val="b"/>` + [0,1,2,3,4,5,7,9,10].map(k => `<c:legendEntry><c:idx val="${k}"/><c:delete val="1"/></c:legendEntry>`).join('') + `<c:overlay val="0"/></c:legend><c:plotVisOnly`);
     zip.file('xl/charts/chart6.xml', t6);
   }
 }
@@ -6220,7 +6447,7 @@ async function exportarExcel(c, p, asig){
     zip.file('xl/worksheets/sheet2.xml', xmlProyeccion(c, p, supuestos, det));
     await agregarHojasDetalle(zip, det);
     const eqX = rendimientoEquilibrio(c, supuestos);
-    zip.file('xl/worksheets/sheet3.xml', xmlDatos(c, p, asig, eqX));
+    zip.file('xl/worksheets/sheet3.xml', xmlDatos(c, p, asig, eqX)); zip._eqFrontera = eqX;
     await colorEquilibrio(zip, p, eqX);
     // La gráfica de la proyección se ubica a la derecha de las columnas adicionales (fondos,
     // pensión, otros ingresos, aportes, apoyos, metas y gasto no cubierto)
@@ -6463,7 +6690,7 @@ async function exportarFicha(c, p, asig){
     const eqP = esInst ? rendimientoEquilibrioInst(c, supuestos) : rendimientoEquilibrio(c, supuestos);
     const ceP = carteraEquilibrio(eqP), aeP = redondeoAsig(ceP.asig);
     const reqP = perfilRequerido(eqP);
-    const holP = eqP.r == null ? null : p.retorno - eqP.r;
+    const holP = eqP.r == null ? null : difPts(p.retorno, eqP.r);
     const verP = esInst ? veredictoInst(c, p, eqP) : veredictoPersona(c, p, eqP);
     const pctSigno = v => (v*100).toFixed(1).replace('-', '-') + '%';
     const titulo = (t, yy) => { doc.setFontSize(10.5); doc.setTextColor(...NEGRO); doc.setFont('helvetica','bold');
@@ -6739,10 +6966,20 @@ async function exportarFicha(c, p, asig){
       nuevaPagina();
       titulo('¿Alcanza el plan?', y); y += 5;
       recuadroPdf(Z.al.texto, Z.al.ok); y += 1;
-      { const G = sankeyPlan(p, usdPdf), wS = W - 2*M, hS = wS * G.H / G.W;
+      { const G = sankeyPlan(p, usdPdf), wS = (W - 2*M) * 0.72, hS = wS * G.H / G.W;
         doc.setFont('helvetica','bold'); doc.setFontSize(7.6); doc.setTextColor(...NEGRO); doc.text('De dónde sale y a dónde va el dinero del plan', M, y); doc.setFont('helvetica','normal');
         doc.setFontSize(6.6); doc.setTextColor(...GRIS); doc.text(p.totalAnios + ' años · dólares nominales · el grosor de cada flujo es su monto', M + 66, y); y += 2;
-        doc.addImage(sankeyCanvas(document.createElement('canvas'), G, usdPdf, 3).toDataURL('image/png'), 'PNG', M, y, wS, hS, undefined, 'FAST'); y += hS + 4; }
+        doc.addImage(sankeyCanvas(document.createElement('canvas'), G, usdPdf, 3).toDataURL('image/png'), 'PNG', M + (W - 2*M - wS)/2, y, wS, hS, undefined, 'FAST'); y += hS + 3; }
+      { const K = cuentaPlan(c, p, usdPdf);
+        doc.setFont('helvetica','bold'); doc.setFontSize(7.6); doc.setTextColor(...NEGRO); doc.text('La cuenta del plan', M, y); doc.setFont('helvetica','normal');
+        doc.setFontSize(6.6); doc.setTextColor(...GRIS); doc.text(p.totalAnios + ' años · dólares nominales · se puede verificar sumando', M + 28, y); y += 4;
+        K.filas.forEach(([t, v, d], i) => { const ult = i === K.filas.length - 1;
+          if(ult){ doc.setDrawColor(...NEGRO); doc.setLineWidth(0.3); doc.line(M, y - 3, M + 120, y - 3); }
+          doc.setFontSize(7.2); doc.setFont('helvetica', ult ? 'bold' : 'normal'); doc.setTextColor(...NEGRO); doc.text(t.replace('−', '-'), M, y);
+          doc.setTextColor(...(v < 0 ? [162,84,58] : NEGRO)); doc.text(v < 0 ? '-' + usdPdf(-v) : usdPdf(v), M + 120, y, {align: 'right'});
+          doc.setFont('helvetica','normal'); if(d){ doc.setFontSize(6.2); doc.setTextColor(...GRIS); doc.text(d, M + 124, y); }
+          y += 3.9; });
+        y += 2.5; }
       Z.razones.forEach(([t, x]) => { doc.setFontSize(7); const l = doc.splitTextToSize(x, W - 2*M - 44);
         doc.setFont('helvetica','bold'); doc.setTextColor(...NEGRO); doc.text(t, M, y); doc.setFont('helvetica','normal'); doc.setTextColor(...GRIS); doc.text(l, M + 44, y); y += l.length*3.2 + 2.2; });
       y += 4;
@@ -6876,9 +7113,9 @@ async function exportarFicha(c, p, asig){
     if(!esInst){
       const k = caminosPlan(c, supuestos, usdPdf);
       asegurar(45); y += 2;
-      titulo(k.ok ? 'Margen del plan' : 'Caminos para alcanzar el objetivo', y); y += 4;
+      titulo('Caminos para alcanzar el objetivo', y); y += 4;
       doc.setFontSize(6.8); doc.setTextColor(...GRIS);
-      doc.text(doc.splitTextToSize(k.ok ? 'Hasta dónde puede moverse cada variable, una a la vez y con todo lo demás igual, sin que el plan deje de alcanzar el objetivo.'
+      doc.text(doc.splitTextToSize(k.ok ? 'El plan ya alcanza el objetivo. Para cada camino, el límite: hasta dónde puede moverse esa variable, una a la vez y con todo lo demás igual, sin que el plan deje de alcanzarlo.'
         : 'Cambio que, por sí solo y con todo lo demás igual, permite cumplir el objetivo. Montos en dólares de hoy.', W - 2*M), M, y); y += 6;
       const cx = [M, M + 58, M + 88, M + 120], anchoL = W - M - cx[3];
       doc.setFontSize(6); doc.setTextColor(...GRIS);
@@ -6973,7 +7210,14 @@ async function exportarPresentacion(c, p, asig){
     pptx.author = 'Chotocruz & Co.'; pptx.company = 'Chotocruz &amp; Co.';   // la librería no escapa este campo
     pptx.title = 'Ficha de planificación · ' + (c.nombre || 'Cliente');
     const W = 13.333, H = 7.5, M = 0.6, FONT = 'Satoshi';
-    pptx.theme = {headFontFace: FONT, bodyFontFace: FONT};   // tipografía de la firma (Satoshi) en toda la presentación
+    pptx.theme = {headFontFace: FONT, bodyFontFace: FONT};
+    // Satoshi no trae el signo de colón (₡) ni el signo menos (−): PowerPoint los mostraría como «?».
+    // Se escriben como «CRC» y «-» en todo el texto de la presentación.
+    const limpiarTxt = v => typeof v === 'string' ? v.replace(/₡(?=\s?\d)/g, 'CRC ').replace(/₡/g, 'CRC').replace(/−/g, '-').replace(/CRC  /g, 'CRC ')
+      : Array.isArray(v) ? v.map(limpiarTxt) : (v && typeof v === 'object' && 'text' in v) ? Object.assign({}, v, {text: limpiarTxt(v.text)}) : v;
+    { const addS = pptx.addSlide.bind(pptx);
+      pptx.addSlide = (...a) => { const sl = addS(...a), at = sl.addText.bind(sl), ab = sl.addTable.bind(sl);
+        sl.addText = (t, o) => at(limpiarTxt(t), o); sl.addTable = (rows, o) => ab(rows.map(r => r.map(limpiarTxt)), o); return sl; }; }   // tipografía de la firma (Satoshi) en toda la presentación
     const OSC = '23270F', VERDE = '2B3014', ORO = '918042', NEGRO = '141709', GRIS = '666653', LINEA = 'C6CCB4', CLARO = 'F5F7EF', ROJO = 'A2543A';
     const esInst = !!p.institucional;
     const anioFin = esInst ? supuestos.anioInicio + p.horizonte - 1 : null;
@@ -7239,7 +7483,7 @@ async function exportarPresentacion(c, p, asig){
     const eqP = esInst ? rendimientoEquilibrioInst(c, supuestos) : rendimientoEquilibrio(c, supuestos);
     const ceP = carteraEquilibrio(eqP), aeP = redondeoAsig(ceP.asig);
     const reqP = perfilRequerido(eqP);
-    const holP = eqP.r == null ? null : p.retorno - eqP.r;
+    const holP = eqP.r == null ? null : difPts(p.retorno, eqP.r);
     const verP = esInst ? veredictoInst(c, p, eqP) : veredictoPersona(c, p, eqP, usdPdf);
     {
       const s = nueva('Rendimiento de equilibrio', 'El rendimiento mínimo que necesita el plan, frente a la cartera sugerida');
@@ -7283,21 +7527,15 @@ async function exportarPresentacion(c, p, asig){
       const G = sankeyPlan(p, usdPdf), hS = 3.85, wS = Math.min(6.7, hS * G.W / G.H);
       s.addText('De dónde sale y a dónde va el dinero del plan · ' + p.totalAnios + ' años, dólares nominales', {x: M, y: 2.55, w: 6.7, h: 0.28, fontFace: FONT, fontSize: 10, bold: true, color: NEGRO, margin: 0});
       s.addImage({data: sankeyCanvas(document.createElement('canvas'), G, usdPdf, 3).toDataURL('image/png'), x: M, y: 2.9, w: wS, h: wS * G.H / G.W});
-      const falt = -r.flujoTotal, hol = holP, cards = [];
-      cards.push(r.flujoTotal < 0
-        ? ['Rendimientos frente al faltante', (r.rendimientos / falt).toFixed(1).replace('.', ',') + ' veces', 'En ' + p.totalAnios + ' años los gastos superan a los ingresos en ' + usdPdf(falt) + '; los rendimientos suman ' + usdPdf(r.rendimientos) + '.', r.rendimientos < falt]
-        : ['Ingresos frente a gastos', 'Superávit', 'Los ingresos y las ventas de activos superan a los gastos en ' + usdPdf(r.flujoTotal) + '.', false]);
-      cards.push(['Margen de rendimiento', hol == null ? 'Sin margen' : (hol >= 0 ? '+' : '−') + (Math.abs(hol)*100).toFixed(1).replace('.', ',') + ' pts',
-        eqP.r == null ? 'Ninguna cartera modelo rinde lo que el plan necesita.' : 'Necesita ' + pct(eqP.r) + ' anual; la cartera sugerida rinde ' + pct(p.retorno) + '.', hol == null || hol < 0]);
-      cards.push(['Saldo final real', usdPdf(p.finalReal), p.edadAgota ? 'Se agota a los ' + p.edadAgota + ' años.' : 'No se agota. En ' + anioF + ' cierra con ' + usdPdf(p.finalNominal) + ' nominales.', !!p.edadAgota]);
-      if(al.meta > 0) cards.push(['Herencia frente al objetivo', (p.finalReal >= al.meta ? '+' : '−') + usdPdf(Math.abs(p.finalReal - al.meta)), 'Herencia deseada: ' + usdPdf(al.meta) + ' en dólares de hoy.', p.finalReal < al.meta]);
-      const xc = M + 7.0, wc = (W - M - xc - 0.2) / 2, hc = 1.85;
-      cards.forEach(([t, v, d, a], i) => { const x = xc + (i % 2) * (wc + 0.2), y = 2.55 + Math.floor(i / 2) * (hc + 0.2);
-        s.addShape(pptx.ShapeType.rect, {x, y, w: wc, h: hc, fill: {color: CLARO}, line: {color: LINEA, width: 0.75}});
-        s.addShape(pptx.ShapeType.rect, {x, y, w: wc, h: 0.06, fill: {color: a ? ROJO : ORO}, line: {color: a ? ROJO : ORO, width: 0}});
-        s.addText(t.toUpperCase(), {x: x + 0.15, y: y + 0.15, w: wc - 0.3, h: 0.36, fontFace: FONT, fontSize: 8, color: GRIS, charSpacing: 0.5, margin: 0, valign: 'top'});
-        s.addText(v, {x: x + 0.15, y: y + 0.52, w: wc - 0.3, h: 0.45, fontFace: FONT, fontSize: 18, bold: true, color: a ? ROJO : NEGRO, margin: 0, fit: 'shrink'});
-        s.addText(d, {x: x + 0.15, y: y + 1.0, w: wc - 0.3, h: hc - 1.08, fontFace: FONT, fontSize: 9, color: NEGRO, margin: 0, valign: 'top', fit: 'shrink'}); });
+      // La cuenta del plan: una suma verificable de dónde sale cada cifra
+      const K = cuentaPlan(c, p, usdPdf), xc = M + 7.0, wc = W - M - xc;
+      s.addText('La cuenta del plan · se puede verificar sumando', {x: xc, y: 2.55, w: wc, h: 0.28, fontFace: FONT, fontSize: 10, bold: true, color: NEGRO, margin: 0});
+      s.addTable(K.filas.map(([t, v], i) => { const ult = i === K.filas.length - 1;
+        return [{text: t, options: {bold: ult}}, {text: v < 0 ? '-' + usdPdf(-v) : usdPdf(v), options: {align: 'right', bold: ult, color: v < 0 ? ROJO : NEGRO}}]; }),
+        {x: xc, y: 2.92, w: wc, colW: [wc - 1.75, 1.75], fontFace: FONT, fontSize: 10, color: NEGRO, border: {type: 'solid', color: LINEA, pt: 0.5}, margin: 0.06, autoPage: false, rowH: 0.34});
+      const yL = 2.92 + K.filas.length * 0.34 + 0.2;
+      s.addText(K.filas[K.filas.length - 1][2] + ' al final.', {x: xc, y: yL, w: wc, h: 0.26, fontFace: FONT, fontSize: 9, color: GRIS, margin: 0});
+      s.addText(K.lectura, {x: xc, y: yL + 0.32, w: wc, h: 6.75 - yL - 0.32, fontFace: FONT, fontSize: 10, color: NEGRO, margin: 0, valign: 'top', fit: 'shrink'});
       s.hidden = true;
     }
     // =================== Complementos: carteras ===================
@@ -7316,9 +7554,10 @@ async function exportarPresentacion(c, p, asig){
         const cv = document.getElementById(id);
         const n4 = clasesVis().length > 3, dP = n4 ? 2.2 : 2.4;
         if(cv) s.addImage({data: cv.toDataURL('image/png'), x: x + (wc - dP)/2, y: 2.6, w: dP, h: dP});
-        const filas = clasesVis().map(([n, kk]) => [
-          {text: '■', options: {color: COLOR_CLASE[kk].replace('#', ''), fontSize: 14}}, {text: n}, {text: fmtPeso(a[kk]) + '%', options: {align: 'right', bold: true}}]);
-        s.addTable(filas, {x: x + (wc - 3.6)/2, y: n4 ? 4.95 : 5.15, w: 3.6, colW: [0.35, 2.2, 1.05], fontFace: FONT, fontSize: 11.5, color: NEGRO, rowH: 0.27, margin: 0.02, border: {type: 'none'}});
+        const filas = clasesVis().map(([n, kk]) => [{text: ''}, {text: n}, {text: fmtPeso(a[kk]) + '%', options: {align: 'right', bold: true}}]);
+        const xL = x + (wc - 3.6)/2, yL = n4 ? 4.95 : 5.15;
+        s.addTable(filas, {x: xL, y: yL, w: 3.6, colW: [0.35, 2.2, 1.05], fontFace: FONT, fontSize: 11.5, color: NEGRO, rowH: 0.27, margin: 0.02, border: {type: 'none'}});
+        clasesVis().forEach(([n, kk], i) => s.addShape(pptx.ShapeType.ellipse, {x: xL + 0.1, y: yL + 0.27*i + 0.075, w: 0.12, h: 0.12, fill: {color: COLOR_CLASE[kk].replace('#', '')}, line: {color: COLOR_CLASE[kk].replace('#', ''), width: 0}}));
         s.addText('Volatilidad anual ' + ((est.x != null ? est.x : est.vol)*100).toFixed(1).replace('.', ',') + '% · peor año ' + (est.peor*100).toFixed(1).replace('.', ',') + '% (' + est.anioPeor + ')',
           {x, y: (n4 ? 4.95 : 5.15) + 0.27*clasesVis().length + 0.18, w: wc, h: 0.3, fontFace: FONT, fontSize: 10, color: GRIS, align: 'center', margin: 0});
       });
@@ -7342,26 +7581,27 @@ async function exportarPresentacion(c, p, asig){
         let x = M; cw = CW[0]; tit(1, x, 'Gasto del cliente, por moneda', 'valor de hoy');
         const tg1 = [tablaCab(['', 'Colones', 'Dólares', 'Total'])].concat(S.gasto.map((r, i) => r.map((v, k) => ({text: v, options: {align: k ? 'right' : 'left', bold: i === 2, color: i === 2 ? ORO : NEGRO}}))));
         [1, 2, 3].forEach(k => tg1[0][k].options.align = 'right');
-        sd.addTable(tg1, {x, y: y0 + 0.85, w: cw, colW: [1.0, 1.7, 0.85, 0.95], fontFace: FONT, fontSize: 9, border: {type: 'solid', color: LINEA, pt: 0.5}, rowH: 0.34, margin: 0.04, autoPage: false});
+        sd.addTable(tg1, {x, y: y0 + 0.85, w: cw, colW: [0.9, 2.05, 0.75, 0.8], fontFace: FONT, fontSize: 8.5, border: {type: 'solid', color: LINEA, pt: 0.5}, rowH: 0.34, margin: 0.04, autoPage: false});
         // 2. capital en colones
         x = M + CW[0] + 0.3; cw = CW[1]; tit(2, x, 'Capital en colones que paga ese gasto con sus intereses', '');
         sd.addText(S.capital.linea, {x: x + 0.4, y: y0 + 0.85, w: cw - 0.45, h: 0.9, fontFace: FONT, fontSize: 11, color: NEGRO, margin: 0, valign: 'top'});
         // 3. reparto de la renta fija (100%)
         x = M + CW[0] + CW[1] + 0.6; cw = CW[2]; tit(3, x, S.rfTit, S.nota);
         const dd = 1.75; sd.addImage({data: donaCanvas(document.createElement('canvas'), S.rf.map(r => [r[0], r[1], r[3]]), S.centro, 'en Costa Rica', 600).toDataURL('image/png'), x: x + (cw - dd) / 2, y: y0 + 0.85, w: dd, h: dd});
-        const tr = [tablaCab(['Renta fija', '% de la renta fija'])].concat(S.rf.map(r => [{text: [{text: '■  ', options: {color: r[3].replace('#', '')}}, {text: r[0], options: {color: NEGRO}}]},
+        const tr = [tablaCab(['Renta fija', '% de la renta fija'])].concat(S.rf.map(r => [{text: '      ' + r[0], options: {color: NEGRO}},
           {text: (r[1]*100).toFixed(1).replace('.', ',') + '%', options: {align: 'right'}}]),
           [[{text: S.rfTot[0], options: {bold: true}}, {text: S.rfTot[1], options: {align: 'right', bold: true}}]]);
         tr[0][1].options.align = 'right';
         sd.addTable(tr, {x, y: y0 + 2.7, w: cw, colW: [cw - 1.4, 1.4], fontFace: FONT, fontSize: 9, color: NEGRO, border: {type: 'solid', color: LINEA, pt: 0.5}, rowH: 0.3, margin: 0.04, autoPage: false});
+        S.rf.forEach((r, i) => sd.addShape(pptx.ShapeType.ellipse, {x: x + 0.08, y: y0 + 2.7 + 0.3*(i + 1) + 0.095, w: 0.11, h: 0.11, fill: {color: r[3].replace('#', '')}, line: {color: r[3].replace('#', ''), width: 0}}));
         if(S.falta) sd.addText(S.falta, {x: M, y: 6.2, w: W - 2*M, h: 0.4, fontFace: FONT, fontSize: 9, color: ROJO, margin: 0});
       }
     }
     // =================== Complementos: caminos o margen del plan ===================
     {
       const k = kM;
-      const s = nueva(k.ok ? 'Margen del plan' : 'Caminos para alcanzar el objetivo', k.ok
-        ? 'Hasta dónde puede moverse cada variable, una a la vez y con todo lo demás igual, sin que el plan deje de alcanzar el objetivo'
+      const s = nueva('Caminos para alcanzar el objetivo', k.ok
+        ? 'El plan ya alcanza el objetivo. Para cada camino, el límite: hasta dónde puede moverse esa variable, una a la vez y con todo lo demás igual, sin que el plan deje de alcanzarlo'
         : 'Cambio que, por sí solo y con todo lo demás igual, permite cumplir el objetivo. Montos en dólares de hoy');
       const filas = k.filas.map(x => [
         {text: x.camino, options: {bold: true}}, {text: x.hoy, options: {color: GRIS}},
@@ -7438,7 +7678,7 @@ async function exportarPresentacion(c, p, asig){
     }
     {
       const k = kM;
-      const s2 = nueva((k.ok ? 'Margen del plan' : 'Caminos para alcanzar el objetivo') + ': metodología de cálculo', 'De dónde sale cada cifra, con los datos del cliente');
+      const s2 = nueva('Caminos para alcanzar el objetivo: metodología de cálculo', 'De dónde sale cada cifra, con los datos del cliente');
       s2.addTable(k.proc.map(([t, x]) => [{text: t, options: {bold: true}}, {text: x, options: {color: NEGRO}}]),
         {x: M, y: 1.85, w: W - 2*M, colW: [2.4, W - 2*M - 2.4], fontFace: FONT, fontSize: 10.5, color: NEGRO, border: {type: 'solid', color: LINEA, pt: 0.5}, margin: 0.08, autoPage: false});
       s2.hidden = true;
@@ -7449,7 +7689,7 @@ async function exportarPresentacion(c, p, asig){
       const partes = textoSupuestosFicha(c, p, esInst, anioFin).replace(/\.\s*Montos expresados.*$/, '').split(' · ');
       const mitad = Math.ceil(partes.length / 2);
       [partes.slice(0, mitad), partes.slice(mitad)].forEach((lista, i) => {
-        s.addText(lista.map(t => ({text: t, options: {bullet: {code: '25A0'}, breakLine: true}})),
+        s.addText(lista.map(t => ({text: t, options: {bullet: {code: '2022'}, breakLine: true}})),
           {x: M + i*(W - 2*M)/2, y: 1.9, w: (W - 2*M)/2 - 0.2, h: 4.5, fontFace: FONT, fontSize: 12.5, color: NEGRO, valign: 'top', paraSpaceAfter: 4, fit: 'shrink'});
       });
       s.addText('Montos expresados en dólares de los Estados Unidos.', {x: M, y: 6.45, w: W - 2*M, h: 0.25, fontFace: FONT, fontSize: 9, color: GRIS, margin: 0});
@@ -7660,7 +7900,7 @@ async function exportarPresentacion(c, p, asig){
     const eqP = esInst ? rendimientoEquilibrioInst(c, supuestos) : rendimientoEquilibrio(c, supuestos);
     const ceP = carteraEquilibrio(eqP), aeP = redondeoAsig(ceP.asig);
     const reqP = perfilRequerido(eqP);
-    const holP = eqP.r == null ? null : p.retorno - eqP.r;
+    const holP = eqP.r == null ? null : difPts(p.retorno, eqP.r);
     const verP = esInst ? veredictoInst(c, p, eqP) : veredictoPersona(c, p, eqP);
     {
       const s = nueva('Rendimiento de equilibrio', 'El rendimiento mínimo que necesita el plan, frente a la cartera sugerida');
@@ -7695,9 +7935,10 @@ async function exportarPresentacion(c, p, asig){
         const cv = document.getElementById(id);
         const n4 = clasesVis().length > 3, dP = n4 ? 2.2 : 2.4;
         if(cv) s.addImage({data: cv.toDataURL('image/png'), x: x + (wc - dP)/2, y: 2.6, w: dP, h: dP});
-        const filas = clasesVis().map(([n, kk]) => [
-          {text: '■', options: {color: COLOR_CLASE[kk].replace('#', ''), fontSize: 14}}, {text: n}, {text: fmtPeso(a[kk]) + '%', options: {align: 'right', bold: true}}]);
-        s.addTable(filas, {x: x + (wc - 3.6)/2, y: n4 ? 4.95 : 5.15, w: 3.6, colW: [0.35, 2.2, 1.05], fontFace: FONT, fontSize: 11.5, color: NEGRO, rowH: 0.27, margin: 0.02, border: {type: 'none'}});
+        const filas = clasesVis().map(([n, kk]) => [{text: ''}, {text: n}, {text: fmtPeso(a[kk]) + '%', options: {align: 'right', bold: true}}]);
+        const xL = x + (wc - 3.6)/2, yL = n4 ? 4.95 : 5.15;
+        s.addTable(filas, {x: xL, y: yL, w: 3.6, colW: [0.35, 2.2, 1.05], fontFace: FONT, fontSize: 11.5, color: NEGRO, rowH: 0.27, margin: 0.02, border: {type: 'none'}});
+        clasesVis().forEach(([n, kk], i) => s.addShape(pptx.ShapeType.ellipse, {x: xL + 0.1, y: yL + 0.27*i + 0.075, w: 0.12, h: 0.12, fill: {color: COLOR_CLASE[kk].replace('#', '')}, line: {color: COLOR_CLASE[kk].replace('#', ''), width: 0}}));
         s.addText('Volatilidad anual ' + ((est.x != null ? est.x : est.vol)*100).toFixed(1).replace('.', ',') + '% · peor año ' + (est.peor*100).toFixed(1).replace('.', ',') + '% (' + est.anioPeor + ')',
           {x, y: (n4 ? 4.95 : 5.15) + 0.27*clasesVis().length + 0.18, w: wc, h: 0.3, fontFace: FONT, fontSize: 10, color: GRIS, align: 'center', margin: 0});
       });
@@ -7722,18 +7963,19 @@ async function exportarPresentacion(c, p, asig){
         let x = M; cw = CW[0]; tit(1, x, 'Gasto del cliente, por moneda', 'valor de hoy');
         const tg1 = [tablaCab(['', 'Colones', 'Dólares', 'Total'])].concat(S.gasto.map((r, i) => r.map((v, k) => ({text: v, options: {align: k ? 'right' : 'left', bold: i === 2, color: i === 2 ? ORO : NEGRO}}))));
         [1, 2, 3].forEach(k => tg1[0][k].options.align = 'right');
-        sd.addTable(tg1, {x, y: y0 + 0.85, w: cw, colW: [1.0, 1.7, 0.85, 0.95], fontFace: FONT, fontSize: 9, border: {type: 'solid', color: LINEA, pt: 0.5}, rowH: 0.34, margin: 0.04, autoPage: false});
+        sd.addTable(tg1, {x, y: y0 + 0.85, w: cw, colW: [0.9, 2.05, 0.75, 0.8], fontFace: FONT, fontSize: 8.5, border: {type: 'solid', color: LINEA, pt: 0.5}, rowH: 0.34, margin: 0.04, autoPage: false});
         // 2. capital en colones
         x = M + CW[0] + 0.3; cw = CW[1]; tit(2, x, 'Capital en colones que paga ese gasto con sus intereses', '');
         sd.addText(S.capital.linea, {x: x + 0.4, y: y0 + 0.85, w: cw - 0.45, h: 0.9, fontFace: FONT, fontSize: 11, color: NEGRO, margin: 0, valign: 'top'});
         // 3. reparto de la renta fija (100%)
         x = M + CW[0] + CW[1] + 0.6; cw = CW[2]; tit(3, x, S.rfTit, S.nota);
         const dd = 1.75; sd.addImage({data: donaCanvas(document.createElement('canvas'), S.rf.map(r => [r[0], r[1], r[3]]), S.centro, 'en Costa Rica', 600).toDataURL('image/png'), x: x + (cw - dd) / 2, y: y0 + 0.85, w: dd, h: dd});
-        const tr = [tablaCab(['Renta fija', '% de la renta fija'])].concat(S.rf.map(r => [{text: [{text: '■  ', options: {color: r[3].replace('#', '')}}, {text: r[0], options: {color: NEGRO}}]},
+        const tr = [tablaCab(['Renta fija', '% de la renta fija'])].concat(S.rf.map(r => [{text: '      ' + r[0], options: {color: NEGRO}},
           {text: (r[1]*100).toFixed(1).replace('.', ',') + '%', options: {align: 'right'}}]),
           [[{text: S.rfTot[0], options: {bold: true}}, {text: S.rfTot[1], options: {align: 'right', bold: true}}]]);
         tr[0][1].options.align = 'right';
         sd.addTable(tr, {x, y: y0 + 2.7, w: cw, colW: [cw - 1.4, 1.4], fontFace: FONT, fontSize: 9, color: NEGRO, border: {type: 'solid', color: LINEA, pt: 0.5}, rowH: 0.3, margin: 0.04, autoPage: false});
+        S.rf.forEach((r, i) => sd.addShape(pptx.ShapeType.ellipse, {x: x + 0.08, y: y0 + 2.7 + 0.3*(i + 1) + 0.095, w: 0.11, h: 0.11, fill: {color: r[3].replace('#', '')}, line: {color: r[3].replace('#', ''), width: 0}}));
         if(S.falta) sd.addText(S.falta, {x: M, y: 6.2, w: W - 2*M, h: 0.4, fontFace: FONT, fontSize: 9, color: ROJO, margin: 0});
       }
       // diapositiva 2: gasto por moneda y capital requerido (detalle)
@@ -7760,8 +8002,8 @@ async function exportarPresentacion(c, p, asig){
     // =================== Complementos: caminos o margen del plan ===================
     if(!esInst){
       const k = caminosPlan(c, supuestos, usdPdf);
-      const s = nueva(k.ok ? 'Margen del plan' : 'Caminos para alcanzar el objetivo', k.ok
-        ? 'Hasta dónde puede moverse cada variable, una a la vez y con todo lo demás igual, sin que el plan deje de alcanzar el objetivo'
+      const s = nueva('Caminos para alcanzar el objetivo', k.ok
+        ? 'El plan ya alcanza el objetivo. Para cada camino, el límite: hasta dónde puede moverse esa variable, una a la vez y con todo lo demás igual, sin que el plan deje de alcanzarlo'
         : 'Cambio que, por sí solo y con todo lo demás igual, permite cumplir el objetivo. Montos en dólares de hoy');
       const filas = k.filas.map(x => [
         {text: x.camino, options: {bold: true}}, {text: x.hoy, options: {color: GRIS}},
@@ -7769,7 +8011,7 @@ async function exportarPresentacion(c, p, asig){
       s.addTable([tablaCab([k.ok ? 'Variable' : 'Camino', 'Hoy', k.ok ? 'Límite' : 'Necesario', 'Lectura'])].concat(filas), {x: M, y: 1.85, w: W - 2*M, colW: [3.0, 1.8, 2.2, 5.13], fontFace: FONT, fontSize: 10.5, color: NEGRO,
         border: {type: 'solid', color: LINEA, pt: 0.5}, margin: 0.06, autoPage: false, rowH: 0.36});
       recuadro(s, M, Math.min(6.05, 1.85 + (k.filas.length + 1) * 0.42 + 0.3), W - 2*M, 0.62, k.resumen, k.ok || k.n ? ORO : ROJO, 11);
-      const s2 = nueva((k.ok ? 'Margen del plan' : 'Caminos para alcanzar el objetivo') + ': metodología de cálculo', 'De dónde sale cada cifra, con los datos del cliente');
+      const s2 = nueva('Caminos para alcanzar el objetivo: metodología de cálculo', 'De dónde sale cada cifra, con los datos del cliente');
       s2.addTable(k.proc.map(([t, x]) => [{text: t, options: {bold: true}}, {text: x, options: {color: NEGRO}}]),
         {x: M, y: 1.85, w: W - 2*M, colW: [2.4, W - 2*M - 2.4], fontFace: FONT, fontSize: 10.5, color: NEGRO, border: {type: 'solid', color: LINEA, pt: 0.5}, margin: 0.08, autoPage: false});
     }
@@ -7780,7 +8022,7 @@ async function exportarPresentacion(c, p, asig){
       const partes = textoSupuestosFicha(c, p, esInst, anioFin).replace(/\.\s*Montos expresados.*$/, '').split(' · ');
       const mitad = Math.ceil(partes.length / 2);
       [partes.slice(0, mitad), partes.slice(mitad)].forEach((lista, i) => {
-        s.addText(lista.map(t => ({text: t, options: {bullet: {code: '25A0'}, breakLine: true}})),
+        s.addText(lista.map(t => ({text: t, options: {bullet: {code: '2022'}, breakLine: true}})),
           {x: M + i*(W - 2*M)/2, y: 1.9, w: (W - 2*M)/2 - 0.2, h: 4.5, fontFace: FONT, fontSize: 12.5, color: NEGRO, valign: 'top', paraSpaceAfter: 4, fit: 'shrink'});
       });
       s.addText('Montos expresados en dólares de los Estados Unidos.', {x: M, y: 6.45, w: W - 2*M, h: 0.25, fontFace: FONT, fontSize: 9, color: GRIS, margin: 0});
@@ -7899,4 +8141,9 @@ cargar();
 
 
 
-<!-- Chotocruz & Co. · Entrega 64 · 29 de octubre de 2026 -->
+<!-- Chotocruz & Co. · Entrega 44 · 28 de octubre de 2026 -->
+
+
+
+
+<!-- Chotocruz & Co. · Entrega 68 · 3 de noviembre de 2026 -->

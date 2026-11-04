@@ -743,6 +743,14 @@
                 <label class="opcion"><input type="checkbox" class="fuente-ck" id="fuente-honorarios" value="honorarios"> Honorarios profesionales</label>
               </div>
               <input type="hidden" required id="fuente-ingreso" name="Fuentes del ingreso">
+              <div class="sub-q" id="empleo-detalle" hidden>
+                <div class="fila-grid">
+                  <div><span class="mini">Nombre de la compañía donde trabaja</span>
+                    <input id="empleo-empresa" name="Salario: compañía donde trabaja" placeholder="Nombre de la compañía"></div>
+                  <div><span class="mini">Puesto</span>
+                    <input id="empleo-puesto" name="Salario: puesto" placeholder="Gerente financiero, director comercial…"></div>
+                </div>
+              </div>
               <p class="hint">Sume todo lo que recibe por su trabajo o actividad: salario, utilidades de su empresa, honorarios u otros. No incluya el ingreso de su pareja, que se pide en la pregunta siguiente, ni pensiones u otros ingresos recurrentes, que se piden después; los alquileres de inmuebles se piden en la pregunta sobre su vivienda e inmuebles. Se proyecta hasta su independencia financiera. Si no recibe ingresos de este tipo, escriba 0.</p>
               <span class="mini espacio">Predictibilidad del ingreso de su hogar</span>
               <select required name="Predecibilidad del ingreso del hogar" id="c3">
@@ -1405,6 +1413,10 @@
               <div class="field">
                 <label for="ocupacion">Ocupación</label>
                 <input data-req id="ocupacion" name="Ocupación" placeholder="Gerente general, médico, empresario…">
+              </div>
+              <div class="field">
+                <label for="profesion">Profesión</label>
+                <input data-req id="profesion" name="Profesión" placeholder="Administrador de empresas, ingeniero civil, abogado…">
               </div>
               <div class="field">
                 <label for="estado-civil">Estado civil</label>
@@ -2233,6 +2245,10 @@ if(document.readyState !== 'loading') sincronizarDependientes();
 function sincronizarFuentes(){
   const h = document.getElementById('fuente-ingreso'); if(!h) return;
   h.value = [...document.querySelectorAll('.fuente-ck')].filter(x => x.checked).map(x => x.value).join(',');
+  // Si recibe salario, se piden la compañía donde trabaja y el puesto
+  const sal = document.getElementById('fuente-salario'), emp = document.getElementById('empleo-detalle');
+  if(emp){ const ver = !!(sal && sal.checked); emp.hidden = !ver;
+    ['empleo-empresa', 'empleo-puesto'].forEach(id => { const x = document.getElementById(id); if(x) x.required = ver; }); }
   // Sin ingreso por actividad (por ejemplo, un pensionado que escribe 0) no se pide la fuente
   const m = document.getElementById('salario-monto');
   h.required = !(m && m.value !== '' && +m.value === 0);
@@ -2563,6 +2579,7 @@ document.getElementById('form').addEventListener('submit', async function(e){
       paisEmisor: val('tipo-doc') === 'pasaporte' ? (val('pais-emisor') === 'otro' ? val('pais-emisor-otro').trim() : val('pais-emisor')) : '',
       fechaNacimiento: val('nacimiento'),
       ocupacion: val('ocupacion').trim(),
+      profesion: val('profesion').trim(),
       estadoCivil: val('estado-civil')
     } : null,
     edad: +val('edad'),
@@ -2673,6 +2690,7 @@ document.getElementById('form').addEventListener('submit', async function(e){
     ingresos: {
       fuentes: val('fuente-ingreso').split(',').filter(Boolean),
       fuentePrincipal: val('fuente-ingreso').split(',')[0] || '',
+      empleo: val('fuente-ingreso').split(',').includes('salario') ? {empresa: val('empleo-empresa').trim(), puesto: val('empleo-puesto').trim()} : null,
       ingresoPareja: val('plan') === 'conjunta'
         ? {monto: +val('ingreso-pareja-monto'), moneda: val('ingreso-pareja-moneda'), hastaEdad: val('ingreso-pareja-hasta') === '' ? null : +val('ingreso-pareja-hasta')} : null,
       gastoRetiroPct: val('gasto-retiro-pct') === '' ? null : +val('gasto-retiro-pct'),
@@ -2998,7 +3016,7 @@ function datosDesdeRegistro(r){
     const idn = r.identificacion || {}, res = r.residencia || {};
     pon('nombres', idn.nombres); pon('apellidos', idn.apellidos); pon('tipo-doc', idn.tipoDocumento);
     pon('cedula', idn.cedula); pon('pasaporte', idn.pasaporte); pon('pais-emisor', idn.paisEmisor);
-    pon('nacimiento', idn.fechaNacimiento); pon('ocupacion', idn.ocupacion); pon('estado-civil', idn.estadoCivil);
+    pon('nacimiento', idn.fechaNacimiento); pon('ocupacion', idn.ocupacion); pon('profesion', idn.profesion); pon('estado-civil', idn.estadoCivil);
     pon('correo', r.correo); pon('tel-codigo', r.telefonoPais);
     pon('telefono', (r.telefono || '').replace(/^\+\d+\s*/, ''));
     pon('pais-residencia', res.pais); pon('provincia', res.provincia); pon('canton', res.canton);
@@ -3050,4 +3068,9 @@ function datosDesdeRegistro(r){
 
 
 
-<!-- Chotocruz & Co. · Entrega 64 · 29 de octubre de 2026 -->
+<!-- Chotocruz & Co. · Entrega 44 · 28 de octubre de 2026 -->
+
+
+
+
+<!-- Chotocruz & Co. · Entrega 68 · 3 de noviembre de 2026 -->
