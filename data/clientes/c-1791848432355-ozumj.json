@@ -65,7 +65,15 @@
   ],
   "donacionesAnualesUsdHoy": 0,
   "donacionesMoneda": null,
-  "ventasActivos": [],
+  "ventasActivos": [
+    {
+      "concepto": "Venta de INVERSIÓN ADICIONAL EN EMPRESA DE TRANSPORTE PARA RENOVACIÓN DE FLOTILLA",
+      "origen": "empresa",
+      "anio": 2036,
+      "monto": 5000000,
+      "moneda": "USD"
+    }
+  ],
   "capitalPrivado": {
     "valor": 0,
     "moneda": "USD",
@@ -211,12 +219,24 @@
         "nombre": "EMPRESA",
         "propietario": true,
         "plan": "mantener",
-        "valor": 38500000,
+        "valor": 30800000,
         "valorMoneda": "USD",
         "participacionPct": 80,
         "inviertePortafolio": null,
         "pctInvierte": null,
         "aniosHastaEvento": null
+      },
+      {
+        "numero": 2,
+        "nombre": "INVERSIÓN ADICIONAL EN EMPRESA DE TRANSPORTE PARA RENOVACIÓN DE FLOTILLA",
+        "propietario": true,
+        "plan": "vender",
+        "valor": 5000000,
+        "valorMoneda": "USD",
+        "participacionPct": 100,
+        "inviertePortafolio": "si",
+        "pctInvierte": 100,
+        "aniosHastaEvento": 10
       }
     ],
     "deudas": {
@@ -997,8 +1017,8 @@
         {
           "id": "empresas-n",
           "campo": "Cantidad de empresas",
-          "valor": "1",
-          "codigo": "1"
+          "valor": "2",
+          "codigo": "2"
         },
         {
           "id": "",
@@ -1015,8 +1035,8 @@
         {
           "id": "",
           "campo": "Empresa 1: valor estimado (monto)",
-          "valor": "38,500,000",
-          "codigo": "38,500,000"
+          "valor": "30,800,000",
+          "codigo": "30,800,000"
         },
         {
           "id": "",
@@ -1029,6 +1049,48 @@
           "campo": "Empresa 1: plan",
           "valor": "No lo estimo por ahora",
           "codigo": "mantener"
+        },
+        {
+          "id": "",
+          "campo": "Empresa 2: nombre",
+          "valor": "INVERSIÓN ADICIONAL EN EMPRESA DE TRANSPORTE PARA RENOVACIÓN DE FLOTILLA",
+          "codigo": "INVERSIÓN ADICIONAL EN EMPRESA DE TRANSPORTE PARA RENOVACIÓN DE FLOTILLA"
+        },
+        {
+          "id": "",
+          "campo": "Empresa 2: porcentaje de participación",
+          "valor": "100",
+          "codigo": "100"
+        },
+        {
+          "id": "",
+          "campo": "Empresa 2: valor estimado (monto)",
+          "valor": "5,000,000",
+          "codigo": "5,000,000"
+        },
+        {
+          "id": "",
+          "campo": "Empresa 2: valor estimado (moneda)",
+          "valor": "USD",
+          "codigo": "USD"
+        },
+        {
+          "id": "",
+          "campo": "Empresa 2: plan",
+          "valor": "Sí, estimo venderla",
+          "codigo": "vender"
+        },
+        {
+          "id": "",
+          "campo": "Empresa 2: años hasta la venta o traspaso",
+          "valor": "10",
+          "codigo": "10"
+        },
+        {
+          "id": "",
+          "campo": "Empresa 2: invierte la venta en el portafolio",
+          "valor": "Sí, todo",
+          "codigo": "si"
         }
       ]
     },
@@ -1312,12 +1374,19 @@
     "n:Inmueble 3: saldo de deuda": "0",
     "n:Inmueble 3: saldo de deuda (moneda)": "USD",
     "n:Inmueble 3: estima venderlo": "no",
-    "empresas-n": "1",
+    "empresas-n": "2",
     "n:Empresa 1: nombre": "EMPRESA",
     "n:Empresa 1: porcentaje de participación": "80",
-    "n:Empresa 1: valor estimado (monto)": "38,500,000",
+    "n:Empresa 1: valor estimado (monto)": "30,800,000",
     "n:Empresa 1: valor estimado (moneda)": "USD",
     "n:Empresa 1: plan": "mantener",
+    "n:Empresa 2: nombre": "INVERSIÓN ADICIONAL EN EMPRESA DE TRANSPORTE PARA RENOVACIÓN DE FLOTILLA",
+    "n:Empresa 2: porcentaje de participación": "100",
+    "n:Empresa 2: valor estimado (monto)": "5,000,000",
+    "n:Empresa 2: valor estimado (moneda)": "USD",
+    "n:Empresa 2: plan": "vender",
+    "n:Empresa 2: años hasta la venta o traspaso": "10",
+    "n:Empresa 2: invierte la venta en el portafolio": "si",
     "pe-tiene": "no",
     "pe-moneda": "USD",
     "ventas-n": "0",
@@ -1365,7 +1434,7 @@
     "distrito": "San Rafael",
     "direccion": "Torre Country"
   },
-  "modificadoEn": 1793812163122,
+  "modificadoEn": 1793820398724,
   "historialEdiciones": [
     1792100359416,
     1792102121912,
@@ -1378,6 +1447,7 @@
     1793131030564,
     1793308164092,
     1793310645129,
-    1793812163122
+    1793812163122,
+    1793820398725
   ]
 }
