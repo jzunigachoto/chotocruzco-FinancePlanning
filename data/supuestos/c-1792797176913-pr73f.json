@@ -1,7 +1,7 @@
 {
   "cliente": "c-1792797176913-pr73f",
   "nombre": "Ana Rojas Gómez",
-  "guardadoEn": 1793399299274,
+  "guardadoEn": 1793911700985,
   "supuestos": {
     "tipoCambio": 450,
     "inflacionLocal": 3.9,
@@ -36,31 +36,41 @@
     "asignacion": {
       "conservador": {
         "rv": 20,
+        "rfcr": 0,
         "rf": 50,
+        "rfem": 0,
         "ef": 30,
         "alt": 0
       },
       "moderadoConservador": {
         "rv": 35,
+        "rfcr": 0,
         "rf": 47.5,
+        "rfem": 0,
         "ef": 17.5,
         "alt": 0
       },
       "moderado": {
         "rv": 40,
+        "rfcr": 0,
         "rf": 55,
+        "rfem": 0,
         "ef": 5,
         "alt": 0
       },
       "moderadoAgresivo": {
         "rv": 70,
+        "rfcr": 0,
         "rf": 25,
+        "rfem": 0,
         "ef": 5,
         "alt": 0
       },
       "agresivo": {
         "rv": 90,
+        "rfcr": 0,
         "rf": 5,
+        "rfem": 0,
         "ef": 5,
         "alt": 0
       }
@@ -73,23 +83,32 @@
       "perfil": "moderadoConservador",
       "topes": {
         "rv": [
-          5,
+          0,
           15
         ],
+        "rfcr": [
+          40,
+          50
+        ],
         "rf": [
-          70,
-          80
+          30,
+          30
+        ],
+        "rfem": [
+          20,
+          20
         ],
         "ef": [
-          0,
-          5
+          10,
+          30
         ],
         "alt": [
           0,
           0
         ]
       },
-      "especifico": null
+      "especifico": null,
+      "rendClase": null
     }
   }
 }
