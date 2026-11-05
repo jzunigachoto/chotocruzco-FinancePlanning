@@ -217,7 +217,7 @@
   .fila-rep:first-child{margin-top:4px;}
   .opciones-estr{display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;margin:6px 0 4px;}
   @media (max-width:560px){ .opciones-estr{grid-template-columns:1fr;} }
-  .emp-venta[hidden], .emp-anios[hidden], .meta-credito[hidden], .meta-otra[hidden], .estr-lista .opcion[hidden]{display:none !important;}
+  .emp-venta[hidden], .emp-inc[hidden], .emp-div[hidden], .emp-anios[hidden], .meta-credito[hidden], .meta-otra[hidden], .estr-lista .opcion[hidden]{display:none !important;}
   .estr-lista{grid-template-columns:1fr;}
   .fila-tabla{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) minmax(0,1.4fr);gap:0 18px;align-items:end;}
   .fila-tabla .fila-tit{margin:0 0 10px;}
@@ -874,6 +874,7 @@
                   <option value="" disabled selected>Seleccione una opción</option>
                   <option value="no">No tengo ROP</option>
                   <option value="si">Sí, tengo saldo en el ROP</option>
+                  <option value="despues">Sí tengo, pero adjunto el dato posteriormente</option>
                   <option value="recibe" hidden>Ya lo recibo junto con mi pensión</option>
                 </select>
                 <p class="hint" id="f-rop-nota" hidden>Si ya recibe su ROP, inclúyalo en el monto de la pensión de la pregunta anterior y elija «Ya lo recibo junto con mi pensión». Si todavía tiene el saldo sin retirar, elija «Sí, tengo saldo»: se proyecta desde este año.</p>
@@ -904,6 +905,7 @@
                   <option value="" disabled selected>Seleccione una opción</option>
                   <option value="no">No tengo FCL</option>
                   <option value="si">Sí, tengo saldo en el FCL</option>
+                  <option value="despues">Sí tengo, pero adjunto el dato posteriormente</option>
                 </select>
                 <div class="sub-q" id="f-fcl-detalle" hidden>
                   <span class="mini">Operadora de pensiones</span>
@@ -939,6 +941,7 @@
                   <option value="" disabled selected>Seleccione una opción</option>
                   <option value="no">No tengo pensión voluntaria</option>
                   <option value="si">Sí, tengo saldo en una pensión voluntaria</option>
+                  <option value="despues">Sí tengo, pero adjunto el dato posteriormente</option>
                 </select>
                 <div class="sub-q" id="f-vol-detalle" hidden>
                   <span class="mini">Operadora de pensiones</span>
@@ -1192,15 +1195,43 @@
             <div>
               <span class="qlabel">¿Tiene inversiones de capital privado?</span>
               <select id="pe-tiene" name="Inversiones de capital privado"><option value="" disabled selected>Seleccione una opción</option><option value="no">No</option><option value="si">Sí</option></select>
-              <p class="hint">Participaciones en empresas que no cotizan en bolsa (distintas de la empresa de la pregunta anterior) o fondos de capital privado. Se usa para calcular su patrimonio total.</p>
+              <p class="hint">Participaciones en empresas que no cotizan en bolsa (distintas de la empresa de la pregunta anterior) o fondos de capital privado. Se usa para su patrimonio total; si genera dividendos o se vende para invertir en este portafolio, entra en la proyección.</p>
               <div class="sub-q" id="pe-detalle" hidden>
-                <span class="mini">Monto total invertido</span>
+                <span class="mini">Monto total invertido en capital privado, en valor de hoy</span>
                 <div class="amount"><input type="number" min="0" id="pe-valor" name="Capital privado: valor estimado (monto)" placeholder="250.000">
                   <select id="pe-moneda" name="Capital privado: valor estimado (moneda)"><option>USD</option><option>CRC</option></select></div>
                 <span class="mini espacio">Detalle (empresa o fondo)</span>
                 <input id="pe-detalle-txt" name="Capital privado: detalle" placeholder="Participación en…">
+                <div class="fila-grid" style="margin-top:14px;">
+                  <div><span class="mini">¿Estima vender este capital privado o fondo?</span><select id="pe-vende" name="Capital privado: estima venderlo"><option value="" disabled selected>Seleccione</option><option value="si">Sí</option><option value="no">No</option></select></div>
+                </div>
+                <div class="sub-q" id="pe-venta-detalle" hidden>
+                  <div class="fila-grid">
+                    <div><span class="mini">Valor futuro que espera recibir de la venta</span><div class="amount"><input type="number" min="0" id="pe-vf" name="Capital privado: valor futuro esperado en la venta" placeholder="400.000"><div class="unit">misma moneda</div></div></div>
+                    <div><span class="mini">¿En cuántos años espera venderlo, aproximadamente?</span><div class="amount"><input type="number" min="0" max="60" id="pe-anios" name="Capital privado: años hasta la venta" placeholder="10"><div class="unit">años</div></div></div>
+                  </div>
+                </div>
+                <div class="fila-grid" style="margin-top:14px;">
+                  <div><span class="mini">¿Le genera dividendos?</span><select id="pe-div" name="Capital privado: genera dividendos"><option value="" disabled selected>Seleccione</option><option value="si">Sí</option><option value="no">No</option></select></div>
+                </div>
+                <div class="sub-q" id="pe-div-detalle" hidden>
+                  <span class="mini">Porcentaje anual de dividendos sobre el valor de hoy</span>
+                  <div class="amount"><input type="number" min="0.01" max="100" step="0.01" id="pe-div-pct" name="Capital privado: dividendos anuales (%)" placeholder="5"><div class="unit">%</div></div>
+                </div>
+                <div class="sub-q" id="pe-venta-inv" hidden>
+                  <div class="fila-grid">
+                    <div><span class="mini">¿Invertiría el dinero de la venta en este portafolio?</span><select id="pe-invierte" name="Capital privado: invierte la venta en el portafolio"><option value="" disabled selected>Seleccione</option><option value="si">Sí, todo</option><option value="parte">Sí, una parte</option><option value="analisis">Sujeto a análisis</option><option value="no">No</option></select></div>
+                  </div>
+                  <div class="sub-q" id="pe-inc-detalle" hidden>
+                    <div class="fila-grid">
+                      <div id="pe-pct-detalle" hidden><span class="mini">Porcentaje de la venta que invertiría</span><div class="amount"><input type="number" min="1" max="99" id="pe-pct" name="Capital privado: porcentaje de la venta que invierte" placeholder="50"><div class="unit">%</div></div></div>
+                      <div><span class="mini">¿En cuántos años ingresaría este dinero al portafolio?</span><div class="amount"><input type="number" min="0" max="60" id="pe-anios-inc" name="Capital privado: años hasta incorporarse al portafolio" placeholder="10"><div class="unit">años</div></div></div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <p class="q-falta">Falta responder esta pregunta.</p>
+              
+<p class="q-falta">Falta responder esta pregunta.</p>
             </div>
           </div>
 
@@ -1515,7 +1546,7 @@
 var VERIFICAR = new URLSearchParams(location.search).has('verificar');
 // Versión de las preguntas del cuestionario. Se sube cada vez que se agrega o cambia una pregunta:
 // los registros guardados con una versión anterior quedan marcados en el dashboard para completarlos.
-const VERSION_FORMULARIO = 72;
+const VERSION_FORMULARIO = 74;
 // Preguntas obligatorias que siguen sin respuesta (o con un dato inválido), con su número y texto
 function preguntasPendientes(){
   const out = [];
@@ -1527,6 +1558,9 @@ function preguntasPendientes(){
     pag.querySelectorAll('.field [required]').forEach(cp => { if(!cp.value || !cp.checkValidity()){
       const lb = cp.closest('.field') && cp.closest('.field').querySelector('label');
       out.push(((lb && lb.textContent) || cp.name || cp.id).replace(/\s+/g, ' ').trim()); } }); }); }catch(e){}
+  // fondos con el dato por adjuntar (pregunta del ROP, el FCL y la pensión voluntaria)
+  [['f-rop-tiene','ROP'],['f-fcl-tiene','FCL'],['f-vol-tiene','Pensión voluntaria']].forEach(([id, n]) => {
+    const e = document.getElementById(id); if(e && e.value === 'despues') out.push(n + ': dato por adjuntar'); });
   return [...new Set(out)];
 }
 const GH_OWNER  = "jzunigachoto";
@@ -1940,7 +1974,12 @@ const CONDICIONALES = [
   {control:'inmuebles-n',     detalle:'inmuebles-detalle',     campos:[],                              aplica: v => +v > 0},
   {control:'deudas-tiene',    detalle:'deudas-detalle-q',      campos:['deudas-n','deudas-en-gasto'],  aplica: v => v === 'si'},
   {control:'donaciones-tiene', detalle:'donaciones-detalle',   campos:['donaciones-monto'],            aplica: v => v === 'si'},
-  {control:'pe-tiene',        detalle:'pe-detalle',            campos:['pe-valor'],                    aplica: v => v === 'si'},
+  {control:'pe-tiene',        detalle:'pe-detalle',            campos:['pe-valor','pe-vende','pe-div'], aplica: v => v === 'si'},
+  {control:'pe-div',          detalle:'pe-div-detalle',        campos:['pe-div-pct'],                  aplica: v => v === 'si'},
+  {control:'pe-vende',        detalle:'pe-venta-detalle',      campos:['pe-vf','pe-anios'],            aplica: v => v === 'si'},
+  {control:'pe-vende',        detalle:'pe-venta-inv',          campos:['pe-invierte'],                 aplica: v => v === 'si'},
+  {control:'pe-invierte',     detalle:'pe-inc-detalle',        campos:['pe-anios-inc'],                aplica: v => v === 'si' || v === 'parte'},
+  {control:'pe-invierte',     detalle:'pe-pct-detalle',        campos:['pe-pct'],                      aplica: v => v === 'parte'},
   {control:'c1-tiene',        detalle:'c1-detalle',            campos:['retiros-n'],                   aplica: v => v === 'si'},
   {control:'seguro-vida',     detalle:'vida-detalle',          campos:['vida-suma'],                   aplica: v => v === true},
   {control:'herencia',        detalle:'herencia-detalle',      campos:['herencia-monto'],              aplica: v => v === 'herencia'}
@@ -2039,18 +2078,27 @@ const REPETIBLES = [
       <div><span class="mini">Nombre de la empresa</span><input required type="text" data-k="nombre" data-mayus="1" name="Empresa ${i+1}: nombre" placeholder="COMERCIALIZADORA DEL VALLE S. A." style="text-transform:uppercase"></div>
       <div class="fila-grid" style="margin-top:12px;">
         <div><span class="mini">Porcentaje de participación</span><div class="amount"><input required type="number" min="0.01" max="100" step="0.01" data-k="part" name="Empresa ${i+1}: porcentaje de participación" placeholder="100"><div class="unit">%</div></div></div>
-        <div><span class="mini">Valor estimado de su participación en la empresa</span><div class="amount"><input required type="number" min="0" data-k="valor" name="Empresa ${i+1}: valor estimado (monto)" placeholder="1.500.000"><select data-k="moneda" name="Empresa ${i+1}: valor estimado (moneda)"><option>USD</option><option>CRC</option></select></div></div>
+        <div><span class="mini">Valor estimado de la empresa hoy</span><div class="amount"><input required type="number" min="0" data-k="valor" name="Empresa ${i+1}: valor estimado (monto)" placeholder="1.500.000"><select data-k="moneda" name="Empresa ${i+1}: valor estimado (moneda)"><option>USD</option><option>CRC</option></select></div></div>
       </div>
       <div class="fila-grid" style="margin-top:12px;">
-        <div><span class="mini">¿Estima venderla o traspasarla?</span><select required data-k="plan" data-plan-emp="1" name="Empresa ${i+1}: plan">
+        <div><span class="mini">¿Estima vender la empresa o traspasarla?</span><select required data-k="plan" data-plan-emp="1" name="Empresa ${i+1}: plan">
           <option value="" disabled selected>Seleccione</option><option value="vender">Sí, estimo venderla</option><option value="traspasar">Sí, estimo traspasarla a mi familia o socios</option><option value="mantener">No lo estimo por ahora</option></select></div>
-        <div class="emp-anios" hidden><span class="mini">¿En cuántos años, aproximadamente?</span><div class="amount"><input type="number" min="0" max="60" data-k="anios" name="Empresa ${i+1}: años hasta la venta o traspaso" placeholder="10"><div class="unit">años</div></div></div>
+        <div class="emp-anios" hidden><span class="mini">¿En cuántos años espera venderla o traspasarla, aproximadamente?</span><div class="amount"><input type="number" min="0" max="60" data-k="anios" name="Empresa ${i+1}: años hasta la venta o traspaso" placeholder="10"><div class="unit">años</div></div></div>
       </div>
       <div class="fila-grid emp-venta" hidden style="margin-top:12px;">
-        <div><span class="mini">¿Invertiría el dinero de la venta en este portafolio?</span><select data-k="invierte" data-inv="1" name="Empresa ${i+1}: invierte la venta en el portafolio"><option value="" disabled selected>Seleccione</option><option value="si">Sí, todo</option><option value="parte">Sí, una parte</option><option value="analisis">Sujeto a análisis</option><option value="no">No</option></select></div>
-        <div class="fila-pct" hidden><span class="mini">Porcentaje de la venta que invertiría</span><div class="amount"><input type="number" min="1" max="99" data-k="pct" name="Empresa ${i+1}: porcentaje de la venta que invierte" placeholder="50"><div class="unit">%</div></div></div>
+        <div><span class="mini">Valor futuro que espera recibir de la venta de la empresa</span><div class="amount"><input type="number" min="0" data-k="vf" name="Empresa ${i+1}: valor futuro esperado en la venta" placeholder="2.500.000"><div class="unit">misma moneda</div></div></div>
+        <div><span class="mini">¿Invertiría el dinero de la venta de la empresa en este portafolio?</span><select data-k="invierte" data-inv="1" data-inv-emp="1" name="Empresa ${i+1}: invierte la venta en el portafolio"><option value="" disabled selected>Seleccione</option><option value="si">Sí, todo</option><option value="parte">Sí, una parte</option><option value="analisis">Sujeto a análisis</option><option value="no">No</option></select></div>
       </div>
-      <p class="hint emp-venta" hidden style="margin-top:8px;">Se toma el valor estimado de su participación. La parte que invierta aquí entra al portafolio como desinversión; si está sujeta a análisis, no se incluye en la proyección.</p>
+      <div class="fila-grid emp-inc" hidden style="margin-top:12px;">
+        <div class="fila-pct" hidden><span class="mini">Porcentaje de la venta que invertiría</span><div class="amount"><input type="number" min="1" max="99" data-k="pct" name="Empresa ${i+1}: porcentaje de la venta que invierte" placeholder="50"><div class="unit">%</div></div></div>
+        <div><span class="mini">¿En cuántos años ingresaría ese dinero al portafolio?</span><div class="amount"><input type="number" min="0" max="60" data-k="aniosInc" name="Empresa ${i+1}: años hasta incorporarse al portafolio" placeholder="10"><div class="unit">años</div></div></div>
+      </div>
+      <div class="fila-grid" style="margin-top:12px;">
+        <div><span class="mini">¿La empresa le genera dividendos?</span><select required data-k="div" data-div-emp="1" name="Empresa ${i+1}: genera dividendos">
+          <option value="" disabled selected>Seleccione</option><option value="si">Sí</option><option value="no">No</option></select></div>
+        <div class="emp-div" hidden><span class="mini">Dividendos anuales (% del valor de hoy de su participación)</span><div class="amount"><input type="number" min="0.01" max="100" step="0.01" data-k="divPct" name="Empresa ${i+1}: dividendos anuales (%)" placeholder="5"><div class="unit">%</div></div></div>
+      </div>
+      <p class="hint emp-venta" hidden style="margin-top:8px;">El valor futuro es el monto que espera recibir por su participación el año de la venta. La parte que invierta entra al portafolio en el año indicado, como desinversión; si está sujeta a análisis, no se incluye en la proyección. Los dividendos se reciben cada año hasta la venta o el traspaso.</p>
     </div>`},
   {control:'apoyos-n', contenedor:'apoyos-filas', max:999, fila: i => `
     <div class="fila-rep"><span class="fila-tit">Dependiente ${i+1}</span><div class="fila-grid">
@@ -2149,21 +2197,28 @@ function sincronizarVentas(raiz){
   });
 }
 document.addEventListener('change', function(e){ if(e.target && e.target.dataset && e.target.dataset.venta) sincronizarVentas(e.target.closest('.fila-rep')); });
-// Empresas: los años se piden si la vende o la traspasa; el destino de la venta, solo si la vende
+// Empresas: los años se piden si la vende o la traspasa; el valor futuro y el destino de la venta,
+// solo si la vende; el plazo para entrar al portafolio, si invierte todo o una parte; el porcentaje
+// de dividendos, si la empresa genera dividendos.
 function sincronizarEmpresas(raiz){
   (raiz || document).querySelectorAll('[data-plan-emp]').forEach(function(sel){
     const fila = sel.closest('.fila-rep'); if(!fila) return;
+    const pide = (k, si) => fila.querySelectorAll('[data-k="' + k + '"]').forEach(c => { c.toggleAttribute('required', si); if(!si) c.value = ''; });
     const conAnios = sel.value === 'vender' || sel.value === 'traspasar', vende = sel.value === 'vender';
-    fila.querySelectorAll('.emp-anios').forEach(d => d.hidden = !conAnios);
-    fila.querySelectorAll('[data-k="anios"]').forEach(c => { c.toggleAttribute('required', conAnios); if(!conAnios) c.value = ''; });
-    fila.querySelectorAll('.emp-venta').forEach(d => d.hidden = !vende);
-    fila.querySelectorAll('[data-k="invierte"]').forEach(c => { c.toggleAttribute('required', vende); if(!vende) c.value = ''; });
-    const parte = vende && (fila.querySelector('[data-k="invierte"]') || {}).value === 'parte';
-    fila.querySelectorAll('.fila-pct').forEach(d => d.hidden = !parte);
-    fila.querySelectorAll('[data-k="pct"]').forEach(c => { c.toggleAttribute('required', parte); if(!parte) c.value = ''; });
+    fila.querySelectorAll('.emp-anios').forEach(d => d.hidden = !conAnios); pide('anios', conAnios);
+    fila.querySelectorAll('.emp-venta').forEach(d => d.hidden = !vende); pide('invierte', vende); pide('vf', vende);
+    const inv = (fila.querySelector('[data-k="invierte"]') || {}).value, entra = vende && (inv === 'si' || inv === 'parte'), parte = vende && inv === 'parte';
+    fila.querySelectorAll('.emp-inc').forEach(d => d.hidden = !entra); pide('aniosInc', entra);
+    fila.querySelectorAll('.fila-pct').forEach(d => d.hidden = !parte); pide('pct', parte);
+    const div = (fila.querySelector('[data-k="div"]') || {}).value === 'si';
+    fila.querySelectorAll('.emp-div').forEach(d => d.hidden = !div); pide('divPct', div);
+    // el plazo para entrar al portafolio parte, por defecto, del año de la venta
+    const ai = fila.querySelector('[data-k="aniosInc"]'), an = fila.querySelector('[data-k="anios"]');
+    if(ai && an && entra) ai.placeholder = an.value || '10';
   });
 }
-document.addEventListener('change', function(e){ if(e.target && e.target.dataset && e.target.dataset.planEmp) sincronizarEmpresas(e.target.closest('.fila-rep')); });
+document.addEventListener('change', function(e){ const t = e.target; if(!t || !t.closest) return;
+  const fila = t.closest('.fila-rep'); if(fila && fila.querySelector('[data-plan-emp]')) sincronizarEmpresas(fila); });
 // Metas: «Otra» pide el nombre de la meta; el crédito pide la tasa y el plazo
 function sincronizarMetas(raiz){
   (raiz || document).querySelectorAll('[data-tipo-meta]').forEach(function(sel){
@@ -2653,6 +2708,8 @@ function construirRegistro(){
       // El conocimiento se mide con la pregunta 10 del perfil de riesgo.
     },
     // Fondos de pensión complementaria: saldo, aporte y año de traslado al portafolio.
+    // Fondos que el cliente tiene pero cuyo dato adjuntará después: quedan como pendientes
+    fondosPorAdjuntar: [['rop','ROP'],['fcl','FCL'],['vol','Pensión voluntaria']].filter(([k]) => val('f-' + k + '-tiene') === 'despues').map(([, n]) => n),
     fondos: Object.fromEntries([['rop','rop'],['fcl','fcl'],['voluntaria','vol']].filter(([,k]) => val('f-' + k + '-tiene') === 'si').map(([n,k]) => [n, {
       saldo: +val('f-' + k + '-saldo') || 0, saldoMoneda: val('f-' + k + '-saldo-moneda'),
       aporteMensual: val('f-' + k + '-aporte') === '' ? null : +val('f-' + k + '-aporte'), aporteMoneda: val('f-' + k + '-aporte-moneda'),
@@ -2680,11 +2737,23 @@ function construirRegistro(){
         // el monto neto solo se calcula aquí si valor y deuda están en la misma moneda; si no, lo calcula el dashboard con el tipo de cambio
         return {concepto: 'Venta de ' + (f.nombre || 'inmueble'), origen: 'inmueble', anio: f.anio, monto: misma ? Math.max(0, (+f.valor || 0) - (+f.deuda || 0)) * pct : null, moneda: mv,
           valor: +f.valor || 0, valorMoneda: mv, deuda: +f.deuda || 0, deudaMoneda: md, pctInvierte: pct * 100}; }),
-      leerFilas('empresas-filas').filter(f => f.plan === 'vender' && (f.invierte === 'si' || f.invierte === 'parte')).map(f => ({
-        concepto: 'Venta de ' + ((f.nombre || '').toUpperCase() || 'la empresa'), origen: 'empresa', anio: ANIO_ACTUAL + (+f.anios || 0),
-        monto: (+f.valor || 0) * (f.invierte === 'parte' ? (+f.pct || 0)/100 : 1), moneda: f.moneda || 'USD'})),
+      // empresas: entra al portafolio en el año indicado; el monto es el valor futuro de la venta (o el de hoy, si no se indicó)
+      leerFilas('empresas-filas').filter(f => f.plan === 'vender' && (f.invierte === 'si' || f.invierte === 'parte')).map(f => { const pct = f.invierte === 'parte' ? (+f.pct || 0)/100 : 1;
+        return {concepto: 'Venta de ' + ((f.nombre || '').toUpperCase() || 'la empresa'), origen: 'empresa',
+        anio: ANIO_ACTUAL + (f.aniosInc === '' || f.aniosInc == null ? +f.anios || 0 : +f.aniosInc), anioVenta: ANIO_ACTUAL + (+f.anios || 0),
+        monto: (+f.valor || 0) * pct, valorFuturo: +f.vf > 0 ? +f.vf * pct : null, moneda: f.moneda || 'USD', pctInvierte: pct * 100}; }),
+      // capital privado: igual que las empresas
+      (val('pe-tiene') === 'si' && val('pe-vende') === 'si' && (val('pe-invierte') === 'si' || val('pe-invierte') === 'parte')) ? [(function(){ const pct = val('pe-invierte') === 'parte' ? (+val('pe-pct') || 0)/100 : 1;
+        return {concepto: 'Venta del capital privado' + (val('pe-detalle-txt').trim() ? ': ' + val('pe-detalle-txt').trim() : ''), origen: 'capital',
+          anio: ANIO_ACTUAL + (val('pe-anios-inc') === '' ? +val('pe-anios') || 0 : +val('pe-anios-inc')), anioVenta: ANIO_ACTUAL + (+val('pe-anios') || 0),
+          monto: (+val('pe-valor') || 0) * pct, valorFuturo: +val('pe-vf') > 0 ? +val('pe-vf') * pct : null, moneda: val('pe-moneda') || 'USD', pctInvierte: pct * 100}; })()] : [],
       leerFilas('ventas-filas').map(f => ({concepto: f.activo || 'Venta de activos', origen: 'otro', anio: f.anio, monto: f.monto, moneda: f.moneda || 'USD'}))),
-    capitalPrivado: val('pe-tiene') === 'si' ? {valor: +val('pe-valor') || 0, moneda: val('pe-moneda'), participacionPct: null, detalle: val('pe-detalle-txt').trim()} : (val('pe-tiene') === 'no' ? {valor: 0, moneda: 'USD', detalle: ''} : null),
+    capitalPrivado: val('pe-tiene') === 'si' ? {valor: +val('pe-valor') || 0, moneda: val('pe-moneda'), participacionPct: null, detalle: val('pe-detalle-txt').trim(),
+      vende: val('pe-vende') === 'si', aniosVenta: val('pe-vende') === 'si' ? +val('pe-anios') || 0 : null, anioVenta: val('pe-vende') === 'si' ? ANIO_ACTUAL + (+val('pe-anios') || 0) : null,
+      valorFuturo: val('pe-vende') === 'si' && +val('pe-vf') > 0 ? +val('pe-vf') : null,
+      inviertePortafolio: val('pe-vende') === 'si' ? val('pe-invierte') : null, pctInvierte: val('pe-vende') === 'si' ? (val('pe-invierte') === 'si' ? 100 : val('pe-invierte') === 'parte' ? +val('pe-pct') || 0 : 0) : null,
+      aniosIncorporacion: val('pe-invierte') === 'si' || val('pe-invierte') === 'parte' ? (val('pe-anios-inc') === '' ? +val('pe-anios') || 0 : +val('pe-anios-inc')) : null,
+      dividendos: {tiene: val('pe-div') === 'si', pct: val('pe-div') === 'si' ? +val('pe-div-pct') || 0 : 0}} : (val('pe-tiene') === 'no' ? {valor: 0, moneda: 'USD', detalle: ''} : null),
     // Retiros adicionales del portafolio (pregunta de retiros): motivo, año y monto de cada uno
     retirosPortafolio: val('c1-tiene') === 'si' ? leerFilas('retiros-filas').map(x => ({nombre: (x.nombre || '').trim(), anio: x.anio, montoUsdHoy: x.monto, moneda: x.moneda || 'USD'})) : [],
     estructuraJuridica: {posee: val('estr-tiene'), tipos: [...document.querySelectorAll('.estr')].filter(x => x.checked).map(x => x.value), detalle: val('estructuras-detalle').trim(),
@@ -2773,7 +2842,11 @@ function construirRegistro(){
         valor: f.valor, valorMoneda: f.moneda || 'USD', participacionPct: f.part,
         inviertePortafolio: f.plan === 'vender' ? f.invierte : null,
         pctInvierte: f.plan === 'vender' ? (f.invierte === 'si' ? 100 : f.invierte === 'parte' ? +f.pct : 0) : null,
-        aniosHastaEvento: f.plan === 'vender' || f.plan === 'traspasar' ? f.anios : null})),
+        aniosHastaEvento: f.plan === 'vender' || f.plan === 'traspasar' ? f.anios : null,
+        anioVenta: f.plan === 'vender' || f.plan === 'traspasar' ? ANIO_ACTUAL + (+f.anios || 0) : null,
+        valorFuturo: f.plan === 'vender' && +f.vf > 0 ? +f.vf : null,
+        aniosIncorporacion: f.plan === 'vender' && (f.invierte === 'si' || f.invierte === 'parte') ? (f.aniosInc === '' || f.aniosInc == null ? +f.anios || 0 : +f.aniosInc) : null,
+        dividendos: {tiene: f.div === 'si', pct: f.div === 'si' ? +f.divPct || 0 : 0}})),
       deudas: {
         tiene: val('deudas-tiene') === 'si',
         moneda: null,
@@ -3212,4 +3285,4 @@ if(VERIFICAR){
 
 
 
-<!-- Chotocruz & Co. · Entrega 73 · 5 de noviembre de 2026 -->
+<!-- Chotocruz & Co. · Entrega 75 · 5 de noviembre de 2026 -->

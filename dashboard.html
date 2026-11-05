@@ -82,6 +82,18 @@
   .tabla-unica tr.sub td.cl{padding-left:22px;color:#3A3D2A;}
   .tabla-unica td.nota-sub{text-align:center;font-size:11.5px;color:#8A8C76;}
   .tabla-unica tr.total td{font-weight:700;border-top:1.5px solid var(--rule);}
+  .pc-explica{margin-top:18px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;}
+  @media (max-width:900px){ .pc-explica{grid-template-columns:1fr;} }
+  .pc-bloque{border:1px solid var(--rule);padding:14px 16px;font-size:12.5px;line-height:1.5;color:#3A3D2A;}
+  .pc-bloque-tit{font-weight:700;margin:0 0 4px;color:var(--black);font-size:13.5px;}
+  .pc-bloque-int{margin:0 0 10px;color:#6B6E5A;}
+  .pc-bloque table{width:100%;border-collapse:collapse;}
+  .pc-bloque td{padding:6px 6px;border-top:1px solid #E4E1D3;vertical-align:top;white-space:normal;text-align:left;font-size:12.5px;}
+  .pc-bloque td:last-child{text-align:left;}
+  .pc-bloque td:first-child{white-space:nowrap;padding-left:0;} .pc-bloque td.num{text-align:right;white-space:nowrap;font-weight:600;}
+  .pc-bloque td.ajust{color:#A23B2A;}
+  .pc-bloque table{border-bottom:1px solid #E4E1D3;}
+  .pc-bloque-pie{margin:10px 0 0;color:#6B6E5A;}
   .cart-tabla table{width:100%;border-collapse:collapse;font-size:13px;min-width:720px;}
   .cart-tabla th{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;text-align:right;font-weight:700;padding:6px 6px;border-bottom:1.5px solid var(--rule);}
   .cart-tabla th:first-child,.cart-tabla th:nth-child(2){text-align:left;}
@@ -1034,9 +1046,19 @@ const cuotaCredito = (principal, tasa, anios) => !(anios > 0) ? 0 : tasa === 0 ?
 const herenciaUsd = (c, sup) => { const l = montosEnUsd(c, sup).legado || {}; return l.destino === 'herencia' && +l.montoUsdHoy > 0 ? +l.montoUsdHoy : 0; };
 // Ventas de activos. La venta de un inmueble con el valor y la deuda en monedas distintas llega sin
 // monto neto: se calcula aquí, en dólares, con el tipo de cambio.
-function ventasDe(c, tc){
-  return (c.ventasActivos || []).map(v => v.monto == null && v.valor != null
-    ? Object.assign({}, v, {monto: Math.max(0, aUsd(v.valor, v.valorMoneda, tc) - aUsd(v.deuda, v.deudaMoneda, tc)) * (v.pctInvierte != null ? +v.pctInvierte : 100)/100, moneda: 'USD'}) : v);
+// Ventas de activos que entran al portafolio. Si el cliente indicó el valor futuro de la venta
+// (empresas y capital privado), ese monto es nominal en el año en que entra: se lleva a valor de hoy
+// con la inflación de su moneda, y la proyección lo vuelve a indexar, de modo que entra exactamente
+// el valor futuro declarado.
+function ventasDe(c, tc, sup){
+  return (c.ventasActivos || []).map(v => {
+    if(v.monto == null && v.valor != null)
+      return Object.assign({}, v, {monto: Math.max(0, aUsd(v.valor, v.valorMoneda, tc) - aUsd(v.deuda, v.deudaMoneda, tc)) * (v.pctInvierte != null ? +v.pctInvierte : 100)/100, moneda: 'USD'});
+    if(+v.valorFuturo > 0 && sup && +v.anio > 0){
+      const i = (v.moneda === 'CRC' ? (sup.inflacionLocal ?? sup.inflacion) : sup.inflacion) / 100, n = Math.max(0, +v.anio - +sup.anioInicio);
+      return Object.assign({}, v, {monto: +v.valorFuturo / Math.pow(1 + i, n), valorFuturoNominal: +v.valorFuturo});
+    }
+    return v; });
 }
 function proyectar(c, sup, opts){
   c = conEdadDelAnio(montosEnUsd(c, sup), sup);
@@ -1114,6 +1136,14 @@ function proyectar(c, sup, opts){
   const alquileres = flujoCompleto ? (inm.lista || []).filter(x => +x.rentaMensualNeta > 0).map(x => ({
     nombre: x.nombre || 'Inmueble', mensual: aUsd(x.rentaMensualNeta, x.rentaMoneda || x.moneda || inm.moneda, tc), original: +x.rentaMensualNeta, moneda: x.rentaMoneda || x.moneda || inm.moneda || 'USD',
     hasta: x.estimaVender && +x.anioVenta ? +x.anioVenta - 1 : 9999})) : [];
+  // Dividendos de empresas y del capital privado: % anual del valor de hoy de la participación, en
+  // valor de hoy (se indexa con la inflación de su moneda, como los alquileres), hasta el año
+  // anterior a la venta o el traspaso.
+  [].concat(empresasDe(c).map(e => [e.nombre || 'empresa', e.valor, e.valorMoneda, e.dividendos, e.anioVenta]),
+    c.capitalPrivado ? [[c.capitalPrivado.detalle ? 'capital privado (' + c.capitalPrivado.detalle + ')' : 'capital privado', c.capitalPrivado.valor, c.capitalPrivado.moneda, c.capitalPrivado.dividendos, c.capitalPrivado.vende ? c.capitalPrivado.anioVenta : null]] : [])
+    .forEach(([nom, valor, mon, dv, fin]) => { if(!dv || !dv.tiene || !(+dv.pct > 0) || !(+valor > 0)) return;
+      const m = +valor * +dv.pct / 100 / 12;
+      alquileres.push({nombre: 'Dividendos: ' + nom, mensual: aUsd(m, mon || 'USD', tc), original: m, moneda: mon || 'USD', hasta: +fin ? +fin - 1 : 9999, dividendo: true, pct: +dv.pct}); });
   const hip = ((pat.vivienda || {}).situacion === 'hipoteca' && flujoCompleto) ? (pat.vivienda.hipoteca || {}) : null;
   const cuotaHip = hip && +hip.cuotaMensual > 0 && +hip.plazoRestanteAnios > 0 ? {mensual: aUsd(hip.cuotaMensual, hip.cuotaMoneda, tc), anios: +hip.plazoRestanteAnios} : null;
   const deu = flujoCompleto ? (pat.deudas || {}) : {};
@@ -1131,10 +1161,11 @@ function proyectar(c, sup, opts){
   const donacionesAnual = +c.donacionesAnualesUsdHoy || 0;
   const ingExtra = (c.aportesExtraordinarios || []).filter(a => +a.montoUsdHoy > 0 && +a.anio > 0)
     .map(a => ({concepto: a.concepto || 'Ingreso extraordinario', anio: +a.anio, montoUsdHoy: +a.montoUsdHoy, montoOriginal: a.montoOriginal, monedaOriginal: a.monedaOriginal}));
-  const ventas = ventasDe(c, tc).filter(v => +v.monto > 0 && +v.anio > 0)
+  const ventas = ventasDe(c, tc, sup).filter(v => +v.monto > 0 && +v.anio > 0)
     .map(v => ({concepto: v.concepto || 'Venta de activos', anio: +v.anio, montoUsdHoy: aUsd(v.monto, v.moneda, tc), montoOriginal: +v.monto, monedaOriginal: v.moneda || 'USD',
-      // origen: 1 inmueble, 2 empresa, 3 otro activo (registros anteriores: por el concepto)
-      tipo: v.origen === 'empresa' || (!v.origen && /empresa/i.test(v.concepto || '')) ? 2 : v.origen === 'otro' ? 3 : 1}));
+      valorFuturo: v.valorFuturoNominal || null,
+      // origen: 1 inmueble, 2 empresa o capital privado, 3 otro activo (registros anteriores: por el concepto)
+      tipo: v.origen === 'empresa' || v.origen === 'capital' || (!v.origen && /empresa/i.test(v.concepto || '')) ? 2 : v.origen === 'otro' ? 3 : 1}));
   // solo las metas que se pagan con una salida del portafolio; las financiadas con crédito no lo tocan
   const metas = (c.metas || []).filter(m => +m.montoUsdHoy > 0 && +m.anio > 0 && (!m.financiamiento || m.financiamiento === 'portafolio'));
   const apoyos = (c.apoyosDependientes || []).filter(a => +a.montoAnualUsdHoy > 0 && +a.anioInicio > 0 && +a.anios > 0);
@@ -2872,7 +2903,9 @@ function pintarPerfilCliente(c, s){
     <div class="cart-tabla"><table class="tabla-unica"><thead><tr><th>Clase de activo</th><th>Cartera modelo</th><th>Mínimo %</th><th>Máximo %</th><th>% específico</th><th>Cartera sugerida</th><th>Rendimiento de la firma</th><th>Rendimiento de este cliente %</th><th>Aporte al rendimiento</th></tr></thead><tbody>
     ${CLASES_ACT.map(([nom, cl]) => {
       const rcF = normalizarConfCarteras(firma.carteras).rendClase, esCR = cl === 'rfcr';
-      const modeloP = cl === 'rfcr' ? '<td>Según gasto en colones</td>' : cl === 'rf' ? `<td>${fmtPeso(ALLOC_SCHWAB[k].rf || 0).replace('.', ',')}% menos colones</td>` : `<td>${fmtPeso(ALLOC_SCHWAB[k][cl] || 0).replace('.', ',')}%</td>`;
+      // cartera modelo con la renta fija segmentada según el gasto en colones del cliente
+      const segM = segmentarRF(Object.assign({alt: 0, rfem: 0}, ALLOC_SCHWAB[k]), s._rfCR || null);
+      const modeloP = `<td>${fmtPeso(segM[cl] || 0).replace('.', ',')}%</td>`;
       return `<tr><td class="cl">${nom}</td>${modeloP}
       <td><input type="number" step="0.5" min="0" max="100" data-cp="${cl}" data-t="0" value="${t[cl][0]}" title="Firma: ${firmaT[cl][0]}"></td>
       <td><input type="number" step="0.5" min="0" max="100" data-cp="${cl}" data-t="1" value="${t[cl][1]}" title="Firma: ${firmaT[cl][1]}"></td>
@@ -2885,6 +2918,7 @@ function pintarPerfilCliente(c, s){
     <tr class="total"><td class="cl">Total</td><td></td><td></td><td></td><td></td><td class="res" data-pcres="tot"></td><td></td><td>Rendimiento esperado</td><td class="res" data-pcap="tot"></td></tr>
     </tbody></table></div>
     <p class="cart-nota" id="pc-nota"></p>
+    <div class="pc-explica" id="pc-explica"></div>
     <p class="cart-err" id="pc-err" hidden></p>`;
   caja.hidden = false;
   refrescarPerfilCliente();
@@ -2903,6 +2937,43 @@ function leerCarterasCliente(){
   const rendClase = Object.keys(rc).length ? rc : null;
   const igual = JSON.stringify(t) === JSON.stringify(firmaC.topes[k]) && JSON.stringify(esp) === JSON.stringify(firmaC.especifico[k] || null) && !rendClase;
   return igual ? null : {perfil: k, topes: t, especifico: esp, rendClase};
+}
+// Explicación de la tabla de clases de activo del cliente, en dos bloques: de dónde sale cada peso
+// de la cartera modelo y por qué la cartera sugerida tiene cada peso.
+function pintarExplicacionCarteras(k, r, conf, X, rCR){
+  const el = document.getElementById('pc-explica'); if(!el) return;
+  const p1 = v => fmtPeso(Math.round((+v || 0)*100)/100).replace('.', ',') + '%', p2 = v => (+v || 0).toFixed(2).replace('.', ',') + '%';
+  const us = v => '$' + fmt(Math.round(v)), M = ALLOC_SCHWAB[k], m = segmentarRF(Object.assign({alt: 0, rfem: 0}, M), X);
+  const nom = PERFILES[k].label.toLowerCase(), cap = X ? X.cap : 0, req = X ? X.req : 0, gC = req * (+rCR || 0) / 100;
+  const pReq = cap > 0 ? req / cap * 100 : 0;
+  const porModelo = {
+    rv: `Peso de renta variable de la cartera modelo del perfil ${nom} (conservador 20%, moderado 60%, agresivo 95%; los perfiles intermedios promedian a sus vecinos).`,
+    rfcr: gC > 0.5 ? `Cubre con intereses el gasto anual en colones: ${us(gC)} ÷ ${p2(rCR)} de los bonos en colones = ${us(req)}, ${p1(pReq)} del portafolio de ${us(cap)}.` + (m.rfcr + 1e-6 < pReq ? ` Se limita a la renta fija de la cartera modelo (${p1(M.rf)}).` : '')
+      : 'El cliente no declaró gastos en colones.',
+    rf: `Resto de la renta fija de la cartera modelo: ${p1(M.rf)} − ${p1(m.rfcr)} en colones.`,
+    rfem: 'No forma parte de la cartera modelo.',
+    ef: `Reserva de liquidez de la cartera modelo del perfil ${nom}.`,
+    alt: 'No forma parte de la cartera modelo.'
+  };
+  const t = conf.topes[k], base = r.partida || m;
+  const porSug = c => {
+    const b = +base[c] || 0, w = +r.asig[c] || 0, [mn, mx] = t[c] || [0, 0], de = r.especifico ? 'el % específico' : 'la cartera modelo';
+    if(Math.abs(w - b) < 1e-6 && mx <= 0) return 'Su máximo es 0%: no se incluye.';
+    if(Math.abs(w - b) < 1e-6) return r.especifico ? 'Porcentaje específico fijado por el asesor.' : `Igual a la cartera modelo; está dentro del rango de ${p1(mn)} a ${p1(mx)}.`;
+    if(b > mx + 1e-6 && Math.abs(w - mx) < 1e-6) return `Se limita al máximo de ${p1(mx)} (${de} tiene ${p1(b)}).`;
+    if(b < mn - 1e-6 && Math.abs(w - mn) < 1e-6) return `Sube al mínimo de ${p1(mn)} (${de} tiene ${p1(b)}).`;
+    return w > b ? `Recibe lo que otras clases no pueden tener por sus máximos: pasa de ${p1(b)} a ${p1(w)}.`
+                 : `Cede ${p1(b - w)} para cubrir los mínimos de otras clases: pasa de ${p1(b)} a ${p1(w)}.`;
+  };
+  const filas = (f) => CLASES_ACT.map(([n, c]) => f(n, c)).join('');
+  const tot = CLASES_ACT.reduce((a, [, c]) => a + (+r.asig[c] || 0) * (+conf.rendClase[c] || 0), 0) / 100;
+  el.innerHTML = `<div class="pc-bloque"><p class="pc-bloque-tit">Supuestos de la cartera modelo según el cliente</p>
+      <p class="pc-bloque-int">Asignación de referencia de la firma para el perfil ${nom}. Es fija: no cambia con los topes.</p>
+      <table>${filas((n, c) => `<tr><td>${n}</td><td class="num">${p1(m[c])}</td><td>${porModelo[c]}</td></tr>`)}</table></div>
+    <div class="pc-bloque"><p class="pc-bloque-tit">Supuestos de la cartera sugerida</p>
+      <p class="pc-bloque-int">${r.especifico ? 'Porcentajes específicos fijados por el asesor' : 'Cartera modelo'} ajustada a los mínimos y máximos de este cliente. Cambia cuando cambian los topes.</p>
+      <table>${filas((n, c) => `<tr><td>${n}</td><td class="num${Math.abs((+r.asig[c] || 0) - (+base[c] || 0)) > 1e-6 ? ' ajust' : ''}">${p1(r.asig[c])}</td><td>${porSug(c)}</td></tr>`)}</table>
+      <p class="pc-bloque-pie">Rendimiento esperado de ${p2(tot)}: suma de cada peso de la cartera sugerida por el rendimiento de su clase. Los rendimientos de la firma están calibrados para que las carteras modelo rindan de 5% (conservador) a 8% (agresivo); la renta fija en colones rinde lo de los bonos en colones. El asesor puede cambiar el rendimiento de este cliente según su criterio.</p></div>`;
 }
 function refrescarPerfilCliente(){
   const caja = document.getElementById('sup-perfil'); if(caja.hidden) return;
@@ -2925,6 +2996,7 @@ function refrescarPerfilCliente(){
   const tt = caja.querySelector('[data-pcres="tot"]'); if(tt) tt.textContent = pc(CLASES_ACT.reduce((a2, [, cl]) => a2 + (r.asig[cl] || 0), 0), 1);
   const ta = caja.querySelector('[data-pcap="tot"]'); if(ta) ta.textContent = pc(tot, 2);
   document.getElementById('pc-ret').textContent = err.length ? '—' : pc(tot, 2);
+  pintarExplicacionCarteras(k, r, conf, X, rCR);
   document.getElementById('pc-nota').textContent = (cc ? 'Valores propios de este cliente: se guardan con sus supuestos y solo lo afectan a él. ' : 'Topes y rendimientos de la firma para el perfil ' + PERFILES[k].label.toLowerCase() + '; puede cambiarlos para este cliente. ')
     + 'En rojo, lo que se ajustó al tope. La renta fija se separa en colones (lo necesario para pagar con intereses el gasto en colones) y EE. UU. (el resto); el rendimiento esperado es la suma de los aportes de cada clase.';
   const e = document.getElementById('pc-err'); e.hidden = !err.length; e.innerHTML = err.map(esc).join('<br>');
@@ -3034,7 +3106,7 @@ async function cargarClientes(){
 // Versión vigente de las preguntas del cuestionario (la misma constante de familias.html e
 // instituciones.html). Todos los registros se revisan contra la versión vigente: los guardados con
 // una versión anterior se cargan en el cuestionario actual (oculto) para saber qué campos les faltan.
-const VERSION_FORMULARIO = 72;
+const VERSION_FORMULARIO = 74;
 const _verif = {};            // id → campos que faltan con la versión vigente
 let _colaVerif = [], _verifActivo = false;
 function estadoCuestionario(c){
@@ -4296,7 +4368,7 @@ function ingresosGastosPorMoneda(c, p, sup){
     const fo = (p.fondos || []).find(f => f.k === kf);
     add(ing, nombre, p.filas[j][k] / Math.pow(1 + sup.inflacion/100, j), fo ? fo.saldoMoneda : 'USD');
   });
-  p.alquileres.forEach(a => add(ing, 'Alquiler: ' + a.nombre, a.mensual * 12, a.moneda));
+  p.alquileres.forEach(a => add(ing, a.dividendo ? a.nombre : 'Alquiler: ' + a.nombre, a.mensual * 12, a.moneda));
   add(gas, 'Gasto familiar', p.gastoMensual * 12, null, p.pUsdGasto);
   add(gas, 'Gastos extraordinarios anuales', p.gastosExtraAnual, 'USD');      // cuestionarios anteriores: en dólares de hoy
   p.apoyos.forEach(a => add(gas, 'Dependiente (' + a.anios + (+a.anios === 1 ? ' año' : ' años') + ' desde ' + a.anioInicio + ')', +a.montoAnualUsdHoy, a.monedaOriginal));
@@ -5065,7 +5137,7 @@ function xmlCliente(c, p, asig, sup){
     Ftxt('Fondos laborales que incorpora (cuestionario anterior)', ({ninguno:'Ninguno', fcl:'Solo el FCL', rop:'Solo el ROP', ambos:'FCL y ROP'})[fl.incorpora] || '—');
     Fnum('Saldo del FCL (US$ de hoy)', fl.fclUsdHoy, EST.num); Fnum('Saldo del ROP (US$ de hoy)', fl.ropUsdHoy, EST.num); }
   (c.aportesExtraordinarios || []).forEach((a2,k) => { n++; filas += `<row r="${n}">` + celda('A'+n,'Ingreso extraordinario ' + (k+1) + (a2.concepto ? ': ' + a2.concepto : '') + ' (valor de hoy)',EST.bold) + celda('B'+n,+a2.montoUsdHoy,EST.num) + celda('C'+n,(a2.moneda || 'USD') + ' · año ' + a2.anio) + `</row>`; });
-  ventasDe(c, sup.tipoCambio).forEach((v,k) => { n++; filas += `<row r="${n}">` + celda('A'+n, 'Desinversión: ' + v.concepto, EST.bold) + celda('B'+n, +v.monto, EST.num) + celda('C'+n, v.moneda + ' · año ' + v.anio + ' · monto que entra al portafolio') + `</row>`; });
+  ventasDe(c, sup.tipoCambio, sup).forEach((v,k) => { n++; filas += `<row r="${n}">` + celda('A'+n, 'Desinversión: ' + v.concepto, EST.bold) + celda('B'+n, +v.monto, EST.num) + celda('C'+n, v.moneda + ' · año ' + v.anio + ' · monto que entra al portafolio') + `</row>`; });
   const BEN = {hijo:'Hijo o hija', pareja:'Cónyuge o pareja', padres:'Padre o madre', hermano:'Hermano o hermana', tia:'Tía', abuelo:'Abuelo o abuela', otro:'Otro familiar', otra:'Otro'};
   const MOT = {educacion:'educación', salud:'salud', vivienda:'vivienda', manutencion:'manutención', otro:'otro motivo'};
   (c.apoyosDependientes || []).forEach((a2,k) => { n++; filas += `<row r="${n}">` + celda('A'+n,'Gasto de dependiente ' + (k+1) + ' (valor de hoy, por año)',EST.bold) + celda('B'+n,+a2.montoAnualUsdHoy,EST.num)
@@ -5318,7 +5390,7 @@ const COLUMNAS_FLUJO = [
   {g:'Gastos totales',           k:'gasTot',            t:'Total gastos', tot:true},
   {g:'Flujo neto',               k:'flujo',             t:'Flujo neto (ingresos − gastos)', tot:true},
   {g:'Desinversiones',           k:'ventaInm',          t:'Venta de inmuebles'},
-  {g:'Desinversiones',           k:'ventaEmp',          t:'Venta de la empresa'},
+  {g:'Desinversiones',           k:'ventaEmp',          t:'Venta de empresas y capital privado'},
   {g:'Desinversiones',           k:'ventaOtro',         t:'Venta de otros activos'},
   {g:'Desinversiones',           k:'venta',             t:'Total desinversiones', tot:true},
   {g:'Flujo neto de inversiones',k:'flujoInv',          t:'Flujo neto de inversiones (desinversiones)', tot:true},
@@ -5637,12 +5709,12 @@ function detalleFamilias(c, p, sup){
     total(H, 'Total de ingresos ordinarios al mes (US$)', `SUM(G${ini}:G${H.r})`, vOrd, 'G', U);
     nota(H, 'Pensiones: la del régimen básico (' + (NOMBRE_PENSION[pn.regimen] || 'Pensión IVM') + '), la del ROP y la voluntaria se registran en la hoja «Pensiones»; en la proyección son ingresos ordinarios, cada una en su columna.', U);
 
-    banda(H, 'Alquileres de inmuebles · mensuales, en valor de hoy', U);
-    encab(H, ENC_MONTO('Inmueble', 'Alquiler mensual declarado').concat([['H', 'Último año con alquiler'], ['J', 'Nota']]));
+    banda(H, 'Alquileres y dividendos · mensuales, en valor de hoy', U);
+    encab(H, ENC_MONTO('Inmueble o empresa', 'Alquiler o dividendo mensual declarado').concat([['H', 'Último año con ingreso'], ['J', 'Nota']]));
     const aA = lista(H, p.alquileres, a => ({concepto: a ? a.nombre : '', decl: a ? a.original : 0, mon: a ? a.moneda : 'USD',
-      extra: [['H', a ? a.hasta : null, EP.inEntC], ['J', a && a.hasta >= 9999 ? 'Sin venta prevista' : a ? 'Hasta el año anterior a la venta' : '', EP.txt]]}));
+      extra: [['H', a ? a.hasta : null, EP.inEntC], ['J', !a ? '' : (a.dividendo ? String(a.pct).replace('.', ',') + '% anual del valor de hoy de la participación ÷ 12 · ' : '') + (a.hasta >= 9999 ? 'Sin venta prevista' : 'Hasta el año anterior a la venta' + (a.dividendo ? ' o el traspaso' : '')), EP.txt]]}));
     L.alq = rango('ing', 'G', aA); L.alqMon = rango('ing', 'E', aA); L.alqHasta = rango('ing', 'H', aA);
-    L.alqTot = `'Ingresos'!${total(H, 'Total de alquileres al mes (US$)', `SUM(G${aA.ini}:G${aA.fin})`, p.alquileres.reduce((a, x) => a + x.mensual, 0), 'G', U)}`;
+    L.alqTot = `'Ingresos'!${total(H, 'Total de alquileres y dividendos al mes (US$)', `SUM(G${aA.ini}:G${aA.fin})`, p.alquileres.reduce((a, x) => a + x.mensual, 0), 'G', U)}`;
 
     banda(H, 'Ingresos extraordinarios · en valor de hoy', U);
     encab(H, ENC_MONTO('Concepto').concat([['H', 'Año'], ['J', 'Nota']]));
@@ -5774,10 +5846,10 @@ function detalleFamilias(c, p, sup){
     const H = hojaNueva(), U = 'L';
     inicio(H, 'Desinversiones', 'Las ventas de activos que entran al portafolio, como las declaró el cliente: monto y moneda, con el tipo de cambio aplicado (celda F7 de la hoja Proyección para los colones, 1 para los dólares) y el monto en US$. Cada monto se indexa con la inflación de su moneda hasta su año. Su total es el flujo neto de inversiones de la proyección. Las celdas en color crema son insumos.', U);
     banda(H, 'Venta de activos · monto que entra al portafolio, en valor de hoy', U);
-    encab(H, ENC_MONTO('Activo', 'Monto que entra (declarado)').concat([['H', 'Año de la venta'], ['I', 'Tipo (1 inmueble · 2 empresa · 3 otro)'], ['J', 'Nota']]));
+    encab(H, ENC_MONTO('Activo', 'Monto que entra (valor de hoy)').concat([['H', 'Año en que entra'], ['I', 'Tipo (1 inmueble · 2 empresa o capital privado · 3 otro)'], ['J', 'Nota']]));
     // ventas con valor y deuda en monedas distintas: el monto que entra se calcula en el detalle de abajo
     const cU = montosEnUsd(c, sup), crudas = cU.ventasActivos || [];
-    const fuentes = ventasDe(cU, tc).map((v, i) => ({v, cruda: crudas[i]})).filter(x => +x.v.monto > 0 && +x.v.anio > 0);
+    const fuentes = ventasDe(cU, tc, sup).map((v, i) => ({v, cruda: crudas[i]})).filter(x => +x.v.monto > 0 && +x.v.anio > 0);
     const mixtas = [];
     const iniV = H.r + 1;
     let kV = 0;
@@ -5787,12 +5859,13 @@ function detalleFamilias(c, p, sup){
       const mixta = !!(src && src.monto == null && src.valor != null);
       if(mixta) mixtas.push({k, fila: iniV + k, src});
       return {concepto: v.concepto, decl: v.montoOriginal, mon: v.monedaOriginal || 'USD',
-        extra: [['H', v.anio, EP.inEntC], ['I', v.tipo, EP.inEntC], ['J', mixta ? 'Valor y deuda en monedas distintas: se calcula en el detalle de abajo' : '', EP.txt]]};
+        extra: [['H', v.anio, EP.inEntC], ['I', v.tipo, EP.inEntC], ['J', mixta ? 'Valor y deuda en monedas distintas: se calcula en el detalle de abajo'
+          : v.valorFuturo ? 'Valor futuro de ' + fmt(Math.round(v.valorFuturo)) + ' ' + (v.monedaOriginal || 'USD') + ' en ' + v.anio + ', llevado a valor de hoy con la inflación de su moneda' : '', EP.txt]]};
     });
     L.dv = rango('des', 'G', aV); L.dvMon = rango('des', 'E', aV); L.dvAnio = rango('des', 'H', aV); L.dvTipo = rango('des', 'I', aV);
     const sumaTipo = tp => p.ventas.filter(v => v.tipo === tp).reduce((a, v) => a + v.montoUsdHoy, 0);
     L.dvTipoTot = {};
-    [[1, 'Total de venta de inmuebles (US$)'], [2, 'Total de venta de la empresa (US$)'], [3, 'Total de venta de otros activos (US$)']].forEach(([tp, t]) => {
+    [[1, 'Total de venta de inmuebles (US$)'], [2, 'Total de venta de empresas y capital privado (US$)'], [3, 'Total de venta de otros activos (US$)']].forEach(([tp, t]) => {
       L.dvTipoTot[tp] = `'Desinversiones'!${total(H, t, `SUMIF(I${aV.ini}:I${aV.fin},${tp},G${aV.ini}:G${aV.fin})`, sumaTipo(tp), 'G', U, EP.etiq)}`; });
     total(H, 'Total de desinversiones (US$)', `SUM(G${aV.ini}:G${aV.fin})`, p.ventas.reduce((a, v) => a + v.montoUsdHoy, 0), 'G', U);
     if(mixtas.length){
@@ -6023,7 +6096,7 @@ function xmlProyeccion(c, p, sup, det){
   linea('ing', fil(PI.otros), 'Otros ingresos recurrentes al mes', {monto: 1, ref: L.otros, decl: p.otrosIngresosMensual ? oi.montoMensual : 0, moneda: oi.moneda, usd: p.otrosIngresosMensual, desde: p.tOtros, hasta: p.tFinOtros});
   linea('ing', fil(PI.pen), nomPen + ' (mensual)', {monto: 1, ref: {d: L.pen.d, m: L.pen.m, u: L.pen.u, de: L.pen.de}, decl: p.pensionMensual ? pn.montoMensual : 0, moneda: pn.moneda, usd: p.pensionMensual,
     desde: p.pensionMensual ? p.tPension : null});
-  linea('ing', 11, 'Alquileres de inmuebles al mes', {suma: L.alqTot, v: sumaUsd(p.alquileres.map(a => a.mensual))});
+  linea('ing', 11, 'Alquileres y dividendos al mes', {suma: L.alqTot, v: sumaUsd(p.alquileres.map(a => a.mensual))});
   linea('ing', 12, 'Pensión del ROP', {texto: df && p.traePensionRop ? 'Hoja «Pensiones»' : 'No aplica'});
   linea('ing', 13, 'Pensión voluntaria', {texto: df && p.traePensionVol ? 'Hoja «Pensiones»' : 'No aplica'});
   sub('I', 'P', 14, 'Ingresos extraordinarios · valor de hoy');
@@ -8306,4 +8379,4 @@ cargar();
 
 
 
-<!-- Chotocruz & Co. · Entrega 73 · 5 de noviembre de 2026 -->
+<!-- Chotocruz & Co. · Entrega 75 · 5 de noviembre de 2026 -->
