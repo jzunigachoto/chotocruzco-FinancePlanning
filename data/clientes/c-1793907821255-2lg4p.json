@@ -450,6 +450,12 @@
           "codigo": "ivm"
         },
         {
+          "id": "pension-recibe",
+          "campo": "Pensión: ¿ya la recibe?",
+          "valor": "No, la recibiré en el futuro",
+          "codigo": "no"
+        },
+        {
           "id": "pension-moneda",
           "campo": "Pensión mensual estimada (moneda)",
           "valor": "CRC",
@@ -1019,6 +1025,7 @@
     "plan": "individual",
     "ingreso-pareja-moneda": "CRC",
     "pension-regimen": "ivm",
+    "pension-recibe": "no",
     "pension-moneda": "CRC",
     "pension-edad": "65",
     "pension-nose": true,
@@ -1130,8 +1137,6 @@
     "direccion": "Ecoresidencial Villa Real casa R17"
   },
   "versionFormulario": 72,
-  "preguntasPendientes": [
-    "Pregunta 04: ¿Qué pensión espera recibir y qué otros ingresos recurrentes tiene o tendrá?"
-  ],
-  "estado": "incompleto"
+  "preguntasPendientes": [],
+  "estado": "completo"
 }
