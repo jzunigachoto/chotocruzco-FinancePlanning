@@ -22,6 +22,7 @@
     "paisEmisor": "",
     "fechaNacimiento": "1967-06-30",
     "ocupacion": "Directora de Operaciones",
+    "profesion": "",
     "estadoCivil": "divorciado"
   },
   "edad": 59,
@@ -41,7 +42,7 @@
     "q10": 0
   },
   "capacidad": {
-    "fuenteIngreso": 6.67,
+    "fuenteIngreso": 0,
     "dependientes": 1,
     "pesoDelPortafolioPct": 71,
     "aniosPrimerRetiro": null,
@@ -91,11 +92,18 @@
     "moneda": "USD",
     "detalle": ""
   },
+  "retirosPortafolio": [],
   "estructuraJuridica": {
+    "posee": "si",
     "tipos": [
       "Sociedad anónima u otra sociedad costarricense"
     ],
-    "detalle": "Para inmuebles en CR  y acciones 25% de patrimonio total de los padres, no conoce el monto de este patrimonio"
+    "detalle": "Para inmuebles en CR  y acciones 25% de patrimonio total de los padres, no conoce el monto de este patrimonio",
+    "portafolioDentro": "",
+    "conPortafolio": [],
+    "fueraPortafolio": [
+      "Sociedad anónima u otra sociedad costarricense"
+    ]
   },
   "apoyosDependientes": [],
   "legado": {
@@ -134,6 +142,10 @@
       "salario"
     ],
     "fuentePrincipal": "salario",
+    "empleo": {
+      "empresa": "",
+      "puesto": ""
+    },
     "ingresoPareja": null,
     "gastoRetiroPct": 87.5,
     "gastoUsdPct": 0,
@@ -151,22 +163,17 @@
   "patrimonio": {
     "vivienda": {
       "situacion": "propia",
+      "valor": null,
+      "valorMoneda": "USD",
+      "alquilerMensual": null,
+      "alquilerMoneda": null,
       "hipoteca": null
     },
     "inmuebles": {
       "moneda": null,
       "lista": []
     },
-    "empresa": {
-      "propietario": false,
-      "plan": null,
-      "valor": null,
-      "valorMoneda": null,
-      "participacionPct": null,
-      "inviertePortafolio": null,
-      "pctInvierte": null,
-      "aniosHastaEvento": null
-    },
+    "empresas": [],
     "deudas": {
       "tiene": false,
       "moneda": null,
@@ -255,7 +262,7 @@
         {
           "id": "q6",
           "campo": "Q6 - Retorno esperado y caída máxima",
-          "valor": "Rendimiento esperado anual de 5% a 5,5% · pérdida anual esperada de −5%",
+          "valor": "Rendimiento esperado anual de 5% a 5,5% · posible pérdida en un año desfavorable de hasta −5%",
           "codigo": "0"
         }
       ]
@@ -384,8 +391,8 @@
         {
           "id": "c3",
           "campo": "Predecibilidad del ingreso del hogar",
-          "valor": "Es estable",
-          "codigo": "6.67"
+          "valor": "Varía de forma importante de un año a otro",
+          "codigo": "0"
         },
         {
           "id": "seleccion",
@@ -760,6 +767,12 @@
           "codigo": "propia"
         },
         {
+          "id": "viv-valor-moneda",
+          "campo": "Vivienda principal: valor estimado (moneda)",
+          "valor": "USD",
+          "codigo": "USD"
+        },
+        {
           "id": "inmuebles-n",
           "campo": "Cantidad de inmuebles de inversión",
           "valor": "0",
@@ -771,14 +784,14 @@
       "pagina": 2,
       "seccion": "Planificación financiera",
       "n": "15",
-      "clave": "empresa",
-      "pregunta": "¿Es propietario de una empresa?",
+      "clave": "empresas-n",
+      "pregunta": "¿Es propietario de empresas? Indique cuántas",
       "detalle": [
         {
-          "id": "empresa",
-          "campo": "Propietario de empresa",
-          "valor": "No",
-          "codigo": "no"
+          "id": "empresas-n",
+          "campo": "Cantidad de empresas",
+          "valor": "0",
+          "codigo": "0"
         }
       ]
     },
@@ -816,21 +829,6 @@
       "pagina": 2,
       "seccion": "Planificación financiera",
       "n": "18",
-      "clave": "c1-tiene",
-      "pregunta": "¿Planea un retiro de este portafolio distinto de sus metas, y cuándo y de cuánto sería?",
-      "detalle": [
-        {
-          "id": "c1-tiene",
-          "campo": "Primer retiro del portafolio",
-          "valor": "No",
-          "codigo": "no"
-        }
-      ]
-    },
-    {
-      "pagina": 2,
-      "seccion": "Planificación financiera",
-      "n": "19",
       "clave": "metas-n",
       "pregunta": "¿Cuántas metas específicas desea financiar con su patrimonio?",
       "detalle": [
@@ -839,6 +837,21 @@
           "campo": "Cantidad de metas específicas",
           "valor": "0",
           "codigo": "0"
+        }
+      ]
+    },
+    {
+      "pagina": 2,
+      "seccion": "Planificación financiera",
+      "n": "19",
+      "clave": "c1-tiene",
+      "pregunta": "¿Planea retiros adicionales de este portafolio, distintos de las metas indicadas en la pregunta anterior?",
+      "detalle": [
+        {
+          "id": "c1-tiene",
+          "campo": "Retiros adicionales del portafolio",
+          "valor": "No",
+          "codigo": "no"
         }
       ]
     },
@@ -909,9 +922,15 @@
       "pagina": 2,
       "seccion": "Planificación financiera",
       "n": "23",
-      "clave": "estr-sa-cr",
-      "pregunta": "Indique cuáles de las siguientes estructuras jurídicas posee",
+      "clave": "estr-tiene",
+      "pregunta": "¿Posee estructuras jurídicas?",
       "detalle": [
+        {
+          "id": "estr-tiene",
+          "campo": "Posee estructuras jurídicas",
+          "valor": "Sí",
+          "codigo": "si"
+        },
         {
           "id": "estructuras-detalle",
           "campo": "Estructuras jurídicas: detalle",
@@ -963,7 +982,7 @@
     "fuente-empresa": false,
     "fuente-honorarios": false,
     "fuente-ingreso": "salario",
-    "c3": "6.67",
+    "c3": "0",
     "plan": "individual",
     "ingreso-pareja-moneda": "CRC",
     "pension-regimen": "ivm",
@@ -1021,17 +1040,17 @@
     "capital-moneda": "USD",
     "c5-pct": "71",
     "vivienda": "propia",
+    "viv-valor-moneda": "USD",
+    "viv-alquiler-moneda": "USD",
     "hipoteca-saldo-moneda": "USD",
     "hipoteca-cuota-moneda": "USD",
     "inmuebles-n": "0",
-    "empresa": "no",
-    "empresa-valor-moneda": "USD",
+    "empresas-n": "0",
     "pe-tiene": "no",
     "pe-moneda": "USD",
     "ventas-n": "0",
-    "c1-tiene": "no",
-    "c1-moneda": "USD",
     "metas-n": "0",
+    "c1-tiene": "no",
     "herencia": "herencia",
     "herencia-monto": "500,000",
     "herencia-moneda": "USD",
@@ -1043,14 +1062,19 @@
     "vida-moneda": "USD",
     "moneda-usd": "15",
     "moneda-crc": "85",
+    "estr-tiene": "si",
     "estr-sa-cr": true,
     "estr-pa": false,
     "estr-offshore": false,
     "estr-fundacion": false,
     "estr-fideicomiso": false,
-    "estr-ninguna": false,
     "estructuras-sel": "Sociedad anónima u otra sociedad costarricense",
     "estructuras-detalle": "Para inmuebles en CR  y acciones 25% de patrimonio total de los padres, no conoce el monto de este patrimonio",
+    "estr-sa-cr-port": false,
+    "estr-pa-port": false,
+    "estr-offshore-port": false,
+    "estr-fundacion-port": false,
+    "estr-fideicomiso-port": false,
     "comentarios": "no",
     "nombres": "Ana",
     "apellidos": "Rojas Gómez",
@@ -1067,5 +1091,17 @@
     "canton": "Central",
     "distrito": "Alajuela",
     "direccion": "De Plaza Real 200 mts al norte calle 19 casa 29B Urb Ciruelas"
-  }
+  },
+  "modificadoEn": 1793911767661,
+  "historialEdiciones": [
+    1793911767661
+  ],
+  "versionFormulario": 72,
+  "preguntasPendientes": [
+    "Pregunta 02: ¿Cuál es su ingreso total mensual, de dónde proviene y qué tan predecible es?",
+    "Pregunta 14: ¿Cuál es la situación de su vivienda y qué otros inmuebles posee?",
+    "Pregunta 23: ¿Posee estructuras jurídicas?",
+    "Profesión"
+  ],
+  "estado": "incompleto"
 }
