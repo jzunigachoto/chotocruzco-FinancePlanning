@@ -398,6 +398,7 @@
   .tabla-cli td.nom{font-weight:600;}
   .tabla-cli .estado{display:inline-block;font-size:12px;padding:3px 10px;border-radius:999px;background:#F2F3EA;color:#5B5F45;white-space:nowrap;}
   .tabla-cli .estado.pend{background:#FBF1EA;color:#A2543A;}
+  .aviso-cuest{margin:6px 0 4px;padding:8px 12px;border-left:3px solid #A2543A;background:#FBF1EA;color:#7A3E2A;font-size:13px;line-height:1.5;max-width:760px;}
   .tabla-cli .ir{color:#918042;text-align:right;font-size:13px;white-space:nowrap;}
   .tabla-intro{font-size:13.5px;color:#5B5F45;margin:0 0 20px;}
   .link-todos{background:none;border:0;padding:0;margin-top:18px;font:inherit;font-size:13px;color:#918042;cursor:pointer;}
@@ -3030,16 +3031,63 @@ async function cargarClientes(){
   return datos.filter(Boolean).map(normalizar);
 }
 
+// Versión vigente de las preguntas del cuestionario (la misma constante de familias.html e
+// instituciones.html). Todos los registros se revisan contra la versión vigente: los guardados con
+// una versión anterior se cargan en el cuestionario actual (oculto) para saber qué campos les faltan.
+const VERSION_FORMULARIO = 72;
+const _verif = {};            // id → campos que faltan con la versión vigente
+let _colaVerif = [], _verifActivo = false;
+function estadoCuestionario(c){
+  const pend = _verif[c.id] || (+c.versionFormulario >= VERSION_FORMULARIO && Array.isArray(c.preguntasPendientes) ? c.preguntasPendientes : null);
+  return {pend: pend || [], revisado: !!pend, incompleto: c.estado === 'incompleto' || !!(pend && pend.length)};
+}
+function avisoCuestionario(c){
+  const e = estadoCuestionario(c);
+  let html = '';
+  if(e.pend.length){
+    const n = e.pend.length;
+    html = `<p class="aviso-cuest"><b>${n === 1 ? 'Falta 1 pregunta por responder' : 'Faltan ' + n + ' preguntas por responder'}.</b> Use «Editar respuestas» para completarlo.</p>`;
+  }
+  return `<div class="aviso-cuest-slot" data-cid="${esc(c.id)}">${html}</div>`;
+}
+// Revisión de los registros con versiones anteriores del cuestionario, uno por uno, en segundo plano
+function verificarCuestionarios(){
+  clientes.forEach(c => { if(+c.versionFormulario >= VERSION_FORMULARIO || _verif[c.id] || _colaVerif.includes(c)) return; _colaVerif.push(c); });
+  siguienteVerif();
+}
+function siguienteVerif(){
+  if(_verifActivo) return;
+  const c = _colaVerif.shift(); if(!c) return;
+  _verifActivo = true;
+  const fr = document.createElement('iframe');
+  fr.setAttribute('aria-hidden', 'true'); fr.tabIndex = -1;
+  fr.style.cssText = 'position:absolute;left:-10000px;top:0;width:1200px;height:900px;border:0;visibility:hidden;';
+  fr.src = (tipoDe(c) === 'institucion' ? 'instituciones.html' : 'familias.html') + '?verificar=1';
+  let hecho = false;
+  const fin = pend => { if(hecho) return; hecho = true; window.removeEventListener('message', oir); fr.remove(); _verifActivo = false;
+    if(pend){ _verif[c.id] = pend; refrescarAvisoCuestionario(c); } setTimeout(siguienteVerif, 30); };
+  const oir = ev => { if(ev.source !== fr.contentWindow || !ev.data) return;
+    if(ev.data.listo) fr.contentWindow.postMessage({verificar: JSON.parse(JSON.stringify(c, (k, v) => k === 'diag' ? undefined : v))}, location.origin);
+    else if(ev.data.verificado === c.id) fin(Array.isArray(ev.data.pendientes) ? ev.data.pendientes : null); };
+  window.addEventListener('message', oir);
+  setTimeout(() => fin(null), 20000);
+  document.body.appendChild(fr);
+}
+function refrescarAvisoCuestionario(c){
+  const t = document.getElementById('tabla-clientes'); if(t && !t.hidden) renderTabla();
+  document.querySelectorAll('.aviso-cuest-slot').forEach(el => { if(el.dataset.cid === c.id) el.outerHTML = avisoCuestionario(c); });
+}
 function renderLista(){
   const list = document.getElementById('client-list');
   list.innerHTML = '';
   clientesSeg().forEach(c=>{
     const row = document.createElement('div');
     row.className = 'client-row' + (c.id===activoId ? ' active' : '');
-    row.innerHTML = `<span class="name">${esc(c.nombre)}</span><span class="tag">${PERFILES[c.perfil].label}</span>`;
+    row.innerHTML = `<span class="name">${esc(c.nombre)}</span><span class="tag">${(PERFILES[c.perfil] || {label: '—'}).label}</span>`;
     row.onclick = ()=>abrirSupuestosCliente(c.id);
     list.appendChild(row);
   });
+  verificarCuestionarios();
   // El antetítulo no revela cuántos clientes hay registrados
 }
 
@@ -3050,8 +3098,9 @@ function renderTabla(){
   t.innerHTML = `<p class="tabla-intro">Seleccione ${segmento === 'institucion' ? 'una institución' : 'un cliente'} para revisar sus supuestos y calcular su proyección.</p>
     <table class="tabla-cli"><thead><tr><th>${segmento === 'institucion' ? 'Institución' : 'Cliente'}</th><th>Cuestionario</th><th>Perfil</th><th>Proyección</th><th></th></tr></thead><tbody>`
     + lista.map(c => { const g = supCliente[c.id];
-        return `<tr data-id="${esc(c.id)}"><td class="nom">${esc(c.nombre)}</td><td>${fecha(c.modificadoEn || c.creadoEn)}${c.modificadoEn ? ' · editado' : ''}</td>
-          <td>${PERFILES[c.perfil].label}</td>
+        const ec = estadoCuestionario(c);
+        return `<tr data-id="${esc(c.id)}"><td class="nom">${esc(c.nombre)}</td><td>${fecha(c.modificadoEn || c.creadoEn)}${c.modificadoEn ? ' · editado' : ''}${ec.pend.length ? ' <span class="estado pend">' + (ec.pend.length === 1 ? 'Falta 1 pregunta' : 'Faltan ' + ec.pend.length + ' preguntas') + '</span>' : c.estado === 'incompleto' ? ' <span class="estado pend">Incompleto</span>' : ''}</td>
+          <td>${(PERFILES[c.perfil] || {label: '—'}).label}</td>
           <td>${g ? '<span class="estado">Proyectada el ' + fecha(g.guardadoEn) + '</span>' : '<span class="estado pend">Pendiente de supuestos</span>'}</td>
           <td class="ir">Abrir →</td></tr>`; }).join('')
     + `</tbody></table>`;
@@ -3087,9 +3136,22 @@ function seleccionar(id){
   document.getElementById('layout').classList.remove('modo-tabla');
   document.getElementById('tabla-clientes').hidden = true;
   if(c){
-    supuestos = supuestosDe(c);
-    c.diag = calcularPerfil(c, supuestos); c.perfil = c.diag.perfil;
-    tipoDe(c) === 'institucion' ? renderInstitucion(c) : renderDetalle(c);
+    try{
+      // sin edad (fecha de nacimiento) un cuestionario incompleto todavía no se puede proyectar
+      if(c.estado === 'incompleto' && tipoDe(c) !== 'institucion' && !(+c.edad > 0)) throw new Error('incompleto');
+      supuestos = supuestosDe(c);
+      c.diag = calcularPerfil(c, supuestos); c.perfil = c.diag.perfil;
+      tipoDe(c) === 'institucion' ? renderInstitucion(c) : renderDetalle(c);
+    }catch(err){
+      // Cuestionario incompleto que todavía no se puede proyectar: se indica qué falta y cómo completarlo
+      const d = document.getElementById('detail'); document.getElementById('empty-state').hidden = true; d.hidden = false;
+      const pag = tipoDe(c) === 'institucion' ? 'instituciones.html' : 'familias.html';
+      d.innerHTML = `<h2 class="section-title">${esc(c.nombre)}</h2>${avisoCuestionario(c)}
+        <p class="section-sub">El cuestionario está incompleto y todavía no se puede proyectar.</p>
+        <button class="btn btn-sm" id="btn-editar">Editar respuestas</button>`;
+      document.getElementById('btn-editar').onclick = () => window.open(pag + '?editar=' + encodeURIComponent(c.id), '_blank', 'noopener');
+      return;
+    }
     const sub = document.querySelector('#detail .section-sub');
     if(sub){
       const g = supCliente[c.id];
@@ -3557,7 +3619,7 @@ function renderInstitucion(c){
   d.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;">
       <div>
-        <h2 class="section-title">${esc(c.nombre)}</h2>
+        <h2 class="section-title">${esc(c.nombre)}</h2>${avisoCuestionario(c)}
         <p class="section-sub">${TXT_INST.tipo[ins.tipo] || 'Institución'} · horizonte de ${p.horizonte} años${contacto ? ' · ' + contacto : ''}</p>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;">
@@ -3744,7 +3806,7 @@ function renderDetalle(c){
   d.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;">
       <div>
-        <h2 class="section-title">${esc(c.nombre)}</h2>
+        <h2 class="section-title">${esc(c.nombre)}</h2>${avisoCuestionario(c)}
         <p class="section-sub">${c.edad} años · independencia financiera a los ${c.edadRetiro} · ${Math.min(p.aniosAcum, p.totalAnios)} años de acumulación${p.aniosAcum === 0
           ? ' (' + ((c.pension || {}).yaRecibe ? 'ya recibe su pensión' : 'ya alcanzó la edad de independencia que indicó, ' + c.edadRetiro + ' años') + ')' : ''} y ${Math.max(0, p.totalAnios - p.aniosAcum)} de retiro${c.correo ? ' · ' + esc(c.correo) : ''}</p>
       </div>
@@ -8244,4 +8306,4 @@ cargar();
 
 
 
-<!-- Chotocruz & Co. · Entrega 71 · 4 de noviembre de 2026 -->
+<!-- Chotocruz & Co. · Entrega 73 · 5 de noviembre de 2026 -->

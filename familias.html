@@ -160,6 +160,8 @@
   .q.contestada select{border-bottom-color:#CFC7A4;}
   /* Pendiente: se marca solo cuando el cliente intenta avanzar sin responder */
   .q.pendiente .q-num{color:#A2543A;}
+  .field.falta label{color:#A2543A;}
+  .field.falta input, .field.falta select{border-bottom-color:#A2543A;}
   .q.pendiente select{border-bottom-color:#A2543A;}
   .q-falta{
     display:none;margin-top:7px;font-size:12px;color:#A2543A;letter-spacing:.01em;
@@ -493,7 +495,7 @@
   <div class="sheet-pad">
 <nav class="pasos-nav" id="pasos-nav" hidden><button type="button" class="paso-btn" data-ir="1">1. <span data-paso-nombre="1"></span><span class="paso-estado" data-paso-estado="1"></span></button><button type="button" class="paso-btn" data-ir="2">2. <span data-paso-nombre="2"></span><span class="paso-estado" data-paso-estado="2"></span></button><button type="button" class="paso-btn" data-ir="3">3. <span data-paso-nombre="3"></span><span class="paso-estado" data-paso-estado="3"></span></button></nav>
 <div class="edicion-banda" id="edicion-banda" hidden></div>
-    <form id="form">
+    <form id="form" autocomplete="off">
 
       <!-- ============ PÁGINA 0 · PORTADA ============ -->
       <div class="page active" data-page="0">
@@ -1375,11 +1377,11 @@
             <div class="grid-2">
               <div class="field">
                 <label for="nombres">Nombre</label>
-                <input data-req id="nombres" name="Nombre" placeholder="Nombre" autocomplete="given-name">
+                <input data-req id="nombres" name="Nombre" placeholder="Nombre" autocomplete="off">
               </div>
               <div class="field">
                 <label for="apellidos">Apellidos</label>
-                <input data-req id="apellidos" name="Apellidos" placeholder="Primer y segundo apellido" autocomplete="family-name">
+                <input data-req id="apellidos" name="Apellidos" placeholder="Primer y segundo apellido" autocomplete="off">
               </div>
               <div class="field">
                 <label for="tipo-doc">Tipo de documento</label>
@@ -1466,7 +1468,7 @@
             </div>
             <div class="field">
               <label for="direccion" id="direccion-label">Otras señas</label>
-              <input data-req id="direccion" name="Dirección" placeholder="Barrio, calle, número de casa o edificio" autocomplete="street-address">
+              <input data-req id="direccion" name="Dirección" placeholder="Barrio, calle, número de casa o edificio" autocomplete="off">
             </div>
           </fieldset>
         </div>
@@ -1508,6 +1510,25 @@
 
 <script>
 // ---- Configuración: repositorio donde se guardan las respuestas ----
+// Modo de verificación: el dashboard abre el cuestionario oculto para saber qué campos le faltan
+// a un registro con la versión vigente. No guarda nada, no pide nada y no muestra avisos.
+var VERIFICAR = new URLSearchParams(location.search).has('verificar');
+// Versión de las preguntas del cuestionario. Se sube cada vez que se agrega o cambia una pregunta:
+// los registros guardados con una versión anterior quedan marcados en el dashboard para completarlos.
+const VERSION_FORMULARIO = 72;
+// Preguntas obligatorias que siguen sin respuesta (o con un dato inválido), con su número y texto
+function preguntasPendientes(){
+  const out = [];
+  try{ [1, 2, 3].forEach(n => { const pag = document.querySelector('.page[data-page="'+n+'"]'); if(!pag) return;
+    visibles(pag).forEach(q => { const cs = [...q.querySelectorAll('[required]')];
+      if(cs.some(x => x.value === '' || !x.checkValidity())){
+        const num = (q.querySelector('.q-num') || {}).textContent || '', lab = ((q.querySelector('.qlabel') || {}).textContent || '').replace(/\s+/g, ' ').trim();
+        out.push(((num ? 'Pregunta ' + num.trim() + ': ' : '') + lab).slice(0, 160)); } });
+    pag.querySelectorAll('.field [required]').forEach(cp => { if(!cp.value || !cp.checkValidity()){
+      const lb = cp.closest('.field') && cp.closest('.field').querySelector('label');
+      out.push(((lb && lb.textContent) || cp.name || cp.id).replace(/\s+/g, ' ').trim()); } }); }); }catch(e){}
+  return [...new Set(out)];
+}
 const GH_OWNER  = "jzunigachoto";
 const GH_REPO   = "chotocruzco-FinancePlanning";
 const GH_BRANCH = "main";
@@ -1817,8 +1838,11 @@ function validarPagina(n, silencioso){
   // Campos de texto fuera del bloque de preguntas (nombre, correo, teléfono).
   const sueltos = [];
   pag.querySelectorAll('.field [required]').forEach(function(campo){
-    if(!campo.value || !campo.checkValidity()) sueltos.push(campo);
+    const malo = !campo.value || !campo.checkValidity();
+    if(malo) sueltos.push(campo);
+    const fl = campo.closest('.field'); if(fl) fl.classList.toggle('falta', malo);   // se marca en rojo
   });
+  pag.querySelectorAll('.field.falta').forEach(fl => { if(![...fl.querySelectorAll('[required]')].some(c => !c.value || !c.checkValidity())) fl.classList.remove('falta'); });
 
   const total = faltantes.length + sueltos.length;
   const aviso = pag.querySelector('[data-aviso]');
@@ -1875,6 +1899,9 @@ function revisarAviso(){
      && [...pag.querySelectorAll('.field [required]')].every(c => c.value && c.checkValidity())) av.hidden = true;
 }
 ['input','change'].forEach(ev => document.addEventListener(ev, () => setTimeout(revisarAviso, 0)));
+// la marca roja de un dato personal se quita en cuanto queda completo
+['input','change'].forEach(ev => document.addEventListener(ev, e => { const fl = e.target && e.target.closest && e.target.closest('.field.falta');
+  if(fl && ![...fl.querySelectorAll('[required]')].some(c => !c.value || !c.checkValidity())) fl.classList.remove('falta'); }));
 
 // Campos que solo se muestran —y solo se exigen— según lo que el cliente escoja.
 // Cuando dejan de aplicar se vacían, para no enviar datos que el cliente descartó.
@@ -2366,12 +2393,22 @@ window.addEventListener('pageshow', restaurarEstado);
 document.getElementById('submit-btn').addEventListener('click', function(e){
   validarIdentificacion(); validarEdades();
   const malas = paginasIncompletas();
-  if(!malas.length) return;
+  const form = document.getElementById('form');
+  if(!malas.length || enviarIncompleto){ form.noValidate = true; return; }
   e.preventDefault();
   const st = document.getElementById('form-status');
-  if(st){ st.className = 'status err'; st.textContent = ''; }
   irAPendiente(malas);
+  // El cuestionario siempre se puede enviar: si faltan respuestas, se ofrece enviarlo de todas formas
+  // y el registro queda marcado con las preguntas pendientes para completarlas después.
+  if(st){ st.className = 'status err'; st.textContent = ''; }
+  // el aviso queda en la página con la primera pregunta pendiente, junto con el botón para enviar igual
+  const av = document.querySelector('.page[data-page="'+malas[0]+'"] [data-aviso]');
+  if(av){ av.appendChild(document.createTextNode(' Si no puede completarlas ahora, puede enviar el cuestionario así: las preguntas pendientes quedarán marcadas para completarlas después. '));
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'btn btn-back'; b.id = 'enviar-igual'; b.textContent = 'Enviar de todas formas'; b.style.marginTop = '10px';
+    b.onclick = () => { enviarIncompleto = true; form.noValidate = true; goTo(3); document.getElementById('submit-btn').click(); };
+    av.appendChild(document.createElement('br')); av.appendChild(b); av.hidden = false; }
 });
+var enviarIncompleto = false;
 
 function alCambiar(e){
   if(!e.target) return;
@@ -2438,6 +2475,7 @@ function irAPendiente(malas){
   }
 }
 function goTo(page){
+  if(typeof guardarEnNube === 'function') guardarEnNube();
   validarIdentificacion();
   const actual = document.querySelector('.page.active');
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -2529,10 +2567,11 @@ function b64EncodeUnicode(str){
 
 marcarRespondidas();
 
-document.getElementById('form').addEventListener('submit', async function(e){
-  e.preventDefault();
-  const statusEl = document.getElementById('form-status');
-  const btn = document.getElementById('submit-btn');
+// Arma el registro del cliente con lo que hay en el formulario (completo o no). Lo usan el envío
+// y el respaldo automático en la nube. El identificador y la fecha de creación se mantienen entre
+// guardados, para que todos actualicen el mismo registro.
+var idBorrador = null, creadoBorrador = null, shaNube = null;
+function construirRegistro(){
   const val = id => { const e = document.getElementById(id); if(!e) return ''; if(e.dataset && e.dataset.monto){ const n = numDe(e); return isNaN(n) ? '' : String(n); } return e.value; };
 
   const esPersona = tipoCliente === 'persona';
@@ -2800,6 +2839,38 @@ document.getElementById('form').addEventListener('submit', async function(e){
     });
   }
 
+  if(!editando){
+    if(idBorrador) cliente.id = idBorrador; else idBorrador = cliente.id;
+    if(creadoBorrador) cliente.creadoEn = creadoBorrador; else creadoBorrador = cliente.creadoEn;
+  }
+  // Versión del cuestionario y preguntas sin responder: el registro se guarda aunque falten
+  // respuestas (estado «incompleto») y el dashboard avisa qué campos faltan por rellenar.
+  cliente.versionFormulario = VERSION_FORMULARIO;
+  cliente.preguntasPendientes = preguntasPendientes();
+  cliente.estado = cliente.preguntasPendientes.length ? 'incompleto' : 'completo';
+  return {cliente, nombre};
+}
+// Guarda el registro en GitHub. Si el archivo cambió mientras tanto (otra pestaña, otro guardado
+// o una versión nueva del sistema), toma su versión vigente y vuelve a guardar: nunca se pierde.
+async function subirRegistro(cliente, nombre, token, mensaje, keepalive){
+  const url = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/data/clientes/${cliente.id}.json`;
+  const put = sha => fetch(url, {method: 'PUT', keepalive: !!keepalive,
+    headers: {'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json'},
+    body: JSON.stringify({message: mensaje + (nombre || 'cliente sin nombre'), ...(sha ? {sha} : {}),
+      content: b64EncodeUnicode(JSON.stringify(cliente, null, 2)), branch: GH_BRANCH})});
+  let res = await put(shaNube || (editando && editando.sha) || null);
+  if(!res.ok && (res.status === 409 || res.status === 422)){
+    const g = await fetch(url + '?ref=' + GH_BRANCH, {headers: {'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json'}, cache: 'no-store'});
+    res = await put(g.ok ? (await g.json()).sha : null);
+  }
+  if(res.ok){ try{ const j = await res.clone().json(); if(j && j.content && j.content.sha){ shaNube = j.content.sha; if(editando) editando.sha = shaNube; } }catch(e){} }
+  return res;
+}
+document.getElementById('form').addEventListener('submit', async function(e){
+  e.preventDefault();
+  const statusEl = document.getElementById('form-status');
+  const btn = document.getElementById('submit-btn');
+  const {cliente, nombre} = construirRegistro();
   const token = getToken();
   if(!token){
     statusEl.className='status err';
@@ -2811,22 +2882,7 @@ document.getElementById('form').addEventListener('submit', async function(e){
   try{
     // Personas e instituciones llegan a la misma carpeta; el campo tipoCliente las distingue
     // y el dashboard las presenta por separado.
-    const path = `data/clientes/${cliente.id}.json`;
-    const url = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${path}`;
-    const res = await fetch(url, {
-      method: 'PUT',
-      headers: {
-        'Authorization': 'Bearer ' + token,
-        'Accept': 'application/vnd.github+json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        message: (editando ? 'Actualización del cuestionario: ' : 'Nuevo cuestionario: ') + (nombre || 'cliente sin nombre'),
-        ...(editando && editando.sha ? {sha: editando.sha} : {}),
-        content: b64EncodeUnicode(JSON.stringify(cliente, null, 2)),
-        branch: GH_BRANCH
-      })
-    });
+    const res = await subirRegistro(cliente, nombre, token, editando ? 'Actualización del cuestionario: ' : 'Cuestionario enviado: ');
     if(!res.ok){
       if(res.status===401 || res.status===403){
         localStorage.removeItem('gh_token');
@@ -2839,40 +2895,91 @@ document.getElementById('form').addEventListener('submit', async function(e){
     goTo(4);
   }catch(err){
     statusEl.className='status err';
-    statusEl.textContent = 'No fue posible registrar las respuestas: ' + (err.message || 'error desconocido') + '.';
+    statusEl.textContent = 'No fue posible registrar las respuestas: ' + (err.message || 'error desconocido') + '. Sus respuestas siguen en esta ventana: no la cierre e intente enviar de nuevo.';
     btn.disabled = false;
   }
 });
 
 // ---- Avance guardado en este dispositivo ----
 const CLAVE_BORRADOR = 'chyco_borrador_' + tipoCliente;
-let respondio = false, enviado = false, tGuardar = null;
+var respondio = false, enviado = false, tGuardar = null;
 // Registro que se está corrigiendo (modo de edición desde el dashboard)
 var editando = null;
 const camposForm = () => [...document.querySelectorAll('#form input, #form select, #form textarea')]
   .filter(c => !c.classList.contains('pais-buscar') && (c.id || c.name));
 const claveCampo = c => c.id || ('n:' + c.name);
 function guardarBorrador(){
-  if(enviado || !respondio || editando) return;
+  if(VERIFICAR || enviado || !respondio || editando) return;
   const datos = {};
   camposForm().forEach(c => { if(c.type === 'checkbox') datos[claveCampo(c)] = c.checked; else if(c.value !== '') datos[claveCampo(c)] = c.value; });
   const act = document.querySelector('.page.active');
   const pagina = act ? Math.min(3, Math.max(1, +act.dataset.page || 1)) : 1;
-  try{ localStorage.setItem(CLAVE_BORRADOR, JSON.stringify({v:1, guardado: Date.now(), pagina, datos})); }catch(e){}
+  try{ localStorage.setItem(CLAVE_BORRADOR, JSON.stringify({v:2, guardado: Date.now(), pagina, datos, idBorrador, creadoBorrador, shaNube})); sessionStorage.setItem(CLAVE_BORRADOR + '_ok', '1'); }catch(e){}
 }
-function programarGuardado(){ respondio = true; clearTimeout(tGuardar); tGuardar = setTimeout(guardarBorrador, 400); }
+function programarGuardado(){ respondio = true; clearTimeout(tGuardar); tGuardar = setTimeout(guardarBorrador, 400); marcarCambio(); }
 ['input','change'].forEach(ev => document.addEventListener(ev, function(e){
   if(e.target && e.target.closest && e.target.closest('#form') && !e.target.classList.contains('pais-buscar')) programarGuardado();
 }));
 document.addEventListener('click', function(e){ if(e.target.closest && e.target.closest('.pais-op')) programarGuardado(); });
-window.addEventListener('pagehide', guardarBorrador);
-function leerBorrador(){ try{ const b = JSON.parse(localStorage.getItem(CLAVE_BORRADOR) || 'null'); return b && b.datos ? b : null; }catch(e){ return null; } }
-function borrarBorrador(){ try{ localStorage.removeItem(CLAVE_BORRADOR); }catch(e){} }
+window.addEventListener('pagehide', () => { guardarBorrador(); guardarEnNube(true); });
+document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'hidden'){ guardarBorrador(); guardarEnNube(true); } });
+window.addEventListener('online', () => guardarEnNube(true));
+window.addEventListener('offline', () => avisoGuardado('sin-conexion'));
+// Respaldo automático en la nube: si hay conexión y token, el avance se guarda en GitHub como un
+// registro «incompleto» (30 segundos después del último cambio, al cambiar de página y al salir).
+// Así, si se va la luz, el internet o el cliente debe irse, el dashboard ya tiene sus respuestas.
+var cambioPend = false, tNube = null, subiendo = false;
+function marcarCambio(){ if(VERIFICAR || enviado) return; cambioPend = true; clearTimeout(tNube); tNube = setTimeout(() => guardarEnNube(), 30000); }
+async function guardarEnNube(alSalir){
+  if(VERIFICAR || enviado || !cambioPend || subiendo) return;
+  if(!navigator.onLine){ avisoGuardado('sin-conexion'); return; }
+  let token = null; try{ token = localStorage.getItem('gh_token'); }catch(e){}
+  if(!token) return;
+  let reg; try{ reg = construirRegistro(); }catch(e){ return; }
+  if(!reg.nombre) return;                       // sin nombre todavía no se crea el registro
+  subiendo = true; cambioPend = false;
+  try{ const res = await subirRegistro(reg.cliente, reg.nombre, token, 'Avance guardado del cuestionario: ', alSalir);
+    if(res.ok){ avisoGuardado('nube'); guardarBorrador(); } else { cambioPend = true; avisoGuardado('error'); } }
+  catch(e){ cambioPend = true; avisoGuardado('sin-conexion'); }
+  finally{ subiendo = false; }
+}
+function avisoGuardado(estado){
+  if(VERIFICAR) return;
+  let el = document.getElementById('estado-guardado');
+  if(!el){ el = document.createElement('div'); el.id = 'estado-guardado'; el.setAttribute('role', 'status');
+    el.style.cssText = 'position:fixed;right:16px;bottom:14px;z-index:50;font-size:12px;padding:6px 12px;border-radius:999px;background:#F2F3EA;color:#5B5F45;box-shadow:0 1px 4px rgba(0,0,0,.08);max-width:min(420px,calc(100vw - 32px));';
+    document.body.appendChild(el); }
+  const h = new Date().toLocaleTimeString('es-CR', {hour: '2-digit', minute: '2-digit'});
+  el.style.background = estado === 'nube' ? '#F2F3EA' : '#FBF1EA'; el.style.color = estado === 'nube' ? '#5B5F45' : '#A2543A';
+  el.textContent = estado === 'nube' ? 'Avance guardado en la nube · ' + h
+    : estado === 'sin-conexion' ? 'Sin conexión: el avance queda guardado en este equipo y se subirá al volver la conexión'
+    : 'No se pudo guardar en la nube; el avance queda guardado en este equipo';
+}
+// El avance se guarda en este equipo (sobrevive a un corte de luz o de internet y al cierre del
+// navegador) y, si hay conexión, también en la nube. Por confidencialidad, otra persona que abra el
+// enlace en el mismo equipo no puede verlo: para continuarlo hay que escribir la identificación del
+// cliente (o seguir en la misma ventana). Los avances de más de 30 días se descartan.
+function leerBorrador(){ try{ const b = JSON.parse(localStorage.getItem(CLAVE_BORRADOR) || 'null');
+  if(b && b.guardado && Date.now() - b.guardado > 30*24*3600*1000){ localStorage.removeItem(CLAVE_BORRADOR); return null; }
+  return b && b.datos ? b : null; }catch(e){ return null; } }
+function borrarBorrador(){ try{ localStorage.removeItem(CLAVE_BORRADOR); sessionStorage.removeItem(CLAVE_BORRADOR + '_ok'); }catch(e){} }
+// Sin sugerencias del navegador (nombres, correos, direcciones de clientes anteriores): ningún campo
+// del cuestionario usa el autocompletado, tampoco los que se crean después (filas repetibles).
+function sinAutocompletar(raiz){
+  (raiz || document).querySelectorAll('#form input:not([type=hidden]):not([type=checkbox]):not([type=radio]), #form textarea').forEach(el => {
+    if(el.dataset.sinAuto) return; el.dataset.sinAuto = '1';
+    // Chrome ignora «off» en campos de nombre, correo o dirección; un valor propio lo desactiva
+    el.setAttribute('autocomplete', /nombre|apellido|correo|mail|tel|direcc|senas|empresa|puesto|ocupac|profes/i.test((el.id || '') + ' ' + (el.name || '')) ? 'chyco-' + (el.id || 'campo') : 'off');
+    el.setAttribute('autocorrect', 'off'); el.setAttribute('spellcheck', 'false'); });
+}
+sinAutocompletar();
+try{ new MutationObserver(() => sinAutocompletar()).observe(document.getElementById('form'), {childList: true, subtree: true}); }catch(e){}
 function aplicarDatos(datos){
   camposForm().forEach(c => { const k = claveCampo(c); if(!(k in datos)) return;
     if(c.type === 'checkbox') c.checked = !!datos[k]; else c.value = datos[k]; });
 }
 function restaurarBorrador(b){
+  if(b.idBorrador && !editando){ idBorrador = b.idBorrador; creadoBorrador = b.creadoBorrador || null; shaNube = b.shaNube || null; }
   // Varias pasadas: las filas repetibles, los campos condicionales y los listados de
   // cantón y distrito aparecen solo después de fijar el dato del que dependen.
   for(let i = 0; i < 3; i++){
@@ -2892,16 +2999,33 @@ function restaurarBorrador(b){
   goTo(b.pagina || 1);
 }
 (function(){
+  if(VERIFICAR) return;
   const b = leerBorrador();
   if(!b) return;
+  const caja = document.getElementById('borrador');
   document.getElementById('portada-inicio').hidden = true;
-  document.getElementById('borrador').hidden = false;
+  caja.hidden = false;
   document.getElementById('borrador-fecha').textContent = new Date(b.guardado).toLocaleString('es-CR',
-    {day:'numeric', month:'long', hour:'2-digit', minute:'2-digit'});
-  document.getElementById('borrador-seguir').onclick = () => restaurarBorrador(b);
+    {day:'numeric', month:'long', hour:'2-digit', minute:'2-digit'}).replace(/\.$/, '');
+  // Confidencialidad: en la misma ventana se continúa directo; en otra, se pide la identificación
+  // del cliente (cédula o nombre de la institución) sin mostrar ningún dato del cuestionario.
+  const norm = t => String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '');
+  const clave = b.datos['cedula'] || b.datos['pasaporte'] || b.datos['inst-nombre'] || b.datos['nombres'] || '';
+  let mismaVentana = false; try{ mismaVentana = sessionStorage.getItem(CLAVE_BORRADOR + '_ok') === '1'; }catch(e){}
+  const seguir = document.getElementById('borrador-seguir');
+  let campo = null;
+  if(clave && !mismaVentana){
+    const p = document.createElement('div'); p.style.margin = '0 0 16px';
+    const tipo = b.datos['cedula'] || b.datos['pasaporte'] ? 'el número de identificación del cliente' : b.datos['inst-nombre'] ? 'el nombre de la institución' : 'el nombre del cliente';
+    p.innerHTML = '<p style="margin:0 0 8px">Por confidencialidad, para continuarlo escriba ' + tipo + '.</p>';
+    campo = document.createElement('input'); campo.type = 'text'; campo.setAttribute('autocomplete', 'chyco-verificar'); campo.style.maxWidth = '320px'; campo.placeholder = tipo.replace(/^el /, '').replace(/^./, m => m.toUpperCase());
+    const err = document.createElement('p'); err.style.cssText = 'margin:6px 0 0;color:#A2543A;font-size:12.5px'; err.hidden = true; err.textContent = 'No coincide con el cuestionario guardado.';
+    p.appendChild(campo); p.appendChild(err); caja.insertBefore(p, caja.querySelector('.portada-borrador-acciones'));
+    seguir.onclick = () => { if(norm(campo.value) && norm(campo.value) === norm(clave)){ try{ sessionStorage.setItem(CLAVE_BORRADOR + '_ok', '1'); }catch(e){} restaurarBorrador(b); } else err.hidden = false; };
+  } else seguir.onclick = () => restaurarBorrador(b);
   document.getElementById('borrador-nuevo').onclick = () => {
-    borrarBorrador();
-    document.getElementById('borrador').hidden = true;
+    borrarBorrador(); idBorrador = null; creadoBorrador = null; shaNube = null;
+    caja.hidden = true;
     document.getElementById('portada-inicio').hidden = false;
     goTo(1);
   };
@@ -3054,12 +3178,27 @@ function datosDesdeRegistro(r){
     const b = document.createElement('b'); b.textContent = 'Modo de edición: ' + (r.nombre || 'cliente') + '. ';
     banda.appendChild(b);
     banda.appendChild(document.createTextNode('Revise o corrija las respuestas y pulse «Guardar cambios»: se actualiza el mismo registro y la versión anterior queda en el historial del repositorio.'
-      + (r.formulario ? '' : ' Este cuestionario se envió con una versión anterior del formulario: revise las preguntas marcadas como pendientes.')));
+      ));
+    { const pend = preguntasPendientes();
+      if(pend.length){ const d = document.createElement('div'); d.style.cssText = 'margin-top:8px;color:#A2543A;font-weight:600;';
+        d.appendChild(document.createTextNode((pend.length === 1 ? 'Falta 1 pregunta por responder; está señalada en rojo.' : 'Faltan ' + pend.length + ' preguntas por responder; están señaladas en rojo en cada página.')));
+        banda.appendChild(d); paginasIncompletas(); actualizarPasos(1); } }
     document.getElementById('submit-btn').textContent = 'Guardar cambios';
   }catch(err){
     banda.textContent = 'No fue posible abrir el cuestionario para editarlo: ' + (err.message || 'error desconocido') + '.';
   }
 })();
+// Verificación desde el dashboard: recibe un registro, lo carga en el cuestionario vigente y
+// devuelve los campos que le faltan por rellenar.
+if(VERIFICAR){
+  window.addEventListener('message', ev => {
+    if(ev.origin !== location.origin || !ev.data || !ev.data.verificar) return;
+    const r = ev.data.verificar;
+    try{ restaurarBorrador({datos: datosDesdeRegistro(r), pagina: 1}); parent.postMessage({verificado: r.id, pendientes: preguntasPendientes()}, location.origin); }
+    catch(e){ parent.postMessage({verificado: r.id, error: String(e && e.message || e)}, location.origin); }
+  });
+  try{ parent.postMessage({listo: true}, location.origin); }catch(e){}
+}
 </script>
 <script>document.querySelectorAll(".anio-actual").forEach(function(e){ e.textContent = new Date().getFullYear(); });</script>
 </body>
@@ -3073,4 +3212,4 @@ function datosDesdeRegistro(r){
 
 
 
-<!-- Chotocruz & Co. · Entrega 71 · 4 de noviembre de 2026 -->
+<!-- Chotocruz & Co. · Entrega 73 · 5 de noviembre de 2026 -->
