@@ -1,7 +1,7 @@
 {
   "cliente": "c-1792597156606-lhwqr",
   "nombre": "Juan Carlos Arguedas Tinajero",
-  "guardadoEn": 1793391613237,
+  "guardadoEn": 1793920199117,
   "supuestos": {
     "tipoCambio": 450,
     "inflacionLocal": 3.9,
@@ -39,31 +39,41 @@
     "asignacion": {
       "conservador": {
         "rv": 20,
+        "rfcr": 0,
         "rf": 50,
+        "rfem": 0,
         "ef": 30,
         "alt": 0
       },
       "moderadoConservador": {
         "rv": 35,
+        "rfcr": 0,
         "rf": 47.5,
+        "rfem": 0,
         "ef": 17.5,
         "alt": 0
       },
       "moderado": {
         "rv": 40,
+        "rfcr": 0,
         "rf": 55,
+        "rfem": 0,
         "ef": 5,
         "alt": 0
       },
       "moderadoAgresivo": {
         "rv": 70,
+        "rfcr": 0,
         "rf": 25,
+        "rfem": 0,
         "ef": 5,
         "alt": 0
       },
       "agresivo": {
         "rv": 90,
+        "rfcr": 0,
         "rf": 5,
+        "rfem": 0,
         "ef": 5,
         "alt": 0
       }
