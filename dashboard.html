@@ -75,13 +75,9 @@
   .sup-cliente{border-top:1px solid var(--rule);margin:34px 0 26px;padding-top:26px;}
   .cart-intro{font-size:13px;line-height:1.6;color:#23270F;margin:0 0 16px;max-width:860px;}
   .cart-sub{font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;font-weight:700;margin:0 0 8px;}
-  .cart-rend{display:grid;grid-template-columns:repeat(3,1fr);gap:12px 24px;margin-bottom:22px;}
+  .cart-rend{display:grid;grid-template-columns:repeat(4,1fr);gap:12px 24px;margin-bottom:22px;}
   .cart-rend span{display:block;font-size:12px;color:var(--muted,#5A5E44);margin-bottom:2px;}
   .cart-tabla{overflow-x:auto;}
-  .tabla-unica tr.grupo td{font-weight:600;}
-  .tabla-unica tr.sub td.cl{padding-left:22px;color:#3A3D2A;}
-  .tabla-unica td.nota-sub{text-align:center;font-size:11.5px;color:#8A8C76;}
-  .tabla-unica tr.total td{font-weight:700;border-top:1.5px solid var(--rule);}
   .cart-tabla table{width:100%;border-collapse:collapse;font-size:13px;min-width:720px;}
   .cart-tabla th{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;text-align:right;font-weight:700;padding:6px 6px;border-bottom:1.5px solid var(--rule);}
   .cart-tabla th:first-child,.cart-tabla th:nth-child(2){text-align:left;}
@@ -601,10 +597,8 @@
         </div>
       </div>
 
-      <!-- El rendimiento de los bonos en colones se edita en la tabla de clases de activo (renta fija en colones);
-           este campo queda oculto solo para guardar el valor -->
-      <div class="block-title" style="display:none">Bonos en colones (Costa Rica) · cobertura de los gastos en colones</div>
-      <div class="grid-3" style="display:none">
+      <div class="block-title">Bonos en colones (Costa Rica) · cobertura de los gastos en colones</div>
+      <div class="grid-3">
         <div class="field">
           <label for="s-rf-crc">Rendimiento de los bonos en colones</label>
           <div class="amount"><input type="number" step="0.01" min="0.1" max="40" id="s-rf-crc" value="6"><span class="unit">%</span></div>
@@ -1317,8 +1311,7 @@ function patrimonioDe(c, sup){
   const liquido = u(c.capitalMonto, c.capitalMoneda);
   const fondos = ['rop','fcl','voluntaria'].reduce((a, k) => a + (c.fondos && c.fondos[k] ? u(c.fondos[k].saldo, c.fondos[k].saldoMoneda) : 0), 0);
   const inmuebles = (inm.lista || []).reduce((a, x) => a + u(x.valor, x.valorMoneda || x.moneda || inm.moneda), 0);
-  // empresas: el valor declarado en el cuestionario es el de su participación; se usa tal cual
-  const empresa = empresasDe(c).reduce((a, e) => a + u(e.valor, e.valorMoneda), 0);
+  const empresa = empresasDe(c).reduce((a, e) => a + u(e.valor, e.valorMoneda) * (valido(e.participacionPct) ? +e.participacionPct/100 : 1), 0);
   const privado = u(pe.valor, pe.moneda);   // monto total invertido (sin porcentaje de participación)
   const deudas = (viv.hipoteca ? u(viv.hipoteca.saldo, viv.hipoteca.saldoMoneda) : 0)
     + (inm.lista || []).reduce((a, x) => a + u(x.saldoDeuda, x.deudaMoneda || x.moneda || inm.moneda), 0) + u(deu.saldo, deu.saldoMoneda)
@@ -1340,7 +1333,7 @@ function activosPasivos(c, sup){
   if(fo.rop) pon('ROP (saldo)', 'Baja: disponible al pensionarse', fo.rop.saldoMoneda, fo.rop.saldo, u(fo.rop.saldo, fo.rop.saldoMoneda));
   (inm.lista || []).forEach(x => pon('Inmueble: ' + (x.nombre || 'inmueble'), 'Baja: requiere su venta', x.valorMoneda || x.moneda || inm.moneda, x.valor, u(x.valor, x.valorMoneda || x.moneda || inm.moneda)));
   empresasDe(c).forEach(e => { const part = valido(e.participacionPct) ? +e.participacionPct/100 : 1;
-    pon('Empresa: ' + (e.nombre || 'empresa') + (part < 1 ? ' (' + String(+e.participacionPct).replace('.', ',') + '%)' : ''), 'Baja: participación en una empresa', e.valorMoneda, (+e.valor || 0), u(e.valor, e.valorMoneda)); });
+    pon('Empresa: ' + (e.nombre || 'empresa') + (part < 1 ? ' (' + String(+e.participacionPct).replace('.', ',') + '%)' : ''), 'Baja: participación en una empresa', e.valorMoneda, (+e.valor || 0) * part, u(e.valor, e.valorMoneda) * part); });
   // vivienda principal: su valor estimado (propia o con hipoteca); es el activo menos líquido
   const vivActivo = () => { if((viv.situacion === 'propia' || viv.situacion === 'hipoteca') && +viv.valor > 0) pon('Vivienda principal', 'Muy baja: vivienda de uso propio', viv.valorMoneda, viv.valor, u(viv.valor, viv.valorMoneda)); };
   if(+pe.valor > 0) pon('Capital privado' + (pe.detalle ? ': ' + pe.detalle : '') + ' (monto invertido)', 'Muy baja: sin mercado secundario', pe.moneda, +pe.valor || 0, u(pe.valor, pe.moneda));
@@ -1813,8 +1806,7 @@ const HIST = {desde: 1928, hasta: 2025,
 // mezcla completa de renta variable, renta fija y efectivo.
 function estadisticaCartera(a){
   // alternativos: sin serie propia; se aproximan con mitad renta variable y mitad renta fija
-  // renta fija emergentes: sin serie propia; se aproxima con la de renta fija
-  const serie = HIST.rv.map((v,i) => (a.rv*v + ((a.rfcr || 0) + a.rf + (a.rfem || 0))*HIST.rf[i] + a.ef*HIST.ef[i] + (a.alt || 0)*(v + HIST.rf[i])/2) / 10000);
+  const serie = HIST.rv.map((v,i) => (a.rv*v + a.rf*HIST.rf[i] + a.ef*HIST.ef[i] + (a.alt || 0)*(v + HIST.rf[i])/2) / 10000);
   const n = serie.length, media = serie.reduce((x,y)=>x+y,0)/n;
   const vol = Math.sqrt(serie.reduce((x,y)=>x+(y-media)**2,0)/(n-1));
   const peor = Math.min(...serie);
@@ -1828,7 +1820,7 @@ function estadisticaCartera(a){
 // con la serie de Damodaran. Así la curva pasa por las tres carteras del sistema y cada
 // punto intermedio tiene una composición concreta que se puede invertir.
 function mezclaCarteras(A, B, w){
-  return {rv: A.rv + (B.rv - A.rv)*w, rfcr: (A.rfcr || 0) + ((B.rfcr || 0) - (A.rfcr || 0))*w, rf: A.rf + (B.rf - A.rf)*w, rfem: (A.rfem || 0) + ((B.rfem || 0) - (A.rfem || 0))*w, ef: A.ef + (B.ef - A.ef)*w, alt: (A.alt || 0) + ((B.alt || 0) - (A.alt || 0))*w};
+  return {rv: A.rv + (B.rv - A.rv)*w, rf: A.rf + (B.rf - A.rf)*w, ef: A.ef + (B.ef - A.ef)*w, alt: (A.alt || 0) + ((B.alt || 0) - (A.alt || 0))*w};
 }
 function curvaModelo(){
   const asig = supuestos.asignacion || CARTERAS;
@@ -1892,8 +1884,8 @@ function carteraEquilibrio(eq){
     : eq.r <= retPerfil('conservador') ? 'El equilibrio queda por debajo de la cartera conservadora; se usa esa cartera, la de menor riesgo del sistema.' : ''});
 }
 const fmtPeso = v => { const r = Math.round((v||0)*10)/10; return (r % 1 ? r.toFixed(1) : String(r)).replace('.', ','); };
-const redondeoAsig = a => { const q = v => Math.round((+v || 0)*10)/10, rv = q(a.rv), rfcr = q(a.rfcr), rf = q(a.rf), rfem = q(a.rfem), alt = q(a.alt);
-  return {rv, rfcr, rf, rfem, ef: Math.round((100 - rv - rfcr - rf - rfem - alt)*10)/10, alt}; };
+const redondeoAsig = a => { const rv = Math.round(a.rv*10)/10, rf = Math.round(a.rf*10)/10, alt = Math.round((a.alt || 0)*10)/10;
+  return {rv, rf, ef: Math.round((100 - rv - rf - alt)*10)/10, alt}; };
 
 // Perfil que exige el objetivo: el menor perfil cuya cartera cubre el equilibrio.
 function perfilRequerido(eq){
@@ -2285,26 +2277,23 @@ const CLASES = [
 // El rendimiento esperado de cada cartera es el promedio ponderado del rendimiento esperado de
 // sus clases. Los valores base reproducen el rendimiento de las carteras modelo (5%, 6%, 7%, 7,5%
 // y 8%): renta variable 8,31%, renta fija 5,46% y efectivo 2,03%; alternativos 6,5%.
-// La renta fija se segmenta en colones (Costa Rica), EE. UU. y emergentes; cada una con sus topes y su rendimiento.
-const CLASES_ACT = [['Renta variable','rv'],['Renta fija en colones','rfcr'],['Renta fija EE. UU.','rf'],['Renta fija emergentes','rfem'],['Efectivo','ef'],['Alternativos','alt']];
+const CLASES_ACT = [['Renta variable','rv'],['Renta fija','rf'],['Efectivo','ef'],['Alternativos','alt']];
 const TOPES_BASE = {
-  conservador:        {rv:[0,20],  rfcr:[0,90], rf:[0,90], rfem:[0,0], ef:[5,40], alt:[0,5]},
-  moderadoConservador:{rv:[20,35], rfcr:[0,75], rf:[0,75], rfem:[0,0], ef:[5,30], alt:[0,10]},
-  moderado:           {rv:[35,50], rfcr:[0,60], rf:[0,60], rfem:[0,0], ef:[5,20], alt:[0,10]},
-  moderadoAgresivo:   {rv:[50,70], rfcr:[0,45], rf:[0,45], rfem:[0,0], ef:[0,15], alt:[0,15]},
-  agresivo:           {rv:[70,90], rfcr:[0,30], rf:[0,30], rfem:[0,0], ef:[0,10], alt:[0,20]}
+  conservador:        {rv:[0,20],  rf:[50,90], ef:[5,40], alt:[0,5]},
+  moderadoConservador:{rv:[20,35], rf:[40,75], ef:[5,30], alt:[0,10]},
+  moderado:           {rv:[35,50], rf:[30,60], ef:[5,20], alt:[0,10]},
+  moderadoAgresivo:   {rv:[50,70], rf:[15,45], ef:[0,15], alt:[0,15]},
+  agresivo:           {rv:[70,90], rf:[0,30],  ef:[0,10], alt:[0,20]}
 };
-// Renta fija emergentes: sin valor propio de la firma todavía; parte del rendimiento de la renta fija
-// y sus topes empiezan en 0% (no entra en ninguna cartera hasta que el asesor le dé un máximo).
-const REND_CLASE_BASE = {rv:8.31, rfcr:6, rf:5.46, rfem:5.46, ef:2.03, alt:6.5};
+const REND_CLASE_BASE = {rv:8.31, rf:5.46, ef:2.03, alt:6.5};
 const carterasBase = () => ({rendClase: Object.assign({}, REND_CLASE_BASE), topes: JSON.parse(JSON.stringify(TOPES_BASE)), especifico: {}});
 // Cartera ajustada a los topes. Devuelve los pesos (suman 100) y si los topes son coherentes.
 function ajustarCartera(base, t){
-  const K = ['rv','rfcr','rf','rfem','ef','alt'], w = {};
-  K.forEach(k => { const b = +base[k] || 0, tk = t[k] || [0, 0]; w[k] = Math.min(Math.max(b, tk[0]), tk[1]); });
+  const K = ['rv','rf','ef','alt'], w = {};
+  K.forEach(k => { const b = +base[k] || 0; w[k] = Math.min(Math.max(b, t[k][0]), t[k][1]); });
   let d = 100 - K.reduce((a, k) => a + w[k], 0);
-  if(d > 1e-9) ['rf','rfcr','rfem','ef','alt','rv'].forEach(k => { const m = Math.min(d, t[k][1] - w[k]); if(m > 0){ w[k] += m; d -= m; } });
-  if(d < -1e-9) ['rv','alt','rfem','rf','rfcr','ef'].forEach(k => { const m = Math.min(-d, w[k] - t[k][0]); if(m > 0){ w[k] -= m; d += m; } });
+  if(d > 1e-9) ['rf','ef','alt','rv'].forEach(k => { const m = Math.min(d, t[k][1] - w[k]); if(m > 0){ w[k] += m; d -= m; } });
+  if(d < -1e-9) ['rv','alt','rf','ef'].forEach(k => { const m = Math.min(-d, w[k] - t[k][0]); if(m > 0){ w[k] -= m; d += m; } });
   K.forEach(k => w[k] = Math.round(w[k]*100)/100);
   return {w, ok: Math.abs(d) < 1e-6};
 }
@@ -2324,20 +2313,11 @@ function erroresCarteras(conf){
   CLASES_ACT.forEach(([n, c]) => { const r = conf.rendClase[c]; if(!(r > -50 && r < 50)) err.push('Rendimiento esperado de ' + n.toLowerCase() + ': dato no válido.'); });
   return err;
 }
-// La cartera modelo trae una sola renta fija; se segmenta en colones (lo necesario para pagar con
-// intereses el gasto anual en colones del cliente: X = {req, cap}) y EE. UU. (el resto). Luego se
-// ajusta a los topes de cada clase.
-function segmentarRF(a, X){
-  const o = Object.assign({rv: 0, rfcr: 0, rf: 0, rfem: 0, ef: 0, alt: 0}, a);
-  if(a.rfcr != null) return o;                      // ya viene segmentada (porcentaje específico)
-  const rf = +(a.rf || 0), cr = X && X.cap > 0 && rf > 0 ? Math.min(X.req, rf / 100 * X.cap) / X.cap * 100 : 0;
-  o.rfcr = Math.round(cr*100)/100; o.rf = Math.round((rf - cr)*100)/100; return o;
-}
-function calcularCarteras(conf, X){
+function calcularCarteras(conf){
   const out = {};
   ESCALA.forEach(k => {
-    const modelo = segmentarRF(Object.assign({alt: 0, rfem: 0}, ALLOC_SCHWAB[k]), X), e = conf.especifico[k];
-    const partida = e ? segmentarRF(e, X) : modelo;
+    const modelo = Object.assign({alt: 0}, ALLOC_SCHWAB[k]), e = conf.especifico[k];
+    const partida = e ? Object.assign({rv: 0, rf: 0, ef: 0, alt: 0}, e) : modelo;
     const aj = ajustarCartera(partida, conf.topes[k]);
     const retorno = CLASES_ACT.reduce((a, [, c]) => a + aj.w[c] * conf.rendClase[c], 0) / 10000;
     const ajustada = CLASES_ACT.some(([, c]) => Math.abs(aj.w[c] - (+partida[c] || 0)) > 1e-6);
@@ -2353,9 +2333,7 @@ function normalizarConfCarteras(x){
   const b = carterasBase(); if(!x) return b;
   const o = {rendClase: Object.assign({}, b.rendClase, x.rendClase || {}), topes: {}, especifico: {}};
   ESCALA.forEach(k => { o.topes[k] = {}; CLASES_ACT.forEach(([, c]) => { const v = ((x.topes || {})[k] || {})[c]; o.topes[k][c] = Array.isArray(v) && v.length === 2 ? [+v[0], +v[1]] : b.topes[k][c].slice(); });
-    // topes guardados antes de segmentar la renta fija: su tope de renta fija vale para colones y para EE. UU.
-    if(((x.topes || {})[k] || {}).rf && !((x.topes || {})[k] || {}).rfcr){ const m = +x.topes[k].rf[1]; o.topes[k].rfcr = [0, m]; o.topes[k].rf = [0, m]; }
-    const e = (x.especifico || {})[k]; if(e) o.especifico[k] = Object.assign({rv: +e.rv || 0, rf: +e.rf || 0, rfem: +e.rfem || 0, ef: +e.ef || 0, alt: +e.alt || 0}, e.rfcr != null ? {rfcr: +e.rfcr || 0} : {}); });
+    const e = (x.especifico || {})[k]; if(e) o.especifico[k] = {rv: +e.rv || 0, rf: +e.rf || 0, ef: +e.ef || 0, alt: +e.alt || 0}; });
   return o;
 }
 function aplicarCarteras(conf){
@@ -2373,57 +2351,21 @@ function retPerfil(k, sup){ const i = carterasSup(sup)[k]; return i ? i.retorno 
 // del cliente para su perfil (si el asesor los cambió). El rendimiento por clase es siempre el de la firma.
 function confCarterasCliente(cc){
   const base = normalizarConfCarteras(firma.carteras);
-  if(cc && cc.rendClase && (!cc.perfil || !base.topes[cc.perfil])){ CLASES_ACT.forEach(([, k]) => { const v = cc.rendClase[k]; if(v != null && v !== '' && !isNaN(+v)) base.rendClase[k] = +v; }); return base; }
   if(!cc || !cc.perfil || !base.topes[cc.perfil]) return base;
   CLASES_ACT.forEach(([, k]) => { const v = (cc.topes || {})[k]; if(Array.isArray(v) && v.length === 2) base.topes[cc.perfil][k] = [+v[0], +v[1]]; });
-  // topes del cliente guardados antes de segmentar la renta fija
-  if((cc.topes || {}).rf && !(cc.topes || {}).rfcr){ const m = +cc.topes.rf[1]; base.topes[cc.perfil].rfcr = [0, m]; base.topes[cc.perfil].rf = [0, m]; }
-  if(cc.especifico) base.especifico[cc.perfil] = Object.assign({rv: +cc.especifico.rv || 0, rf: +cc.especifico.rf || 0, rfem: +cc.especifico.rfem || 0, ef: +cc.especifico.ef || 0, alt: +cc.especifico.alt || 0}, cc.especifico.rfcr != null ? {rfcr: +cc.especifico.rfcr || 0} : {});
+  if(cc.especifico) base.especifico[cc.perfil] = {rv: +cc.especifico.rv || 0, rf: +cc.especifico.rf || 0, ef: +cc.especifico.ef || 0, alt: +cc.especifico.alt || 0};
   else delete base.especifico[cc.perfil];
-  // rendimiento esperado por clase propio del cliente (si el asesor lo cambió); si no, el de la firma
-  if(cc.rendClase) CLASES_ACT.forEach(([, k]) => { const v = cc.rendClase[k]; if(v != null && v !== '' && !isNaN(+v)) base.rendClase[k] = +v; });
   return base;
 }
-function aplicarCarterasSup(s, X){
+function aplicarCarterasSup(s){
   let conf = confCarterasCliente(s.carterasCliente);
   if(erroresCarteras(conf).length) conf = normalizarConfCarteras(firma.carteras);
-  conf.rendClase.rfcr = s.rfColones ?? 6;          // la renta fija en colones rinde lo de los bonos en colones
-  const r = calcularCarteras(conf, X);
-  s.carterasInfo = r; s.asignacion = Object.fromEntries(ESCALA.map(k => [k, r[k].asig])); s.rendClase = Object.assign({}, conf.rendClase);
+  const r = calcularCarteras(conf);
+  s.carterasInfo = r; s.asignacion = Object.fromEntries(ESCALA.map(k => [k, r[k].asig]));
   return s;
 }
-// Renta fija separada en Costa Rica y EE. UU. (personas y familias). La parte en Costa Rica es el
-// capital en bonos en colones que paga con sus intereses el gasto anual en colones (gasto en colones
-// ÷ rendimiento de los bonos en colones), hasta el total de renta fija de la cartera; el resto va a
-// bonos en EE. UU. Cada parte rinde lo suyo: Costa Rica, el rendimiento de los bonos en colones;
-// EE. UU., el rendimiento de la renta fija. El rendimiento esperado de cada cartera es el promedio
-// ponderado de sus cinco clases.
-function separarRentaFija(c, s){
-  delete s._rfCR;
-  if(!c || tipoDe(c) === 'institucion' || !s.carterasInfo) return s;
-  let p; try{ p = proyectar(c, s); }catch(e){ return s; }
-  const A = ingresosGastosPorMoneda(c, p, s), rCR = (s.rfColones ?? 6) / 100;
-  s._rfCR = {req: rCR > 0 ? A.tot.gasCrc / rCR : 0, cap: p.capital || 0, r: rCR};
-  return aplicarCarterasSup(s, s._rfCR);
-}
-// Rendimiento esperado por clase de activo y su aporte al rendimiento de una cartera:
-// [nombre, clave, peso (%), rendimiento (%), aporte (%), origen del rendimiento]
-function rendimientosClase(a, sup){
-  sup = sup || supuestos; const rc = sup.rendClase || normalizarConfCarteras(firma.carteras).rendClase, rcF = normalizarConfCarteras(firma.carteras).rendClase;
-  return clasesVis().map(([n, k]) => {
-    const peso = +(a[k] || 0), r = k === 'rfcr' ? (sup.rfColones ?? 6) : rc[k] != null ? rc[k] : REND_CLASE_BASE[k];
-    const rF = k === 'rfcr' ? (firma.rfColones ?? 6) : rcF[k];
-    return [n, k, peso, r, peso * r / 100, Math.abs(r - rF) > 1e-9 ? 'propio de este cliente' : 'valor de la firma']; });
-}
 const conAlt = () => ESCALA.some(k => ((carterasSup()[k] || {}).asig || CARTERAS[k]).alt > 0);
-const conRfem = () => ESCALA.some(k => (((carterasSup()[k] || {}).asig || CARTERAS[k]).rfem || 0) > 0);
-const conRfcr = () => ESCALA.some(k => (((carterasSup()[k] || {}).asig || CARTERAS[k]).rfcr || 0) > 0) || !!(typeof supuestos !== 'undefined' && supuestos && supuestos._rfCR && supuestos._rfCR.req > 0);
-// Clases que se muestran: renta fija en colones, emergentes y alternativos solo si alguna cartera las usa.
-// Sin renta fija en colones (instituciones), la de EE. UU. se llama simplemente «Renta fija».
-const clasesVis = () => {
-  const cr = conRfcr();
-  return CLASES_ACT.filter(([, k]) => (k !== 'alt' || conAlt()) && (k !== 'rfem' || conRfem()) && (k !== 'rfcr' || cr))
-    .map(([n, k]) => k === 'rf' && !cr ? ['Renta fija', 'rf'] : [n, k]); };
+const clasesVis = () => CLASES_ACT.filter(([, k]) => k !== 'alt' || conAlt());
 // Texto de la composición: «renta variable 50% · renta fija 45% · efectivo 5%»
 const composicionTxt = a => clasesVis().map(([n, k]) => n.toLowerCase() + ' ' + fmtPeso(a[k] || 0).replace('.', ',') + '%').join(' · ');
 // Nota del ajuste de la cartera a los topes del perfil
@@ -2460,7 +2402,6 @@ function supuestosDe(c){
   const s = g ? Object.assign({}, SUPUESTOS_EXCEL, normalizarSup(g.supuestos), {asignacion: CARTERAS}) : Object.assign({}, firma);
   delete s.carteras;   // las carteras de la firma no viajan en los supuestos del cliente
   aplicarCarterasSup(s);
-  separarRentaFija(c, s);
   if(c && c.perfil && s.carterasCliente && s.carterasInfo[c.perfil]){
     const b = calcularCarteras(normalizarConfCarteras(firma.carteras))[c.perfil], i = s.carterasInfo[c.perfil];
     i.propios = JSON.stringify(b.topes) !== JSON.stringify(i.topes) || i.especifico !== b.especifico || JSON.stringify(b.partida) !== JSON.stringify(i.partida); }
@@ -2824,12 +2765,11 @@ function pintarCarteras(conf){
   conf = normalizarConfCarteras(conf);
   const n = v => v == null || v === '' ? '' : String(v);
   document.getElementById('cart-rend').innerHTML = CLASES_ACT.map(([nom, k]) =>
-    k === 'rfcr' ? `<label class="cart-r"><span>${nom}</span><input type="number" step="0.01" min="0.1" max="40" data-rcr="1" value="${n(firma.rfColones ?? 6)}"></label>`
-    : `<label class="cart-r"><span>${nom}</span><input type="number" step="0.01" data-rc="${k}" value="${n(conf.rendClase[k])}"></label>`).join('');
+    `<label class="cart-r"><span>${nom}</span><input type="number" step="0.01" data-rc="${k}" value="${n(conf.rendClase[k])}"></label>`).join('');
   const filas = ESCALA.map(p => CLASES_ACT.map(([nom, k], i) => {
     const e = conf.especifico[p];
     const nCli = (typeof clientes !== 'undefined' ? clientes : []).filter(c => c.perfil === p).length;
-    return `<tr class="${i ? '' : 'ini'}" data-perfil="${p}">${i ? '' : `<td class="perfil" rowspan="${CLASES_ACT.length}">${PERFILES[p].label}<small data-ret="${p}"></small><small>${nCli} ${nCli === 1 ? 'cliente' : 'clientes'}</small></td>`}
+    return `<tr class="${i ? '' : 'ini'}" data-perfil="${p}">${i ? '' : `<td class="perfil" rowspan="4">${PERFILES[p].label}<small data-ret="${p}"></small><small>${nCli} ${nCli === 1 ? 'cliente' : 'clientes'}</small></td>`}
       <td class="cl">${nom}</td><td>${fmtPeso(ALLOC_SCHWAB[p][k] || 0).replace('.', ',')}%</td>
       <td><input type="number" step="0.5" min="0" max="100" data-p="${p}" data-k="${k}" data-t="0" value="${conf.topes[p][k][0]}"></td>
       <td><input type="number" step="0.5" min="0" max="100" data-p="${p}" data-k="${k}" data-t="1" value="${conf.topes[p][k][1]}"></td>
@@ -2867,22 +2807,13 @@ function pintarPerfilCliente(c, s){
       <div><span>Apetito de riesgo</span><b>${n1(d.apetito)}</b><small>Riesgo que quiere asumir</small></div>
       <div><span>Rendimiento esperado</span><b id="pc-ret">—</b><small>De su cartera sugerida</small></div>
     </div>
-    <p class="cart-sub">Clases de activo de su cartera · perfil ${PERFILES[k].label.toLowerCase()}: topes, cartera sugerida y rendimiento esperado</p>
-    <div class="cart-tabla"><table class="tabla-unica"><thead><tr><th>Clase de activo</th><th>Cartera modelo</th><th>Mínimo %</th><th>Máximo %</th><th>% específico</th><th>Cartera sugerida</th><th>Rendimiento de la firma</th><th>Rendimiento de este cliente %</th><th>Aporte al rendimiento</th></tr></thead><tbody>
-    ${CLASES_ACT.map(([nom, cl]) => {
-      const rcF = normalizarConfCarteras(firma.carteras).rendClase, esCR = cl === 'rfcr';
-      const modeloP = cl === 'rfcr' ? '<td>Según gasto en colones</td>' : cl === 'rf' ? `<td>${fmtPeso(ALLOC_SCHWAB[k].rf || 0).replace('.', ',')}% menos colones</td>` : `<td>${fmtPeso(ALLOC_SCHWAB[k][cl] || 0).replace('.', ',')}%</td>`;
-      return `<tr><td class="cl">${nom}</td>${modeloP}
+    <p class="cart-sub">Topes de su cartera · perfil ${PERFILES[k].label.toLowerCase()}</p>
+    <div class="cart-tabla"><table><thead><tr><th>Clase de activo</th><th>Cartera modelo</th><th>Mínimo %</th><th>Máximo %</th><th>% específico</th><th>Cartera sugerida</th></tr></thead><tbody>
+    ${CLASES_ACT.map(([nom, cl]) => `<tr><td class="cl">${nom}</td><td>${fmtPeso(ALLOC_SCHWAB[k][cl] || 0).replace('.', ',')}%</td>
       <td><input type="number" step="0.5" min="0" max="100" data-cp="${cl}" data-t="0" value="${t[cl][0]}" title="Firma: ${firmaT[cl][0]}"></td>
       <td><input type="number" step="0.5" min="0" max="100" data-cp="${cl}" data-t="1" value="${t[cl][1]}" title="Firma: ${firmaT[cl][1]}"></td>
-      <td><input type="number" step="0.5" min="0" max="100" data-cp="${cl}" data-e="1" placeholder="—" value="${e && e[cl] != null ? v(e[cl]) : ''}"></td>
-      <td class="res" data-pcres="${cl}"></td>
-      <td>${String(esCR ? (firma.rfColones ?? 6) : rcF[cl]).replace('.', ',')}%</td>
-      <td>${esCR ? `<input type="number" step="0.01" min="0.1" max="40" data-rcr="1" value="${v(s.rfColones ?? 6)}" title="Firma: ${firma.rfColones ?? 6}%">`
-        : `<input type="number" step="0.01" data-rcc="${cl}" value="${v(conf.rendClase[cl])}" title="Firma: ${rcF[cl]}%">`}</td>
-      <td class="res" data-pcap="${cl}"></td></tr>`; }).join('')}
-    <tr class="total"><td class="cl">Total</td><td></td><td></td><td></td><td></td><td class="res" data-pcres="tot"></td><td></td><td>Rendimiento esperado</td><td class="res" data-pcap="tot"></td></tr>
-    </tbody></table></div>
+      <td><input type="number" step="0.5" min="0" max="100" data-cp="${cl}" data-e="1" placeholder="—" value="${e ? v(e[cl]) : ''}"></td>
+      <td class="res" data-pcres="${cl}"></td></tr>`).join('')}</tbody></table></div>
     <p class="cart-nota" id="pc-nota"></p>
     <p class="cart-err" id="pc-err" hidden></p>`;
   caja.hidden = false;
@@ -2897,47 +2828,30 @@ function leerCarterasCliente(){
   caja.querySelectorAll('[data-t]').forEach(el => { const x = num(el); if(x != null) t[el.dataset.cp][+el.dataset.t] = x; });
   const els = [...caja.querySelectorAll('[data-e]')];
   const esp = els.some(el => num(el) != null) ? Object.fromEntries(els.map(el => [el.dataset.cp, num(el) || 0])) : null;
-  // rendimiento por clase propio del cliente: solo las clases que difieren del valor de la firma
-  const rc = {}; caja.querySelectorAll('[data-rcc]').forEach(el => { const x = num(el); if(x != null && Math.abs(x - firmaC.rendClase[el.dataset.rcc]) > 1e-9) rc[el.dataset.rcc] = x; });
-  const rendClase = Object.keys(rc).length ? rc : null;
-  const igual = JSON.stringify(t) === JSON.stringify(firmaC.topes[k]) && JSON.stringify(esp) === JSON.stringify(firmaC.especifico[k] || null) && !rendClase;
-  return igual ? null : {perfil: k, topes: t, especifico: esp, rendClase};
+  const igual = JSON.stringify(t) === JSON.stringify(firmaC.topes[k]) && JSON.stringify(esp) === JSON.stringify(firmaC.especifico[k] || null);
+  return igual ? null : {perfil: k, topes: t, especifico: esp};
 }
 function refrescarPerfilCliente(){
   const caja = document.getElementById('sup-perfil'); if(caja.hidden) return;
   const c = clientes.find(x => x.id === modoSup.id); if(!c) return;
-  const k = c.perfil, cc = leerCarterasCliente(), conf = confCarterasCliente(cc);
-  // renta fija en colones: su rendimiento (bonos en colones) y lo necesario para el gasto en colones
-  const sc = supuestosDe(c), elCR = caja.querySelector('[data-rcr]');
-  const rCR = elCR && elCR.value !== '' && !isNaN(parseFloat(elCR.value)) ? parseFloat(elCR.value) : (sc.rfColones ?? 6);
-  conf.rendClase.rfcr = rCR;
-  const X = sc._rfCR ? {req: rCR > 0 ? sc._rfCR.req * sc._rfCR.r * 100 / rCR : 0, cap: sc._rfCR.cap} : null;
-  const err = erroresCarteras(conf).filter(t => t.startsWith(PERFILES[k].label + ':') || /^Rendimiento/.test(t));
-  const r = calcularCarteras(conf, X)[k];
-  CLASES_ACT.forEach(([, cl]) => { const td = caja.querySelector(`[data-pcres="${cl}"]`); if(!td) return;
+  const k = c.perfil, cc = leerCarterasCliente(), conf = confCarterasCliente(cc), err = erroresCarteras(conf).filter(t => t.startsWith(PERFILES[k].label + ':') || /^Rendimiento/.test(t));
+  const r = calcularCarteras(conf)[k];
+  CLASES_ACT.forEach(([, cl]) => { const td = caja.querySelector(`[data-pcres="${cl}"]`);
     const cambia = Math.abs(r.asig[cl] - (+r.partida[cl] || 0)) > 1e-6;
-    td.textContent = fmtPeso(r.asig[cl] || 0).replace('.', ',') + '%'; td.classList.toggle('aj', cambia); });
-  const pc = (x, dd) => x.toFixed(dd).replace('.', ',') + '%';
-  let tot = 0;
-  CLASES_ACT.forEach(([, cl]) => { const ap = (r.asig[cl] || 0) * conf.rendClase[cl] / 100; tot += ap;
-    const b = caja.querySelector(`[data-pcap="${cl}"]`); if(b) b.textContent = pc(ap, 2); });
-  const tt = caja.querySelector('[data-pcres="tot"]'); if(tt) tt.textContent = pc(CLASES_ACT.reduce((a2, [, cl]) => a2 + (r.asig[cl] || 0), 0), 1);
-  const ta = caja.querySelector('[data-pcap="tot"]'); if(ta) ta.textContent = pc(tot, 2);
-  document.getElementById('pc-ret').textContent = err.length ? '—' : pc(tot, 2);
-  document.getElementById('pc-nota').textContent = (cc ? 'Valores propios de este cliente: se guardan con sus supuestos y solo lo afectan a él. ' : 'Topes y rendimientos de la firma para el perfil ' + PERFILES[k].label.toLowerCase() + '; puede cambiarlos para este cliente. ')
-    + 'En rojo, lo que se ajustó al tope. La renta fija se separa en colones (lo necesario para pagar con intereses el gasto en colones) y EE. UU. (el resto); el rendimiento esperado es la suma de los aportes de cada clase.';
+    td.textContent = fmtPeso(r.asig[cl]).replace('.', ',') + '%'; td.classList.toggle('aj', cambia); });
+  document.getElementById('pc-ret').textContent = err.length ? '—' : (r.retorno*100).toFixed(2).replace('.', ',') + '%';
+  const rc = conf.rendClase;
+  document.getElementById('pc-nota').textContent = (cc ? 'Topes propios de este cliente: se guardan con sus supuestos y solo lo afectan a él. ' : 'Topes de la firma para el perfil ' + PERFILES[k].label.toLowerCase() + '; puede cambiarlos para este cliente. ')
+    + 'En rojo, lo que se ajustó al tope. Rendimiento esperado por clase (valores de la firma): ' + CLASES_ACT.map(([n, cl]) => n.toLowerCase() + ' ' + String(rc[cl]).replace('.', ',') + '%').join(' · ') + '.';
   const e = document.getElementById('pc-err'); e.hidden = !err.length; e.innerHTML = err.map(esc).join('<br>');
   document.getElementById('btn-aplicar').disabled = err.length > 0;
 }
-document.getElementById('screen-supuestos').addEventListener('input', e => {
-  if(e.target.matches && e.target.matches('[data-rcr]')){ const h = document.getElementById('s-rf-crc'); if(h){ h.value = e.target.value; h.dispatchEvent(new Event('input', {bubbles: false})); } }
-  if(e.target.closest && (e.target.closest('#sup-perfil') || e.target.id === 's-rf-crc')) refrescarPerfilCliente(); });
+document.getElementById('screen-supuestos').addEventListener('input', e => { if(e.target.closest && e.target.closest('#sup-perfil')) refrescarPerfilCliente(); });
 
 function leerCarteras(){
   const v = el => { const x = parseFloat(el.value); return isNaN(x) ? null : x; };
   const conf = {rendClase: {}, topes: {}, especifico: {}};
   document.querySelectorAll('#cart-rend [data-rc]').forEach(el => { const x = v(el); conf.rendClase[el.dataset.rc] = x == null ? REND_CLASE_BASE[el.dataset.rc] : x; });
-  { const el = document.querySelector('#cart-rend [data-rcr]'), x = el ? v(el) : null; conf.rendClase.rfcr = x == null ? 6 : x; }
   ESCALA.forEach(p => { conf.topes[p] = {}; CLASES_ACT.forEach(([, k]) => conf.topes[p][k] = [0, 100]); });
   document.querySelectorAll('#cart-tabla [data-t]').forEach(el => { const x = v(el); conf.topes[el.dataset.p][el.dataset.k][+el.dataset.t] = x == null ? TOPES_BASE[el.dataset.p][el.dataset.k][+el.dataset.t] : x; });
   // porcentaje específico: si el asesor llenó alguna clase del perfil, las vacías cuentan como 0
@@ -4096,7 +4010,7 @@ const ISOTIPO_B64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGEAAAB4CAYAA
 const EST = {bold:1, tc:2, titulo:3, pct:4, encab:5, seccion:6, pct0:7, dec2:8, ent:9, num:10};
 
 // Gráfico de pastel de una cartera (renta variable, renta fija, efectivo)
-const COLOR_CLASE = {rv:'#2B3014', rfcr:'#918042', rf:'#CDB878', rfem:'#6F7B4E', ef:'#B3BC80', alt:'#5F6B6D'};
+const COLOR_CLASE = {rv:'#2B3014', rf:'#918042', ef:'#B3BC80', alt:'#5F6B6D'};
 function dibujarPastel(id, a){
   const cv = document.getElementById(id);
   if(!cv) return;
@@ -4104,8 +4018,8 @@ function dibujarPastel(id, a){
   cv.width = W*dpr; cv.height = H*dpr;
   const g = cv.getContext('2d'); g.scale(dpr,dpr); g.clearRect(0,0,W,H);
   let ang = -Math.PI/2; const cx = W/2, cy = H/2, R = 92;
-  clasesVis().map(([, k]) => k).forEach(k => {
-    const v = (+a[k] || 0)/100; if(v <= 0) return;
+  ['rv','rf','ef','alt'].forEach(k => {
+    const v = (a[k]||0)/100; if(v <= 0) return;
     g.beginPath(); g.moveTo(cx,cy); g.arc(cx,cy,R,ang,ang+v*Math.PI*2); g.closePath();
     g.fillStyle = COLOR_CLASE[k]; g.fill(); g.strokeStyle='#FFFFFF'; g.lineWidth=2; g.stroke();
     ang += v*Math.PI*2;
@@ -4457,13 +4371,12 @@ function rentaFijaPorPais(c, p, sup){
   const req = r > 0 ? gC / r : 0, cap = p.capital;
   const tasas = [r];   // un solo rendimiento, digitado por el asesor (sin rango)
   const info = carterasSup(sup)[c.perfil] || {}, asig = (sup.asignacion || CARTERAS)[c.perfil] || {rv: 0, rf: 0, ef: 0, alt: 0};
-  // renta fija en colones y en EE. UU. de la cartera sugerida (ya segmentada y ajustada a sus topes)
-  const rfPct = ((asig.rfcr || 0) + (asig.rf || 0)) / 100, rfMaxPct = ((info.topes || {}).rfcr || [0, 100])[1] / 100;
-  const RF = rfPct * cap, cr = (asig.rfcr || 0) / 100 * cap, us = (asig.rf || 0) / 100 * cap;
+  const rfPct = (asig.rf || 0) / 100, rfMaxPct = ((info.topes || {}).rf || [0, 100])[1] / 100;
+  const RF = rfPct * cap, cr = Math.min(req, RF), us = Math.max(0, RF - cr);
   const reqPct = cap > 0 ? req / cap : null;
   return {A, tc, r, tasas: tasas.map(x => ({r: x, usd: x > 0 ? gC / x : 0, crc: x > 0 ? gC * tc / x : 0, pct: cap > 0 && x > 0 ? gC / x / cap : null, ref: false})),
     gC, gU, gT, iC, req, reqCrc: req * tc, reqPct, cap, perfil: c.perfil, asig, rfPct, rfMaxPct, RF, cr, us,
-    crDeRf: RF > 0 ? cr / RF : 0, usDeRf: RF > 0 ? us / RF : 0, falta: Math.max(0, req - cr), cabeEnTope: req <= rfMaxPct * cap + 0.5,
+    crDeRf: RF > 0 ? cr / RF : 0, usDeRf: RF > 0 ? us / RF : 0, falta: Math.max(0, req - RF), cabeEnTope: req <= rfMaxPct * cap + 0.5,
     reqNeto: r > 0 ? Math.max(0, gC - iC) / r : 0};
 }
 function textoRentaFija(R, f){
@@ -5097,15 +5010,6 @@ function xmlCliente(c, p, asig, sup){
   });
   Ftxt('Topes del perfil ' + PERFILES[c.perfil].label.toLowerCase() + ((carterasSup()[c.perfil] || {}).propios ? ' (propios del cliente)' : ' (de la firma)'), topesTxt(c.perfil));
   Ftxt('Ajuste de la cartera sugerida', notaTopes(c.perfil));
-  { // rendimiento esperado por clase de activo: peso × rendimiento = aporte; la suma es el rendimiento esperado
-    const pc = (v, d) => v.toFixed(d).replace('.', ',') + '%', RC = rendimientosClase(asig, sup);
-    n++; filas += `<row r="${n}">` + celda('A'+n,'Rendimiento esperado por clase',EST.encab) + celda('B'+n,'Rendimiento anual',EST.encab)
-      + celda('C'+n,'Peso en la cartera sugerida × rendimiento = aporte',EST.encab) + `</row>`;
-    RC.forEach(([nm, k, w, r, ap, fu]) => { n++; filas += `<row r="${n}">` + celda('A'+n, nm, EST.bold) + celda('B'+n, pc(r, 2))
-      + celda('C'+n, pc(w, 1) + ' × ' + pc(r, 2) + ' = ' + pc(ap, 2) + ' · ' + fu) + `</row>`; });
-    n++; filas += `<row r="${n}">` + celda('A'+n, 'Rendimiento esperado de la cartera sugerida', EST.bold) + celda('B'+n, pc(RC.reduce((t, x) => t + x[4], 0), 2))
-      + celda('C'+n, 'Suma de los aportes de cada clase') + `</row>`;
-  }
   Fnum('Rendimiento de la cartera de equilibrio', ceX.rendimiento, EST.pct);
   Fnum('Volatilidad anual de la cartera de equilibrio', ceX.x, EST.pct);
   if(ceX.nota) Ftxt('Nota', ceX.nota);
@@ -5696,7 +5600,7 @@ function detalleFamilias(c, p, sup){
     const otros = [];
     (inm.lista || []).forEach(x => { if(+x.valor > 0) otros.push({concepto: 'Inmueble: ' + (x.nombre || 'inmueble'), decl: +x.valor, mon: x.valorMoneda || x.moneda || inm.moneda || 'USD', part: null,
       nota: +x.saldoDeuda > 0 ? 'Deuda: ' + Math.round(+x.saldoDeuda).toLocaleString('en-US') + ' ' + (x.deudaMoneda || x.moneda || inm.moneda || 'USD') : ''}); });
-    empresasDe(c).forEach(e => { if(+e.valor > 0) otros.push({concepto: 'Empresa: ' + (e.nombre || 'empresa'), decl: +e.valor, mon: e.valorMoneda || 'USD', part: null, nota: valido(e.participacionPct) ? 'Participación ' + String(+e.participacionPct).replace('.', ',') + '% · valor declarado de su participación' : ''}); });
+    empresasDe(c).forEach(e => { if(+e.valor > 0) otros.push({concepto: 'Empresa: ' + (e.nombre || 'empresa'), decl: +e.valor, mon: e.valorMoneda || 'USD', part: valido(e.participacionPct) ? +e.participacionPct / 100 : null, nota: ''}); });
     if(+pe.valor > 0) otros.push({concepto: 'Capital privado (monto invertido)', decl: +pe.valor, mon: pe.moneda || 'USD', part: null, nota: pe.detalle || ''});
     ['rop', 'fcl', 'voluntaria'].forEach(k => { const f = c.fondos && c.fondos[k]; if(f && +f.saldo > 0)
       otros.push({concepto: ({rop: 'ROP', fcl: 'FCL', voluntaria: 'Pensión voluntaria'})[k] + ' (saldo)', decl: +f.saldo, mon: f.saldoMoneda || 'USD', part: null, nota: 'Su evolución está en la hoja «Pensiones»'}); });
@@ -6147,7 +6051,7 @@ function xmlDatos(c, p, asig, eq){
   });
   // matriz de posición (escala 0 a 10, cuadrantes divididos en 5)
   const d = c.diag || {};
-  if(clasesVis().length < 5){ pon('A6','Perfil de riesgo'); pon('B6','Tolerancia'); pon('C6','Apetito'); }
+  pon('A6','Perfil de riesgo'); pon('B6','Tolerancia'); pon('C6','Apetito');
   pon('A7', (c.nombre || 'Cliente') + (d.perfilRiesgo ? ' · ' + PERFILES[d.perfilRiesgo].label : ''));
   if(d.tolerancia != null) pon('B7', +d.tolerancia.toFixed(2), EST.dec2);
   if(d.apetito != null) pon('C7', +d.apetito.toFixed(2), EST.dec2);
@@ -6478,13 +6382,11 @@ async function estandarizarFormatos(zip){
     const f = zip.file(g); if(!f) continue;
     const t = await f.async('string');
     let u = (/<dLbls><numFmt/.test(t) ? t : t.replace(/<dLbls>/g, '<dLbls><numFmt formatCode="0.0%" sourceLinked="0"/>')).replace(/Cartera asignada/g, 'Cartera sugerida');
-    // una porción por clase visible (renta fija separada en Costa Rica y EE. UU.; alternativos si hay)
-    { const cls = clasesVis(), nC = cls.length;
-      u = u.replace(/(\$[ABC])\$2:(\$[ABC])\$\d+/g, (m, a1, a2) => a1 + '$2:' + a2 + '$' + (1 + nC));
-      const m = u.match(/<dPt><idx val="0"\/>[\s\S]*?<\/dPt>/);
-      if(m){ const modelo = m[0];
-        u = u.replace(/<dPt>[\s\S]*?<\/dPt>/g, '').replace(/(<\/spPr>)(?=[\s\S]*?<\/ser>)/, '$1' + cls.map(([, k], i) =>
-          modelo.replace('<idx val="0"/>', `<idx val="${i}"/>`).replace(/2B3014/i, COLOR_CLASE[k].replace('#', ''))).join('')); } }
+    if(conAlt() && !/\$A\$2:\$A\$5/.test(u)){
+      u = u.replace(/(\$[ABC])\$2:(\$[ABC])\$4/g, '$1$$2:$2$$5');
+      const m = u.match(/<dPt><idx val="2"\/>[\s\S]*?<\/dPt>/);
+      if(m) u = u.replace(m[0], m[0] + m[0].replace('<idx val="2"/>', '<idx val="3"/>').replace(/B3BC80/i, '5F6B6D'));
+    }
     // solo el porcentaje, afuera de la porción y en texto oscuro (la clase está en la leyenda)
     if(!/<dLblPos/.test(u)) u = u.replace(/(<dLbls><numFmt[^>]*\/>)<showLegendKey/, '$1<txPr><a:bodyPr xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"/><a:p xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:pPr><a:defRPr sz="1000" b="1"><a:solidFill><a:srgbClr val="2B3014"/></a:solidFill></a:defRPr></a:pPr><a:endParaRPr lang="es-CR"/></a:p></txPr><dLblPos val="outEnd"/><showLegendKey')
       .replace(/<showCatName val="1"\/>/g, '<showCatName val="0"/>').replace(/<legendPos val="r"\/>/, '<legendPos val="b"/>');
@@ -8244,4 +8146,4 @@ cargar();
 
 
 
-<!-- Chotocruz & Co. · Entrega 71 · 4 de noviembre de 2026 -->
+<!-- Chotocruz & Co. · Entrega 68 · 3 de noviembre de 2026 -->
