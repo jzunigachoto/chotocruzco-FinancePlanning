@@ -22,7 +22,7 @@
     "paisEmisor": "",
     "fechaNacimiento": "1967-06-30",
     "ocupacion": "Directora de Operaciones",
-    "profesion": "",
+    "profesion": "Gererente de Operaciones",
     "estadoCivil": "divorciado"
   },
   "edad": 59,
@@ -1110,6 +1110,7 @@
     "cedula": "2-0427-0904",
     "nacimiento": "1967-06-30",
     "ocupacion": "Directora de Operaciones",
+    "profesion": "Gererente de Operaciones",
     "estado-civil": "divorciado",
     "tel-codigo": "CR",
     "telefono": "88336920",
@@ -1120,13 +1121,11 @@
     "distrito": "Alajuela",
     "direccion": "De Plaza Real 200 mts al norte calle 19 casa 29B Urb Ciruelas"
   },
-  "modificadoEn": 1793911824423,
+  "modificadoEn": 1793911842081,
   "historialEdiciones": [
-    1793911824423
+    1793911842081
   ],
   "versionFormulario": 72,
-  "preguntasPendientes": [
-    "Profesión"
-  ],
-  "estado": "incompleto"
+  "preguntasPendientes": [],
+  "estado": "completo"
 }
