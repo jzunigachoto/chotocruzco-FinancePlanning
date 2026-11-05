@@ -99,7 +99,7 @@
       "Sociedad anónima u otra sociedad costarricense"
     ],
     "detalle": "Para inmuebles en CR  y acciones 25% de patrimonio total de los padres, no conoce el monto de este patrimonio",
-    "portafolioDentro": "",
+    "portafolioDentro": "no",
     "conPortafolio": [],
     "fueraPortafolio": [
       "Sociedad anónima u otra sociedad costarricense"
@@ -143,8 +143,8 @@
     ],
     "fuentePrincipal": "salario",
     "empleo": {
-      "empresa": "",
-      "puesto": ""
+      "empresa": "Wester Union",
+      "puesto": "Gerente de Operaciones"
     },
     "ingresoPareja": null,
     "gastoRetiroPct": 87.5,
@@ -163,7 +163,7 @@
   "patrimonio": {
     "vivienda": {
       "situacion": "propia",
-      "valor": null,
+      "valor": 150000,
       "valorMoneda": "USD",
       "alquilerMensual": null,
       "alquilerMoneda": null,
@@ -387,6 +387,18 @@
           "campo": "Ingreso total: hasta la edad",
           "valor": "60",
           "codigo": "60"
+        },
+        {
+          "id": "empleo-empresa",
+          "campo": "Salario: compañía donde trabaja",
+          "valor": "Wester Union",
+          "codigo": "Wester Union"
+        },
+        {
+          "id": "empleo-puesto",
+          "campo": "Salario: puesto",
+          "valor": "Gerente de Operaciones",
+          "codigo": "Gerente de Operaciones"
         },
         {
           "id": "c3",
@@ -767,6 +779,12 @@
           "codigo": "propia"
         },
         {
+          "id": "viv-valor",
+          "campo": "Vivienda principal: valor estimado (monto)",
+          "valor": "150,000",
+          "codigo": "150,000"
+        },
+        {
           "id": "viv-valor-moneda",
           "campo": "Vivienda principal: valor estimado (moneda)",
           "valor": "USD",
@@ -938,6 +956,12 @@
           "codigo": "Para inmuebles en CR  y acciones 25% de patrimonio total de los padres, no conoce el monto de este patrimonio"
         },
         {
+          "id": "estr-port",
+          "campo": "Portafolio dentro de una estructura jurídica",
+          "valor": "No",
+          "codigo": "no"
+        },
+        {
           "id": "seleccion",
           "campo": "Selección",
           "valor": "Sociedad anónima u otra sociedad costarricense",
@@ -982,6 +1006,8 @@
     "fuente-empresa": false,
     "fuente-honorarios": false,
     "fuente-ingreso": "salario",
+    "empleo-empresa": "Wester Union",
+    "empleo-puesto": "Gerente de Operaciones",
     "c3": "0",
     "plan": "individual",
     "ingreso-pareja-moneda": "CRC",
@@ -1040,6 +1066,7 @@
     "capital-moneda": "USD",
     "c5-pct": "71",
     "vivienda": "propia",
+    "viv-valor": "150,000",
     "viv-valor-moneda": "USD",
     "viv-alquiler-moneda": "USD",
     "hipoteca-saldo-moneda": "USD",
@@ -1070,6 +1097,7 @@
     "estr-fideicomiso": false,
     "estructuras-sel": "Sociedad anónima u otra sociedad costarricense",
     "estructuras-detalle": "Para inmuebles en CR  y acciones 25% de patrimonio total de los padres, no conoce el monto de este patrimonio",
+    "estr-port": "no",
     "estr-sa-cr-port": false,
     "estr-pa-port": false,
     "estr-offshore-port": false,
@@ -1092,15 +1120,12 @@
     "distrito": "Alajuela",
     "direccion": "De Plaza Real 200 mts al norte calle 19 casa 29B Urb Ciruelas"
   },
-  "modificadoEn": 1793911767661,
+  "modificadoEn": 1793911824423,
   "historialEdiciones": [
-    1793911767661
+    1793911824423
   ],
   "versionFormulario": 72,
   "preguntasPendientes": [
-    "Pregunta 02: ¿Cuál es su ingreso total mensual, de dónde proviene y qué tan predecible es?",
-    "Pregunta 14: ¿Cuál es la situación de su vivienda y qué otros inmuebles posee?",
-    "Pregunta 23: ¿Posee estructuras jurídicas?",
     "Profesión"
   ],
   "estado": "incompleto"
