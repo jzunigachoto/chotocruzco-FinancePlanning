@@ -1,7 +1,7 @@
 {
   "cliente": "c-1792797176913-pr73f",
   "nombre": "Ana Rojas Gómez",
-  "guardadoEn": 1793911700985,
+  "guardadoEn": 1793912266228,
   "supuestos": {
     "tipoCambio": 450,
     "inflacionLocal": 3.9,
@@ -87,20 +87,20 @@
           15
         ],
         "rfcr": [
-          40,
-          50
+          35,
+          45
         ],
         "rf": [
-          30,
-          30
-        ],
-        "rfem": [
-          20,
+          10,
           20
         ],
+        "rfem": [
+          5,
+          15
+        ],
         "ef": [
-          10,
-          30
+          0,
+          10
         ],
         "alt": [
           0,
