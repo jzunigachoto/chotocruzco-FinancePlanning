@@ -2012,7 +2012,7 @@ const REPETIBLES = [
       <div><span class="mini">Nombre de la empresa</span><input required type="text" data-k="nombre" data-mayus="1" name="Empresa ${i+1}: nombre" placeholder="COMERCIALIZADORA DEL VALLE S. A." style="text-transform:uppercase"></div>
       <div class="fila-grid" style="margin-top:12px;">
         <div><span class="mini">Porcentaje de participación</span><div class="amount"><input required type="number" min="0.01" max="100" step="0.01" data-k="part" name="Empresa ${i+1}: porcentaje de participación" placeholder="100"><div class="unit">%</div></div></div>
-        <div><span class="mini">Valor estimado de la empresa completa (100%)</span><div class="amount"><input required type="number" min="0" data-k="valor" name="Empresa ${i+1}: valor estimado (monto)" placeholder="1.500.000"><select data-k="moneda" name="Empresa ${i+1}: valor estimado (moneda)"><option>USD</option><option>CRC</option></select></div></div>
+        <div><span class="mini">Valor estimado de su participación en la empresa</span><div class="amount"><input required type="number" min="0" data-k="valor" name="Empresa ${i+1}: valor estimado (monto)" placeholder="1.500.000"><select data-k="moneda" name="Empresa ${i+1}: valor estimado (moneda)"><option>USD</option><option>CRC</option></select></div></div>
       </div>
       <div class="fila-grid" style="margin-top:12px;">
         <div><span class="mini">¿Estima venderla o traspasarla?</span><select required data-k="plan" data-plan-emp="1" name="Empresa ${i+1}: plan">
@@ -2023,7 +2023,7 @@ const REPETIBLES = [
         <div><span class="mini">¿Invertiría el dinero de la venta en este portafolio?</span><select data-k="invierte" data-inv="1" name="Empresa ${i+1}: invierte la venta en el portafolio"><option value="" disabled selected>Seleccione</option><option value="si">Sí, todo</option><option value="parte">Sí, una parte</option><option value="analisis">Sujeto a análisis</option><option value="no">No</option></select></div>
         <div class="fila-pct" hidden><span class="mini">Porcentaje de la venta que invertiría</span><div class="amount"><input type="number" min="1" max="99" data-k="pct" name="Empresa ${i+1}: porcentaje de la venta que invierte" placeholder="50"><div class="unit">%</div></div></div>
       </div>
-      <p class="hint emp-venta" hidden style="margin-top:8px;">Se toma su participación en el valor estimado. La parte que invierta aquí entra al portafolio como desinversión; si está sujeta a análisis, no se incluye en la proyección.</p>
+      <p class="hint emp-venta" hidden style="margin-top:8px;">Se toma el valor estimado de su participación. La parte que invierta aquí entra al portafolio como desinversión; si está sujeta a análisis, no se incluye en la proyección.</p>
     </div>`},
   {control:'apoyos-n', contenedor:'apoyos-filas', max:999, fila: i => `
     <div class="fila-rep"><span class="fila-tit">Dependiente ${i+1}</span><div class="fila-grid">
@@ -2643,7 +2643,7 @@ document.getElementById('form').addEventListener('submit', async function(e){
           valor: +f.valor || 0, valorMoneda: mv, deuda: +f.deuda || 0, deudaMoneda: md, pctInvierte: pct * 100}; }),
       leerFilas('empresas-filas').filter(f => f.plan === 'vender' && (f.invierte === 'si' || f.invierte === 'parte')).map(f => ({
         concepto: 'Venta de ' + ((f.nombre || '').toUpperCase() || 'la empresa'), origen: 'empresa', anio: ANIO_ACTUAL + (+f.anios || 0),
-        monto: (+f.valor || 0) * (f.part != null ? +f.part : 100)/100 * (f.invierte === 'parte' ? (+f.pct || 0)/100 : 1), moneda: f.moneda || 'USD'})),
+        monto: (+f.valor || 0) * (f.invierte === 'parte' ? (+f.pct || 0)/100 : 1), moneda: f.moneda || 'USD'})),
       leerFilas('ventas-filas').map(f => ({concepto: f.activo || 'Venta de activos', origen: 'otro', anio: f.anio, monto: f.monto, moneda: f.moneda || 'USD'}))),
     capitalPrivado: val('pe-tiene') === 'si' ? {valor: +val('pe-valor') || 0, moneda: val('pe-moneda'), participacionPct: null, detalle: val('pe-detalle-txt').trim()} : (val('pe-tiene') === 'no' ? {valor: 0, moneda: 'USD', detalle: ''} : null),
     // Retiros adicionales del portafolio (pregunta de retiros): motivo, año y monto de cada uno
@@ -3073,4 +3073,4 @@ function datosDesdeRegistro(r){
 
 
 
-<!-- Chotocruz & Co. · Entrega 68 · 3 de noviembre de 2026 -->
+<!-- Chotocruz & Co. · Entrega 70 · 4 de noviembre de 2026 -->
