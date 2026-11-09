@@ -1,7 +1,7 @@
 {
   "cliente": "c-1793138684452-3pcrx",
   "nombre": "Pilar Collado Carboni",
-  "guardadoEn": 1794258226955,
+  "guardadoEn": 1794258775436,
   "supuestos": {
     "tipoCambio": 450,
     "inflacionLocal": 3.9,
@@ -109,10 +109,10 @@
         ]
       },
       "especifico": {
-        "rv": 40,
+        "rv": 35,
         "rfcr": 20,
         "rf": 20,
-        "rfem": 20,
+        "rfem": 25,
         "ef": 0,
         "alt": 0
       },
