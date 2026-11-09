@@ -136,11 +136,11 @@
       "Sociedad anónima u otra sociedad costarricense"
     ],
     "detalle": "Tiene 3 SA que mantienen inmuebles y una que mantiene inversiones",
-    "portafolioDentro": "",
-    "conPortafolio": [],
-    "fueraPortafolio": [
+    "portafolioDentro": "si",
+    "conPortafolio": [
       "Sociedad anónima u otra sociedad costarricense"
-    ]
+    ],
+    "fueraPortafolio": []
   },
   "apoyosDependientes": [],
   "legado": {
@@ -195,7 +195,7 @@
   "patrimonio": {
     "vivienda": {
       "situacion": "hipoteca",
-      "valor": null,
+      "valor": 1200000,
       "valorMoneda": "USD",
       "alquilerMensual": null,
       "alquilerMoneda": null,
@@ -1055,6 +1055,12 @@
           "codigo": "hipoteca"
         },
         {
+          "id": "viv-valor",
+          "campo": "Vivienda principal: valor estimado (monto)",
+          "valor": "1,200,000",
+          "codigo": "1,200,000"
+        },
+        {
           "id": "viv-valor-moneda",
           "campo": "Vivienda principal: valor estimado (moneda)",
           "valor": "USD",
@@ -1152,6 +1158,12 @@
           "campo": "Empresa 1: años hasta la venta o traspaso",
           "valor": "10",
           "codigo": "10"
+        },
+        {
+          "id": "",
+          "campo": "Empresa 1: genera dividendos",
+          "valor": "No",
+          "codigo": "no"
         }
       ]
     },
@@ -1185,6 +1197,18 @@
           "campo": "Capital privado: detalle",
           "valor": "Es una empresa constructora de condominios",
           "codigo": "Es una empresa constructora de condominios "
+        },
+        {
+          "id": "pe-vende",
+          "campo": "Capital privado: estima venderlo",
+          "valor": "No",
+          "codigo": "no"
+        },
+        {
+          "id": "pe-div",
+          "campo": "Capital privado: genera dividendos",
+          "valor": "No",
+          "codigo": "no"
         }
       ]
     },
@@ -1316,9 +1340,15 @@
           "codigo": "Tiene 3 SA que mantienen inmuebles y una que mantiene inversiones"
         },
         {
+          "id": "estr-port",
+          "campo": "Portafolio dentro de una estructura jurídica",
+          "valor": "Sí",
+          "codigo": "si"
+        },
+        {
           "id": "seleccion",
           "campo": "Selección",
-          "valor": "Sociedad anónima u otra sociedad costarricense",
+          "valor": "Sociedad anónima u otra sociedad costarricense · Sociedad anónima u otra sociedad costarricense",
           "codigo": ""
         }
       ]
@@ -1450,6 +1480,7 @@
     "capital-moneda": "USD",
     "c5-pct": "64",
     "vivienda": "hipoteca",
+    "viv-valor": "1,200,000",
     "viv-valor-moneda": "USD",
     "viv-alquiler-moneda": "USD",
     "hipoteca-saldo": "280,777",
@@ -1466,10 +1497,13 @@
     "n:Empresa 1: valor estimado (moneda)": "USD",
     "n:Empresa 1: plan": "traspasar",
     "n:Empresa 1: años hasta la venta o traspaso": "10",
+    "n:Empresa 1: genera dividendos": "no",
     "pe-tiene": "si",
     "pe-valor": "480,000",
     "pe-moneda": "USD",
     "pe-detalle-txt": "Es una empresa constructora de condominios ",
+    "pe-vende": "no",
+    "pe-div": "no",
     "ventas-n": "0",
     "metas-n": "0",
     "c1-tiene": "no",
@@ -1492,11 +1526,13 @@
     "estr-fideicomiso": false,
     "estructuras-sel": "Sociedad anónima u otra sociedad costarricense",
     "estructuras-detalle": "Tiene 3 SA que mantienen inmuebles y una que mantiene inversiones",
-    "estr-sa-cr-port": false,
+    "estr-port": "si",
+    "estr-sa-cr-port": true,
     "estr-pa-port": false,
     "estr-offshore-port": false,
     "estr-fundacion-port": false,
     "estr-fideicomiso-port": false,
+    "estr-port-sel": "Sociedad anónima u otra sociedad costarricense",
     "comentarios": "No quiere invertir en armas",
     "nombres": "Pilar",
     "apellidos": "Collado Carboni",
@@ -1514,16 +1550,12 @@
     "distrito": "Sánchez",
     "direccion": "Condominio Hacienda el Gregal"
   },
-  "modificadoEn": 1794258343421,
+  "modificadoEn": 1794258562192,
   "historialEdiciones": [
-    1794258343421
+    1794258562192
   ],
   "versionFormulario": 74,
   "preguntasPendientes": [
-    "Pregunta 14: ¿Cuál es la situación de su vivienda y qué otros inmuebles posee?",
-    "Pregunta 15: ¿Es propietario de empresas? Indique cuántas",
-    "Pregunta 16: ¿Tiene inversiones de capital privado?",
-    "Pregunta 23: ¿Posee estructuras jurídicas?",
     "Profesión"
   ],
   "estado": "incompleto"
