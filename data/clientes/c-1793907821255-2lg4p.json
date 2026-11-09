@@ -60,6 +60,16 @@
       "traslado": "pension",
       "modalidad": "",
       "anio": null
+    },
+    "fcl": {
+      "saldo": 0,
+      "saldoMoneda": "CRC",
+      "aporteMensual": null,
+      "aporteMoneda": "CRC",
+      "operadora": "",
+      "traslado": "",
+      "modalidad": null,
+      "anio": null
     }
   },
   "otrosIngresosRetiro": {
@@ -551,8 +561,20 @@
         {
           "id": "f-fcl-tiene",
           "campo": "FCL: ¿tiene saldo?",
-          "valor": "No tengo FCL",
-          "codigo": "no"
+          "valor": "Sí, tengo saldo en el FCL",
+          "codigo": "si"
+        },
+        {
+          "id": "f-fcl-saldo-moneda",
+          "campo": "FCL: saldo actual (moneda)",
+          "valor": "CRC",
+          "codigo": "CRC"
+        },
+        {
+          "id": "f-fcl-aporte-moneda",
+          "campo": "FCL: aporte mensual (moneda)",
+          "valor": "CRC",
+          "codigo": "CRC"
         },
         {
           "id": "f-vol-tiene",
@@ -1062,7 +1084,7 @@
     "f-rop-tiene": "si",
     "f-rop-saldo-moneda": "CRC",
     "f-rop-aporte-moneda": "CRC",
-    "f-fcl-tiene": "no",
+    "f-fcl-tiene": "si",
     "f-fcl-saldo-moneda": "CRC",
     "f-fcl-aporte-moneda": "CRC",
     "f-vol-tiene": "no",
@@ -1160,9 +1182,9 @@
     "distrito": "Pozos",
     "direccion": "Ecoresidencial Villa Real casa R17"
   },
-  "modificadoEn": 1794254198044,
+  "modificadoEn": 1794254209459,
   "historialEdiciones": [
-    1794254198044
+    1794254209459
   ],
   "versionFormulario": 74,
   "preguntasPendientes": [
