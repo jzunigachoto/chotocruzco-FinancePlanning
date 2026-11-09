@@ -1,0 +1,88 @@
+{
+  "cliente": "c-1793907821255-2lg4p",
+  "nombre": "Daniela Arguedas Millet",
+  "guardadoEn": 1794254108249,
+  "supuestos": {
+    "tipoCambio": 450,
+    "inflacionLocal": 3.9,
+    "inflacion": 3.9,
+    "inflacionPension": 1,
+    "inflacionRop": 3.9,
+    "inflacionVoluntaria": 3.9,
+    "anioInicio": 2026,
+    "edadFinal": 95,
+    "anioIngresoFcl": 5,
+    "factorGastoMenor": 80,
+    "factorGastoMayor": 110,
+    "rendimientoFondos": 6,
+    "aporteRopPct": 4.25,
+    "aporteFclPct": 1.5,
+    "edadPension": 65,
+    "modalidadRop": 1,
+    "expectativaRop": 87,
+    "edadFinProgramado": 100,
+    "rfColones": 6,
+    "na": [
+      "inflacionPension",
+      "inflacionRop",
+      "inflacionVoluntaria",
+      "anioIngresoFcl",
+      "factorGastoMenor",
+      "factorGastoMayor",
+      "rendimientoFondos",
+      "aporteRopPct",
+      "aporteFclPct",
+      "edadPension",
+      "modalidadRop",
+      "expectativaRop",
+      "edadFinProgramado"
+    ],
+    "asignacion": {
+      "conservador": {
+        "rv": 20,
+        "rfcr": 0,
+        "rf": 50,
+        "rfem": 0,
+        "ef": 30,
+        "alt": 0
+      },
+      "moderadoConservador": {
+        "rv": 35,
+        "rfcr": 0,
+        "rf": 47.5,
+        "rfem": 0,
+        "ef": 17.5,
+        "alt": 0
+      },
+      "moderado": {
+        "rv": 40,
+        "rfcr": 0,
+        "rf": 55,
+        "rfem": 0,
+        "ef": 5,
+        "alt": 0
+      },
+      "moderadoAgresivo": {
+        "rv": 70,
+        "rfcr": 0,
+        "rf": 25,
+        "rfem": 0,
+        "ef": 5,
+        "alt": 0
+      },
+      "agresivo": {
+        "rv": 90,
+        "rfcr": 0,
+        "rf": 5,
+        "rfem": 0,
+        "ef": 5,
+        "alt": 0
+      }
+    },
+    "presentacion": {
+      "pasos": "Formalización de acuerdos de asesoría\nApertura de cuenta en banco del exterior\nImplementación de estrategia de inversión\nRevisión de estructura legal y fiscal actual",
+      "portada": "Daniela Arguedas Millet"
+    },
+    "carterasCliente": null
+  }
+}
