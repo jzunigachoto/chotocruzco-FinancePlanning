@@ -49,7 +49,19 @@
     "montoPrimerRetiroUsdHoy": null,
     "montoPrimerRetiroMoneda": null
   },
-  "fondos": {},
+  "fondosPorAdjuntar": [],
+  "fondos": {
+    "rop": {
+      "saldo": 0,
+      "saldoMoneda": "CRC",
+      "aporteMensual": null,
+      "aporteMoneda": "CRC",
+      "operadora": "",
+      "traslado": "pension",
+      "modalidad": "",
+      "anio": null
+    }
+  },
   "otrosIngresosRetiro": {
     "montoMensual": 3500,
     "moneda": "CRC",
@@ -521,8 +533,20 @@
         {
           "id": "f-rop-tiene",
           "campo": "ROP: ¿tiene saldo?",
-          "valor": "No tengo ROP",
-          "codigo": "no"
+          "valor": "Sí, tengo saldo en el ROP",
+          "codigo": "si"
+        },
+        {
+          "id": "f-rop-saldo-moneda",
+          "campo": "ROP: saldo actual (moneda)",
+          "valor": "CRC",
+          "codigo": "CRC"
+        },
+        {
+          "id": "f-rop-aporte-moneda",
+          "campo": "ROP: aporte mensual (moneda)",
+          "valor": "CRC",
+          "codigo": "CRC"
         },
         {
           "id": "f-fcl-tiene",
@@ -1035,7 +1059,7 @@
     "otros-ing-desde": "hoy",
     "otros-ing-hasta": "anio",
     "otros-ing-fin": "2030",
-    "f-rop-tiene": "no",
+    "f-rop-tiene": "si",
     "f-rop-saldo-moneda": "CRC",
     "f-rop-aporte-moneda": "CRC",
     "f-fcl-tiene": "no",
@@ -1136,7 +1160,13 @@
     "distrito": "Pozos",
     "direccion": "Ecoresidencial Villa Real casa R17"
   },
-  "versionFormulario": 72,
-  "preguntasPendientes": [],
-  "estado": "completo"
+  "modificadoEn": 1794254198044,
+  "historialEdiciones": [
+    1794254198044
+  ],
+  "versionFormulario": 74,
+  "preguntasPendientes": [
+    "Pregunta 05: ¿Tiene saldos en el ROP, el FCL o una pensión voluntaria, y qué hará con ellos?"
+  ],
+  "estado": "incompleto"
 }
