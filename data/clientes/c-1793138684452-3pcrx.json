@@ -22,7 +22,7 @@
     "paisEmisor": "",
     "fechaNacimiento": "1970-09-12",
     "ocupacion": "Odontóloga",
-    "profesion": "",
+    "profesion": "Odontóloga",
     "estadoCivil": "casado"
   },
   "edad": 56,
@@ -1540,6 +1540,7 @@
     "cedula": "1-0782-0013",
     "nacimiento": "1970-09-12",
     "ocupacion": "Odontóloga",
+    "profesion": "Odontóloga",
     "estado-civil": "casado",
     "tel-codigo": "CR",
     "telefono": "88799090",
@@ -1550,13 +1551,11 @@
     "distrito": "Sánchez",
     "direccion": "Condominio Hacienda el Gregal"
   },
-  "modificadoEn": 1794258562192,
+  "modificadoEn": 1794258581236,
   "historialEdiciones": [
-    1794258562192
+    1794258581236
   ],
   "versionFormulario": 74,
-  "preguntasPendientes": [
-    "Profesión"
-  ],
-  "estado": "incompleto"
+  "preguntasPendientes": [],
+  "estado": "completo"
 }
