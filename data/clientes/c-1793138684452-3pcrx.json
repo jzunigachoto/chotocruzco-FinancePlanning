@@ -22,6 +22,7 @@
     "paisEmisor": "",
     "fechaNacimiento": "1970-09-12",
     "ocupacion": "Odontóloga",
+    "profesion": "",
     "estadoCivil": "casado"
   },
   "edad": 56,
@@ -48,6 +49,7 @@
     "montoPrimerRetiroUsdHoy": null,
     "montoPrimerRetiroMoneda": null
   },
+  "fondosPorAdjuntar": [],
   "fondos": {
     "rop": {
       "saldo": 13323009,
@@ -113,14 +115,32 @@
   "capitalPrivado": {
     "valor": 480000,
     "moneda": "USD",
-    "participacionPct": 20,
-    "detalle": "Es una empresa constructora de condominios"
+    "participacionPct": null,
+    "detalle": "Es una empresa constructora de condominios",
+    "vende": false,
+    "aniosVenta": null,
+    "anioVenta": null,
+    "valorFuturo": null,
+    "inviertePortafolio": null,
+    "pctInvierte": null,
+    "aniosIncorporacion": null,
+    "dividendos": {
+      "tiene": false,
+      "pct": 0
+    }
   },
+  "retirosPortafolio": [],
   "estructuraJuridica": {
+    "posee": "si",
     "tipos": [
       "Sociedad anónima u otra sociedad costarricense"
     ],
-    "detalle": "Tiene 3 SA que mantienen inmuebles y una que mantiene inversiones"
+    "detalle": "Tiene 3 SA que mantienen inmuebles y una que mantiene inversiones",
+    "portafolioDentro": "",
+    "conPortafolio": [],
+    "fueraPortafolio": [
+      "Sociedad anónima u otra sociedad costarricense"
+    ]
   },
   "apoyosDependientes": [],
   "legado": {
@@ -134,7 +154,7 @@
   "salarioMonto": 4000000,
   "salarioMoneda": "CRC",
   "gastoMonto": 5000000,
-  "gastoMoneda": "USD",
+  "gastoMoneda": "CRC",
   "capitalMonto": 10000000,
   "capitalMoneda": "USD",
   "aportePctIngreso": null,
@@ -157,6 +177,7 @@
       "empresa"
     ],
     "fuentePrincipal": "empresa",
+    "empleo": null,
     "ingresoPareja": null,
     "gastoRetiroPct": 80,
     "gastoUsdPct": 30,
@@ -174,6 +195,10 @@
   "patrimonio": {
     "vivienda": {
       "situacion": "hipoteca",
+      "valor": null,
+      "valorMoneda": "USD",
+      "alquilerMensual": null,
+      "alquilerMoneda": null,
       "hipoteca": {
         "saldo": 280777,
         "saldoMoneda": "USD",
@@ -187,16 +212,27 @@
       "moneda": null,
       "lista": []
     },
-    "empresa": {
-      "propietario": true,
-      "plan": "traspasar",
-      "valor": 3000000,
-      "valorMoneda": "USD",
-      "participacionPct": 50,
-      "inviertePortafolio": null,
-      "pctInvierte": null,
-      "aniosHastaEvento": 10
-    },
+    "empresas": [
+      {
+        "numero": 1,
+        "nombre": "EMPRESA",
+        "propietario": true,
+        "plan": "traspasar",
+        "valor": 3000000,
+        "valorMoneda": "USD",
+        "participacionPct": 50,
+        "inviertePortafolio": null,
+        "pctInvierte": null,
+        "aniosHastaEvento": 10,
+        "anioVenta": 2036,
+        "valorFuturo": null,
+        "aniosIncorporacion": null,
+        "dividendos": {
+          "tiene": false,
+          "pct": 0
+        }
+      }
+    ],
     "deudas": {
       "tiene": true,
       "moneda": null,
@@ -310,7 +346,7 @@
         {
           "id": "q6",
           "campo": "Q6 - Retorno esperado y caída máxima",
-          "valor": "Rendimiento esperado anual de 7% a 7,5% · pérdida anual esperada de −9%",
+          "valor": "Rendimiento esperado anual de 7% a 7,5% · posible pérdida en un año desfavorable de hasta −9%",
           "codigo": "5"
         }
       ]
@@ -640,14 +676,14 @@
         {
           "id": "gasto-monto",
           "campo": "Gasto familiar mensual (monto)",
-          "valor": "5,000,000",
-          "codigo": "5,000,000"
+          "valor": "5.000.000",
+          "codigo": "5.000.000"
         },
         {
           "id": "gasto-moneda",
           "campo": "Gasto familiar mensual (moneda)",
-          "valor": "USD",
-          "codigo": "USD"
+          "valor": "CRC",
+          "codigo": "CRC"
         },
         {
           "id": "gasto-usd-pct",
@@ -1019,6 +1055,12 @@
           "codigo": "hipoteca"
         },
         {
+          "id": "viv-valor-moneda",
+          "campo": "Vivienda principal: valor estimado (moneda)",
+          "valor": "USD",
+          "codigo": "USD"
+        },
+        {
           "id": "hipoteca-saldo",
           "campo": "Saldo de la hipoteca (monto)",
           "valor": "280,777",
@@ -1066,42 +1108,48 @@
       "pagina": 2,
       "seccion": "Planificación financiera",
       "n": "15",
-      "clave": "empresa",
-      "pregunta": "¿Es propietario de una empresa?",
+      "clave": "empresas-n",
+      "pregunta": "¿Es propietario de empresas? Indique cuántas",
       "detalle": [
         {
-          "id": "empresa",
-          "campo": "Propietario de empresa",
-          "valor": "Sí",
-          "codigo": "si"
+          "id": "empresas-n",
+          "campo": "Cantidad de empresas",
+          "valor": "1",
+          "codigo": "1"
         },
         {
-          "id": "empresa-part",
-          "campo": "Empresa: porcentaje de participación",
+          "id": "",
+          "campo": "Empresa 1: nombre",
+          "valor": "EMPRESA",
+          "codigo": "EMPRESA"
+        },
+        {
+          "id": "",
+          "campo": "Empresa 1: porcentaje de participación",
           "valor": "50",
           "codigo": "50"
         },
         {
-          "id": "empresa-valor",
-          "campo": "Empresa: valor estimado (monto)",
+          "id": "",
+          "campo": "Empresa 1: valor estimado (monto)",
           "valor": "3,000,000",
           "codigo": "3,000,000"
         },
         {
-          "id": "empresa-valor-moneda",
-          "campo": "Empresa: valor estimado (moneda)",
+          "id": "",
+          "campo": "Empresa 1: valor estimado (moneda)",
           "valor": "USD",
           "codigo": "USD"
         },
         {
-          "id": "empresa-plan",
-          "campo": "Plan sobre la empresa",
+          "id": "",
+          "campo": "Empresa 1: plan",
           "valor": "Sí, estimo traspasarla a mi familia o socios",
           "codigo": "traspasar"
         },
         {
-          "id": "empresa-anios",
-          "campo": "Años hasta la venta o traspaso",
+          "id": "",
+          "campo": "Empresa 1: años hasta la venta o traspaso",
           "valor": "10",
           "codigo": "10"
         }
@@ -1133,12 +1181,6 @@
           "codigo": "USD"
         },
         {
-          "id": "pe-part",
-          "campo": "Capital privado: porcentaje de participación",
-          "valor": "20",
-          "codigo": "20"
-        },
-        {
           "id": "pe-detalle-txt",
           "campo": "Capital privado: detalle",
           "valor": "Es una empresa constructora de condominios",
@@ -1165,21 +1207,6 @@
       "pagina": 2,
       "seccion": "Planificación financiera",
       "n": "18",
-      "clave": "c1-tiene",
-      "pregunta": "¿Planea un retiro de este portafolio distinto de sus metas, y cuándo y de cuánto sería?",
-      "detalle": [
-        {
-          "id": "c1-tiene",
-          "campo": "Primer retiro del portafolio",
-          "valor": "No",
-          "codigo": "no"
-        }
-      ]
-    },
-    {
-      "pagina": 2,
-      "seccion": "Planificación financiera",
-      "n": "19",
       "clave": "metas-n",
       "pregunta": "¿Cuántas metas específicas desea financiar con su patrimonio?",
       "detalle": [
@@ -1188,6 +1215,21 @@
           "campo": "Cantidad de metas específicas",
           "valor": "0",
           "codigo": "0"
+        }
+      ]
+    },
+    {
+      "pagina": 2,
+      "seccion": "Planificación financiera",
+      "n": "19",
+      "clave": "c1-tiene",
+      "pregunta": "¿Planea retiros adicionales de este portafolio, distintos de las metas indicadas en la pregunta anterior?",
+      "detalle": [
+        {
+          "id": "c1-tiene",
+          "campo": "Retiros adicionales del portafolio",
+          "valor": "No",
+          "codigo": "no"
         }
       ]
     },
@@ -1258,9 +1300,15 @@
       "pagina": 2,
       "seccion": "Planificación financiera",
       "n": "23",
-      "clave": "estr-sa-cr",
-      "pregunta": "Indique cuáles de las siguientes estructuras jurídicas posee",
+      "clave": "estr-tiene",
+      "pregunta": "¿Posee estructuras jurídicas?",
       "detalle": [
+        {
+          "id": "estr-tiene",
+          "campo": "Posee estructuras jurídicas",
+          "valor": "Sí",
+          "codigo": "si"
+        },
         {
           "id": "estructuras-detalle",
           "campo": "Estructuras jurídicas: detalle",
@@ -1342,8 +1390,8 @@
     "f-vol-saldo-moneda": "CRC",
     "f-vol-aporte-moneda": "CRC",
     "aportes-extra-n": "0",
-    "gasto-monto": "5,000,000",
-    "gasto-moneda": "USD",
+    "gasto-monto": "5.000.000",
+    "gasto-moneda": "CRC",
     "gasto-usd-pct": "30",
     "gasto-crc-pct": "70",
     "gasto-retiro-pct": "80",
@@ -1402,6 +1450,8 @@
     "capital-moneda": "USD",
     "c5-pct": "64",
     "vivienda": "hipoteca",
+    "viv-valor-moneda": "USD",
+    "viv-alquiler-moneda": "USD",
     "hipoteca-saldo": "280,777",
     "hipoteca-saldo-moneda": "USD",
     "hipoteca-cuota": "2,731.66",
@@ -1409,21 +1459,20 @@
     "hipoteca-tasa": "9.75",
     "hipoteca-plazo": "30",
     "inmuebles-n": "0",
-    "empresa": "si",
-    "empresa-part": "50",
-    "empresa-valor": "3,000,000",
-    "empresa-valor-moneda": "USD",
-    "empresa-plan": "traspasar",
-    "empresa-anios": "10",
+    "empresas-n": "1",
+    "n:Empresa 1: nombre": "EMPRESA",
+    "n:Empresa 1: porcentaje de participación": "50",
+    "n:Empresa 1: valor estimado (monto)": "3,000,000",
+    "n:Empresa 1: valor estimado (moneda)": "USD",
+    "n:Empresa 1: plan": "traspasar",
+    "n:Empresa 1: años hasta la venta o traspaso": "10",
     "pe-tiene": "si",
     "pe-valor": "480,000",
     "pe-moneda": "USD",
-    "pe-part": "20",
     "pe-detalle-txt": "Es una empresa constructora de condominios ",
     "ventas-n": "0",
-    "c1-tiene": "no",
-    "c1-moneda": "USD",
     "metas-n": "0",
+    "c1-tiene": "no",
     "herencia": "herencia",
     "herencia-monto": "10,000,000",
     "herencia-moneda": "USD",
@@ -1435,14 +1484,19 @@
     "vida-moneda": "USD",
     "moneda-usd": "70",
     "moneda-crc": "30",
+    "estr-tiene": "si",
     "estr-sa-cr": true,
     "estr-pa": false,
     "estr-offshore": false,
     "estr-fundacion": false,
     "estr-fideicomiso": false,
-    "estr-ninguna": false,
     "estructuras-sel": "Sociedad anónima u otra sociedad costarricense",
     "estructuras-detalle": "Tiene 3 SA que mantienen inmuebles y una que mantiene inversiones",
+    "estr-sa-cr-port": false,
+    "estr-pa-port": false,
+    "estr-offshore-port": false,
+    "estr-fundacion-port": false,
+    "estr-fideicomiso-port": false,
     "comentarios": "No quiere invertir en armas",
     "nombres": "Pilar",
     "apellidos": "Collado Carboni",
@@ -1459,5 +1513,18 @@
     "canton": "Curridabat",
     "distrito": "Sánchez",
     "direccion": "Condominio Hacienda el Gregal"
-  }
+  },
+  "modificadoEn": 1794258343421,
+  "historialEdiciones": [
+    1794258343421
+  ],
+  "versionFormulario": 74,
+  "preguntasPendientes": [
+    "Pregunta 14: ¿Cuál es la situación de su vivienda y qué otros inmuebles posee?",
+    "Pregunta 15: ¿Es propietario de empresas? Indique cuántas",
+    "Pregunta 16: ¿Tiene inversiones de capital privado?",
+    "Pregunta 23: ¿Posee estructuras jurídicas?",
+    "Profesión"
+  ],
+  "estado": "incompleto"
 }
