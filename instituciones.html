@@ -2018,6 +2018,7 @@ function construirRegistro(){
 // Guarda el registro en GitHub. Si el archivo cambió mientras tanto (otra pestaña, otro guardado
 // o una versión nueva del sistema), toma su versión vigente y vuelve a guardar: nunca se pierde.
 async function subirRegistro(cliente, nombre, token, mensaje, keepalive){
+  cliente._guardado = Date.now();             // marca de la versión: el dashboard conserva siempre la más nueva
   const url = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/data/clientes/${cliente.id}.json`;
   const put = sha => fetch(url, {method: 'PUT', keepalive: !!keepalive,
     headers: {'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json'},
@@ -2028,7 +2029,9 @@ async function subirRegistro(cliente, nombre, token, mensaje, keepalive){
     const g = await fetch(url + '?ref=' + GH_BRANCH, {headers: {'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json'}, cache: 'no-store'});
     res = await put(g.ok ? (await g.json()).sha : null);
   }
-  if(res.ok){ try{ const j = await res.clone().json(); if(j && j.content && j.content.sha){ shaNube = j.content.sha; if(editando) editando.sha = shaNube; } }catch(e){} }
+  if(res.ok){ try{ const j = await res.clone().json(); if(j && j.content && j.content.sha){ shaNube = j.content.sha; if(editando) editando.sha = shaNube; } }catch(e){}
+    // el dashboard abierto en otra pestaña se actualiza de inmediato
+    try{ (window._canalCli = window._canalCli || new BroadcastChannel('chco-clientes')).postMessage({registro: JSON.parse(JSON.stringify(cliente)), sha: shaNube}); }catch(e){} }
   return res;
 }
 document.getElementById('form').addEventListener('submit', async function(e){
@@ -2300,4 +2303,4 @@ if(VERIFICAR){
 
 
 
-<!-- Chotocruz & Co. · Entrega 75 · 5 de noviembre de 2026 -->
+<!-- Chotocruz & Co. · Entrega 76 · 10 de noviembre de 2026 -->

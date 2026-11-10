@@ -2787,15 +2787,14 @@ function normalizar(c){
 }
 
 async function cargarSupuestosRepo(){
-  const res = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_SUP_PATH}?ref=${GH_BRANCH}`,
-    {headers:{'Accept':'application/vnd.github+json'}});
+  const res = await listarRepo(GH_SUP_PATH);
   if(!res.ok) return;                       // la carpeta aún no existe: se usan los valores de la firma
   const files = await res.json();
   const jsons = (Array.isArray(files) ? files : []).filter(f => f.name && f.name.endsWith('.json'));
   const datos = await Promise.all(jsons.map(async f => {
     // la versión del archivo va en la URL para no leer una copia vieja del caché
-    const r = await fetch(f.download_url + '?v=' + f.sha);
-    return r.ok ? [f.name.replace(/\.json$/, ''), await r.json()] : null;
+    const d = await leerArchivoRepo(f).catch(() => null);
+    return d ? [f.name.replace(/\.json$/, ''), d] : null;
   }));
   const nuevo = {};
   datos.filter(Boolean).forEach(([id, d]) => {
@@ -3089,19 +3088,118 @@ function abrirSupuestosFirma(){
   mostrar('screen-supuestos');
 }
 
+// ---- Lectura de los cuestionarios desde GitHub, siempre en su última versión ----
+// raw.githubusercontent.com guarda copias en caché hasta 5 minutos, así que una edición recién
+// guardada podía no verse. Cada archivo se lee por su versión (sha): con el token, desde la API de
+// GitHub (sin caché); sin token, con la versión en la URL. El contenido se comprueba contra el sha.
+const _shaCli = {}, _blobCache = {};
+function ghHeaders(){
+  const h = {'Accept': 'application/vnd.github+json'};
+  let t = null; try{ t = localStorage.getItem('gh_token'); }catch(e){}
+  if(t && t.trim()) h.Authorization = 'Bearer ' + t.trim();
+  return h;
+}
+async function listarRepo(ruta){
+  const url = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${ruta}?ref=${GH_BRANCH}`;
+  const h = ghHeaders();
+  let res = await fetch(url, {headers: h, cache: 'no-store'});
+  if(res.status === 401 && h.Authorization){ delete h.Authorization; res = await fetch(url, {headers: h, cache: 'no-store'}); }
+  return res;
+}
+async function shaGit(buf){
+  if(!(window.crypto && crypto.subtle)) return null;
+  const pre = new TextEncoder().encode('blob ' + buf.byteLength + '\0'), all = new Uint8Array(pre.length + buf.byteLength);
+  all.set(pre); all.set(new Uint8Array(buf), pre.length);
+  return [...new Uint8Array(await crypto.subtle.digest('SHA-1', all))].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+async function leerArchivoRepo(f){
+  if(_blobCache[f.sha]) return JSON.parse(_blobCache[f.sha]);
+  const h = ghHeaders(); let ultimo = null;
+  for(let i = 0; i < 4; i++){
+    let r = null;
+    try{
+      r = h.Authorization
+        ? await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/git/blobs/${f.sha}`, {headers: Object.assign({}, h, {Accept: 'application/vnd.github.raw'}), cache: 'no-store'})
+        : await fetch(f.download_url + '?v=' + f.sha + (i ? '&r=' + Date.now() : ''), {cache: 'no-store'});
+    }catch(e){}
+    if(r && (r.status === 401 || r.status === 403) && h.Authorization){ delete h.Authorization; continue; }
+    if(r && r.ok){
+      const buf = await r.arrayBuffer(), txt = new TextDecoder().decode(buf), sh = await shaGit(buf);
+      if(sh === null || sh === f.sha){ _blobCache[f.sha] = txt; return JSON.parse(txt); }
+      ultimo = txt;                             // copia vieja del caché: se vuelve a pedir
+    }
+    await new Promise(z => setTimeout(z, 700 * (i + 1)));
+  }
+  return ultimo ? JSON.parse(ultimo) : null;
+}
 async function cargarClientes(){
-  const url = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_DATA_PATH}?ref=${GH_BRANCH}`;
-  const res = await fetch(url, {headers:{'Accept':'application/vnd.github+json'}});
+  const res = await listarRepo(GH_DATA_PATH);
   if(res.status === 404) return [];
   if(!res.ok) throw new Error('GitHub respondió ' + res.status);
   const files = await res.json();
   const jsons = (Array.isArray(files)?files:[]).filter(f=>f.name && f.name.endsWith('.json'));
-  const datos = await Promise.all(jsons.map(async f=>{
-    const r = await fetch(f.download_url);
-    return r.ok ? r.json() : null;
+  const datos = await Promise.all(jsons.map(async f => {
+    const d = await leerArchivoRepo(f).catch(() => null);
+    if(d && d.id) _shaCli[d.id] = f.sha;
+    return d;
   }));
   return datos.filter(Boolean).map(normalizar);
 }
+// Momento en que se guardó cada versión de un cuestionario: evita que una copia vieja reemplace a una nueva
+const marcaGuardado = x => +((x && (x._guardado || x.modificadoEn || x.creadoEn)) || 0);
+// Un cuestionario editado o guardado reemplaza al anterior y la vista se recalcula de inmediato:
+// tabla de clientes, panel del cliente (proyección, Excel, PDF y presentación) y sus supuestos.
+function actualizarCliente(d, sha){
+  if(!d || !d.id) return false;
+  const i = clientes.findIndex(x => x.id === d.id);
+  if(i >= 0 && marcaGuardado(d) < marcaGuardado(clientes[i])) return false;
+  let n; try{ n = normalizar(d); }catch(e){ return false; }
+  if(sha) _shaCli[d.id] = sha;
+  delete _verif[d.id];
+  if(i >= 0) clientes[i] = n; else { clientes.push(n); clientes.sort((a,b)=>(b.creadoEn||0)-(a.creadoEn||0)); }
+  refrescarVistaCliente(d.id);
+  return true;
+}
+function refrescarVistaCliente(id){
+  const y = window.scrollY;
+  const enSup = document.getElementById('screen-supuestos').classList.contains('active');
+  if(enSup){
+    renderLista();
+    if(modoSup.tipo === 'cliente' && modoSup.id === id){
+      const c = clientes.find(x => x.id === id);
+      try{ supuestos = supuestosDe(c); c.diag = calcularPerfil(c, supuestos); c.perfil = c.diag.perfil; }catch(e){}
+      try{ refrescarPerfilCliente(); }catch(e){}
+      estadoSup('Se actualizaron las respuestas del cuestionario.');
+    }
+  } else {
+    const t = document.getElementById('tabla-clientes');
+    if(t && !t.hidden){ renderLista(); renderTabla(); }
+    else if(activoId === id) seleccionar(id);
+    else renderLista();
+  }
+  window.scrollTo(0, y);
+}
+// Revisa en GitHub si algún cuestionario cambió (al volver a esta pestaña y cada 30 segundos)
+let _sincronizando = false, _ultSinc = 0;
+async function sincronizarClientes(){
+  if(_sincronizando || Date.now() - _ultSinc < 4000 || !clientes.length) return;
+  _sincronizando = true; _ultSinc = Date.now();
+  try{
+    const res = await listarRepo(GH_DATA_PATH); if(!res.ok) return;
+    const files = (await res.json() || []).filter(f => f.name && f.name.endsWith('.json'));
+    for(const f of files){
+      const id = f.name.replace(/\.json$/, '');
+      if(_shaCli[id] === f.sha) continue;
+      const d = await leerArchivoRepo(f).catch(() => null);
+      if(d && d.id){ if(!actualizarCliente(d, f.sha)) _shaCli[d.id] = _shaCli[d.id] || f.sha; }
+    }
+  }catch(e){} finally{ _sincronizando = false; }
+}
+// El cuestionario abierto en otra pestaña avisa cada vez que guarda (envío, edición o avance)
+try{ new BroadcastChannel('chco-clientes').onmessage = ev => { const m = ev.data || {}; if(m.registro) actualizarCliente(m.registro, m.sha); }; }catch(e){}
+document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible') sincronizarClientes(); });
+window.addEventListener('focus', () => sincronizarClientes());
+setInterval(() => { if(document.visibilityState === 'visible' && ghHeaders().Authorization) sincronizarClientes(); }, 30000);
 
 // Versión vigente de las preguntas del cuestionario (la misma constante de familias.html e
 // instituciones.html). Todos los registros se revisan contra la versión vigente: los guardados con
@@ -8337,7 +8435,7 @@ async function cargar(){
   btn.disabled = true;
   try{
     const [cl] = await Promise.all([cargarClientes(), cargarSupuestosRepo().catch(() => {})]);
-    clientes = cl;
+    clientes = cl.map(n => { const v = clientes.find(x => x.id === n.id); return v && marcaGuardado(v) > marcaGuardado(n) ? v : n; });
     clientes.sort((a,b)=>(b.creadoEn||0)-(a.creadoEn||0));
     document.getElementById('btn-todos').hidden = !SEGMENTOS[segmento].csv;
     renderLista();
@@ -8379,4 +8477,4 @@ cargar();
 
 
 
-<!-- Chotocruz & Co. · Entrega 75 · 5 de noviembre de 2026 -->
+<!-- Chotocruz & Co. · Entrega 76 · 10 de noviembre de 2026 -->
