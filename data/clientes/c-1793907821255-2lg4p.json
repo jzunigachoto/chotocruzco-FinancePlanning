@@ -106,14 +106,14 @@
   "porcentajeUsd": 80,
   "ingresoHastaEdad": 4,
   "salarioMonto": 1750,
-  "salarioMoneda": "CRC",
+  "salarioMoneda": "USD",
   "gastoMonto": 4700,
   "gastoMoneda": "USD",
   "capitalMonto": 800000,
   "capitalMoneda": "USD",
   "aportePctIngreso": null,
   "aporteMonto": 0,
-  "aporteMoneda": "CRC",
+  "aporteMoneda": "USD",
   "comentarios": "En la pregunta 5 sobre ROP FCL, si posee los saldos sin embargo no tiene la información en el momento de la entrevista, Daniel se compromete en enviar esta información posteriormente. En la pregunta 21 sobre seguros vigentes, el monto se coloca en 0 pero Daniela debe dar información posteriormente.",
   "hogar": {
     "planificacion": "individual",
@@ -381,14 +381,14 @@
         {
           "id": "salario-monto",
           "campo": "Ingreso mensual del titular (monto)",
-          "valor": "1.750",
-          "codigo": "1.750"
+          "valor": "1,750",
+          "codigo": "1,750"
         },
         {
           "id": "salario-moneda",
           "campo": "Ingreso mensual del titular (moneda)",
-          "valor": "CRC",
-          "codigo": "CRC"
+          "valor": "USD",
+          "codigo": "USD"
         },
         {
           "id": "ingreso-hasta",
@@ -1013,8 +1013,8 @@
     "q10": "6.67",
     "edad": "37",
     "edad_retiro": "50",
-    "salario-monto": "1.750",
-    "salario-moneda": "CRC",
+    "salario-monto": "1,750",
+    "salario-moneda": "USD",
     "ingreso-hasta": "4",
     "fuente-salario": true,
     "fuente-empresa": false,
@@ -1137,11 +1137,12 @@
     "distrito": "Pozos",
     "direccion": "Ecoresidencial Villa Real casa R17"
   },
-  "modificadoEn": 1794332558126,
+  "modificadoEn": 1794333401049,
   "historialEdiciones": [
     1794254283976,
     1794332381529,
-    1794332558126
+    1794332558126,
+    1794333401049
   ],
   "versionFormulario": 74,
   "preguntasPendientes": [],
