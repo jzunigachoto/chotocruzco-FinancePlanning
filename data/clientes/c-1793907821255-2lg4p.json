@@ -53,7 +53,7 @@
   "fondos": {},
   "otrosIngresosRetiro": {
     "montoMensual": 3500,
-    "moneda": "CRC",
+    "moneda": "USD",
     "desde": "hoy",
     "anio": null,
     "hasta": "anio",
@@ -477,14 +477,14 @@
         {
           "id": "otros-ing-monto",
           "campo": "Otros ingresos mensuales en el retiro (monto)",
-          "valor": "3.500",
-          "codigo": "3.500"
+          "valor": "3,500",
+          "codigo": "3,500"
         },
         {
           "id": "otros-ing-moneda",
           "campo": "Otros ingresos mensuales en el retiro (moneda)",
-          "valor": "CRC",
-          "codigo": "CRC"
+          "valor": "USD",
+          "codigo": "USD"
         },
         {
           "id": "otros-ing-desde",
@@ -1031,8 +1031,8 @@
     "pension-edad": "65",
     "pension-nose": true,
     "otros-ing": "si",
-    "otros-ing-monto": "3.500",
-    "otros-ing-moneda": "CRC",
+    "otros-ing-monto": "3,500",
+    "otros-ing-moneda": "USD",
     "otros-ing-desde": "hoy",
     "otros-ing-hasta": "anio",
     "otros-ing-fin": "2030",
@@ -1137,10 +1137,11 @@
     "distrito": "Pozos",
     "direccion": "Ecoresidencial Villa Real casa R17"
   },
-  "modificadoEn": 1794332381529,
+  "modificadoEn": 1794332531908,
   "historialEdiciones": [
     1794254283976,
-    1794332381529
+    1794332381529,
+    1794332531908
   ],
   "versionFormulario": 74,
   "preguntasPendientes": [],
