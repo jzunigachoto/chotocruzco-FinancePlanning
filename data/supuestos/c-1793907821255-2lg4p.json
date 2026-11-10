@@ -1,7 +1,7 @@
 {
   "cliente": "c-1793907821255-2lg4p",
   "nombre": "Daniela Arguedas Millet",
-  "guardadoEn": 1794254108249,
+  "guardadoEn": 1794331941438,
   "supuestos": {
     "tipoCambio": 450,
     "inflacionLocal": 3.9,
@@ -21,7 +21,7 @@
     "modalidadRop": 1,
     "expectativaRop": 87,
     "edadFinProgramado": 100,
-    "rfColones": 6,
+    "rfColones": 7.5,
     "na": [
       "inflacionPension",
       "inflacionRop",
@@ -80,9 +80,43 @@
       }
     },
     "presentacion": {
-      "pasos": "Formalización de acuerdos de asesoría\nApertura de cuenta en banco del exterior\nImplementación de estrategia de inversión\nRevisión de estructura legal y fiscal actual",
+      "pasos": "Formalización de acuerdos de asesoría\nApertura de cuenta en banco del exterior\nImplementación de estrategia de inversión\n",
       "portada": "Daniela Arguedas Millet"
     },
-    "carterasCliente": null
+    "carterasCliente": {
+      "perfil": "moderado",
+      "topes": {
+        "rv": [
+          20,
+          40
+        ],
+        "rfcr": [
+          0,
+          25
+        ],
+        "rf": [
+          0,
+          15
+        ],
+        "rfem": [
+          0,
+          15
+        ],
+        "ef": [
+          0,
+          10
+        ],
+        "alt": [
+          0,
+          5
+        ]
+      },
+      "especifico": null,
+      "rendClase": {
+        "rf": 5,
+        "rfem": 6,
+        "ef": 3
+      }
+    }
   }
 }
