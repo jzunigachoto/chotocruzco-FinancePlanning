@@ -66,6 +66,90 @@
       "montoUsdHoy": 37000,
       "moneda": "USD",
       "anio": 2027
+    },
+    {
+      "numero": 2,
+      "concepto": "Bono de Prole",
+      "montoUsdHoy": 37000,
+      "moneda": "USD",
+      "anio": 2028
+    },
+    {
+      "numero": 3,
+      "concepto": "Bono de Prole",
+      "montoUsdHoy": 37000,
+      "moneda": "USD",
+      "anio": 2029
+    },
+    {
+      "numero": 4,
+      "concepto": "Bono de Prole",
+      "montoUsdHoy": 37000,
+      "moneda": "USD",
+      "anio": 2030
+    },
+    {
+      "numero": 5,
+      "concepto": "Bono de Prole",
+      "montoUsdHoy": 37000,
+      "moneda": "USD",
+      "anio": 2031
+    },
+    {
+      "numero": 6,
+      "concepto": "Bono de Prole",
+      "montoUsdHoy": 37000,
+      "moneda": "USD",
+      "anio": 2032
+    },
+    {
+      "numero": 7,
+      "concepto": "Bono de Prole",
+      "montoUsdHoy": 37000,
+      "moneda": "USD",
+      "anio": 2033
+    },
+    {
+      "numero": 8,
+      "concepto": "Bono de Prole",
+      "montoUsdHoy": 37000,
+      "moneda": "USD",
+      "anio": 2034
+    },
+    {
+      "numero": 9,
+      "concepto": "Bono de Prole",
+      "montoUsdHoy": 37000,
+      "moneda": "USD",
+      "anio": 2035
+    },
+    {
+      "numero": 10,
+      "concepto": "Bono de Prole",
+      "montoUsdHoy": 37000,
+      "moneda": "USD",
+      "anio": 2036
+    },
+    {
+      "numero": 11,
+      "concepto": "Bono de Prole",
+      "montoUsdHoy": 37000,
+      "moneda": "USD",
+      "anio": 2037
+    },
+    {
+      "numero": 12,
+      "concepto": "Bono de Prole",
+      "montoUsdHoy": 37000,
+      "moneda": "USD",
+      "anio": 2038
+    },
+    {
+      "numero": 13,
+      "concepto": "Bono de Prole",
+      "montoUsdHoy": 37000,
+      "moneda": "USD",
+      "anio": 2039
     }
   ],
   "gastosExtraordinariosAnualesUsdHoy": 0,
@@ -549,8 +633,8 @@
         {
           "id": "aportes-extra-n",
           "campo": "Cantidad de aportes extraordinarios",
-          "valor": "1",
-          "codigo": "1"
+          "valor": "13",
+          "codigo": "13"
         },
         {
           "id": "",
@@ -573,6 +657,294 @@
         {
           "id": "",
           "campo": "Ingreso extraordinario 1: moneda",
+          "valor": "USD",
+          "codigo": "USD"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 2: nombre",
+          "valor": "Bono de Prole",
+          "codigo": "Bono de Prole"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 2: año",
+          "valor": "2028",
+          "codigo": "2028"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 2: monto (valor de hoy)",
+          "valor": "37,000",
+          "codigo": "37,000"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 2: moneda",
+          "valor": "USD",
+          "codigo": "USD"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 3: nombre",
+          "valor": "Bono de Prole",
+          "codigo": "Bono de Prole"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 3: año",
+          "valor": "2029",
+          "codigo": "2029"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 3: monto (valor de hoy)",
+          "valor": "37,000",
+          "codigo": "37,000"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 3: moneda",
+          "valor": "USD",
+          "codigo": "USD"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 4: nombre",
+          "valor": "Bono de Prole",
+          "codigo": "Bono de Prole"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 4: año",
+          "valor": "2030",
+          "codigo": "2030"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 4: monto (valor de hoy)",
+          "valor": "37,000",
+          "codigo": "37,000"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 4: moneda",
+          "valor": "USD",
+          "codigo": "USD"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 5: nombre",
+          "valor": "Bono de Prole",
+          "codigo": "Bono de Prole"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 5: año",
+          "valor": "2031",
+          "codigo": "2031"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 5: monto (valor de hoy)",
+          "valor": "37,000",
+          "codigo": "37,000"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 5: moneda",
+          "valor": "USD",
+          "codigo": "USD"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 6: nombre",
+          "valor": "Bono de Prole",
+          "codigo": "Bono de Prole"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 6: año",
+          "valor": "2032",
+          "codigo": "2032"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 6: monto (valor de hoy)",
+          "valor": "37,000",
+          "codigo": "37,000"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 6: moneda",
+          "valor": "USD",
+          "codigo": "USD"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 7: nombre",
+          "valor": "Bono de Prole",
+          "codigo": "Bono de Prole"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 7: año",
+          "valor": "2033",
+          "codigo": "2033"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 7: monto (valor de hoy)",
+          "valor": "37,000",
+          "codigo": "37,000"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 7: moneda",
+          "valor": "USD",
+          "codigo": "USD"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 8: nombre",
+          "valor": "Bono de Prole",
+          "codigo": "Bono de Prole"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 8: año",
+          "valor": "2034",
+          "codigo": "2034"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 8: monto (valor de hoy)",
+          "valor": "37,000",
+          "codigo": "37,000"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 8: moneda",
+          "valor": "USD",
+          "codigo": "USD"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 9: nombre",
+          "valor": "Bono de Prole",
+          "codigo": "Bono de Prole"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 9: año",
+          "valor": "2035",
+          "codigo": "2035"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 9: monto (valor de hoy)",
+          "valor": "37,000",
+          "codigo": "37,000"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 9: moneda",
+          "valor": "USD",
+          "codigo": "USD"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 10: nombre",
+          "valor": "Bono de Prole",
+          "codigo": "Bono de Prole"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 10: año",
+          "valor": "2036",
+          "codigo": "2036"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 10: monto (valor de hoy)",
+          "valor": "37,000",
+          "codigo": "37,000"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 10: moneda",
+          "valor": "USD",
+          "codigo": "USD"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 11: nombre",
+          "valor": "Bono de Prole",
+          "codigo": "Bono de Prole"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 11: año",
+          "valor": "2037",
+          "codigo": "2037"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 11: monto (valor de hoy)",
+          "valor": "37,000",
+          "codigo": "37,000"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 11: moneda",
+          "valor": "USD",
+          "codigo": "USD"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 12: nombre",
+          "valor": "Bono de Prole",
+          "codigo": "Bono de Prole"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 12: año",
+          "valor": "2038",
+          "codigo": "2038"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 12: monto (valor de hoy)",
+          "valor": "37,000",
+          "codigo": "37,000"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 12: moneda",
+          "valor": "USD",
+          "codigo": "USD"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 13: nombre",
+          "valor": "Bono de Prole",
+          "codigo": "Bono de Prole"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 13: año",
+          "valor": "2039",
+          "codigo": "2039"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 13: monto (valor de hoy)",
+          "valor": "37,000",
+          "codigo": "37,000"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 13: moneda",
           "valor": "USD",
           "codigo": "USD"
         }
@@ -1046,11 +1418,59 @@
     "f-vol-tiene": "no",
     "f-vol-saldo-moneda": "CRC",
     "f-vol-aporte-moneda": "CRC",
-    "aportes-extra-n": "1",
+    "aportes-extra-n": "13",
     "n:Ingreso extraordinario 1: nombre": "Bono de Prole",
     "n:Ingreso extraordinario 1: año": "2027",
     "n:Ingreso extraordinario 1: monto (valor de hoy)": "37,000",
     "n:Ingreso extraordinario 1: moneda": "USD",
+    "n:Ingreso extraordinario 2: nombre": "Bono de Prole",
+    "n:Ingreso extraordinario 2: año": "2028",
+    "n:Ingreso extraordinario 2: monto (valor de hoy)": "37,000",
+    "n:Ingreso extraordinario 2: moneda": "USD",
+    "n:Ingreso extraordinario 3: nombre": "Bono de Prole",
+    "n:Ingreso extraordinario 3: año": "2029",
+    "n:Ingreso extraordinario 3: monto (valor de hoy)": "37,000",
+    "n:Ingreso extraordinario 3: moneda": "USD",
+    "n:Ingreso extraordinario 4: nombre": "Bono de Prole",
+    "n:Ingreso extraordinario 4: año": "2030",
+    "n:Ingreso extraordinario 4: monto (valor de hoy)": "37,000",
+    "n:Ingreso extraordinario 4: moneda": "USD",
+    "n:Ingreso extraordinario 5: nombre": "Bono de Prole",
+    "n:Ingreso extraordinario 5: año": "2031",
+    "n:Ingreso extraordinario 5: monto (valor de hoy)": "37,000",
+    "n:Ingreso extraordinario 5: moneda": "USD",
+    "n:Ingreso extraordinario 6: nombre": "Bono de Prole",
+    "n:Ingreso extraordinario 6: año": "2032",
+    "n:Ingreso extraordinario 6: monto (valor de hoy)": "37,000",
+    "n:Ingreso extraordinario 6: moneda": "USD",
+    "n:Ingreso extraordinario 7: nombre": "Bono de Prole",
+    "n:Ingreso extraordinario 7: año": "2033",
+    "n:Ingreso extraordinario 7: monto (valor de hoy)": "37,000",
+    "n:Ingreso extraordinario 7: moneda": "USD",
+    "n:Ingreso extraordinario 8: nombre": "Bono de Prole",
+    "n:Ingreso extraordinario 8: año": "2034",
+    "n:Ingreso extraordinario 8: monto (valor de hoy)": "37,000",
+    "n:Ingreso extraordinario 8: moneda": "USD",
+    "n:Ingreso extraordinario 9: nombre": "Bono de Prole",
+    "n:Ingreso extraordinario 9: año": "2035",
+    "n:Ingreso extraordinario 9: monto (valor de hoy)": "37,000",
+    "n:Ingreso extraordinario 9: moneda": "USD",
+    "n:Ingreso extraordinario 10: nombre": "Bono de Prole",
+    "n:Ingreso extraordinario 10: año": "2036",
+    "n:Ingreso extraordinario 10: monto (valor de hoy)": "37,000",
+    "n:Ingreso extraordinario 10: moneda": "USD",
+    "n:Ingreso extraordinario 11: nombre": "Bono de Prole",
+    "n:Ingreso extraordinario 11: año": "2037",
+    "n:Ingreso extraordinario 11: monto (valor de hoy)": "37,000",
+    "n:Ingreso extraordinario 11: moneda": "USD",
+    "n:Ingreso extraordinario 12: nombre": "Bono de Prole",
+    "n:Ingreso extraordinario 12: año": "2038",
+    "n:Ingreso extraordinario 12: monto (valor de hoy)": "37,000",
+    "n:Ingreso extraordinario 12: moneda": "USD",
+    "n:Ingreso extraordinario 13: nombre": "Bono de Prole",
+    "n:Ingreso extraordinario 13: año": "2039",
+    "n:Ingreso extraordinario 13: monto (valor de hoy)": "37,000",
+    "n:Ingreso extraordinario 13: moneda": "USD",
     "gasto-monto": "4,700",
     "gasto-moneda": "USD",
     "gasto-usd-pct": "23",
@@ -1138,7 +1558,7 @@
     "distrito": "Pozos",
     "direccion": "Ecoresidencial Villa Real casa R17"
   },
-  "modificadoEn": 1794434105310,
+  "modificadoEn": 1794434351666,
   "historialEdiciones": [
     1794254283976,
     1794332381529,
@@ -1151,10 +1571,10 @@
     1794427163568,
     1794432270314,
     1794433482084,
-    1794434105310
+    1794434351666
   ],
   "versionFormulario": 74,
   "preguntasPendientes": [],
   "estado": "completo",
-  "_guardado": 1794434105312
+  "_guardado": 1794434351666
 }
