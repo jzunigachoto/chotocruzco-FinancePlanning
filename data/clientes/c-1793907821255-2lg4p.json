@@ -104,7 +104,7 @@
   },
   "preferenciaMoneda": "80% en dólares y 20% en colones",
   "porcentajeUsd": 80,
-  "ingresoHastaEdad": 4,
+  "ingresoHastaEdad": 38,
   "salarioMonto": 1750,
   "salarioMoneda": "USD",
   "gastoMonto": 4700,
@@ -393,8 +393,8 @@
         {
           "id": "ingreso-hasta",
           "campo": "Ingreso total: hasta la edad",
-          "valor": "4",
-          "codigo": "4"
+          "valor": "38",
+          "codigo": "38"
         },
         {
           "id": "empleo-empresa",
@@ -1015,7 +1015,7 @@
     "edad_retiro": "50",
     "salario-monto": "1,750",
     "salario-moneda": "USD",
-    "ingreso-hasta": "4",
+    "ingreso-hasta": "38",
     "fuente-salario": true,
     "fuente-empresa": false,
     "fuente-honorarios": false,
@@ -1137,7 +1137,7 @@
     "distrito": "Pozos",
     "direccion": "Ecoresidencial Villa Real casa R17"
   },
-  "modificadoEn": 1794418484648,
+  "modificadoEn": 1794427134083,
   "historialEdiciones": [
     1794254283976,
     1794332381529,
@@ -1145,10 +1145,11 @@
     1794333403229,
     1794340039656,
     1794340064184,
-    1794418484648
+    1794418484648,
+    1794427134083
   ],
   "versionFormulario": 74,
   "preguntasPendientes": [],
   "estado": "completo",
-  "_guardado": 1794418484648
+  "_guardado": 1794427134083
 }
