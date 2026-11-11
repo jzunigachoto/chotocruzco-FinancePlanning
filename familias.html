@@ -1548,8 +1548,25 @@ var VERIFICAR = new URLSearchParams(location.search).has('verificar');
 // los registros guardados con una versión anterior quedan marcados en el dashboard para completarlos.
 const VERSION_FORMULARIO = 74;
 // Preguntas obligatorias que siguen sin respuesta (o con un dato inválido), con su número y texto
+// Campos opcionales con un dato imposible (una edad «hasta» menor que la edad actual, un año ya
+// pasado, un valor fuera de rango): cuentan como pendientes y se señalan en rojo, igual que los
+// obligatorios. Un campo opcional con dato se trata como obligatorio mientras tenga ese dato.
+function sincronizarOpcionales(){
+  try{
+    const ed = +((document.getElementById('edad') || {}).value) || 0, ih = document.getElementById('ingreso-hasta');
+    if(ih) ih.min = ed >= 18 ? ed : 18;
+    const ep = +((document.getElementById('edad-pareja') || {}).value) || 0, ph = document.getElementById('ingreso-pareja-hasta');
+    if(ph) ph.min = ep >= 18 ? ep : 18;
+    document.querySelectorAll('.page input[type="number"]').forEach(c => {
+      if(c.dataset.reqval){ if(c.value === ''){ c.removeAttribute('required'); delete c.dataset.reqval; } }
+      else if(!c.required && c.value !== '' && !c.checkValidity()){ c.required = true; c.dataset.reqval = '1'; }
+    });
+  }catch(e){}
+}
+['input','change'].forEach(ev => document.addEventListener(ev, sincronizarOpcionales, true));
 function preguntasPendientes(){
   const out = [];
+  sincronizarOpcionales();
   try{ [1, 2, 3].forEach(n => { const pag = document.querySelector('.page[data-page="'+n+'"]'); if(!pag) return;
     visibles(pag).forEach(q => { const cs = [...q.querySelectorAll('[required]')];
       if(cs.some(x => x.value === '' || !x.checkValidity())){
@@ -3288,4 +3305,4 @@ if(VERIFICAR){
 
 
 
-<!-- Chotocruz & Co. · Entrega 76 · 10 de noviembre de 2026 -->
+<!-- Chotocruz & Co. · Entrega 77 · 11 de noviembre de 2026 -->

@@ -2779,6 +2779,21 @@ function normalizar(c){
     o.gastoMonto   = o.gasto;    o.gastoMoneda   = 'USD';
     o.salarioMonto = 0;          o.salarioMoneda = 'USD';
   }
+  // Datos imposibles: una edad «hasta» menor que la edad actual o un último año ya pasado. No se
+  // usan (el ingreso se trata como si el dato estuviera en blanco) y se señalan como pendientes,
+  // igual en el dashboard, el Excel, el PDF y la presentación.
+  o.datosInvalidos = [];
+  if(+o.ingresoHastaEdad > 0 && +o.edad > 0 && +o.ingresoHastaEdad < +o.edad){
+    o.datosInvalidos.push('Ingreso total: la edad hasta la que lo recibirá (' + o.ingresoHastaEdad + ') es menor que su edad actual (' + o.edad + ')');
+    o.ingresoHastaEdad = null; }
+  { const ip = (o.ingresos || {}).ingresoPareja, ep = +((o.hogar || {}).edadPareja);
+    if(ip && +ip.hastaEdad > 0 && ep > 0 && +ip.hastaEdad < ep){
+      o.datosInvalidos.push('Ingreso de la pareja: la edad hasta la que lo recibirá (' + ip.hastaEdad + ') es menor que su edad actual (' + ep + ')');
+      o.ingresos = Object.assign({}, o.ingresos, {ingresoPareja: Object.assign({}, ip, {hastaEdad: null})}); } }
+  { const oi = o.otrosIngresosRetiro;
+    if(oi && +oi.montoMensual > 0 && oi.hasta === 'anio' && +oi.anioFin > 0 && +oi.anioFin < new Date().getFullYear()){
+      o.datosInvalidos.push('Otros ingresos recurrentes: el último año (' + oi.anioFin + ') ya pasó');
+      o.otrosIngresosRetiro = Object.assign({}, oi, {hasta: 'siempre', anioFin: null}); } }
   // El perfil se calcula sobre el cliente ya normalizado: necesita edades y capacidad,
   // no solo el bloque de respuestas.
   o.diag = calcularPerfil(o, supuestos);
@@ -3209,14 +3224,17 @@ const _verif = {};            // id → campos que faltan con la versión vigent
 let _colaVerif = [], _verifActivo = false;
 function estadoCuestionario(c){
   const pend = _verif[c.id] || (+c.versionFormulario >= VERSION_FORMULARIO && Array.isArray(c.preguntasPendientes) ? c.preguntasPendientes : null);
-  return {pend: pend || [], revisado: !!pend, incompleto: c.estado === 'incompleto' || !!(pend && pend.length)};
+  const todo = (pend || []).concat(c.datosInvalidos || []);
+  return {pend: todo, revisado: !!pend, incompleto: c.estado === 'incompleto' || !!todo.length};
 }
 function avisoCuestionario(c){
   const e = estadoCuestionario(c);
   let html = '';
   if(e.pend.length){
-    const n = e.pend.length;
-    html = `<p class="aviso-cuest"><b>${n === 1 ? 'Falta 1 pregunta por responder' : 'Faltan ' + n + ' preguntas por responder'}.</b> Use «Editar respuestas» para completarlo.</p>`;
+    const n = e.pend.length - (c.datosInvalidos || []).length;
+    if(n > 0) html = `<p class="aviso-cuest"><b>${n === 1 ? 'Falta 1 pregunta por responder' : 'Faltan ' + n + ' preguntas por responder'}.</b> Use «Editar respuestas» para completarlo.</p>`;
+    // datos imposibles: se dice cuál es, para corregirlo en el cuestionario
+    (c.datosInvalidos || []).forEach(d => { html += `<p class="aviso-cuest"><b>Dato por corregir.</b> ${esc(d)}. Use «Editar respuestas» para corregirlo; mientras tanto, ese dato no se toma en cuenta.</p>`; });
   }
   return `<div class="aviso-cuest-slot" data-cid="${esc(c.id)}">${html}</div>`;
 }
@@ -8477,4 +8495,4 @@ cargar();
 
 
 
-<!-- Chotocruz & Co. · Entrega 76 · 10 de noviembre de 2026 -->
+<!-- Chotocruz & Co. · Entrega 77 · 11 de noviembre de 2026 -->
