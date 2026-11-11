@@ -142,12 +142,12 @@
   },
   "pension": {
     "regimen": "ivm",
-    "montoMensual": null,
-    "montoDesconocido": true,
+    "montoMensual": 211285.5,
+    "montoDesconocido": false,
     "yaRecibe": false,
     "ropIncluido": false,
     "moneda": "CRC",
-    "edadInicio": 65
+    "edadInicio": 64
   },
   "patrimonio": {
     "vivienda": {
@@ -457,6 +457,12 @@
           "codigo": "no"
         },
         {
+          "id": "pension-monto",
+          "campo": "Pensión mensual estimada (monto)",
+          "valor": "211.285,50",
+          "codigo": "211.285,50"
+        },
+        {
           "id": "pension-moneda",
           "campo": "Pensión mensual estimada (moneda)",
           "valor": "CRC",
@@ -465,8 +471,8 @@
         {
           "id": "pension-edad",
           "campo": "Edad de inicio de la pensión",
-          "valor": "65",
-          "codigo": "65"
+          "valor": "64",
+          "codigo": "64"
         },
         {
           "id": "otros-ing",
@@ -503,12 +509,6 @@
           "campo": "Otros ingresos recurrentes: último año",
           "valor": "2030",
           "codigo": "2030"
-        },
-        {
-          "id": "seleccion",
-          "campo": "Selección",
-          "valor": "No conozco el monto: que lo estime el asesor",
-          "codigo": ""
         }
       ]
     },
@@ -1027,9 +1027,10 @@
     "ingreso-pareja-moneda": "CRC",
     "pension-regimen": "ivm",
     "pension-recibe": "no",
+    "pension-monto": "211.285,50",
     "pension-moneda": "CRC",
-    "pension-edad": "65",
-    "pension-nose": true,
+    "pension-edad": "64",
+    "pension-nose": false,
     "otros-ing": "si",
     "otros-ing-monto": "3,500",
     "otros-ing-moneda": "USD",
@@ -1137,7 +1138,7 @@
     "distrito": "Pozos",
     "direccion": "Ecoresidencial Villa Real casa R17"
   },
-  "modificadoEn": 1794427163568,
+  "modificadoEn": 1794432268682,
   "historialEdiciones": [
     1794254283976,
     1794332381529,
@@ -1147,10 +1148,11 @@
     1794340064184,
     1794418484648,
     1794427136848,
-    1794427163568
+    1794427163568,
+    1794432268682
   ],
   "versionFormulario": 74,
   "preguntasPendientes": [],
   "estado": "completo",
-  "_guardado": 1794427163568
+  "_guardado": 1794432268682
 }
