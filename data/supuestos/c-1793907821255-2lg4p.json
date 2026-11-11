@@ -1,7 +1,7 @@
 {
   "cliente": "c-1793907821255-2lg4p",
   "nombre": "Daniela Arguedas Millet",
-  "guardadoEn": 1794427273393,
+  "guardadoEn": 1794432298378,
   "supuestos": {
     "tipoCambio": 450,
     "inflacionLocal": 3.9,
@@ -23,8 +23,6 @@
     "edadFinProgramado": 100,
     "rfColones": 7.5,
     "na": [
-      "tipoCambio",
-      "inflacionPension",
       "inflacionRop",
       "inflacionVoluntaria",
       "anioIngresoFcl",
