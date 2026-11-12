@@ -65,91 +65,104 @@
       "concepto": "Bono de Prole",
       "montoUsdHoy": 37000,
       "moneda": "USD",
-      "anio": 2027
+      "anio": 2027,
+      "anioFin": null
     },
     {
       "numero": 2,
       "concepto": "Bono de Prole",
       "montoUsdHoy": 37000,
       "moneda": "USD",
-      "anio": 2028
+      "anio": 2028,
+      "anioFin": null
     },
     {
       "numero": 3,
       "concepto": "Bono de Prole",
       "montoUsdHoy": 37000,
       "moneda": "USD",
-      "anio": 2029
+      "anio": 2029,
+      "anioFin": null
     },
     {
       "numero": 4,
       "concepto": "Bono de Prole",
       "montoUsdHoy": 37000,
       "moneda": "USD",
-      "anio": 2030
+      "anio": 2030,
+      "anioFin": null
     },
     {
       "numero": 5,
       "concepto": "Bono de Prole",
       "montoUsdHoy": 37000,
       "moneda": "USD",
-      "anio": 2031
+      "anio": 2031,
+      "anioFin": null
     },
     {
       "numero": 6,
       "concepto": "Bono de Prole",
       "montoUsdHoy": 37000,
       "moneda": "USD",
-      "anio": 2032
+      "anio": 2032,
+      "anioFin": null
     },
     {
       "numero": 7,
       "concepto": "Bono de Prole",
       "montoUsdHoy": 37000,
       "moneda": "USD",
-      "anio": 2033
+      "anio": 2033,
+      "anioFin": null
     },
     {
       "numero": 8,
       "concepto": "Bono de Prole",
       "montoUsdHoy": 37000,
       "moneda": "USD",
-      "anio": 2034
+      "anio": 2034,
+      "anioFin": null
     },
     {
       "numero": 9,
       "concepto": "Bono de Prole",
       "montoUsdHoy": 37000,
       "moneda": "USD",
-      "anio": 2035
+      "anio": 2035,
+      "anioFin": null
     },
     {
       "numero": 10,
       "concepto": "Bono de Prole",
       "montoUsdHoy": 37000,
       "moneda": "USD",
-      "anio": 2036
+      "anio": 2036,
+      "anioFin": null
     },
     {
       "numero": 11,
       "concepto": "Bono de Prole",
       "montoUsdHoy": 37000,
       "moneda": "USD",
-      "anio": 2037
+      "anio": 2037,
+      "anioFin": null
     },
     {
       "numero": 12,
       "concepto": "Bono de Prole",
       "montoUsdHoy": 37000,
       "moneda": "USD",
-      "anio": 2038
+      "anio": 2038,
+      "anioFin": null
     },
     {
       "numero": 13,
       "concepto": "Bono de Prole",
       "montoUsdHoy": 37000,
       "moneda": "USD",
-      "anio": 2039
+      "anio": 2039,
+      "anioFin": null
     }
   ],
   "gastosExtraordinariosAnualesUsdHoy": 0,
@@ -189,6 +202,7 @@
   "preferenciaMoneda": "80% en dólares y 20% en colones",
   "porcentajeUsd": 80,
   "ingresoHastaEdad": 38,
+  "ingresoHastaMeses": null,
   "salarioMonto": 1750,
   "salarioMoneda": "USD",
   "gastoMonto": 4700,
@@ -214,6 +228,17 @@
     "fuentes": [
       "salario"
     ],
+    "fuentesDetalle": [
+      {
+        "fuente": "salario",
+        "monto": 1750,
+        "moneda": "USD",
+        "tiempo": 4,
+        "unidad": "meses",
+        "meses": 4
+      }
+    ],
+    "tipoCambioReferencia": 450,
     "fuentePrincipal": "salario",
     "empleo": {
       "empresa": "Databricks",
@@ -467,6 +492,36 @@
           "campo": "Ingreso total: hasta la edad",
           "valor": "38",
           "codigo": "38"
+        },
+        {
+          "id": "ingreso-hasta-u",
+          "campo": "Ingreso total: hasta la edad (unidad)",
+          "valor": "años (edad)",
+          "codigo": "anios"
+        },
+        {
+          "id": "fm-salario",
+          "campo": "Fuente salario: ingreso mensual (monto)",
+          "valor": "1,750",
+          "codigo": "1,750"
+        },
+        {
+          "id": "fm-salario-moneda",
+          "campo": "Fuente salario: ingreso mensual (moneda)",
+          "valor": "USD",
+          "codigo": "USD"
+        },
+        {
+          "id": "ft-salario",
+          "campo": "Fuente salario: tiempo que lo recibirá",
+          "valor": "4",
+          "codigo": "4"
+        },
+        {
+          "id": "ft-salario-u",
+          "campo": "Fuente salario: tiempo que lo recibirá (unidad)",
+          "valor": "meses",
+          "codigo": "meses"
         },
         {
           "id": "empleo-empresa",
@@ -1340,15 +1395,25 @@
     "salario-monto": "1,750",
     "salario-moneda": "USD",
     "ingreso-hasta": "38",
+    "ingreso-hasta-u": "anios",
     "fuente-salario": true,
     "fuente-empresa": false,
     "fuente-honorarios": false,
+    "fm-salario": "1,750",
+    "fm-salario-moneda": "USD",
+    "ft-salario": "4",
+    "ft-salario-u": "meses",
+    "fm-empresa-moneda": "CRC",
+    "ft-empresa-u": "anios",
+    "fm-honorarios-moneda": "CRC",
+    "ft-honorarios-u": "anios",
     "fuente-ingreso": "salario",
     "empleo-empresa": "Databricks",
     "empleo-puesto": "Diseñador UX",
     "c3": "0",
     "plan": "individual",
     "ingreso-pareja-moneda": "CRC",
+    "ingreso-pareja-hasta-u": "anios",
     "pension-regimen": "ivm",
     "pension-recibe": "no",
     "pension-monto": "211.285,50",
@@ -1457,10 +1522,13 @@
     "viv-alquiler-moneda": "USD",
     "hipoteca-saldo-moneda": "USD",
     "hipoteca-cuota-moneda": "USD",
+    "hipoteca-plazo-u": "anios",
     "inmuebles-n": "0",
     "empresas-n": "0",
     "pe-tiene": "no",
     "pe-moneda": "USD",
+    "pe-anios-u": "anios",
+    "pe-anios-inc-u": "anios",
     "ventas-n": "0",
     "metas-n": "0",
     "c1-tiene": "no",
@@ -1504,7 +1572,7 @@
     "distrito": "Pozos",
     "direccion": "Ecoresidencial Villa Real casa R17"
   },
-  "modificadoEn": 1794502283078,
+  "modificadoEn": 1794521090521,
   "historialEdiciones": [
     1794254283976,
     1794332381529,
@@ -1518,10 +1586,11 @@
     1794432270314,
     1794433482084,
     1794434394629,
-    1794502283078
+    1794502283078,
+    1794521090521
   ],
-  "versionFormulario": 74,
+  "versionFormulario": 78,
   "preguntasPendientes": [],
   "estado": "completo",
-  "_guardado": 1794502283080
+  "_guardado": 1794521090522
 }
