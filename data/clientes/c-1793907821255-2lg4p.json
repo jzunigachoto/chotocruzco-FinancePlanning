@@ -26,7 +26,7 @@
     "estadoCivil": "soltero"
   },
   "edad": 37,
-  "edadRetiro": 50,
+  "edadRetiro": 60,
   "versionPerfil": 2,
   "situacionPortafolio": "aporta",
   "respuestas": {
@@ -463,8 +463,8 @@
         {
           "id": "edad_retiro",
           "campo": "Edad de independencia financiera",
-          "valor": "50",
-          "codigo": "50"
+          "valor": "60",
+          "codigo": "60"
         }
       ]
     },
@@ -1391,7 +1391,7 @@
     "q9": "7.5",
     "q10": "6.67",
     "edad": "37",
-    "edad_retiro": "50",
+    "edad_retiro": "60",
     "salario-monto": "1,750",
     "salario-moneda": "USD",
     "ingreso-hasta": "38",
@@ -1572,7 +1572,7 @@
     "distrito": "Pozos",
     "direccion": "Ecoresidencial Villa Real casa R17"
   },
-  "modificadoEn": 1794521107895,
+  "modificadoEn": 1794521167598,
   "historialEdiciones": [
     1794254283976,
     1794332381529,
@@ -1587,10 +1587,11 @@
     1794433482084,
     1794434394629,
     1794502283078,
-    1794521107895
+    1794521107895,
+    1794521167598
   ],
   "versionFormulario": 78,
   "preguntasPendientes": [],
   "estado": "completo",
-  "_guardado": 1794521107896
+  "_guardado": 1794521167599
 }
