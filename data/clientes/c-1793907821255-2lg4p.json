@@ -1202,6 +1202,21 @@
     {
       "pagina": 2,
       "seccion": "Planificación financiera",
+      "n": "18",
+      "clave": "metas-n",
+      "pregunta": "¿Cuántas metas específicas desea financiar con su patrimonio?",
+      "detalle": [
+        {
+          "id": "metas-n",
+          "campo": "Cantidad de metas específicas",
+          "valor": "0",
+          "codigo": "0"
+        }
+      ]
+    },
+    {
+      "pagina": 2,
+      "seccion": "Planificación financiera",
       "n": "19",
       "clave": "c1-tiene",
       "pregunta": "¿Planea retiros adicionales de este portafolio, distintos de las metas indicadas en la pregunta anterior?",
@@ -1447,6 +1462,7 @@
     "pe-tiene": "no",
     "pe-moneda": "USD",
     "ventas-n": "0",
+    "metas-n": "0",
     "c1-tiene": "no",
     "herencia": "indistinto",
     "herencia-moneda": "USD",
@@ -1488,7 +1504,7 @@
     "distrito": "Pozos",
     "direccion": "Ecoresidencial Villa Real casa R17"
   },
-  "modificadoEn": 1794502272321,
+  "modificadoEn": 1794502281220,
   "historialEdiciones": [
     1794254283976,
     1794332381529,
@@ -1502,12 +1518,10 @@
     1794432270314,
     1794433482084,
     1794434394629,
-    1794502272321
+    1794502281220
   ],
   "versionFormulario": 74,
-  "preguntasPendientes": [
-    "Pregunta 18: ¿Cuántas metas específicas desea financiar con su patrimonio?"
-  ],
-  "estado": "incompleto",
-  "_guardado": 1794502272322
+  "preguntasPendientes": [],
+  "estado": "completo",
+  "_guardado": 1794502281221
 }
