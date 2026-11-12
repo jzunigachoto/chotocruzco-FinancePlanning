@@ -201,8 +201,8 @@
   },
   "preferenciaMoneda": "80% en dólares y 20% en colones",
   "porcentajeUsd": 80,
-  "ingresoHastaEdad": 38,
-  "ingresoHastaMeses": null,
+  "ingresoHastaEdad": null,
+  "ingresoHastaMeses": 4,
   "salarioMonto": 1750,
   "salarioMoneda": "USD",
   "gastoMonto": 4700,
@@ -233,9 +233,9 @@
         "fuente": "salario",
         "monto": 1750,
         "moneda": "USD",
-        "tiempo": 6,
+        "tiempo": 4,
         "unidad": "meses",
-        "meses": 6
+        "meses": 4
       }
     ],
     "tipoCambioReferencia": 450,
@@ -490,14 +490,14 @@
         {
           "id": "ingreso-hasta",
           "campo": "Ingreso total: hasta la edad",
-          "valor": "38",
-          "codigo": "38"
+          "valor": "4",
+          "codigo": "4"
         },
         {
           "id": "ingreso-hasta-u",
           "campo": "Ingreso total: hasta la edad (unidad)",
-          "valor": "años (edad)",
-          "codigo": "anios"
+          "valor": "meses",
+          "codigo": "meses"
         },
         {
           "id": "fm-salario",
@@ -514,8 +514,8 @@
         {
           "id": "ft-salario",
           "campo": "Fuente salario: tiempo que lo recibirá",
-          "valor": "6",
-          "codigo": "6"
+          "valor": "4",
+          "codigo": "4"
         },
         {
           "id": "ft-salario-u",
@@ -1394,14 +1394,14 @@
     "edad_retiro": "60",
     "salario-monto": "1,750",
     "salario-moneda": "USD",
-    "ingreso-hasta": "38",
-    "ingreso-hasta-u": "anios",
+    "ingreso-hasta": "4",
+    "ingreso-hasta-u": "meses",
     "fuente-salario": true,
     "fuente-empresa": false,
     "fuente-honorarios": false,
     "fm-salario": "1,750",
     "fm-salario-moneda": "USD",
-    "ft-salario": "6",
+    "ft-salario": "4",
     "ft-salario-u": "meses",
     "fm-empresa-moneda": "CRC",
     "ft-empresa-u": "anios",
@@ -1572,7 +1572,7 @@
     "distrito": "Pozos",
     "direccion": "Ecoresidencial Villa Real casa R17"
   },
-  "modificadoEn": 1794521728932,
+  "modificadoEn": 1794522351270,
   "historialEdiciones": [
     1794254283976,
     1794332381529,
@@ -1589,10 +1589,11 @@
     1794502283078,
     1794521107895,
     1794521170297,
-    1794521728932
+    1794521728932,
+    1794522351270
   ],
   "versionFormulario": 78,
   "preguntasPendientes": [],
   "estado": "completo",
-  "_guardado": 1794521728933
+  "_guardado": 1794522351272
 }
