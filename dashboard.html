@@ -1026,6 +1026,9 @@ function mesesPrimerAnio(c, sup){
   const f = new Date(ms);
   return f.getFullYear() === +sup.anioInicio ? 13 - (f.getMonth() + 1) : 12;
 }
+// Último mes de un plazo de M meses contado desde el mes del cuestionario: « (hasta febrero 2027)»
+const hastaMesTxt = (c, M) => { const ms = +(c && c.creadoEn); if(!(ms > 0) || !(+M > 0)) return '';
+  const d = new Date(ms), e = new Date(d.getFullYear(), d.getMonth() + (+M) - 1, 1); return ' (hasta ' + MESES_TXT[e.getMonth()] + ' ' + e.getFullYear() + ')'; };
 const fechaCuestionario = c => { const ms = +(c && c.creadoEn); return ms > 0 ? new Date(ms).toLocaleDateString('es-CR', {day:'2-digit', month:'2-digit', year:'numeric'}) : ''; };
 // Texto del primer año: «2026: 3 meses, de octubre a diciembre»
 const MESES_TXT = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
@@ -1312,7 +1315,7 @@ function proyectar(c, sup, opts){
     traePensionVol: fondos.some(f => f.regla === 'pension' && f.k === 'voluntaria'), cuotasEnGasto, pUsdGasto, pUsdOrigen, fracPen, mesNac: mesNacimiento(c), edadInicial: c.edad, mesesPrimer, f0,
     ropSaldoFinal: (() => { const k = fondos.findIndex(f => f.k === 'rop'); return k < 0 ? 0 : filasFondos[k][filasFondos[k].length - 1].saldoFinal; })(),
     pensionMensual, infPen, factorGasto, gastoEnRetiro: gr || null, metas, ingresoMensual, fuentesIng, ingresoDecl, otrosIngresosMensual, tOtros, tFinOtros, periodosIngreso, edadFinIngreso,
-    conjunta, edadPareja: conjunta ? +hgP.edadPareja : null, ingresoParejaMensual, periodosPareja, mesesPar: ingresoParejaMensual ? mesesPar : null, mesesIng,
+    conjunta, edadPareja: conjunta ? +hgP.edadPareja : null, ingresoParejaMensual, periodosPareja, mesesPar: ingresoParejaMensual ? mesesPar : null, monedaPareja: igP ? igP.moneda : null, mesesIng,
     ingExtraDecl: ingExtra.filter(a => a.anio === a.anioIni), traePareja: ingresoParejaMensual > 0,
     alquileres, cuotaHip, cuotaDeu, deudas, gastosExtra, donacionesAnual, gastosExtraAnual, ingExtra, ventas, apoyos, retiros, metasCredito,
     aportesExtra: ingExtra.concat(ventas),
@@ -4506,10 +4509,12 @@ function ingresosGastosPorMoneda(c, p, sup){
   const add = (lista, nombre, monto, mon, pUsd) => { if(!(monto > 0.5)) return;
     const u = pUsd != null ? monto * pUsd : mon === 'CRC' ? 0 : monto;
     lista.push({nombre, usd: u, crc: monto - u, colones: (monto - u) * tc}); };
+  // ingresos con plazo en meses: solo los meses que se reciben dentro de los próximos 12 (por ejemplo, 4 meses → 4 × el mensual)
   if(p.fuentesIng && p.fuentesIng.length) p.fuentesIng.forEach(f => { if(f.meses != null || p.periodosIngreso > 0)
-      add(ing, 'Ingreso total (actividad)' + (f.k === 'total' ? '' : ': ' + f.nombre.toLowerCase()) + (f.meses != null ? ' · por ' + duracionTxt(f.tiempo, f.unidad === 'meses' ? f.meses : 0) : ''), f.mensual * 12, f.moneda); });
+      add(ing, 'Ingreso total (actividad)' + (f.k === 'total' ? '' : ': ' + f.nombre.toLowerCase()) + (f.meses != null ? ' · por ' + duracionTxt(f.tiempo, f.unidad === 'meses' ? f.meses : 0) + hastaMesTxt(c, f.meses) : ''),
+        f.mensual * (f.meses != null ? Math.min(12, f.meses) : 12), f.moneda); });
   else if(p.periodosIngreso > 0) add(ing, 'Ingreso total (actividad)', p.ingresoMensual * 12, c.salarioMoneda);
-  add(ing, 'Ingreso de la pareja', p.ingresoParejaMensual * 12, ig.moneda);
+  add(ing, 'Ingreso de la pareja' + (p.mesesPar ? ' · por ' + duracionTxt(0, p.mesesPar) + hastaMesTxt(c, p.mesesPar) : ''), p.ingresoParejaMensual * (p.mesesPar ? Math.min(12, p.mesesPar) : 12), ig.moneda);
   add(ing, 'Otros ingresos recurrentes', p.otrosIngresosMensual * 12, oi.moneda);
   add(ing, NOMBRE_PENSION[pen.regimen] || 'Pensión', p.pensionMensual * 12, pen.moneda);
   // pensiones del ROP y voluntaria: primer año completo de pago, en valor de hoy, en la moneda del saldo del fondo
@@ -4527,7 +4532,7 @@ function ingresosGastosPorMoneda(c, p, sup){
   if(p.cuotaHip) add(gas, 'Cuota de la hipoteca', p.cuotaHip.mensual * 12, hip.cuotaMoneda);
   if(!p.cuotasEnGasto) p.deudas.forEach(d => add(gas, 'Cuota: ' + d.nombre, d.mensual * 12, d.moneda));
   (p.metasCredito || []).forEach(m => add(gas, 'Crédito de la meta: ' + nombreMeta(m) + ' (' + m.anio + ' a ' + m.anioFinCredito + ')', m.cuotaAnual, m.monedaOriginal));
-  p.gastosExtra.filter(g => g.anual).forEach(g => add(gas, g.concepto + ' (cada año)', g.montoUsdHoy, g.monedaOriginal));
+  p.gastosExtra.filter(g => g.anual).forEach(g => add(gas, g.concepto + ' (cada año desde ' + g.anio + ')', g.montoUsdHoy, g.monedaOriginal));
   p.ingExtra.forEach(a => { if(a.grupo == null) add(puntIng, a.concepto + ' (' + a.anio + ')', a.montoUsdHoy, a.monedaOriginal);
     else if(a.anio === a.anioIni) add(puntIng, a.concepto + ' (cada año, de ' + a.anioIni + ' a ' + a.anioFin + ')', a.montoUsdHoy, a.monedaOriginal); });
   p.ventas.forEach(v => add(puntIng, v.concepto + ' (' + v.anio + ')', v.montoUsdHoy, v.monedaOriginal));
@@ -4599,7 +4604,9 @@ function objetivosPlan(c, p, sup, f){
     f(+a.montoAnualUsdHoy) + ' al año', duracionTxt(a.anios, a.meses)])});
   if(p.ventas.length) grupos.push({titulo: 'Entradas al portafolio', filas: p.ventas.map(v => [v.concepto, String(v.anio), f(v.montoUsdHoy), 'Venta de activos'])});
   const filas = grupos.flatMap(g => g.filas);
-  return {sub, kpis, kpis2: null, filas, grupos, vacio: 'El cliente no declaró metas, retiros, gastos extraordinarios ni ventas de activos.'};
+  // los gastos extraordinarios de cada año también salen en «Gastos recurrentes»: aclaración para el dashboard, la ficha y la presentación
+  const notaAnual = (p.gastosExtra || []).some(g => g.anual) ? 'Los gastos que se repiten cada año también aparecen en Gastos recurrentes; en la proyección se cuentan una sola vez.' : '';
+  return {sub, kpis, kpis2: null, filas, grupos, notaAnual, vacio: 'El cliente no declaró metas, retiros, gastos extraordinarios ni ventas de activos.'};
 }
 // Cifras clave de la ficha y de la presentación: perfil de riesgo, rendimiento esperado
 // (cartera del perfil), rendimiento mínimo necesario (equilibrio) y dos cifras del resultado.
@@ -4723,7 +4730,7 @@ function objetivosHTML(c, p){
       <thead><tr><th>Concepto</th><th>Año</th><th class="der">Monto</th><th>Condición</th></tr></thead><tbody>
       ${O.grupos.map(g => `<tr class="grupo"><td colspan="4">${esc(g.titulo)}</td></tr>` +
         g.filas.map(f => `<tr><td>${esc(f[0])}</td><td>${esc(f[1])}</td><td class="der">${esc(f[2])}</td><td class="cond">${esc(f[3])}</td></tr>`).join('')).join('')}
-      </tbody></table>` : `<p class="nota-riesgo">${esc(O.vacio)}</p>`}
+      </tbody></table>${O.notaAnual ? `<p class="nota-riesgo">${esc(O.notaAnual)}</p>` : ''}` : `<p class="nota-riesgo">${esc(O.vacio)}</p>`}
     </div>`;
 }
 // ================= Porcentaje del portafolio en colones para cubrir gastos (renta fija en Costa Rica y en EE. UU.) =================
@@ -4836,10 +4843,17 @@ function flujo12(p, sup){
   const recur = (f, t) => p.gastosExtra.filter(g => g.anual && f.anio >= g.anio).reduce((a, g) => a + g.montoUsdHoy * ix(g.monedaOriginal, t), 0) * (t === 1 ? fa1 : 1)
     + (p.gastosExtraAnual || 0) * ix('USD', t) * (t === 1 ? fa1 : 1);
   const filas = [];
+  // ingresos con plazo en meses (fuentes de la actividad y pareja): van solo en los meses en que se reciben,
+  // no repartidos en el año. plazoMes: lo de ese mes (i = meses desde el cuestionario); plazoAnio: lo que la proyección puso en el año
+  const conPlazo = (p.fuentesIng || []).filter(x => x.meses != null).map(x => ({mensual: x.mensual, meses: x.meses, moneda: x.moneda}))
+    .concat(p.mesesPar && p.ingresoParejaMensual ? [{mensual: p.ingresoParejaMensual, meses: p.mesesPar, moneda: p.monedaPareja}] : []);
+  const mesesEn = (t, M) => Math.max(0, Math.min(t === 1 ? m1 : 12, M - (t === 1 ? 0 : m1 + 12 * (t - 2))));
+  const plazoAnio = t => conPlazo.reduce((a, x) => a + x.mensual * mesesEn(t, x.meses) * ix(x.moneda, t), 0);
+  const plazoMes = (i, t) => conPlazo.reduce((a, x) => a + (i < x.meses ? x.mensual * ix(x.moneda, t) : 0), 0);
   for(let i = 0; i < 12; i++){
     const enPrimero = i < m1, f = enPrimero ? f1 : f2; if(!f) break;
     const t = enPrimero ? 1 : 2, div = enPrimero ? m1 : 12, mes = (mes0 + i) % 12;
-    const ing = f.ingOrd / div, gas = (f.gasOrd + recur(f, t)) / div;
+    const ing = Math.max(0, f.ingOrd - plazoAnio(t)) / div + plazoMes(i, t), gas = (f.gasOrd + recur(f, t)) / div;
     filas.push({etiq: MESES_TXT[mes].slice(0, 3) + ' ' + String(f.anio).slice(2), mes: MESES_TXT[mes][0].toUpperCase() + MESES_TXT[mes].slice(1) + ' ' + f.anio, ing, gas, flujo: ing - gas});
   }
   // montos puntuales (sin mes definido) de cada año que toca la ventana
@@ -7205,6 +7219,7 @@ async function exportarFicha(c, p, asig){
         doc.setFontSize(7.6); doc.setTextColor(...NEGRO); doc.setFont('helvetica','bold');
         doc.text('Metas y compromisos del plan · montos en dólares de hoy', M, y); doc.setFont('helvetica','normal'); y += 5;
         tablaPdf(['Concepto', 'Año', 'Monto', 'Condición'], O.grupos.flatMap(g => [{grupo: g.titulo}].concat(g.filas)), [74, 28, 30, 42], [2]);
+        if(O.notaAnual) subtitulo(O.notaAnual);
       } else if(O.vacio) subtitulo(O.vacio);
     }
     nuevaPagina();
@@ -7842,7 +7857,9 @@ async function exportarPresentacion(c, p, asig){
 
     // 6. Ingresos y gastos extraordinarios (centrada)
     {
-      const s = nueva('Ingresos y Gastos Extraordinarios', 'Montos en dólares de hoy');
+      // los gastos que se repiten cada año también salen en «Gastos recurrentes»: se aclara que no se cuentan dos veces
+      const subE = 'Montos en dólares de hoy' + (p.gastosExtra.some(g => g.anual) ? ' · los gastos que se repiten cada año también aparecen en Gastos recurrentes; en la proyección se cuentan una sola vez' : '');
+      const s = nueva('Ingresos y Gastos Extraordinarios', subE);
       const wT = 10.5, xT = (W - wT) / 2;
       if(O.filas.length){
         const filasT = O.grupos.flatMap(g => [[{text: g.titulo.toUpperCase(), options: {colspan: 4, bold: true, color: ORO, fontSize: 9, fill: {color: 'F5F3EA'}}}]]
@@ -7853,7 +7870,7 @@ async function exportarPresentacion(c, p, asig){
         const cabe1 = 18, cabeN = 19, n1f = Math.min(filasT.length, cabe1), hT = (n1f + 1) * (n1f > 10 ? 0.22 : 0.26);
         s.addTable([cabT].concat(filasT.slice(0, cabe1)), optT(1.75 + Math.max(0, (6.85 - 1.75 - hT) / 2), n1f));
         for(let i = cabe1; i < filasT.length; i += cabeN){
-          const s2 = nueva('Ingresos y Gastos Extraordinarios (continuación)', 'Montos en dólares de hoy');
+          const s2 = nueva('Ingresos y Gastos Extraordinarios (continuación)', subE);
           s2.addTable([cabT].concat(filasT.slice(i, i + cabeN)), optT(1.8, 11));
         }
       } else s.addText(O.vacio, {x: M, y: 3.9, w: W - 2*M, h: 0.4, fontFace: FONT, fontSize: 12, color: GRIS, margin: 0, align: 'center'});
