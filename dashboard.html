@@ -903,7 +903,7 @@ function inicioPension(c, edadPen, yaRecibe){
 }
 function fondosDe(c, sup, aniosAcum){
   const tc = sup.tipoCambio, out = [];
-  const salUsd = aUsd(c.salarioMonto, c.salarioMoneda, tc);
+  const salUsd = ingresoTotalUsd(c, tc);
   const NOMBRES = {rop:'ROP', fcl:'FCL', voluntaria:'Pensión voluntaria'};
   // El aporte al ROP y al FCL es un porcentaje del salario: solo se estima si la fuente
   // principal del ingreso es el salario (empresarios y rentistas no cotizan sobre él).
@@ -1083,7 +1083,15 @@ function proyectar(c, sup, opts){
   // deudas, gastos extraordinarios y primer retiro. Los anteriores no los pedían.
   const flujoCompleto = c.gastosExtraordinariosAnualesUsdHoy !== undefined && c.gastosExtraordinariosAnualesUsdHoy !== null;
 
-  const ingresoMensual = aUsd(c.salarioMonto, c.salarioMoneda, tc);
+  // Ingreso total (actividad) por fuente: cada fuente con su monto, su moneda y, si se indicó, los
+  // meses que se recibirá desde la fecha del cuestionario. Sin desglose, el ingreso total declarado.
+  const fuentesIng = (((c.ingresos || {}).fuentesDetalle) || []).filter(f => f && +f.monto > 0)
+    .map(f => ({k: f.fuente, nombre: NOMBRE_FUENTE[f.fuente] || f.fuente || 'Fuente', mensual: aUsd(f.monto, f.moneda, tc), original: +f.monto, moneda: f.moneda || 'USD',
+      meses: +f.meses > 0 ? Math.round(+f.meses) : null, tiempo: f.tiempo, unidad: f.unidad}));
+  const ingresoMensual = fuentesIng.length ? fuentesIng.reduce((a, f) => a + f.mensual, 0) : aUsd(c.salarioMonto, c.salarioMoneda, tc);
+  // monto y moneda del ingreso total como se muestra: la moneda común de las fuentes o, si hay colones y dólares, dólares
+  const monFu = fuentesIng.length && fuentesIng.every(f => f.moneda === fuentesIng[0].moneda) ? fuentesIng[0].moneda : 'USD';
+  const ingresoDecl = fuentesIng.length ? {monto: monFu === 'USD' ? ingresoMensual : fuentesIng.reduce((a, f) => a + f.original, 0), moneda: monFu} : {monto: +c.salarioMonto || 0, moneda: c.salarioMoneda || 'USD'};
   const gastoMensual   = aUsd(c.gastoMonto,   c.gastoMoneda,   tc);
   const capital        = (opts && opts.capital != null) ? opts.capital : aUsd(c.capitalMonto, c.capitalMoneda, tc);
   const aniosAcum   = Math.max(0, c.edadRetiro - c.edad);
@@ -1096,7 +1104,7 @@ function proyectar(c, sup, opts){
   // independencia. Si ya es independiente y aun así declara ingresos (por ejemplo, de su
   // empresa), se asume que los sigue recibiendo durante toda la proyección.
   const edadFinIngreso = +c.ingresoHastaEdad > 0 ? +c.ingresoHastaEdad : (aniosAcum > 0 ? c.edadRetiro : sup.edadFinal);
-  const periodosIngreso = Math.max(0, Math.min(totalAnios, edadFinIngreso - c.edad + (aniosAcum > 0 && !(+c.ingresoHastaEdad > 0) ? 0 : 1)));
+  const periodosIngreso0 = Math.max(0, Math.min(totalAnios, edadFinIngreso - c.edad + (aniosAcum > 0 && !(+c.ingresoHastaEdad > 0) ? 0 : 1)));
 
   const rf = (sup.rendimientoFondos ?? 6)/100;
   const fondos = fondosDe(c, sup, aniosAcum);
@@ -1111,12 +1119,27 @@ function proyectar(c, sup, opts){
   const ipP = inicioPension(c, edadPen, !!(pensionMensual && pen.yaRecibe)), tPension = ipP.t, fracPen = ipP.frac;
   // Primer año: solo los meses que faltan desde el mes en que se llenó el cuestionario
   const mesesPrimer = mesesPrimerAnio(c, sup), f0 = mesesPrimer / 12;
+  // Meses del período t que caen dentro de un plazo de M meses contado desde la fecha del cuestionario
+  const mesesEn = (t, M) => Math.max(0, Math.min(t === 1 ? mesesPrimer : 12, M - (t === 1 ? 0 : mesesPrimer + 12 * (t - 2))));
+  // Fracción del año calendario «anio» cubierta por una duración de «anios» años (puede traer meses) desde «ini»
+  const fracAnios = (ini, anios, anio) => anio < ini ? 0 : Math.max(0, Math.min(1, ini + anios - anio));
+  const periodosDeMeses = M => M <= mesesPrimer ? 1 : 1 + Math.ceil((M - mesesPrimer) / 12);
+  // Ingreso total «durante N meses más» (en lugar de hasta una edad): las fuentes sin plazo propio lo
+  // heredan; sin desglose por fuente, el ingreso total se trata como una sola fuente con ese plazo.
+  const mesesIng = +c.ingresoHastaMeses > 0 ? Math.round(+c.ingresoHastaMeses) : null;
+  if(mesesIng){
+    if(fuentesIng.length) fuentesIng.forEach(f => { if(f.meses == null){ f.meses = mesesIng; f.tiempo = mesesIng; f.unidad = 'meses'; } });
+    else if(ingresoMensual > 0) fuentesIng.push({k: 'total', nombre: 'Ingreso total', mensual: ingresoMensual, original: +c.salarioMonto || 0, moneda: c.salarioMoneda || 'USD', meses: mesesIng, tiempo: mesesIng, unidad: 'meses'});
+  }
+  const periodosIngreso = mesesIng ? Math.min(totalAnios, periodosDeMeses(mesesIng)) : periodosIngreso0;
+  // Ingreso de la pareja «durante N meses más»
+  const mesesPar = igP && +igP.hastaMeses > 0 ? Math.round(+igP.hastaMeses) : null;
   const oi = c.otrosIngresosRetiro;
   const otrosIngresosMensual = oi && +oi.montoMensual > 0 ? aUsd(oi.montoMensual, oi.moneda, tc) : 0;
   // otros ingresos: desde hoy, desde un año indicado o (versión anterior) desde la independencia
   // Ingreso de la pareja: hasta la edad que indicó o, si no la indicó, hasta la independencia del cliente
   const ingresoParejaMensual = conjunta && igP && +igP.monto > 0 ? aUsd(igP.monto, igP.moneda, tc) : 0;
-  const periodosPareja = !ingresoParejaMensual ? 0 : +igP.hastaEdad > 0 ? Math.max(0, Math.min(totalAnios, +igP.hastaEdad - (+hgP.edadPareja) + 1))
+  const periodosPareja = !ingresoParejaMensual ? 0 : mesesPar ? Math.min(totalAnios, periodosDeMeses(mesesPar)) : +igP.hastaEdad > 0 ? Math.max(0, Math.min(totalAnios, +igP.hastaEdad - (+hgP.edadPareja) + 1))
     : (aniosAcum > 0 ? aniosAcum : totalAnios);
   // Otros ingresos: último año (si el cliente lo indicó)
   const tFinOtros = oi && oi.hasta === 'anio' && +oi.anioFin > 0 ? Math.max(0, +oi.anioFin - sup.anioInicio + 1) : totalAnios;
@@ -1145,7 +1168,7 @@ function proyectar(c, sup, opts){
       const m = +valor * +dv.pct / 100 / 12;
       alquileres.push({nombre: 'Dividendos: ' + nom, mensual: aUsd(m, mon || 'USD', tc), original: m, moneda: mon || 'USD', hasta: +fin ? +fin - 1 : 9999, dividendo: true, pct: +dv.pct}); });
   const hip = ((pat.vivienda || {}).situacion === 'hipoteca' && flujoCompleto) ? (pat.vivienda.hipoteca || {}) : null;
-  const cuotaHip = hip && +hip.cuotaMensual > 0 && +hip.plazoRestanteAnios > 0 ? {mensual: aUsd(hip.cuotaMensual, hip.cuotaMoneda, tc), anios: +hip.plazoRestanteAnios} : null;
+  const cuotaHip = hip && +hip.cuotaMensual > 0 && +hip.plazoRestanteAnios > 0 ? {mensual: aUsd(hip.cuotaMensual, hip.cuotaMoneda, tc), anios: +hip.plazoRestanteAnios, meses: +hip.plazoRestanteMeses > 0 ? Math.round(+hip.plazoRestanteMeses) : null} : null;
   const deu = flujoCompleto ? (pat.deudas || {}) : {};
   const cuotasEnGasto = deu.cuotasEnGasto === true;
   const cuotaDeu = +deu.cuotaMensual > 0 && +deu.plazoRestanteAnios > 0 ? {mensual: aUsd(deu.cuotaMensual, deu.cuotaMoneda, tc), anios: +deu.plazoRestanteAnios} : null;
@@ -1159,8 +1182,11 @@ function proyectar(c, sup, opts){
     .map((g, k) => ({numero: k + 1, concepto: g.concepto || 'Gasto extraordinario ' + (k + 1), anio: +g.anio, montoUsdHoy: +g.montoUsdHoy, anual: g.frecuencia === 'anual',
       montoOriginal: g.montoOriginal, monedaOriginal: g.monedaOriginal}));
   const donacionesAnual = +c.donacionesAnualesUsdHoy || 0;
-  const ingExtra = (c.aportesExtraordinarios || []).filter(a => +a.montoUsdHoy > 0 && +a.anio > 0)
-    .map(a => ({concepto: a.concepto || 'Ingreso extraordinario', anio: +a.anio, montoUsdHoy: +a.montoUsdHoy, montoOriginal: a.montoOriginal, monedaOriginal: a.monedaOriginal}));
+  const ingExtra = [].concat(...(c.aportesExtraordinarios || []).filter(a => +a.montoUsdHoy > 0 && +a.anio > 0).map((a, g) => {
+    const fin = +a.anioFin > +a.anio ? Math.min(+a.anioFin, +a.anio + 150) : +a.anio, out = [];
+    for(let y = +a.anio; y <= fin; y++) out.push({concepto: a.concepto || 'Ingreso extraordinario', anio: y, montoUsdHoy: +a.montoUsdHoy, montoOriginal: a.montoOriginal, monedaOriginal: a.monedaOriginal,
+      grupo: fin > +a.anio ? g : null, anioIni: +a.anio, anioFin: fin});
+    return out; }));
   const ventas = ventasDe(c, tc, sup).filter(v => +v.monto > 0 && +v.anio > 0)
     .map(v => ({concepto: v.concepto || 'Venta de activos', anio: +v.anio, montoUsdHoy: aUsd(v.monto, v.moneda, tc), montoOriginal: +v.monto, monedaOriginal: v.moneda || 'USD',
       valorFuturo: v.valorFuturoNominal || null,
@@ -1174,7 +1200,7 @@ function proyectar(c, sup, opts){
   const metasCredito = (c.metas || []).filter(m => +m.montoUsdHoy > 0 && +m.anio > 0 && m.financiamiento && m.financiamiento !== 'portafolio'
       && m.tasaCredito != null && m.tasaCredito !== '' && +m.plazoCreditoAnios > 0)
     .map(m => { const principal = +m.montoUsdHoy * ix(m.monedaOriginal, +m.anio - sup.anioInicio + 1);
-      return Object.assign({}, m, {principal, cuotaAnual: cuotaCredito(principal, +m.tasaCredito / 100, +m.plazoCreditoAnios), anioFinCredito: +m.anio + (+m.plazoCreditoAnios) - 1}); });
+      return Object.assign({}, m, {principal, cuotaAnual: cuotaCredito(principal, +m.tasaCredito / 100, +m.plazoCreditoAnios), anioFinCredito: +m.anio + Math.ceil(+m.plazoCreditoAnios) - 1}); });
   const cap = c.capacidad || {};
   // retiros adicionales del portafolio: salen del portafolio en su año (columna de gastos extraordinarios)
   const retiros = (c.retirosPortafolio || []).filter(x => +x.montoUsdHoy > 0 && +x.anio > 0);
@@ -1203,8 +1229,10 @@ function proyectar(c, sup, opts){
     // Ingresos ordinarios
     // Montos recurrentes: en el primer año, solo los meses que faltan (fa); los puntuales van completos
     const fa = t === 1 ? f0 : 1;
-    const ingresoActividad = t <= periodosIngreso ? ingresoMensual * 12 * ix(c.salarioMoneda, t) * fa : 0;
-    const ingresoPareja = t <= periodosPareja ? ingresoParejaMensual * 12 * ix(igP && igP.moneda, t) * fa : 0;
+    const ingresoActividad = fuentesIng.length
+      ? fuentesIng.reduce((a, f) => a + f.mensual * (f.meses == null ? (t <= periodosIngreso ? (t === 1 ? mesesPrimer : 12) : 0) : mesesEn(t, f.meses)) * ix(f.moneda, t), 0)
+      : t <= periodosIngreso ? ingresoMensual * 12 * ix(c.salarioMoneda, t) * fa : 0;
+    const ingresoPareja = mesesPar ? ingresoParejaMensual * mesesEn(t, mesesPar) * ix(igP && igP.moneda, t) : t <= periodosPareja ? ingresoParejaMensual * 12 * ix(igP && igP.moneda, t) * fa : 0;
     const otrosIngresos = otrosIngresosMensual && t >= tOtros && t <= tFinOtros ? otrosIngresosMensual * 12 * ix(oi.moneda, t) * fa : 0;
     const alquiler = alquileres.filter(a => anio <= a.hasta).reduce((x, a) => x + a.mensual * ix(a.moneda, t), 0) * 12 * fa;
     const pension = (pensionMensual && t >= tPension) ? pensionMensual * 12 * ix(pen.moneda, tPension) * Math.pow(1 + infPen, t - tPension) * Math.min(t === tPension ? fracPen : 1, fa) : 0;
@@ -1222,12 +1250,12 @@ function proyectar(c, sup, opts){
     const ingExt = ingresoExtra + traslado;
     // Gastos ordinarios (las cuotas son fijas: no se indexan)
     const gastoFamiliar = gastoMensual * 12 * (pUsdGasto * Math.pow(1 + inf, t - 1) + (1 - pUsdGasto) * Math.pow(1 + infL, t - 1)) * (enRetiro ? factorGasto : 1) * fGasto * fa;
-    const gastoDependientes = apoyos.filter(a => anio >= +a.anioInicio && anio < +a.anioInicio + (+a.anios)).reduce((x, a) => x + (+a.montoAnualUsdHoy) * ix(a.monedaOriginal, t), 0) * fa;
+    const gastoDependientes = apoyos.reduce((x, a) => x + (+a.montoAnualUsdHoy) * ix(a.monedaOriginal, t) * fracAnios(+a.anioInicio, +a.anios, anio), 0) * fa;
     const donaciones = donacionesAnual * ix(c.donacionesMoneda, t) * fa;
     // cuotas de las deudas: si el cliente indicó que ya están en el gasto familiar, no se suman de nuevo
     const cuotasDeudas = deudas.filter(d => anio <= d.anioFin).reduce((x, d) => x + d.mensual * 12, 0) * fa;
-    const cuotasCredito = metasCredito.filter(m => anio >= +m.anio && anio <= m.anioFinCredito).reduce((x, m) => x + m.cuotaAnual, 0) * fa;
-    const cuotas = ((cuotaHip && t <= cuotaHip.anios ? cuotaHip.mensual * 12 : 0) + (cuotaDeu && t <= cuotaDeu.anios ? cuotaDeu.mensual * 12 : 0)) * fa
+    const cuotasCredito = metasCredito.reduce((x, m) => x + m.cuotaAnual * fracAnios(+m.anio, +m.plazoCreditoAnios, anio), 0) * fa;
+    const cuotas = (cuotaHip && cuotaHip.meses ? cuotaHip.mensual * mesesEn(t, cuotaHip.meses) : 0) + ((cuotaHip && !cuotaHip.meses && t <= cuotaHip.anios ? cuotaHip.mensual * 12 : 0) + (cuotaDeu && t <= cuotaDeu.anios ? cuotaDeu.mensual * 12 : 0)) * fa
       + (cuotasEnGasto ? 0 : cuotasDeudas) + cuotasCredito;
     const cuotasIncluidas = cuotasEnGasto ? cuotasDeudas : 0;
     const gasOrd = gastoFamiliar + gastoDependientes + donaciones + cuotas;
@@ -1269,7 +1297,7 @@ function proyectar(c, sup, opts){
   const agota = filas.find(f => f.deficit > 1e-6);
   // qué inflaciones usa este cliente (las demás quedan en N/A)
   const crc = m => m === 'CRC';
-  const usaInfLocal = (ingresoMensual > 0 && crc(c.salarioMoneda)) || (ingresoParejaMensual > 0 && crc(igP && igP.moneda)) || (otrosIngresosMensual > 0 && crc(oi.moneda))
+  const usaInfLocal = (ingresoMensual > 0 && (fuentesIng.length ? fuentesIng.some(f => crc(f.moneda)) : crc(c.salarioMoneda))) || (ingresoParejaMensual > 0 && crc(igP && igP.moneda)) || (otrosIngresosMensual > 0 && crc(oi.moneda))
     || alquileres.some(a => crc(a.moneda)) || (pensionMensual > 0 && tPension > 1 && crc(pen.moneda)) || ingExtra.some(a => crc(a.monedaOriginal)) || ventas.some(v => crc(v.monedaOriginal))
     || (gastoMensual > 0 && pUsdGasto < 1) || apoyos.some(a => crc(a.monedaOriginal)) || (donacionesAnual > 0 && crc(c.donacionesMoneda))
     || gastosExtra.some(g => crc(g.monedaOriginal)) || metas.some(m => crc(m.monedaOriginal));
@@ -1283,8 +1311,9 @@ function proyectar(c, sup, opts){
     traeTrasladoFondos: fondos.some(f => f.regla !== 'pension'), traePensionRop: fondos.some(f => f.regla === 'pension' && f.k !== 'voluntaria'),
     traePensionVol: fondos.some(f => f.regla === 'pension' && f.k === 'voluntaria'), cuotasEnGasto, pUsdGasto, pUsdOrigen, fracPen, mesNac: mesNacimiento(c), edadInicial: c.edad, mesesPrimer, f0,
     ropSaldoFinal: (() => { const k = fondos.findIndex(f => f.k === 'rop'); return k < 0 ? 0 : filasFondos[k][filasFondos[k].length - 1].saldoFinal; })(),
-    pensionMensual, infPen, factorGasto, gastoEnRetiro: gr || null, metas, ingresoMensual, otrosIngresosMensual, tOtros, tFinOtros, periodosIngreso, edadFinIngreso,
-    conjunta, edadPareja: conjunta ? +hgP.edadPareja : null, ingresoParejaMensual, periodosPareja, traePareja: ingresoParejaMensual > 0,
+    pensionMensual, infPen, factorGasto, gastoEnRetiro: gr || null, metas, ingresoMensual, fuentesIng, ingresoDecl, otrosIngresosMensual, tOtros, tFinOtros, periodosIngreso, edadFinIngreso,
+    conjunta, edadPareja: conjunta ? +hgP.edadPareja : null, ingresoParejaMensual, periodosPareja, mesesPar: ingresoParejaMensual ? mesesPar : null, mesesIng,
+    ingExtraDecl: ingExtra.filter(a => a.anio === a.anioIni), traePareja: ingresoParejaMensual > 0,
     alquileres, cuotaHip, cuotaDeu, deudas, gastosExtra, donacionesAnual, gastosExtraAnual, ingExtra, ventas, apoyos, retiros, metasCredito,
     aportesExtra: ingExtra.concat(ventas),
     traePension: pensionMensual > 0, traeMetas: metas.length > 0, traeOtros: otrosIngresosMensual > 0,
@@ -1384,7 +1413,7 @@ function activosPasivos(c, sup){
   (deu.lista || []).forEach(d => pas('Deuda: ' + (d.nombre || 'deuda'), d.saldoMoneda || d.moneda || deu.moneda, d.saldo, u(d.saldo, d.saldoMoneda || d.moneda || deu.moneda), +d.anioFin || null));
   if(+deu.saldo > 0) pas('Deudas (cuestionario anterior)', deu.saldoMoneda, deu.saldo, u(deu.saldo, deu.saldoMoneda), +deu.plazoRestanteAnios > 0 ? a0 + (+deu.plazoRestanteAnios) - 1 : null);
   if(viv.hipoteca) pas('Hipoteca de la vivienda', viv.hipoteca.saldoMoneda, viv.hipoteca.saldo, u(viv.hipoteca.saldo, viv.hipoteca.saldoMoneda),
-    +viv.hipoteca.plazoRestanteAnios > 0 ? a0 + (+viv.hipoteca.plazoRestanteAnios) - 1 : null);
+    +viv.hipoteca.plazoRestanteAnios > 0 ? a0 + Math.ceil(+viv.hipoteca.plazoRestanteAnios) - 1 : null);
   (inm.lista || []).forEach(x => pas('Deuda del inmueble: ' + (x.nombre || 'inmueble'), x.deudaMoneda || x.moneda || inm.moneda, x.saldoDeuda, u(x.saldoDeuda, x.deudaMoneda || x.moneda || inm.moneda), null));
   P.sort((a, b) => (a.fin == null ? 9999 : a.fin) - (b.fin == null ? 9999 : b.fin));
   const totA = A.reduce((a, x) => a + x.usd, 0), totP = P.reduce((a, x) => a + x.usd, 0);
@@ -2790,6 +2819,10 @@ function normalizar(c){
     if(ip && +ip.hastaEdad > 0 && ep > 0 && +ip.hastaEdad < ep){
       o.datosInvalidos.push('Ingreso de la pareja: la edad hasta la que lo recibirá (' + ip.hastaEdad + ') es menor que su edad actual (' + ep + ')');
       o.ingresos = Object.assign({}, o.ingresos, {ingresoPareja: Object.assign({}, ip, {hastaEdad: null})}); } }
+  // el ingreso total debe ser la suma de sus fuentes: si no calza, se usa la suma de las fuentes y se señala
+  { const fd = (((o.ingresos || {}).fuentesDetalle) || []).filter(x => x && +x.monto > 0);
+    if(fd.length && fd.every(x => (x.moneda || 'USD') === (o.salarioMoneda || 'USD'))){ const su = fd.reduce((a, x) => a + (+x.monto), 0);
+      if(Math.abs(su - (+o.salarioMonto || 0)) > 1){ o.datosInvalidos.push('Ingreso total mensual: el total declarado (' + fmt(+o.salarioMonto || 0) + ') no coincide con la suma de sus fuentes (' + fmt(su) + '); se usa la suma de las fuentes'); o.salarioMonto = su; } } }
   { const oi = o.otrosIngresosRetiro;
     if(oi && +oi.montoMensual > 0 && oi.hasta === 'anio' && +oi.anioFin > 0 && +oi.anioFin < new Date().getFullYear()){
       o.datosInvalidos.push('Otros ingresos recurrentes: el último año (' + oi.anioFin + ') ya pasó');
@@ -3219,7 +3252,7 @@ setInterval(() => { if(document.visibilityState === 'visible' && ghHeaders().Aut
 // Versión vigente de las preguntas del cuestionario (la misma constante de familias.html e
 // instituciones.html). Todos los registros se revisan contra la versión vigente: los guardados con
 // una versión anterior se cargan en el cuestionario actual (oculto) para saber qué campos les faltan.
-const VERSION_FORMULARIO = 74;
+const VERSION_FORMULARIO = 78;
 const _verif = {};            // id → campos que faltan con la versión vigente
 let _colaVerif = [], _verifActivo = false;
 function estadoCuestionario(c){
@@ -4473,7 +4506,9 @@ function ingresosGastosPorMoneda(c, p, sup){
   const add = (lista, nombre, monto, mon, pUsd) => { if(!(monto > 0.5)) return;
     const u = pUsd != null ? monto * pUsd : mon === 'CRC' ? 0 : monto;
     lista.push({nombre, usd: u, crc: monto - u, colones: (monto - u) * tc}); };
-  if(p.periodosIngreso > 0) add(ing, 'Ingreso total (actividad)', p.ingresoMensual * 12, c.salarioMoneda);
+  if(p.fuentesIng && p.fuentesIng.length) p.fuentesIng.forEach(f => { if(f.meses != null || p.periodosIngreso > 0)
+      add(ing, 'Ingreso total (actividad)' + (f.k === 'total' ? '' : ': ' + f.nombre.toLowerCase()) + (f.meses != null ? ' · por ' + duracionTxt(f.tiempo, f.unidad === 'meses' ? f.meses : 0) : ''), f.mensual * 12, f.moneda); });
+  else if(p.periodosIngreso > 0) add(ing, 'Ingreso total (actividad)', p.ingresoMensual * 12, c.salarioMoneda);
   add(ing, 'Ingreso de la pareja', p.ingresoParejaMensual * 12, ig.moneda);
   add(ing, 'Otros ingresos recurrentes', p.otrosIngresosMensual * 12, oi.moneda);
   add(ing, NOMBRE_PENSION[pen.regimen] || 'Pensión', p.pensionMensual * 12, pen.moneda);
@@ -4487,13 +4522,14 @@ function ingresosGastosPorMoneda(c, p, sup){
   p.alquileres.forEach(a => add(ing, a.dividendo ? a.nombre : 'Alquiler: ' + a.nombre, a.mensual * 12, a.moneda));
   add(gas, 'Gasto familiar', p.gastoMensual * 12, null, p.pUsdGasto);
   add(gas, 'Gastos extraordinarios anuales', p.gastosExtraAnual, 'USD');      // cuestionarios anteriores: en dólares de hoy
-  p.apoyos.forEach(a => add(gas, 'Dependiente (' + a.anios + (+a.anios === 1 ? ' año' : ' años') + ' desde ' + a.anioInicio + ')', +a.montoAnualUsdHoy, a.monedaOriginal));
+  p.apoyos.forEach(a => add(gas, 'Dependiente (' + duracionTxt(a.anios, a.meses) + ' desde ' + a.anioInicio + ')', +a.montoAnualUsdHoy, a.monedaOriginal));
   add(gas, 'Donaciones', p.donacionesAnual, c.donacionesMoneda);
   if(p.cuotaHip) add(gas, 'Cuota de la hipoteca', p.cuotaHip.mensual * 12, hip.cuotaMoneda);
   if(!p.cuotasEnGasto) p.deudas.forEach(d => add(gas, 'Cuota: ' + d.nombre, d.mensual * 12, d.moneda));
   (p.metasCredito || []).forEach(m => add(gas, 'Crédito de la meta: ' + nombreMeta(m) + ' (' + m.anio + ' a ' + m.anioFinCredito + ')', m.cuotaAnual, m.monedaOriginal));
   p.gastosExtra.filter(g => g.anual).forEach(g => add(gas, g.concepto + ' (cada año)', g.montoUsdHoy, g.monedaOriginal));
-  p.ingExtra.forEach(a => add(puntIng, a.concepto + ' (' + a.anio + ')', a.montoUsdHoy, a.monedaOriginal));
+  p.ingExtra.forEach(a => { if(a.grupo == null) add(puntIng, a.concepto + ' (' + a.anio + ')', a.montoUsdHoy, a.monedaOriginal);
+    else if(a.anio === a.anioIni) add(puntIng, a.concepto + ' (cada año, de ' + a.anioIni + ' a ' + a.anioFin + ')', a.montoUsdHoy, a.monedaOriginal); });
   p.ventas.forEach(v => add(puntIng, v.concepto + ' (' + v.anio + ')', v.montoUsdHoy, v.monedaOriginal));
   p.gastosExtra.filter(g => !g.anual).forEach(g => add(punt, g.concepto + ' (' + g.anio + ')', g.montoUsdHoy, g.monedaOriginal));
   p.metas.forEach(m => add(punt, 'Meta: ' + nombreMeta(m) + ' (' + m.anio + ')', +m.montoUsdHoy, m.monedaOriginal));
@@ -4554,13 +4590,13 @@ function objetivosPlan(c, p, sup, f){
   const grupos = [];
   const metas = c.metas || [];
   const credTxt = m => m.financiamiento && m.financiamiento !== 'portafolio' && m.tasaCredito != null && m.tasaCredito !== '' && +m.plazoCreditoAnios > 0
-    ? ' al ' + String(+m.tasaCredito).replace('.', ',') + '% a ' + m.plazoCreditoAnios + ' años' : '';
+    ? ' al ' + String(+m.tasaCredito).replace('.', ',') + '% a ' + duracionTxt(m.plazoCreditoAnios, m.plazoCreditoMeses) : '';
   if(metas.length) grupos.push({titulo: 'Metas', filas: metas.map((m, i) => [(metas.length > 1 ? 'Meta ' + (i + 1) + ' · ' : '') + nombreMeta(m), String(m.anio),
     f(aUsd(+m.montoUsdHoy, m.moneda || 'USD', sup.tipoCambio)), (m.prioridad === 'esencial' ? 'Esencial' : 'Deseable') + ' · ' + FIN[m.financiamiento || 'portafolio'].toLowerCase() + credTxt(m)])});
   if((p.retiros || []).length) grupos.push({titulo: 'Retiros del portafolio', filas: p.retiros.map(x => [x.nombre, String(x.anio), f(+x.montoUsdHoy), 'Una vez'])});
   if(p.gastosExtra.length) grupos.push({titulo: 'Gastos extraordinarios', filas: p.gastosExtra.map(g => [g.concepto, g.anual ? 'Desde ' + g.anio : String(g.anio), f(g.montoUsdHoy), g.anual ? 'Cada año' : 'Una vez'])});
-  if(p.apoyos.length) grupos.push({titulo: 'Apoyo a dependientes', filas: p.apoyos.map((a, i) => ['Dependiente' + (p.apoyos.length > 1 ? ' ' + (i + 1) : ''), a.anioInicio + ' a ' + (+a.anioInicio + (+a.anios) - 1),
-    f(+a.montoAnualUsdHoy) + ' al año', a.anios + (+a.anios === 1 ? ' año' : ' años')])});
+  if(p.apoyos.length) grupos.push({titulo: 'Apoyo a dependientes', filas: p.apoyos.map((a, i) => ['Dependiente' + (p.apoyos.length > 1 ? ' ' + (i + 1) : ''), a.anioInicio + ' a ' + (+a.anioInicio + Math.ceil(+a.anios) - 1),
+    f(+a.montoAnualUsdHoy) + ' al año', duracionTxt(a.anios, a.meses)])});
   if(p.ventas.length) grupos.push({titulo: 'Entradas al portafolio', filas: p.ventas.map(v => [v.concepto, String(v.anio), f(v.montoUsdHoy), 'Venta de activos'])});
   const filas = grupos.flatMap(g => g.filas);
   return {sub, kpis, kpis2: null, filas, grupos, vacio: 'El cliente no declaró metas, retiros, gastos extraordinarios ni ventas de activos.'};
@@ -5261,7 +5297,7 @@ function xmlCliente(c, p, asig, sup){
   (c.metas || []).forEach((m,k) => { n++; filas += `<row r="${n}">` + celda('A'+n,'Meta ' + (k+1) + ' (valor de hoy)',EST.bold) + celda('B'+n,+m.montoUsdHoy,EST.num)
     + celda('C'+n, (m.moneda || 'USD') + ' · ' + nombreMeta(m) + ' · año ' + m.anio + ' · ' + (m.prioridad === 'esencial' ? 'esencial' : 'deseable')
       + ' · ' + (({portafolio:'salida del portafolio', 'credito-portafolio':'crédito respaldado por el portafolio', 'credito-bancario':'crédito bancario'})[m.financiamiento || 'portafolio'])
-      + (m.financiamiento && m.financiamiento !== 'portafolio' ? (m.tasaCredito != null && m.tasaCredito !== '' && +m.plazoCreditoAnios > 0 ? ' al ' + m.tasaCredito + '% a ' + m.plazoCreditoAnios + ' años' : ' · sin tasa o plazo') : '')) + `</row>`; });
+      + (m.financiamiento && m.financiamiento !== 'portafolio' ? (m.tasaCredito != null && m.tasaCredito !== '' && +m.plazoCreditoAnios > 0 ? ' al ' + m.tasaCredito + '% a ' + duracionTxt(m.plazoCreditoAnios, m.plazoCreditoMeses) : ' · sin tasa o plazo') : '')) + `</row>`; });
 
   // Información patrimonial declarada: describe al cliente; no entra en la proyección
   // Activos en orden de liquidez y pasivos en orden de exigibilidad (US$, con la vivienda principal)
@@ -5519,6 +5555,12 @@ const COLUMNAS_FLUJO = [
   {g:'Portafolio',               k:'deficit',           t:'Gasto no cubierto'}
 ];
 // Nombre de la columna de la pensión según el régimen que declaró el cliente
+// Ingreso total mensual en dólares: la suma de las fuentes (cada una en su moneda) o, sin desglose, el total declarado
+function ingresoTotalUsd(c, tc){ const fd = (((c.ingresos || {}).fuentesDetalle) || []).filter(f => f && +f.monto > 0);
+  return fd.length ? fd.reduce((a, f) => a + aUsd(f.monto, f.moneda, tc), 0) : aUsd(c.salarioMonto, c.salarioMoneda, tc); }
+const NOMBRE_FUENTE = {salario: 'Salario', empresa: 'Empresa propia', honorarios: 'Honorarios profesionales'};
+// Duración en años que puede venir de meses: «18 meses», «5 años»
+const duracionTxt = (anios, meses) => +meses > 0 ? meses + (+meses === 1 ? ' mes' : ' meses') : anios + (+anios === 1 ? ' año' : ' años');
 const NOMBRE_PENSION = {ivm:'Pensión IVM', magisterio:'Pensión del Magisterio', judicial:'Pensión del Poder Judicial', bomberos:'Pensión de Bomberos',
   hacienda:'Pensión de Hacienda', otro:'Pensión de otro régimen'};
 // Celdas del resumen del plan (hoja Proyección), que enlazan las hojas de detalle
@@ -5754,7 +5796,8 @@ function detalleFamilias(c, p, sup){
   // Una fila con monto: N.º (B), concepto (C), monto declarado (D), moneda (E), tipo de cambio (F)
   // y monto en dólares (G). x.extra: [[columna, valor, estilo, fórmula]] para años, plazos y notas.
   const filaMonto = (H, x) => {
-    const r = ++H.r, mon = x.mon || 'USD', libre = !!x.libre;
+    // una fila sin monto no depende del tipo de cambio (que puede estar en N/A): va en dólares
+    const r = ++H.r, libre = !!x.libre, mon = !libre && !x.declF && !(+x.decl > 0) && esNA(sup, 'tipoCambio') ? 'USD' : x.mon || 'USD';
     let s = H.rellenar('G', H.U, r, EP.etiq) + celda('B' + r, x.n, EP.ent)
       + (x.concepto ? celda('C' + r, x.concepto, x.fija ? EP.etiq : EP.inTxt) : H.vacia('C' + r, x.fija ? EP.etiq : EP.inTxt));
     if(libre) s += H.vacia('D' + r, EP.inNum) + H.vacia('E' + r, EP.inTxtC);
@@ -5763,6 +5806,7 @@ function detalleFamilias(c, p, sup){
     s += celda('F' + r, !libre && mon === 'CRC' ? tc : 1, EP.tc, `IF(E${r}="CRC",${TC},1)`)
       + celda('G' + r, libre ? 0 : r2(usdDe(x.decl, mon)), EP.num, `D${r}/F${r}`);
     (x.extra || []).forEach(([col, v, est, fm]) => {
+      if(typeof fm === 'string') fm = fm.replace(/\{r\}/g, r);
       s += v == null || v === '' ? H.vacia(col + r, est) : typeof v === 'string' && fm ? celdaTexto(col + r, v, est, fm) : celda(col + r, v, est, fm || null);
     });
     H.pon(r, s); return r;
@@ -5801,10 +5845,12 @@ function detalleFamilias(c, p, sup){
     const ini = H.r + 1, pos = {};
     const fijo = (k, x) => { const r = filaMonto(H, Object.assign({fija: 1}, x)); pos[k] = r;
       L[k] = {d: ref('ing', 'D', r), m: ref('ing', 'E', r), u: ref('ing', 'G', r), de: ref('ing', 'H', r), ha: ref('ing', 'I', r)}; };
-    fijo('ing', {n: 1, concepto: 'Ingreso total mensual (actividad)', decl: c.salarioMonto, mon: c.salarioMoneda,
-      extra: [['H', 1, EP.ent], ['I', p.periodosIngreso, EP.inEntC], ['J', 'Hasta la independencia o la edad indicada', EP.txt]]});
+    const FU = p.fuentesIng || [], fu0 = ini + 8, fu1 = fu0 + FU.length - 1;     // filas de la tabla «por fuente», más abajo
+    fijo('ing', Object.assign({n: 1, concepto: 'Ingreso total mensual (actividad)', decl: p.ingresoDecl.monto, mon: p.ingresoDecl.moneda,
+      extra: [['H', 1, EP.ent], ['I', p.periodosIngreso, EP.inEntC], ['J', FU.length ? 'Suma de las fuentes (tabla «Ingreso total por fuente»)' : 'Hasta la independencia o la edad indicada', EP.txt]]},
+      FU.length ? {declF: `SUM(${p.ingresoDecl.moneda === 'USD' ? 'G' : 'D'}${fu0}:${p.ingresoDecl.moneda === 'USD' ? 'G' : 'D'}${fu1})`} : {}));
     fijo('par', {n: 2, concepto: 'Ingreso mensual de la pareja', decl: p.traePareja ? igPx.monto : 0, mon: igPx.moneda,
-      extra: [['H', 1, EP.ent], ['I', p.periodosPareja, EP.inEntC], ['J', p.traePareja ? 'Planificación conjunta' : 'No aplica', EP.txt]]});
+      extra: [['H', 1, EP.ent], ['I', p.periodosPareja, EP.inEntC], ['J', p.traePareja ? 'Planificación conjunta' + (p.mesesPar ? ' · durante ' + p.mesesPar + ' meses desde la fecha del cuestionario' : '') : 'No aplica', EP.txt]]});
     fijo('otros', {n: 3, concepto: 'Otros ingresos recurrentes al mes', decl: p.otrosIngresosMensual ? oi.montoMensual : 0, mon: oi.moneda,
       extra: [['H', p.tOtros, EP.inEntC], ['I', p.tFinOtros, EP.inEntC], ['J', '', EP.txt]]});
     const rPen = H.r + 1;
@@ -5816,7 +5862,7 @@ function detalleFamilias(c, p, sup){
     const fNotaPen = !p.pensionMensual || p.pensionYaRecibe ? null
       : `IF(AND(ISNUMBER(${E21}),N(${E20})>=${C0}),"Desde el año en que cumple "&${E20}&" años; ese año, "&(12-${E21})&" meses","Desde el año en que cumple "&${E20}&" años")`;
     // la pensión del régimen básico se registra en la hoja «Pensiones» (bloque de arriba a la derecha)
-    L.penInfo = {concepto: (NOMBRE_PENSION[pn.regimen] || 'Pensión IVM') + ' (mensual)', decl: p.pensionMensual ? +pn.montoMensual || 0 : 0, mon: pn.moneda || 'USD',
+    L.penInfo = {concepto: (NOMBRE_PENSION[pn.regimen] || 'Pensión IVM') + ' (mensual)', decl: p.pensionMensual ? +pn.montoMensual || 0 : 0, mon: p.pensionMensual ? pn.moneda || 'USD' : 'USD',
       usd: p.pensionMensual || 0, desde: p.pensionMensual ? p.tPension : null, desdeF: p.pensionMensual && !p.pensionYaRecibe ? `MAX(1,N(${E20})-${C0}+1)` : null,
       yaRecibe: !!p.pensionYaRecibe, nota: notaPen, notaF: fNotaPen};
     const PEN = `'Pensiones'`;
@@ -5824,6 +5870,18 @@ function detalleFamilias(c, p, sup){
     const vOrd = [p.ingresoMensual, p.ingresoParejaMensual, p.otrosIngresosMensual].reduce((a, v) => a + (+v || 0), 0);
     total(H, 'Total de ingresos ordinarios al mes (US$)', `SUM(G${ini}:G${H.r})`, vOrd, 'G', U);
     nota(H, 'Pensiones: la del régimen básico (' + (NOMBRE_PENSION[pn.regimen] || 'Pensión IVM') + '), la del ROP y la voluntaria se registran en la hoja «Pensiones»; en la proyección son ingresos ordinarios, cada una en su columna.', U);
+
+    // Ingreso total por fuente: monto y moneda de cada una y, si se indicó, los meses que se recibirá
+    if(FU.length){
+      banda(H, 'Ingreso total por fuente · mensual, en valor de hoy', U);
+      encab(H, ENC_MONTO('Fuente').concat([['H', 'Meses que lo recibirá'], ['J', 'Nota']]));
+      if(H.r + 1 !== fu0) throw new Error('hoja Ingresos: la tabla por fuente no quedó en la fila esperada');
+      L.fu = FU.map((x, k) => { const r = filaMonto(H, {n: k + 1, fija: 1, concepto: x.nombre, decl: x.original, mon: x.moneda,
+          extra: [['H', x.meses, EP.inEntC], ['I', null, EP.etiq], ['J', x.meses == null ? 'Hasta el período de la fila 1 (independencia o edad indicada)' : 'Declarado: ' + duracionTxt(x.tiempo, x.unidad === 'meses' ? x.meses : 0) + ', desde la fecha del cuestionario', EP.txt]]});
+        return {u: ref('ing', 'G', r), m: ref('ing', 'E', r), me: ref('ing', 'H', r)}; });
+      total(H, 'Total del ingreso por fuente al mes (US$)', `SUM(G${fu0}:G${fu1})`, p.ingresoMensual, 'G', U);
+      nota(H, 'Meses que lo recibirá: en blanco, la fuente se recibe hasta el período indicado en la fila 1; con un número, se recibe esa cantidad de meses contados desde la fecha del cuestionario (el primer año cuenta los meses que faltan).', U);
+    }
 
     banda(H, 'Alquileres y dividendos · mensuales, en valor de hoy', U);
     encab(H, ENC_MONTO('Inmueble o empresa', 'Alquiler o dividendo mensual declarado').concat([['H', 'Último año con ingreso'], ['J', 'Nota']]));
@@ -5833,11 +5891,13 @@ function detalleFamilias(c, p, sup){
     L.alqTot = `'Ingresos'!${total(H, 'Total de alquileres y dividendos al mes (US$)', `SUM(G${aA.ini}:G${aA.fin})`, p.alquileres.reduce((a, x) => a + x.mensual, 0), 'G', U)}`;
 
     banda(H, 'Ingresos extraordinarios · en valor de hoy', U);
-    encab(H, ENC_MONTO('Concepto').concat([['H', 'Año'], ['J', 'Nota']]));
-    const aE = lista(H, p.ingExtra, a => ({concepto: a ? a.concepto : '', decl: a ? (a.montoOriginal != null ? a.montoOriginal : a.montoUsdHoy) : 0, mon: a ? a.monedaOriginal || 'USD' : 'USD',
-      extra: [['H', a ? a.anio : null, EP.inEntC], ['J', '', EP.txt]]}));
-    L.ie = rango('ing', 'G', aE); L.ieMon = rango('ing', 'E', aE); L.ieAnio = rango('ing', 'H', aE);
-    L.ieTot = `'Ingresos'!${total(H, 'Total de ingresos extraordinarios (US$)', `SUM(G${aE.ini}:G${aE.fin})`, p.ingExtra.reduce((a, x) => a + x.montoUsdHoy, 0), 'G', U)}`;
+    encab(H, ENC_MONTO('Concepto', 'Monto declarado (cada año que se recibe)').concat([['H', 'Primer año que lo recibe'], ['I', 'Último año que lo recibe'], ['J', 'Cantidad de años']]));
+    const rIE = H.r + 1;
+    const aE = lista(H, p.ingExtraDecl, a => ({concepto: a ? a.concepto : '', decl: a ? (a.montoOriginal != null ? a.montoOriginal : a.montoUsdHoy) : 0, mon: a ? a.monedaOriginal || 'USD' : 'USD',
+      extra: [['H', a ? a.anioIni : null, EP.inEntC], ['I', a ? a.anioFin : null, EP.inEntC], ['J', a ? a.anioFin - a.anioIni + 1 : 0, EP.ent, 'IF(N(H{r})=0,0,MAX(1,N(I{r})-H{r}+1))']]}));
+    L.ie = rango('ing', 'G', aE); L.ieMon = rango('ing', 'E', aE); L.ieAnio = rango('ing', 'H', aE); L.ieFin = rango('ing', 'I', aE);
+    L.ieTot = `'Ingresos'!${total(H, 'Total de ingresos extraordinarios, una vez cada uno (US$)', `SUM(G${aE.ini}:G${aE.fin})`, p.ingExtraDecl.reduce((a, x) => a + x.montoUsdHoy, 0), 'G', U)}`;
+    nota(H, 'Cada ingreso se recibe una vez por año, desde su primer año hasta su último año (si el último año está en blanco, solo en el primero); cada año se actualiza con la inflación de su moneda.', U);
     nota(H, 'Traslado del FCL' + (p.fondos.some(f => f.regla === 'pagoUnico') ? ' y ROP en un solo pago' : '') + ': ' + (p.traeTrasladoFondos ? 'se calcula en la hoja «Pensiones» y entra a la proyección como ingreso extraordinario.' : 'no aplica.'), U);
 
     enProyeccion(H, [['Ingresos ordinarios', rs.ingOrd, `${PROY}!${RES.ingOrd}`], ['Ingresos extraordinarios', rs.ingExt, `${PROY}!${RES.ingExt}`],
@@ -6207,16 +6267,16 @@ function xmlProyeccion(c, p, sup, det){
   const pn = c.pension || {}, oi = c.otrosIngresosRetiro || {}, igPx = (c.ingresos || {}).ingresoPareja || {};
   const nomPen = NOMBRE_PENSION[pn.regimen] || 'Pensión IVM';
   sub('I', 'P', 6, 'Ingresos ordinarios · hoja «Ingresos»');
-  linea('ing', fil(PI.ing), 'Ingreso total mensual (actividad)', {monto: 1, ref: L.ing, decl: c.salarioMonto, moneda: c.salarioMoneda, usd: p.ingresoMensual, desde: 1, hasta: p.periodosIngreso});
+  linea('ing', fil(PI.ing), 'Ingreso total mensual (actividad)', {monto: 1, ref: L.ing, decl: p.ingresoDecl.monto, moneda: p.ingresoDecl.moneda, usd: p.ingresoMensual, desde: 1, hasta: p.periodosIngreso});
   linea('ing', fil(PI.ingPar), 'Ingreso mensual de la pareja', {monto: 1, ref: L.par, decl: p.traePareja ? igPx.monto : 0, moneda: igPx.moneda, usd: p.ingresoParejaMensual, desde: 1, hasta: p.periodosPareja});
   linea('ing', fil(PI.otros), 'Otros ingresos recurrentes al mes', {monto: 1, ref: L.otros, decl: p.otrosIngresosMensual ? oi.montoMensual : 0, moneda: oi.moneda, usd: p.otrosIngresosMensual, desde: p.tOtros, hasta: p.tFinOtros});
-  linea('ing', fil(PI.pen), nomPen + ' (mensual)', {monto: 1, ref: {d: L.pen.d, m: L.pen.m, u: L.pen.u, de: L.pen.de}, decl: p.pensionMensual ? pn.montoMensual : 0, moneda: pn.moneda, usd: p.pensionMensual,
+  linea('ing', fil(PI.pen), nomPen + ' (mensual)', {monto: 1, ref: {d: L.pen.d, m: L.pen.m, u: L.pen.u, de: L.pen.de}, decl: p.pensionMensual ? pn.montoMensual : 0, moneda: p.pensionMensual ? pn.moneda : 'USD', usd: p.pensionMensual,
     desde: p.pensionMensual ? p.tPension : null});
   linea('ing', 11, 'Alquileres y dividendos al mes', {suma: L.alqTot, v: sumaUsd(p.alquileres.map(a => a.mensual))});
   linea('ing', 12, 'Pensión del ROP', {texto: df && p.traePensionRop ? 'Hoja «Pensiones»' : 'No aplica'});
   linea('ing', 13, 'Pensión voluntaria', {texto: df && p.traePensionVol ? 'Hoja «Pensiones»' : 'No aplica'});
   sub('I', 'P', 14, 'Ingresos extraordinarios · valor de hoy');
-  linea('ing', 15, 'Ingresos extraordinarios', {suma: L.ieTot, v: sumaUsd(p.ingExtra.map(a => a.montoUsdHoy))});
+  linea('ing', 15, 'Ingresos extraordinarios', {suma: L.ieTot, v: sumaUsd(p.ingExtraDecl.map(a => a.montoUsdHoy))});
   linea('ing', 16, 'Traslado del FCL' + (p.fondos.some(f => f.regla === 'pagoUnico') ? ' y ROP en un solo pago' : ''), {texto: df && p.traeTrasladoFondos ? 'Hoja «Pensiones»' : 'No aplica'});
 
   const pat = c.patrimonio || {}, hip = ((pat.vivienda || {}).hipoteca) || {}, deu = pat.deudas || {};
@@ -6274,9 +6334,20 @@ function xmlProyeccion(c, p, sup, det){
   // Primer año de la proyección: los montos recurrentes y el rendimiento, solo por los meses que faltan (F24)
   const FA = r => r === F0 ? `*${PI.m1}/12` : '';
   const ventaFx = tp => r => `SUMPRODUCT((${L.dvAnio}=B${r})*(${L.dvTipo}=${tp})*${L.dv}*${idxR(L.dvMon, r)})`;
+  // Meses del período de la fila r dentro de un plazo de M meses contado desde la fecha del cuestionario
+  const mesesX = (r, M) => r === F0 ? `MIN(${PI.m1},${M})` : `MAX(0,MIN(12,${M}-(${PI.m1}+12*(D${r}-2))))`;
+  // Fracción del año de la fila r cubierta por una duración (en años, puede traer meses) desde su año de inicio
+  const fracX = (ini, dur, r) => { const e = `(${ini}+${dur}-B${r})`; return `((${e}>=1)+(${e}>0)*(${e}<1)*${e})`; };
+  const conMeses = arr => (arr || []).some(v => +v > 0 && Math.abs(+v - Math.round(+v)) > 1e-9);
+  const depFrac = conMeses(p.apoyos.map(a => a.anios)), mcFrac = conMeses((p.metasCredito || []).map(m => m.plazoCreditoAnios));
+  const hipMeses = p.cuotaHip && p.cuotaHip.meses ? `ROUND(${PI.hipA}*12,0)` : null;
   const fx = {
-    ingresoActividad: r => `IF(D${r}<=${PI.periodos},${PI.ing}*12*${idxM(monDe(PI.ing), r)},0)` + FA(r),
-    ingresoPareja:    r => `IF(D${r}<=${PI.perPar},${PI.ingPar}*12*${idxM(monDe(PI.ingPar), r)},0)` + FA(r),
+    // con desglose por fuente: cada fuente con su moneda y sus meses; sin desglose, el ingreso total hasta su período
+    ingresoActividad: r => L.fu && L.fu.length
+      ? L.fu.map(x => `${x.u}*IF(${x.me}="",IF(D${r}<=${PI.periodos},${r === F0 ? PI.m1 : 12},0),${mesesX(r, x.me)})*${idxM(x.m, r)}`).join('+')
+      : `IF(D${r}<=${PI.periodos},${PI.ing}*12*${idxM(monDe(PI.ing), r)},0)` + FA(r),
+    ingresoPareja:    r => p.mesesPar ? `${PI.ingPar}*${mesesX(r, p.mesesPar)}*${idxM(monDe(PI.ingPar), r)}`
+      : `IF(D${r}<=${PI.perPar},${PI.ingPar}*12*${idxM(monDe(PI.ingPar), r)},0)` + FA(r),
     otrosIngresos:    r => `IF(AND(${PI.otros}>0,D${r}>=${PI.tOtros},D${r}<=${PI.finOtros}),${PI.otros}*12*${idxM(monDe(PI.otros), r)},0)` + FA(r),
     alquiler:         r => `SUMPRODUCT((${L.alqHasta}>=B${r})*${L.alq}*${idxR(L.alqMon, r)})*12` + FA(r),
     // primer año de la pensión: meses después del cumpleaños; primer año de la proyección: además, solo los meses que faltan
@@ -6285,16 +6356,17 @@ function xmlProyeccion(c, p, sup, det){
     pensionRop:       r => df && p.traePensionRop ? `'Pensiones'!${df.PROP}${df.D0 + (r - F0)}` : '0',
     pensionVol:       r => df && p.traePensionVol ? `'Pensiones'!${df.PVOL}${df.D0 + (r - F0)}` : '0',
     ingOrd:           r => `SUM(${C('ingresoActividad')}${r}:${C('pensionVol')}${r})`,
-    ingresoExtra:     r => `SUMPRODUCT((${L.ieAnio}=B${r})*${L.ie}*${idxR(L.ieMon, r)})`,
+    ingresoExtra:     r => `SUMPRODUCT((${L.ieAnio}<=B${r})*((${L.ieFin}>0)*(${L.ieFin}>=B${r})+(${L.ieFin}=0)*(${L.ieAnio}=B${r}))*${L.ie}*${idxR(L.ieMon, r)})`,
     traslado:         r => df && p.traeTrasladoFondos ? `'Pensiones'!${df.TOT}${df.D0 + (r - F0)}` : '0',
     ingExt:           r => `SUM(${C('ingresoExtra')}${r}:${C('traslado')}${r})`,
     ingTot:           r => `${C('ingOrd')}${r}+${C('ingExt')}${r}`,
     // gasto familiar: la parte pagada en dólares (F22) crece con la inflación internacional y la parte en colones (F23) con la local
     gastoFamiliar:    r => `${PI.gasto}*12*(N(${PI.pUsd})*(1+${PI.inf})^(D${r}-1)+(1-N(${PI.pUsd}))*(1+N(${PI.infL}))^(D${r}-1))*IF(D${r}>${PI.acum},${PI.factor},1)` + FA(r),
-    gastoDependientes:r => `SUMPRODUCT((${L.depIni}<=B${r})*(${L.depIni}+${L.depAnios}>B${r})*${L.dep}*${idxR(L.depMon, r)})` + FA(r),
+    gastoDependientes:r => (depFrac ? `SUMPRODUCT((${L.depIni}<=B${r})*${fracX(L.depIni, L.depAnios, r)}*${L.dep}*${idxR(L.depMon, r)})`
+      : `SUMPRODUCT((${L.depIni}<=B${r})*(${L.depIni}+${L.depAnios}>B${r})*${L.dep}*${idxR(L.depMon, r)})`) + FA(r),
     donaciones:       r => `${PI.don}*${idxM(monDe(PI.don), r)}` + FA(r),
-    cuotas:           r => `(IF(D${r}<=${PI.hipA},${PI.hipC}*12,0)` + (PL.deuC ? `+IF(D${r}<=${PL.deuA},${PL.deuC}*12,0)` : '') + `+IF(${L.deIncl}="Sí",0,SUMPRODUCT((${L.deFin}>=B${r})*${L.deCuota})*12)`
-                           + `+SUMPRODUCT((${L.mcAnio}<=B${r})*(${L.mcAnio}+${L.mcPlazo}-1>=B${r})*${L.mcCuota}))` + FA(r),
+    cuotas:           r => `(` + (hipMeses ? (r === F0 ? `${PI.hipC}*MIN(${PI.m1},${hipMeses})*12/${PI.m1}` : `${PI.hipC}*${mesesX(r, hipMeses)}`) : `IF(D${r}<=${PI.hipA},${PI.hipC}*12,0)`) + (PL.deuC ? `+IF(D${r}<=${PL.deuA},${PL.deuC}*12,0)` : '') + `+IF(${L.deIncl}="Sí",0,SUMPRODUCT((${L.deFin}>=B${r})*${L.deCuota})*12)`
+                           + (mcFrac ? `+SUMPRODUCT((${L.mcAnio}<=B${r})*${fracX(L.mcAnio, L.mcPlazo, r)}*${L.mcCuota}))` : `+SUMPRODUCT((${L.mcAnio}<=B${r})*(${L.mcAnio}+${L.mcPlazo}-1>=B${r})*${L.mcCuota}))`) + FA(r),
     gasOrd:           r => `SUM(${C('gastoFamiliar')}${r}:${C('cuotas')}${r})`,
     // los de cada año (frecuencia 2) son recurrentes: en el primer año, solo los meses que faltan; los de una vez, completos
     gastoExtra:       r => (PL.gextA ? `${PL.gextA}*${idx(r)}${FA(r)}+` : '') + `SUMPRODUCT((${L.geFrec}=1)*(${L.geAnio}=B${r})*${L.ge}*${idxR(L.geMon, r)})+SUMPRODUCT((${L.geFrec}=2)*(${L.geAnio}<=B${r})*${L.ge}*${idxR(L.geMon, r)})${FA(r)}`
@@ -7534,7 +7606,7 @@ function textoSupuestosFicha(c, p, esInst, anioFin){
     + ` · Gasto familiar ${Math.round(p.pUsdGasto*100)}% en dólares y ${Math.round((1 - p.pUsdGasto)*100)}% en colones, cada parte con la inflación de su moneda`
     + ` · Rendimiento de los bonos en colones ${pcs(supuestos.rfColones ?? 6)} (supuesto del asesor según el mercado del día; calcula el capital requerido en Costa Rica)`
     + (p.traePension ? ` · Pensión estimada ${usdPdf(p.pensionMensual)} mensuales en dólares de hoy, desde los ${p.edadPension} años` : '')
-    + (p.traePareja ? ` · Ingreso de la pareja ${usdPdf(p.ingresoParejaMensual)} mensuales en dólares de hoy durante ${p.periodosPareja} años` : '')
+    + (p.traePareja ? ` · Ingreso de la pareja ${usdPdf(p.ingresoParejaMensual)} mensuales en dólares de hoy durante ${p.mesesPar ? p.mesesPar + ' meses' : p.periodosPareja + ' años'}` : '')
     + (p.traeOtros ? ` · Otros ingresos recurrentes ${usdPdf(p.otrosIngresosMensual)} mensuales en dólares de hoy${p.tFinOtros < p.totalAnios ? ' hasta ' + (supuestos.anioInicio + p.tFinOtros - 1) : ''}` : '')
     + (p.gastosExtraAnual ? ` · Gastos extraordinarios ${usdPdf(p.gastosExtraAnual)} al año en dólares de hoy` : '')
     + (p.gastosExtra.length ? ` · Gastos extraordinarios: ` + p.gastosExtra.map(g => g.concepto + ' ' + usdPdf(g.montoUsdHoy) + (g.anual ? ' cada año desde ' : ' en ') + g.anio).join(', ') : '')
@@ -8495,4 +8567,4 @@ cargar();
 
 
 
-<!-- Chotocruz & Co. · Entrega 77 · 11 de noviembre de 2026 -->
+<!-- Chotocruz & Co. · Entrega 78 · 12 de noviembre de 2026 -->

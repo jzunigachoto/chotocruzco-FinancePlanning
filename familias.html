@@ -223,8 +223,10 @@
   .fila-tabla .fila-tit{margin:0 0 10px;}
   .fila-tabla4{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,.8fr) minmax(0,1.2fr);gap:0 16px;align-items:end;}
   .fila-tabla5{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) minmax(0,1.5fr) minmax(0,.7fr);gap:0 14px;align-items:end;}
-  .fila-tabla4 .fila-tit,.fila-tabla5 .fila-tit{grid-column:1/-1;margin:0 0 4px;}
-  @media (max-width:640px){ .fila-tabla4,.fila-tabla5{grid-template-columns:1fr;} }
+  .fila-tabla4r{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1.3fr);gap:0 16px;align-items:end;}
+  .fila-tabla4 .fila-tit,.fila-tabla5 .fila-tit,.fila-tabla4r .fila-tit{grid-column:1/-1;margin:0 0 4px;}
+  @media (max-width:640px){ .fila-tabla4,.fila-tabla5,.fila-tabla4r{grid-template-columns:1fr;} }
+  .amount select.unidad-t{min-width:84px;}
   @media (max-width:560px){ .fila-tabla{grid-template-columns:1fr;} }
   .fila-rep .fila-tit{display:block;font-size:11px;letter-spacing:.1em;text-transform:uppercase;
     color:#918042;font-weight:600;margin-bottom:6px;}
@@ -735,14 +737,39 @@
                 <input required type="number" min="0" id="salario-monto" name="Ingreso mensual del titular (monto)" placeholder="2.700.000">
                 <select id="salario-moneda" name="Ingreso mensual del titular (moneda)"><option>CRC</option><option>USD</option></select>
               </div>
-              <span class="mini espacio">¿Hasta qué edad espera recibir este ingreso?</span>
-              <div class="amount"><input type="number" min="18" max="100" id="ingreso-hasta" name="Ingreso total: hasta la edad" placeholder="Su edad de independencia"><div class="unit">años</div></div>
-              <p class="hint">Déjelo en blanco si lo recibirá hasta su independencia financiera. Si, por ejemplo, su empresa le seguirá pagando después, indique hasta qué edad.</p>
+              <span class="mini espacio">¿Hasta qué edad espera recibir este ingreso, o durante cuántos meses más?</span>
+              <div class="amount"><input type="number" min="18" max="100" data-maxa="100" data-edad="1" id="ingreso-hasta" name="Ingreso total: hasta la edad" placeholder="Su edad de independencia"><select class="unidad-t" id="ingreso-hasta-u" name="Ingreso total: hasta la edad (unidad)"><option value="anios">años (edad)</option><option value="meses">meses</option></select></div>
+              <p class="hint">Déjelo en blanco si lo recibirá hasta su independencia financiera. Con «años», indique la edad hasta la que lo recibirá (por ejemplo, si su empresa le seguirá pagando después); con «meses», indique cuántos meses más lo recibirá a partir de hoy.</p>
               <span class="mini espacio">¿De dónde proviene ese ingreso? Puede marcar varias opciones</span>
               <div class="opciones-estr" id="fuente-opciones">
                 <label class="opcion"><input type="checkbox" class="fuente-ck" id="fuente-salario" value="salario"> Salario</label>
                 <label class="opcion"><input type="checkbox" class="fuente-ck" id="fuente-empresa" value="empresa"> Empresa propia</label>
                 <label class="opcion"><input type="checkbox" class="fuente-ck" id="fuente-honorarios" value="honorarios"> Honorarios profesionales</label>
+              </div>
+              <div id="fuentes-montos">
+                <div class="fila-grid fuente-linea" id="fl-salario" hidden style="margin-top:12px;">
+                  <div><span class="mini">Salario: ingreso mensual</span>
+                    <div class="amount"><input type="number" min="0" id="fm-salario" class="fuente-monto" name="Fuente salario: ingreso mensual (monto)" placeholder="1.500.000">
+                    <select id="fm-salario-moneda" class="fuente-moneda" name="Fuente salario: ingreso mensual (moneda)"><option>CRC</option><option>USD</option></select></div></div>
+                  <div><span class="mini">¿Por cuánto tiempo lo recibirá?</span>
+                    <div class="amount"><input type="number" min="1" max="80" data-maxa="80" id="ft-salario" name="Fuente salario: tiempo que lo recibirá" placeholder="Hasta su independencia"><select class="unidad-t" id="ft-salario-u" name="Fuente salario: tiempo que lo recibirá (unidad)"><option value="anios">años</option><option value="meses">meses</option></select></div></div>
+                </div>
+                <div class="fila-grid fuente-linea" id="fl-empresa" hidden style="margin-top:12px;">
+                  <div><span class="mini">Empresa propia: ingreso mensual</span>
+                    <div class="amount"><input type="number" min="0" id="fm-empresa" class="fuente-monto" name="Fuente empresa propia: ingreso mensual (monto)" placeholder="1.500.000">
+                    <select id="fm-empresa-moneda" class="fuente-moneda" name="Fuente empresa propia: ingreso mensual (moneda)"><option>CRC</option><option>USD</option></select></div></div>
+                  <div><span class="mini">¿Por cuánto tiempo lo recibirá?</span>
+                    <div class="amount"><input type="number" min="1" max="80" data-maxa="80" id="ft-empresa" name="Fuente empresa propia: tiempo que lo recibirá" placeholder="Hasta su independencia"><select class="unidad-t" id="ft-empresa-u" name="Fuente empresa propia: tiempo que lo recibirá (unidad)"><option value="anios">años</option><option value="meses">meses</option></select></div></div>
+                </div>
+                <div class="fila-grid fuente-linea" id="fl-honorarios" hidden style="margin-top:12px;">
+                  <div><span class="mini">Honorarios profesionales: ingreso mensual</span>
+                    <div class="amount"><input type="number" min="0" id="fm-honorarios" class="fuente-monto" name="Fuente honorarios profesionales: ingreso mensual (monto)" placeholder="1.500.000">
+                    <select id="fm-honorarios-moneda" class="fuente-moneda" name="Fuente honorarios profesionales: ingreso mensual (moneda)"><option>CRC</option><option>USD</option></select></div></div>
+                  <div><span class="mini">¿Por cuánto tiempo lo recibirá?</span>
+                    <div class="amount"><input type="number" min="1" max="80" data-maxa="80" id="ft-honorarios" name="Fuente honorarios profesionales: tiempo que lo recibirá" placeholder="Hasta su independencia"><select class="unidad-t" id="ft-honorarios-u" name="Fuente honorarios profesionales: tiempo que lo recibirá (unidad)"><option value="anios">años</option><option value="meses">meses</option></select></div></div>
+                </div>
+                <p class="hint" id="fuentes-nota" hidden>Indique cuánto recibe al mes por cada fuente y en qué moneda. El ingreso total mensual de arriba es la suma de estas fuentes y se calcula solo; puede verlo en dólares o en colones. En «¿Por cuánto tiempo lo recibirá?» puede responder en años o en meses; déjelo en blanco si lo recibirá hasta su independencia financiera o hasta la edad o los meses indicados arriba.</p>
+                <p class="hint" id="fuentes-tc" hidden></p>
               </div>
               <input type="hidden" required id="fuente-ingreso" name="Fuentes del ingreso">
               <div class="sub-q" id="empleo-detalle" hidden>
@@ -783,8 +810,8 @@
                     <div class="amount"><input type="number" min="0" id="ingreso-pareja-monto" name="Ingreso mensual de la pareja (monto)" placeholder="1.500.000">
                     <select id="ingreso-pareja-moneda" name="Ingreso mensual de la pareja (moneda)"><option>CRC</option><option>USD</option></select></div></div>
                 </div>
-                <span class="mini espacio">¿Hasta qué edad de su pareja recibirá ese ingreso?</span>
-                <div class="amount"><input type="number" min="18" max="100" id="ingreso-pareja-hasta" name="Ingreso de la pareja: hasta la edad" placeholder="Su edad de independencia"><div class="unit">años</div></div>
+                <span class="mini espacio">¿Hasta qué edad de su pareja recibirá ese ingreso, o durante cuántos meses más?</span>
+                <div class="amount"><input type="number" min="18" max="100" data-maxa="100" data-edad="1" id="ingreso-pareja-hasta" name="Ingreso de la pareja: hasta la edad" placeholder="Su edad de independencia"><select class="unidad-t" id="ingreso-pareja-hasta-u" name="Ingreso de la pareja: hasta la edad (unidad)"><option value="anios">años (edad)</option><option value="meses">meses</option></select></div>
                 <p class="hint">Si su pareja no percibe ingresos, escriba 0. Déjelo en blanco si lo recibirá hasta su independencia financiera. El ingreso de su pareja se suma a los ingresos ordinarios del hogar, y la proyección cubre hasta la edad final del más joven de los dos.</p>
               </div>
               <p class="q-falta">Falta responder esta pregunta.</p>
@@ -980,7 +1007,7 @@
               <span class="mini espacio">Cantidad de ingresos extraordinarios</span>
               <div class="amount"><input required type="number" min="0" step="1" id="aportes-extra-n" name="Cantidad de aportes extraordinarios" placeholder="0"><div class="unit">ingresos</div></div>
               <div class="sub-q filas" id="aportes-extra-filas" hidden></div>
-              <p class="hint">Escriba 0 si no espera ninguno. Montos puntuales, como bonos, herencias o premios. Indique cada monto en valor de hoy, con su moneda, y el año en que lo recibiría. Las ventas de activos se indican en Desinversiones.</p>
+              <p class="hint">Escriba 0 si no espera ninguno. Montos puntuales, como bonos, herencias o premios. Indique cada monto en valor de hoy, con su moneda, y el año en que lo recibiría. Indique el primer y el último año en que lo recibirá: un ingreso de una sola vez lleva solo el primer año; uno que se recibe cada año (por ejemplo, un bono anual) se registra una sola vez, con su primer y su último año. Las ventas de activos se indican en Desinversiones.</p>
               <p class="q-falta">Falta responder esta pregunta.</p>
             </div>
           </div>
@@ -1166,7 +1193,7 @@
                   <div><span class="mini espacio">Tasa de interés anual del crédito</span>
                     <div class="amount"><input type="number" min="0" max="40" step="0.01" id="hipoteca-tasa" name="Hipoteca: tasa de interés anual" placeholder="8,5"><div class="unit">%</div></div></div>
                   <div><span class="mini espacio">Plazo restante</span>
-                    <div class="amount"><input type="number" min="0" max="40" id="hipoteca-plazo" name="Hipoteca: plazo restante (años)" placeholder="15"><div class="unit">años</div></div></div>
+                    <div class="amount"><input type="number" min="0" max="40" data-maxa="40" id="hipoteca-plazo" name="Hipoteca: plazo restante (años)" placeholder="15"><select class="unidad-t" id="hipoteca-plazo-u" name="Hipoteca: plazo restante (unidad)"><option value="anios">años</option><option value="meses">meses</option></select></div></div>
                 </div>
               </div>
               <span class="mini espacio">Inmuebles de inversión (locales, apartamentos, lotes u otros)</span>
@@ -1208,7 +1235,7 @@
                 <div class="sub-q" id="pe-venta-detalle" hidden>
                   <div class="fila-grid">
                     <div><span class="mini">Valor futuro que espera recibir de la venta</span><div class="amount"><input type="number" min="0" id="pe-vf" name="Capital privado: valor futuro esperado en la venta" placeholder="400.000"><div class="unit">misma moneda</div></div></div>
-                    <div><span class="mini">¿En cuántos años espera venderlo, aproximadamente?</span><div class="amount"><input type="number" min="0" max="60" id="pe-anios" name="Capital privado: años hasta la venta" placeholder="10"><div class="unit">años</div></div></div>
+                    <div><span class="mini">¿En cuánto tiempo espera venderlo, aproximadamente?</span><div class="amount"><input type="number" min="0" max="60" data-maxa="60" id="pe-anios" name="Capital privado: años hasta la venta" placeholder="10"><select class="unidad-t" id="pe-anios-u" name="Capital privado: años hasta la venta (unidad)"><option value="anios">años</option><option value="meses">meses</option></select></div></div>
                   </div>
                 </div>
                 <div class="fila-grid" style="margin-top:14px;">
@@ -1225,7 +1252,7 @@
                   <div class="sub-q" id="pe-inc-detalle" hidden>
                     <div class="fila-grid">
                       <div id="pe-pct-detalle" hidden><span class="mini">Porcentaje de la venta que invertiría</span><div class="amount"><input type="number" min="1" max="99" id="pe-pct" name="Capital privado: porcentaje de la venta que invierte" placeholder="50"><div class="unit">%</div></div></div>
-                      <div><span class="mini">¿En cuántos años ingresaría este dinero al portafolio?</span><div class="amount"><input type="number" min="0" max="60" id="pe-anios-inc" name="Capital privado: años hasta incorporarse al portafolio" placeholder="10"><div class="unit">años</div></div></div>
+                      <div><span class="mini">¿En cuánto tiempo ingresaría este dinero al portafolio?</span><div class="amount"><input type="number" min="0" max="60" data-maxa="60" id="pe-anios-inc" name="Capital privado: años hasta incorporarse al portafolio" placeholder="10"><select class="unidad-t" id="pe-anios-inc-u" name="Capital privado: años hasta incorporarse al portafolio (unidad)"><option value="anios">años</option><option value="meses">meses</option></select></div></div>
                     </div>
                   </div>
                 </div>
@@ -1546,7 +1573,7 @@
 var VERIFICAR = new URLSearchParams(location.search).has('verificar');
 // Versión de las preguntas del cuestionario. Se sube cada vez que se agrega o cambia una pregunta:
 // los registros guardados con una versión anterior quedan marcados en el dashboard para completarlos.
-const VERSION_FORMULARIO = 74;
+const VERSION_FORMULARIO = 78;
 // Preguntas obligatorias que siguen sin respuesta (o con un dato inválido), con su número y texto
 // Campos opcionales con un dato imposible (una edad «hasta» menor que la edad actual, un año ya
 // pasado, un valor fuera de rango): cuentan como pendientes y se señalan en rojo, igual que los
@@ -1554,9 +1581,13 @@ const VERSION_FORMULARIO = 74;
 function sincronizarOpcionales(){
   try{
     const ed = +((document.getElementById('edad') || {}).value) || 0, ih = document.getElementById('ingreso-hasta');
-    if(ih) ih.min = ed >= 18 ? ed : 18;
+    if(ih) ih.min = (document.getElementById('ingreso-hasta-u') || {}).value === 'meses' ? 1 : ed >= 18 ? ed : 18;
     const ep = +((document.getElementById('edad-pareja') || {}).value) || 0, ph = document.getElementById('ingreso-pareja-hasta');
-    if(ph) ph.min = ep >= 18 ? ep : 18;
+    if(ph) ph.min = (document.getElementById('ingreso-pareja-hasta-u') || {}).value === 'meses' ? 1 : ep >= 18 ? ep : 18;
+    // años o meses: el máximo del campo sigue la unidad elegida
+    document.querySelectorAll('select.unidad-t').forEach(u => { const c = u.parentElement && u.parentElement.querySelector('input'); if(c && c.dataset.maxa) c.max = u.value === 'meses' ? +c.dataset.maxa * 12 : c.dataset.maxa; });
+    // un ingreso extraordinario que se repite: el último año no puede ser anterior al primero
+    document.querySelectorAll('#aportes-extra-filas .fila-rep').forEach(fl => { const a = fl.querySelector('[data-k="anio"]'), b = fl.querySelector('[data-k="anioFin"]'); if(a && b) b.min = a.value || ANIO_ACTUAL; });
     document.querySelectorAll('.page input[type="number"]').forEach(c => {
       if(c.dataset.reqval){ if(c.value === ''){ c.removeAttribute('required'); delete c.dataset.reqval; } }
       else if(!c.required && c.value !== '' && !c.checkValidity()){ c.required = true; c.dataset.reqval = '1'; }
@@ -1734,7 +1765,7 @@ document.addEventListener('input', function(e){
 
 // Los montos admiten decimales (centavos); edades, años y cantidades siguen siendo enteros.
 const ENTEROS = new Set(['otros-ing-fin','gastos-extra-n','aportes-extra-n','apoyos-n','ventas-n','deudas-n','inmuebles-n','metas-n','retiros-n','empresas-n','ingreso-pareja-hasta','edad_retiro','edad-pareja','c1','i3-horizonte','empresa-anios','f-rop-anio','f-fcl-anio','f-vol-anio',
-  'pension-edad','hipoteca-plazo','hipoteca-tasa','deudas-plazo','ingreso-hasta','moneda-usd','moneda-crc']);
+  'pension-edad','hipoteca-plazo','hipoteca-tasa','deudas-plazo','ingreso-hasta','moneda-usd','moneda-crc','ft-salario','ft-empresa','ft-honorarios','pe-anios','pe-anios-inc']);
 // Montos con separadores mientras se escribe. La convención sigue la moneda del monto:
 // dólares 250,000.50 · colones 1.000.000,50. El valor numérico se lee con numDe().
 function monedaDe(x){
@@ -1781,7 +1812,7 @@ function reformatear(x){
 function montosConDecimales(raiz){
   (raiz || document).querySelectorAll('input[type="number"]').forEach(function(x){
     const k = x.dataset.k;
-    if(ENTEROS.has(x.id) || k === 'anio' || k === 'anios' || k === 'edad' || /edad|anio/.test(x.id)) return;
+    if(ENTEROS.has(x.id) || k === 'anio' || k === 'anios' || k === 'anioFin' || k === 'edad' || /edad|anio/.test(x.id)) return;
     // monto: pasa a texto con formato
     x.dataset.monto = '1'; x.dataset.min = x.min || '0';
     x.type = 'text'; x.inputMode = 'decimal'; x.autocomplete = 'off';
@@ -2100,7 +2131,7 @@ const REPETIBLES = [
       <div class="fila-grid" style="margin-top:12px;">
         <div><span class="mini">¿Estima vender la empresa o traspasarla?</span><select required data-k="plan" data-plan-emp="1" name="Empresa ${i+1}: plan">
           <option value="" disabled selected>Seleccione</option><option value="vender">Sí, estimo venderla</option><option value="traspasar">Sí, estimo traspasarla a mi familia o socios</option><option value="mantener">No lo estimo por ahora</option></select></div>
-        <div class="emp-anios" hidden><span class="mini">¿En cuántos años espera venderla o traspasarla, aproximadamente?</span><div class="amount"><input type="number" min="0" max="60" data-k="anios" name="Empresa ${i+1}: años hasta la venta o traspaso" placeholder="10"><div class="unit">años</div></div></div>
+        <div class="emp-anios" hidden><span class="mini">¿En cuánto tiempo espera venderla o traspasarla, aproximadamente?</span><div class="amount"><input type="number" min="0" max="60" data-maxa="60" data-k="anios" name="Empresa ${i+1}: años hasta la venta o traspaso" placeholder="10"><select class="unidad-t" data-k="aniosU" name="Empresa ${i+1}: años hasta la venta o traspaso (unidad)"><option value="anios">años</option><option value="meses">meses</option></select></div></div>
       </div>
       <div class="fila-grid emp-venta" hidden style="margin-top:12px;">
         <div><span class="mini">Valor futuro que espera recibir de la venta de la empresa</span><div class="amount"><input type="number" min="0" data-k="vf" name="Empresa ${i+1}: valor futuro esperado en la venta" placeholder="2.500.000"><div class="unit">misma moneda</div></div></div>
@@ -2108,7 +2139,7 @@ const REPETIBLES = [
       </div>
       <div class="fila-grid emp-inc" hidden style="margin-top:12px;">
         <div class="fila-pct" hidden><span class="mini">Porcentaje de la venta que invertiría</span><div class="amount"><input type="number" min="1" max="99" data-k="pct" name="Empresa ${i+1}: porcentaje de la venta que invierte" placeholder="50"><div class="unit">%</div></div></div>
-        <div><span class="mini">¿En cuántos años ingresaría ese dinero al portafolio?</span><div class="amount"><input type="number" min="0" max="60" data-k="aniosInc" name="Empresa ${i+1}: años hasta incorporarse al portafolio" placeholder="10"><div class="unit">años</div></div></div>
+        <div><span class="mini">¿En cuánto tiempo ingresaría ese dinero al portafolio?</span><div class="amount"><input type="number" min="0" max="60" data-maxa="60" data-k="aniosInc" name="Empresa ${i+1}: años hasta incorporarse al portafolio" placeholder="10"><select class="unidad-t" data-k="aniosIncU" name="Empresa ${i+1}: años hasta incorporarse al portafolio (unidad)"><option value="anios">años</option><option value="meses">meses</option></select></div></div>
       </div>
       <div class="fila-grid" style="margin-top:12px;">
         <div><span class="mini">¿La empresa le genera dividendos?</span><select required data-k="div" data-div-emp="1" name="Empresa ${i+1}: genera dividendos">
@@ -2129,13 +2160,14 @@ const REPETIBLES = [
       <div><span class="mini">Monto por año, en valor de hoy</span><div class="amount"><input required type="number" min="1" data-k="monto" name="Dependiente ${i+1}: monto anual (valor de hoy)" placeholder="12.000"><select data-k="moneda" name="Dependiente ${i+1}: moneda"><option>USD</option><option>CRC</option></select></div></div>
       <div class="fila-grid" style="gap:0 14px;">
         <div><span class="mini">Año en que empieza</span><input required type="number" min="${ANIO_ACTUAL}" max="2100" data-k="anio" name="Dependiente ${i+1}: año de inicio" placeholder="${ANIO_ACTUAL+4}"></div>
-        <div><span class="mini">Durante cuántos años</span><input required type="number" min="1" max="40" data-k="anios" name="Dependiente ${i+1}: años de duración" placeholder="5"></div>
+        <div><span class="mini">Durante cuánto tiempo</span><div class="amount"><input required type="number" min="1" max="40" data-maxa="40" data-k="anios" name="Dependiente ${i+1}: años de duración" placeholder="5"><select class="unidad-t" data-k="aniosU" name="Dependiente ${i+1}: años de duración (unidad)"><option value="anios">años</option><option value="meses">meses</option></select></div></div>
       </div>
     </div></div>`},
   {control:'aportes-extra-n', contenedor:'aportes-extra-filas', max:999, fila: i => `
-    <div class="fila-rep fila-tabla4"><span class="fila-tit">Ingreso extraordinario ${i+1}</span>
+    <div class="fila-rep fila-tabla4r"><span class="fila-tit">Ingreso extraordinario ${i+1}</span>
       <div><span class="mini">Nombre</span><input type="text" data-k="nombre" name="Ingreso extraordinario ${i+1}: nombre" placeholder="Bono, herencia…"></div>
-      <div><span class="mini">Año</span><input required type="number" min="${ANIO_ACTUAL}" max="2100" data-k="anio" name="Ingreso extraordinario ${i+1}: año" placeholder="${ANIO_ACTUAL+3}"></div>
+      <div><span class="mini">Primer año que lo recibe</span><input required type="number" min="${ANIO_ACTUAL}" max="2100" data-k="anio" name="Ingreso extraordinario ${i+1}: año" placeholder="${ANIO_ACTUAL+3}"></div>
+      <div><span class="mini">Último año que lo recibe</span><input type="number" min="${ANIO_ACTUAL}" max="2100" data-k="anioFin" name="Ingreso extraordinario ${i+1}: último año (si se repite cada año)" placeholder="Igual al primero"></div>
       <div><span class="mini">Monto, en valor de hoy</span><div class="amount"><input required type="number" min="1" data-k="monto" name="Ingreso extraordinario ${i+1}: monto (valor de hoy)" placeholder="50.000"><select data-k="moneda" name="Ingreso extraordinario ${i+1}: moneda"><option>USD</option><option>CRC</option></select></div></div>
     </div>`},
   {control:'gastos-extra-n', contenedor:'gastos-extra-filas', max:999, fila: i => `
@@ -2199,7 +2231,7 @@ const REPETIBLES = [
       </div>
       <div class="fila-grid meta-credito" hidden style="margin-top:12px;">
         <div><span class="mini">Tasa de interés anual del crédito</span><div class="amount"><input type="number" min="0" max="80" step="0.01" data-k="tasa" name="Meta ${i+1}: tasa del crédito (%)" placeholder="9"><div class="unit">%</div></div></div>
-        <div><span class="mini">Plazo del crédito</span><div class="amount"><input type="number" min="1" max="40" step="1" data-k="plazo" name="Meta ${i+1}: plazo del crédito (años)" placeholder="10"><div class="unit">años</div></div></div>
+        <div><span class="mini">Plazo del crédito</span><div class="amount"><input type="number" min="1" max="40" step="1" data-maxa="40" data-k="plazo" name="Meta ${i+1}: plazo del crédito (años)" placeholder="10"><select class="unidad-t" data-k="plazoU" name="Meta ${i+1}: plazo del crédito (unidad)"><option value="anios">años</option><option value="meses">meses</option></select></div></div>
       </div>
       <p class="hint meta-credito" hidden style="margin-top:8px;">La cuota anual del crédito (con esta tasa y este plazo, desde el año de la meta) entra a la proyección como un gasto ordinario.</p>
     </div>`}
@@ -2348,10 +2380,47 @@ function sincronizarFuentes(){
   const sal = document.getElementById('fuente-salario'), emp = document.getElementById('empleo-detalle');
   if(emp){ const ver = !!(sal && sal.checked); emp.hidden = !ver;
     ['empleo-empresa', 'empleo-puesto'].forEach(id => { const x = document.getElementById(id); if(x) x.required = ver; }); }
+  // Cada fuente marcada pide su monto mensual y su moneda; el ingreso total es la suma
+  FUENTES_ING.forEach(k => { const ck = document.getElementById('fuente-' + k), l = document.getElementById('fl-' + k), mo = document.getElementById('fm-' + k);
+    if(!l || !mo) return; const ver = !!(ck && ck.checked); l.hidden = !ver; mo.required = ver;
+    if(!ver){ mo.value = ''; const t = document.getElementById('ft-' + k); if(t) t.value = ''; } });
+  const alguna = FUENTES_ING.some(k => (document.getElementById('fuente-' + k) || {}).checked);
+  const nt = document.getElementById('fuentes-nota'); if(nt) nt.hidden = !alguna;
+  totalDeFuentes();
   // Sin ingreso por actividad (por ejemplo, un pensionado que escribe 0) no se pide la fuente
   const m = document.getElementById('salario-monto');
-  h.required = !(m && m.value !== '' && +m.value === 0);
+  h.required = !(m && m.value !== '' && numDe(m) === 0);
 }
+// Ingreso total mensual = suma de los montos de las fuentes marcadas. Si todas están en la misma
+// moneda, el total va en esa moneda; si hay colones y dólares, va en dólares (o en colones, si se
+// elige), con el tipo de cambio de referencia de la firma. El dashboard vuelve a sumar las fuentes
+// con el tipo de cambio de los supuestos del cliente.
+const FUENTES_ING = ['salario', 'empresa', 'honorarios'];
+var TC_REF = 450, monedaTotalManual = false;
+function fuentesConMonto(){
+  return FUENTES_ING.filter(k => (document.getElementById('fuente-' + k) || {}).checked).map(k => { const mo = document.getElementById('fm-' + k);
+    return {k, monto: mo && mo.value !== '' ? numDe(mo) : NaN, moneda: (document.getElementById('fm-' + k + '-moneda') || {}).value || 'USD'}; }).filter(x => !isNaN(x.monto));
+}
+function totalDeFuentes(){
+  const tot = document.getElementById('salario-monto'), mon = document.getElementById('salario-moneda'); if(!tot || !mon) return;
+  const fs = fuentesConMonto(), tcN = document.getElementById('fuentes-tc');
+  tot.readOnly = fs.length > 0; tot.style.opacity = fs.length ? '.75' : '';
+  if(!fs.length){ if(tcN) tcN.hidden = true; return; }
+  const mixto = new Set(fs.map(x => x.moneda)).size > 1;
+  if(!mixto){ if(mon.value !== fs[0].moneda){ mon.value = fs[0].moneda; mon.dataset.prev = fs[0].moneda; } }
+  else if(!monedaTotalManual && mon.value !== 'USD'){ mon.value = 'USD'; mon.dataset.prev = 'USD'; }
+  const dest = mon.value;
+  const suma = fs.reduce((a, x) => a + (x.moneda === dest ? x.monto : dest === 'USD' ? x.monto / TC_REF : x.monto * TC_REF), 0);
+  const n = Math.round(suma * 100) / 100, {dec} = separadores(dest);
+  tot.value = formatoMonto(String(n).replace('.', dec), dest); try{ revisarMonto(tot); }catch(e){}
+  if(tcN){ tcN.hidden = !mixto; tcN.textContent = mixto ? 'Las fuentes están en colones y en dólares: el total se muestra en ' + (dest === 'USD' ? 'dólares' : 'colones') + ' con el tipo de cambio de referencia de ₡' + TC_REF + ' por dólar. Puede cambiar la moneda del total arriba.' : ''; }
+}
+document.addEventListener('input', function(e){ const t = e.target; if(t && t.classList && t.classList.contains('fuente-monto')) setTimeout(totalDeFuentes, 0); });
+document.addEventListener('change', function(e){ const t = e.target; if(!t) return;
+  if(t.id === 'salario-moneda'){ if(e.isTrusted) monedaTotalManual = true; setTimeout(totalDeFuentes, 0); }
+  else if(t.classList && (t.classList.contains('fuente-moneda') || t.classList.contains('fuente-monto'))) setTimeout(totalDeFuentes, 0); });
+// tipo de cambio de referencia: el de los valores de la firma
+try{ fetch(`https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/data/supuestos/firma.json`).then(r => r.ok ? r.json() : null).then(j => { const v = j && j.supuestos && +j.supuestos.tipoCambio; if(v > 0){ TC_REF = v; totalDeFuentes(); } }).catch(() => {}); }catch(e){}
 document.addEventListener('input', function(e){ if(e.target && e.target.id === 'salario-monto') sincronizarFuentes(); });
 document.addEventListener('change', function(e){ if(e.target && e.target.classList && e.target.classList.contains('fuente-ck')) sincronizarFuentes(); });
 // Al restaurar un borrador o una edición, las casillas se marcan desde el campo oculto
@@ -2643,9 +2712,14 @@ marcarRespondidas();
 // y el respaldo automático en la nube. El identificador y la fecha de creación se mantienen entre
 // guardados, para que todos actualicen el mismo registro.
 var idBorrador = null, creadoBorrador = null, shaNube = null;
+// Años o meses: un plazo «desde hoy» en meses cae en el año calendario que corresponde; una duración en meses se guarda también en años (meses ÷ 12)
+function aniosCalendario(v, u){ if(v === '' || v == null || isNaN(+v)) return v; if(u !== 'meses') return +v; const h = new Date(); return new Date(h.getFullYear(), h.getMonth() + (+v), 1).getFullYear() - h.getFullYear(); }
+const filasEmpresas = () => leerFilas('empresas-filas').map(f => { f.aniosMeses = f.aniosU === 'meses' && f.anios != null && f.anios !== '' ? +f.anios : null; f.aniosIncMeses = f.aniosIncU === 'meses' && f.aniosInc != null && f.aniosInc !== '' ? +f.aniosInc : null;
+  f.anios = aniosCalendario(f.anios, f.aniosU); f.aniosInc = aniosCalendario(f.aniosInc, f.aniosIncU); return f; });
 function construirRegistro(){
   const val = id => { const e = document.getElementById(id); if(!e) return ''; if(e.dataset && e.dataset.monto){ const n = numDe(e); return isNaN(n) ? '' : String(n); } return e.value; };
 
+  const peA = id => +aniosCalendario(val(id), val(id + '-u')) || 0;
   const esPersona = tipoCliente === 'persona';
   const nombre = esPersona
     ? (val('nombres').trim() + ' ' + val('apellidos').trim()).trim()
@@ -2740,7 +2814,7 @@ function construirRegistro(){
     otrosIngresosRetiro: val('otros-ing') === 'si' ? {montoMensual: +val('otros-ing-monto'), moneda: val('otros-ing-moneda'), desde: val('otros-ing-desde') || 'hoy', anio: val('otros-ing-desde') === 'anio' ? +val('otros-ing-anio') : null,
       hasta: val('otros-ing-hasta') || 'siempre', anioFin: val('otros-ing-hasta') === 'anio' ? +val('otros-ing-fin') : null} : null,
     // Ingresos extraordinarios (bonos, herencias u otros montos puntuales), en dólares de hoy
-    aportesExtraordinarios: leerFilas('aportes-extra-filas').map((r, k) => ({numero: k + 1, concepto: (r.nombre || '').trim() || 'Ingreso extraordinario ' + (k + 1), montoUsdHoy: r.monto, moneda: r.moneda || 'USD', anio: r.anio})),
+    aportesExtraordinarios: leerFilas('aportes-extra-filas').map((r, k) => ({numero: k + 1, concepto: (r.nombre || '').trim() || 'Ingreso extraordinario ' + (k + 1), montoUsdHoy: r.monto, moneda: r.moneda || 'USD', anio: r.anio, anioFin: +r.anioFin > +r.anio ? +r.anioFin : null})),
     // Gastos extraordinarios: uno por fila, en su año o cada año desde ese año
     gastosExtraordinariosAnualesUsdHoy: 0,
     gastosExtraordinarios: leerFilas('gastos-extra-filas').map((r, k) => ({numero: k + 1, concepto: (r.nombre || '').trim() || 'Gasto extraordinario ' + (k + 1), montoUsdHoy: r.monto, moneda: r.moneda || 'USD', anio: r.anio, frecuencia: r.frecuencia})),
@@ -2755,21 +2829,21 @@ function construirRegistro(){
         return {concepto: 'Venta de ' + (f.nombre || 'inmueble'), origen: 'inmueble', anio: f.anio, monto: misma ? Math.max(0, (+f.valor || 0) - (+f.deuda || 0)) * pct : null, moneda: mv,
           valor: +f.valor || 0, valorMoneda: mv, deuda: +f.deuda || 0, deudaMoneda: md, pctInvierte: pct * 100}; }),
       // empresas: entra al portafolio en el año indicado; el monto es el valor futuro de la venta (o el de hoy, si no se indicó)
-      leerFilas('empresas-filas').filter(f => f.plan === 'vender' && (f.invierte === 'si' || f.invierte === 'parte')).map(f => { const pct = f.invierte === 'parte' ? (+f.pct || 0)/100 : 1;
+      filasEmpresas().filter(f => f.plan === 'vender' && (f.invierte === 'si' || f.invierte === 'parte')).map(f => { const pct = f.invierte === 'parte' ? (+f.pct || 0)/100 : 1;
         return {concepto: 'Venta de ' + ((f.nombre || '').toUpperCase() || 'la empresa'), origen: 'empresa',
         anio: ANIO_ACTUAL + (f.aniosInc === '' || f.aniosInc == null ? +f.anios || 0 : +f.aniosInc), anioVenta: ANIO_ACTUAL + (+f.anios || 0),
         monto: (+f.valor || 0) * pct, valorFuturo: +f.vf > 0 ? +f.vf * pct : null, moneda: f.moneda || 'USD', pctInvierte: pct * 100}; }),
       // capital privado: igual que las empresas
       (val('pe-tiene') === 'si' && val('pe-vende') === 'si' && (val('pe-invierte') === 'si' || val('pe-invierte') === 'parte')) ? [(function(){ const pct = val('pe-invierte') === 'parte' ? (+val('pe-pct') || 0)/100 : 1;
         return {concepto: 'Venta del capital privado' + (val('pe-detalle-txt').trim() ? ': ' + val('pe-detalle-txt').trim() : ''), origen: 'capital',
-          anio: ANIO_ACTUAL + (val('pe-anios-inc') === '' ? +val('pe-anios') || 0 : +val('pe-anios-inc')), anioVenta: ANIO_ACTUAL + (+val('pe-anios') || 0),
+          anio: ANIO_ACTUAL + (val('pe-anios-inc') === '' ? peA('pe-anios') || 0 : peA('pe-anios-inc')), anioVenta: ANIO_ACTUAL + (peA('pe-anios') || 0),
           monto: (+val('pe-valor') || 0) * pct, valorFuturo: +val('pe-vf') > 0 ? +val('pe-vf') * pct : null, moneda: val('pe-moneda') || 'USD', pctInvierte: pct * 100}; })()] : [],
       leerFilas('ventas-filas').map(f => ({concepto: f.activo || 'Venta de activos', origen: 'otro', anio: f.anio, monto: f.monto, moneda: f.moneda || 'USD'}))),
     capitalPrivado: val('pe-tiene') === 'si' ? {valor: +val('pe-valor') || 0, moneda: val('pe-moneda'), participacionPct: null, detalle: val('pe-detalle-txt').trim(),
-      vende: val('pe-vende') === 'si', aniosVenta: val('pe-vende') === 'si' ? +val('pe-anios') || 0 : null, anioVenta: val('pe-vende') === 'si' ? ANIO_ACTUAL + (+val('pe-anios') || 0) : null,
+      vende: val('pe-vende') === 'si', aniosVenta: val('pe-vende') === 'si' ? peA('pe-anios') || 0 : null, anioVenta: val('pe-vende') === 'si' ? ANIO_ACTUAL + (peA('pe-anios') || 0) : null,
       valorFuturo: val('pe-vende') === 'si' && +val('pe-vf') > 0 ? +val('pe-vf') : null,
       inviertePortafolio: val('pe-vende') === 'si' ? val('pe-invierte') : null, pctInvierte: val('pe-vende') === 'si' ? (val('pe-invierte') === 'si' ? 100 : val('pe-invierte') === 'parte' ? +val('pe-pct') || 0 : 0) : null,
-      aniosIncorporacion: val('pe-invierte') === 'si' || val('pe-invierte') === 'parte' ? (val('pe-anios-inc') === '' ? +val('pe-anios') || 0 : +val('pe-anios-inc')) : null,
+      aniosIncorporacion: val('pe-invierte') === 'si' || val('pe-invierte') === 'parte' ? (val('pe-anios-inc') === '' ? peA('pe-anios') || 0 : peA('pe-anios-inc')) : null,
       dividendos: {tiene: val('pe-div') === 'si', pct: val('pe-div') === 'si' ? +val('pe-div-pct') || 0 : 0}} : (val('pe-tiene') === 'no' ? {valor: 0, moneda: 'USD', detalle: ''} : null),
     // Retiros adicionales del portafolio (pregunta de retiros): motivo, año y monto de cada uno
     retirosPortafolio: val('c1-tiene') === 'si' ? leerFilas('retiros-filas').map(x => ({nombre: (x.nombre || '').trim(), anio: x.anio, montoUsdHoy: x.monto, moneda: x.moneda || 'USD'})) : [],
@@ -2778,7 +2852,7 @@ function construirRegistro(){
       portafolioDentro: val('estr-port'),
       conPortafolio: [...document.querySelectorAll('.estr-p')].filter(x => x.checked).map(x => x.value),
       fueraPortafolio: [...document.querySelectorAll('.estr')].filter(x => x.checked && !document.getElementById(x.id + '-port').checked).map(x => x.value)},
-    apoyosDependientes: val('apoyos-tiene') === 'si' ? leerFilas('apoyos-filas').map(r => ({beneficiario: r.beneficiario, motivo: r.motivo, montoAnualUsdHoy: r.monto, moneda: r.moneda || 'USD', anioInicio: r.anio, anios: r.anios})) : [],
+    apoyosDependientes: val('apoyos-tiene') === 'si' ? leerFilas('apoyos-filas').map(r => ({beneficiario: r.beneficiario, motivo: r.motivo, montoAnualUsdHoy: r.monto, moneda: r.moneda || 'USD', anioInicio: r.anio, anios: r.aniosU === 'meses' ? r.anios / 12 : r.anios, meses: r.aniosU === 'meses' ? r.anios : null})) : [],
     // Destino del patrimonio. El monto se expresa en dólares de hoy, es decir en
     // poder adquisitivo actual, para compararlo contra el portafolio en términos reales.
     legado: {
@@ -2788,7 +2862,8 @@ function construirRegistro(){
     },
     preferenciaMoneda: val('moneda-usd') === '' ? '' : val('moneda-usd') + '% en dólares y ' + (100 - +val('moneda-usd')) + '% en colones',
     porcentajeUsd: val('moneda-usd') === '' ? null : +val('moneda-usd'),
-    ingresoHastaEdad: val('ingreso-hasta') === '' ? null : +val('ingreso-hasta'),
+    ingresoHastaEdad: val('ingreso-hasta') === '' || val('ingreso-hasta-u') === 'meses' ? null : +val('ingreso-hasta'),
+    ingresoHastaMeses: val('ingreso-hasta') !== '' && val('ingreso-hasta-u') === 'meses' ? +val('ingreso-hasta') : null,
     salarioMonto: +val('salario-monto'),
     salarioMoneda: val('salario-moneda'),
     gastoMonto: +val('gasto-monto'),
@@ -2814,10 +2889,15 @@ function construirRegistro(){
     },
     ingresos: {
       fuentes: val('fuente-ingreso').split(',').filter(Boolean),
+      // monto, moneda y tiempo de cada fuente; meses = tiempo que la recibirá desde hoy (null: hasta la independencia o la edad indicada)
+      fuentesDetalle: val('fuente-ingreso').split(',').filter(Boolean).filter(k => val('fm-' + k) !== '').map(k => { const t = val('ft-' + k) === '' ? null : +val('ft-' + k), u = val('ft-' + k + '-u') || 'anios';
+        return {fuente: k, monto: +val('fm-' + k), moneda: val('fm-' + k + '-moneda') || 'USD', tiempo: t, unidad: t == null ? null : u, meses: t == null ? null : (u === 'meses' ? t : t * 12)}; }),
+      tipoCambioReferencia: TC_REF,
       fuentePrincipal: val('fuente-ingreso').split(',')[0] || '',
       empleo: val('fuente-ingreso').split(',').includes('salario') ? {empresa: val('empleo-empresa').trim(), puesto: val('empleo-puesto').trim()} : null,
       ingresoPareja: val('plan') === 'conjunta'
-        ? {monto: +val('ingreso-pareja-monto'), moneda: val('ingreso-pareja-moneda'), hastaEdad: val('ingreso-pareja-hasta') === '' ? null : +val('ingreso-pareja-hasta')} : null,
+        ? {monto: +val('ingreso-pareja-monto'), moneda: val('ingreso-pareja-moneda'), hastaEdad: val('ingreso-pareja-hasta') === '' || val('ingreso-pareja-hasta-u') === 'meses' ? null : +val('ingreso-pareja-hasta'),
+          hastaMeses: val('ingreso-pareja-hasta') !== '' && val('ingreso-pareja-hasta-u') === 'meses' ? +val('ingreso-pareja-hasta') : null} : null,
       gastoRetiroPct: val('gasto-retiro-pct') === '' ? null : +val('gasto-retiro-pct'),
       gastoUsdPct: val('gasto-usd-pct') === '' ? null : +val('gasto-usd-pct'),
       gastoCrcPct: val('gasto-usd-pct') === '' ? null : 100 - (+val('gasto-usd-pct'))
@@ -2843,7 +2923,8 @@ function construirRegistro(){
           saldo: +val('hipoteca-saldo'), saldoMoneda: val('hipoteca-saldo-moneda'),
           cuotaMensual: +val('hipoteca-cuota'), cuotaMoneda: val('hipoteca-cuota-moneda'),
           tasaAnual: val('hipoteca-tasa') === '' ? null : +val('hipoteca-tasa'),
-          plazoRestanteAnios: val('hipoteca-plazo') === '' ? null : +val('hipoteca-plazo')
+          plazoRestanteAnios: val('hipoteca-plazo') === '' ? null : (val('hipoteca-plazo-u') === 'meses' ? +val('hipoteca-plazo') / 12 : +val('hipoteca-plazo')),
+          plazoRestanteMeses: val('hipoteca-plazo') !== '' && val('hipoteca-plazo-u') === 'meses' ? +val('hipoteca-plazo') : null
         } : null
       },
       inmuebles: {
@@ -2855,11 +2936,11 @@ function construirRegistro(){
           inviertePortafolio: f.vende === 'si' ? f.invierte : null, pctInvierte: f.vende === 'si' ? (f.invierte === 'si' ? 100 : f.invierte === 'parte' ? +f.pct : 0) : null}))
       },
       // una fila por empresa (pregunta 15)
-      empresas: leerFilas('empresas-filas').map((f, k) => ({numero: k + 1, nombre: (f.nombre || '').toUpperCase() || 'EMPRESA ' + (k + 1), propietario: true, plan: f.plan,
+      empresas: filasEmpresas().map((f, k) => ({numero: k + 1, nombre: (f.nombre || '').toUpperCase() || 'EMPRESA ' + (k + 1), propietario: true, plan: f.plan,
         valor: f.valor, valorMoneda: f.moneda || 'USD', participacionPct: f.part,
         inviertePortafolio: f.plan === 'vender' ? f.invierte : null,
         pctInvierte: f.plan === 'vender' ? (f.invierte === 'si' ? 100 : f.invierte === 'parte' ? +f.pct : 0) : null,
-        aniosHastaEvento: f.plan === 'vender' || f.plan === 'traspasar' ? f.anios : null,
+        aniosHastaEvento: f.plan === 'vender' || f.plan === 'traspasar' ? f.anios : null, mesesHastaEvento: f.aniosMeses, mesesIncorporacion: f.aniosIncMeses,
         anioVenta: f.plan === 'vender' || f.plan === 'traspasar' ? ANIO_ACTUAL + (+f.anios || 0) : null,
         valorFuturo: f.plan === 'vender' && +f.vf > 0 ? +f.vf : null,
         aniosIncorporacion: f.plan === 'vender' && (f.invierte === 'si' || f.invierte === 'parte') ? (f.aniosInc === '' || f.aniosInc == null ? +f.anios || 0 : +f.aniosInc) : null,
@@ -2882,7 +2963,7 @@ function construirRegistro(){
         ? {monto: +val('vida-suma'), moneda: val('vida-moneda')} : null
     },
     metas: leerFilas('metas-filas').map(m => ({tipo: m.tipo, detalle: m.tipo === 'otra' ? (m.tipoOtro || '').trim() : '', montoUsdHoy: m.monto, moneda: m.moneda || 'USD', anio: m.anio, prioridad: m.prioridad,
-      financiamiento: m.financia || 'portafolio', tasaCredito: m.financia && m.financia !== 'portafolio' ? m.tasa : null, plazoCreditoAnios: m.financia && m.financia !== 'portafolio' ? m.plazo : null})),
+      financiamiento: m.financia || 'portafolio', tasaCredito: m.financia && m.financia !== 'portafolio' ? m.tasa : null, plazoCreditoAnios: m.financia && m.financia !== 'portafolio' ? (m.plazoU === 'meses' ? m.plazo / 12 : m.plazo) : null, plazoCreditoMeses: m.financia && m.financia !== 'portafolio' && m.plazoU === 'meses' ? m.plazo : null})),
     creadoEn: Date.now()
   }; }
   function base(){
@@ -3127,6 +3208,10 @@ function restaurarBorrador(b){
 // ---- Edición de un cuestionario enviado (desde el dashboard: ?editar=<id>) ----
 // Respuestas guardadas con versiones anteriores del formulario: se llevan a los campos vigentes
 function migrarFormulario(d, r){
+  // fuentes del ingreso sin monto (versiones anteriores): si es una sola, su monto es el ingreso total
+  { const fu = (d['fuente-ingreso'] || '').split(',').filter(Boolean);
+    if(fu.length === 1 && d['fm-' + fu[0]] === undefined && d['salario-monto'] !== undefined && d['salario-monto'] !== ''){
+      d['fm-' + fu[0]] = d['salario-monto']; d['fm-' + fu[0] + '-moneda'] = d['salario-moneda'] || 'USD'; } }
   // pregunta 6: las versiones anteriores solo tenían la redacción de quien aporta
   if(d['q7-situacion'] === undefined && d['q7'] !== undefined && d['q7'] !== '') d['q7-situacion'] = 'aporta';
   // Montos «en dólares de hoy» de versiones anteriores: ahora «en valor de hoy», con su moneda
@@ -3305,4 +3390,4 @@ if(VERIFICAR){
 
 
 
-<!-- Chotocruz & Co. · Entrega 77 · 11 de noviembre de 2026 -->
+<!-- Chotocruz & Co. · Entrega 78 · 12 de noviembre de 2026 -->
