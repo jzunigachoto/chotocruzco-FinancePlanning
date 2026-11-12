@@ -56,8 +56,8 @@
     "moneda": "USD",
     "desde": "hoy",
     "anio": null,
-    "hasta": "anio",
-    "anioFin": 2030
+    "hasta": "siempre",
+    "anioFin": null
   },
   "aportesExtraordinarios": [
     {
@@ -628,14 +628,8 @@
         {
           "id": "otros-ing-hasta",
           "campo": "Otros ingresos recurrentes: hasta",
-          "valor": "Hasta un año específico",
-          "codigo": "anio"
-        },
-        {
-          "id": "otros-ing-fin",
-          "campo": "Otros ingresos recurrentes: último año",
-          "valor": "2030",
-          "codigo": "2030"
+          "valor": "Durante toda la proyección",
+          "codigo": "siempre"
         }
       ]
     },
@@ -1424,8 +1418,7 @@
     "otros-ing-monto": "3,500",
     "otros-ing-moneda": "USD",
     "otros-ing-desde": "hoy",
-    "otros-ing-hasta": "anio",
-    "otros-ing-fin": "2030",
+    "otros-ing-hasta": "siempre",
     "f-rop-tiene": "no",
     "f-rop-saldo-moneda": "CRC",
     "f-rop-aporte-moneda": "CRC",
@@ -1572,7 +1565,7 @@
     "distrito": "Pozos",
     "direccion": "Ecoresidencial Villa Real casa R17"
   },
-  "modificadoEn": 1794522351270,
+  "modificadoEn": 1794522365933,
   "historialEdiciones": [
     1794254283976,
     1794332381529,
@@ -1590,10 +1583,10 @@
     1794521107895,
     1794521170297,
     1794521728932,
-    1794522351270
+    1794522365933
   ],
   "versionFormulario": 78,
   "preguntasPendientes": [],
   "estado": "completo",
-  "_guardado": 1794522351272
+  "_guardado": 1794522365934
 }
