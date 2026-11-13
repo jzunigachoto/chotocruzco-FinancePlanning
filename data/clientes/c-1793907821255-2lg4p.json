@@ -59,7 +59,16 @@
     "hasta": "anio",
     "anioFin": 2030
   },
-  "aportesExtraordinarios": [],
+  "aportesExtraordinarios": [
+    {
+      "numero": 1,
+      "concepto": "Bono Prole",
+      "montoUsdHoy": 37000,
+      "moneda": "USD",
+      "anio": 2027,
+      "anioFin": 2037
+    }
+  ],
   "gastosExtraordinariosAnualesUsdHoy": 0,
   "gastosExtraordinarios": [
     {
@@ -571,8 +580,38 @@
         {
           "id": "aportes-extra-n",
           "campo": "Cantidad de aportes extraordinarios",
-          "valor": "0",
-          "codigo": "0"
+          "valor": "1",
+          "codigo": "1"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 1: nombre",
+          "valor": "Bono Prole",
+          "codigo": "Bono Prole"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 1: año",
+          "valor": "2027",
+          "codigo": "2027"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 1: último año (si se repite cada año)",
+          "valor": "2037",
+          "codigo": "2037"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 1: monto (valor de hoy)",
+          "valor": "37,000",
+          "codigo": "37,000"
+        },
+        {
+          "id": "",
+          "campo": "Ingreso extraordinario 1: moneda",
+          "valor": "USD",
+          "codigo": "USD"
         }
       ]
     },
@@ -1018,7 +1057,12 @@
     "f-vol-tiene": "no",
     "f-vol-saldo-moneda": "CRC",
     "f-vol-aporte-moneda": "CRC",
-    "aportes-extra-n": "0",
+    "aportes-extra-n": "1",
+    "n:Ingreso extraordinario 1: nombre": "Bono Prole",
+    "n:Ingreso extraordinario 1: año": "2027",
+    "n:Ingreso extraordinario 1: último año (si se repite cada año)": "2037",
+    "n:Ingreso extraordinario 1: monto (valor de hoy)": "37,000",
+    "n:Ingreso extraordinario 1: moneda": "USD",
     "gasto-monto": "4,700",
     "gasto-moneda": "USD",
     "gasto-usd-pct": "23",
@@ -1103,7 +1147,7 @@
     "distrito": "Pozos",
     "direccion": "Ecoresidencial Villa Real casa R17"
   },
-  "modificadoEn": 1794588775916,
+  "modificadoEn": 1794589636001,
   "historialEdiciones": [
     1794254283976,
     1794332381529,
@@ -1127,10 +1171,11 @@
     1794585095991,
     1794586066793,
     1794586530982,
-    1794588775916
+    1794588775916,
+    1794589636001
   ],
   "versionFormulario": 78,
   "preguntasPendientes": [],
   "estado": "completo",
-  "_guardado": 1794588775916
+  "_guardado": 1794589636001
 }
