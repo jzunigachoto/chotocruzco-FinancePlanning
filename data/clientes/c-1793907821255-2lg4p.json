@@ -26,7 +26,7 @@
     "estadoCivil": "soltero"
   },
   "edad": 37,
-  "edadRetiro": 50,
+  "edadRetiro": 60,
   "versionPerfil": 2,
   "situacionPortafolio": "aporta",
   "respuestas": {
@@ -56,8 +56,8 @@
     "moneda": "USD",
     "desde": "hoy",
     "anio": null,
-    "hasta": "siempre",
-    "anioFin": null
+    "hasta": "anio",
+    "anioFin": 2030
   },
   "aportesExtraordinarios": [],
   "gastosExtraordinariosAnualesUsdHoy": 0,
@@ -358,8 +358,8 @@
         {
           "id": "edad_retiro",
           "campo": "Edad de independencia financiera",
-          "valor": "50",
-          "codigo": "50"
+          "valor": "60",
+          "codigo": "60"
         }
       ]
     },
@@ -523,8 +523,14 @@
         {
           "id": "otros-ing-hasta",
           "campo": "Otros ingresos recurrentes: hasta",
-          "valor": "Durante toda la proyección",
-          "codigo": "siempre"
+          "valor": "Hasta un año específico",
+          "codigo": "anio"
+        },
+        {
+          "id": "otros-ing-fin",
+          "campo": "Otros ingresos recurrentes: último año",
+          "valor": "2030",
+          "codigo": "2030"
         }
       ]
     },
@@ -968,7 +974,7 @@
     "q9": "7.5",
     "q10": "6.67",
     "edad": "37",
-    "edad_retiro": "50",
+    "edad_retiro": "60",
     "salario-monto": "1,750",
     "salario-moneda": "USD",
     "ingreso-hasta": "3",
@@ -1001,7 +1007,8 @@
     "otros-ing-monto": "3,500",
     "otros-ing-moneda": "USD",
     "otros-ing-desde": "hoy",
-    "otros-ing-hasta": "siempre",
+    "otros-ing-hasta": "anio",
+    "otros-ing-fin": "2030",
     "f-rop-tiene": "no",
     "f-rop-saldo-moneda": "CRC",
     "f-rop-aporte-moneda": "CRC",
@@ -1096,7 +1103,7 @@
     "distrito": "Pozos",
     "direccion": "Ecoresidencial Villa Real casa R17"
   },
-  "modificadoEn": 1794586530982,
+  "modificadoEn": 1794588773046,
   "historialEdiciones": [
     1794254283976,
     1794332381529,
@@ -1119,10 +1126,11 @@
     1794526074917,
     1794585095991,
     1794586066793,
-    1794586530982
+    1794586530982,
+    1794588773046
   ],
   "versionFormulario": 78,
   "preguntasPendientes": [],
   "estado": "completo",
-  "_guardado": 1794586530983
+  "_guardado": 1794588773047
 }
